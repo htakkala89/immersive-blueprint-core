@@ -236,8 +236,12 @@ export function DragonEncounterGame({ onComplete, onCancel }: DragonEncounterGam
   const [dragonHealth, setDragonHealth] = useState(100);
   const [playerHealth, setPlayerHealth] = useState(80);
   const [isAttacking, setIsAttacking] = useState(false);
-  const [combatLog, setCombatLog] = useState<string[]>(['A fierce dragon blocks your path!']);
-  const [timeLeft, setTimeLeft] = useState(20);
+  const [combatLog, setCombatLog] = useState<string[]>([
+    'A mighty dragon emerges from the shadows!',
+    '"Mortal... you dare enter my domain?"',
+    'The dragon\'s eyes glow with ancient fury.'
+  ]);
+  const [timeLeft, setTimeLeft] = useState(30);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -265,13 +269,25 @@ export function DragonEncounterGame({ onComplete, onCancel }: DragonEncounterGam
     const playerDamage = Math.floor(Math.random() * 25) + 15;
     const dragonDamage = Math.floor(Math.random() * 20) + 10;
     
+    const attackMessages = [
+      `Your blade strikes true for ${playerDamage} damage!`,
+      `A critical hit! You deal ${playerDamage} damage!`,
+      `Your attack finds its mark, dealing ${playerDamage} damage!`
+    ];
+    
+    const dragonResponses = [
+      `"Insignificant mortal!" The dragon retaliates with ${dragonDamage} fire damage!`,
+      `The dragon roars in pain and breathes fire for ${dragonDamage} damage!`,
+      `"You will pay for that!" Dragon's claws rake you for ${dragonDamage} damage!`
+    ];
+    
     setDragonHealth(prev => Math.max(0, prev - playerDamage));
-    setCombatLog(prev => [...prev, `You deal ${playerDamage} damage!`]);
+    setCombatLog(prev => [...prev, attackMessages[Math.floor(Math.random() * attackMessages.length)]]);
     
     setTimeout(() => {
       if (dragonHealth - playerDamage > 0) {
         setPlayerHealth(prev => Math.max(0, prev - dragonDamage));
-        setCombatLog(prev => [...prev, `Dragon breathes fire for ${dragonDamage} damage!`]);
+        setCombatLog(prev => [...prev, dragonResponses[Math.floor(Math.random() * dragonResponses.length)]]);
       }
       setIsAttacking(false);
     }, 1000);
@@ -284,10 +300,17 @@ export function DragonEncounterGame({ onComplete, onCancel }: DragonEncounterGam
     const dragonDamage = Math.floor(Math.random() * 10) + 5;
     const healAmount = Math.floor(Math.random() * 15) + 10;
     
+    const defendMessages = [
+      `You raise your shield, blocking most damage and recovering ${healAmount - dragonDamage} health!`,
+      `Your defensive stance pays off! You recover ${healAmount - dragonDamage} health!`,
+      `You channel healing energy while defending, gaining ${healAmount - dragonDamage} health!`
+    ];
+    
     setPlayerHealth(prev => Math.min(100, Math.max(0, prev - dragonDamage + healAmount)));
-    setCombatLog(prev => [...prev, `You defend and recover ${healAmount - dragonDamage} health!`]);
+    setCombatLog(prev => [...prev, defendMessages[Math.floor(Math.random() * defendMessages.length)]]);
     
     setTimeout(() => {
+      setCombatLog(prev => [...prev, '"Coward! Face me with courage!" the dragon taunts.']);
       setIsAttacking(false);
     }, 1000);
   };
@@ -299,10 +322,20 @@ export function DragonEncounterGame({ onComplete, onCancel }: DragonEncounterGam
     const spellSuccess = Math.random() > 0.3;
     if (spellSuccess) {
       const spellDamage = Math.floor(Math.random() * 35) + 20;
+      const spellMessages = [
+        `"By the ancient words!" Lightning strikes for ${spellDamage} damage!`,
+        `Your arcane power surges, dealing ${spellDamage} magical damage!`,
+        `"Feel my wrath!" Flames engulf the dragon for ${spellDamage} damage!`
+      ];
       setDragonHealth(prev => Math.max(0, prev - spellDamage));
-      setCombatLog(prev => [...prev, `Lightning spell hits for ${spellDamage} damage!`]);
+      setCombatLog(prev => [...prev, spellMessages[Math.floor(Math.random() * spellMessages.length)]]);
     } else {
-      setCombatLog(prev => [...prev, 'Spell fizzles out harmlessly...']);
+      const failMessages = [
+        '"Your magic is weak!" The spell fails to manifest.',
+        'The dragon\'s presence disrupts your concentration!',
+        '"Pathetic mortal magic!" Your spell fizzles out.'
+      ];
+      setCombatLog(prev => [...prev, failMessages[Math.floor(Math.random() * failMessages.length)]]);
     }
     
     setTimeout(() => {

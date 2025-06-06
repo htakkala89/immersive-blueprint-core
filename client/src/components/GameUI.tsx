@@ -38,18 +38,28 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
 
   // Auto-narration effect when story changes
   useEffect(() => {
-    if (enabled && gameState.narration) {
-      // Clean the narration text for better speech synthesis
-      const cleanNarration = gameState.narration
-        .replace(/[""]/g, '"')
-        .replace(/['']/g, "'")
-        .replace(/\.\.\./g, '... pause ...')
-        .replace(/!/g, '.')
-        .replace(/\?/g, '.');
+    if (enabled && supported && gameState.narration) {
+      // Add a small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        // Clean the narration text for better speech synthesis
+        const cleanNarration = gameState.narration
+          .replace(/[""]/g, '"')
+          .replace(/['']/g, "'")
+          .replace(/\.\.\./g, '... pause ...')
+          .replace(/!/g, '.')
+          .replace(/\?/g, '.');
+        
+        console.log('Attempting to speak narration:', cleanNarration.substring(0, 50) + '...');
+        speak(cleanNarration, {
+          rate: 0.8,
+          pitch: 1.0,
+          volume: 0.9
+        });
+      }, 100);
       
-      speak(cleanNarration);
+      return () => clearTimeout(timer);
     }
-  }, [gameState.narration, enabled, speak]);
+  }, [gameState.narration, enabled, supported, speak]);
 
   const handleMinigameComplete = (success: boolean, originalChoice: Choice) => {
     setActiveMinigame(null);
