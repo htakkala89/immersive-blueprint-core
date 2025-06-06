@@ -1,5 +1,5 @@
 import type { GameState, InsertGameState, Choice } from "@shared/schema";
-import { getNextStoryNode, getAvailableChoices, STORY_NODES } from "./storyEngine";
+import { STORY_NODES, getNextStoryNode, getAvailableChoices } from "./storyEngine";
 
 export interface IStorage {
   getGameState(sessionId: string): Promise<GameState | undefined>;
@@ -59,59 +59,69 @@ export class MemStorage implements IStorage {
       throw new Error('Game state not found');
     }
 
-    // AI Game Master responses based on choice
-    const responses: Record<string, string> = {
-      examine: "You lean closer to the ancient door, studying the intricate runes. As your eyes trace their patterns, you notice they seem to shift and pulse with inner light. Maya whispers, 'These are protection wards, but they're weakening...'",
-      'pick-lock-success': "Your skilled fingers work the ancient lock mechanism with precision. The tumblers click into place one by one, and with a satisfying mechanical sound, the lock disengages. The heavy door swings open, revealing a chamber filled with ethereal light.",
-      'pick-lock-fail': "Despite your best efforts, the ancient lock proves too complex. Your lockpicks slip, and you hear a warning click. The door's magical defenses activate, sending a mild shock through your hands. You'll need to try a different approach.",
-      'ask-maya': "Maya looks up from her examination, her eyes bright with excitement. 'These runes tell a story,' she explains. 'They speak of a great treasure protected by trials of wisdom, courage, and sacrifice. But beware - the magic here is ancient and unpredictable.'",
-      'enhanced-vision-success': "You successfully channel your magical energy, completing the complex runic sequence. Your vision transforms dramatically, revealing hidden magical pathways and secret passages throughout the chamber. The ancient mysteries become clear to you.",
-      'enhanced-vision-fail': "Your attempt to activate enhanced vision falters as you misalign the magical sequence. The spell backfires, causing temporary disorientation and draining additional mana. The ancient magic resists your untrained approach.",
-      'face-dragon-success': "Victory! Your strategic combat prowess overwhelms the ancient dragon guardian. It retreats with a respectful nod, recognizing your worthiness. The path to the inner sanctum opens before you, and powerful artifacts await your discovery.",
-      'face-dragon-fail': "The dragon's flames prove too intense. You retreat with singed armor but valuable experience. The guardian allows you to withdraw safely, impressed by your courage if not your combat skills. You may return when better prepared.",
-      continue: "You step forward through the ancient doorway. The air grows thick with magical energy as you enter a vast chamber. Crystalline formations along the walls pulse with an otherworldly light, illuminating mysterious symbols carved into the stone.",
-      prepare: "You ready your weapons and focus your mind, sensing danger ahead. Alex nods approvingly while Maya begins weaving protective enchantments around your group. The ancient magic responds to your preparations, and you feel more confident.",
-      investigate: "You search the area more thoroughly, discovering hidden passages and secret compartments. Your careful investigation reveals ancient artifacts and clues about the civilization that once inhabited this place.",
-      retreat: "You step back cautiously, reassessing the situation. Sometimes wisdom lies in patience. The magical energies seem to calm slightly as you show respect for the ancient powers at work here."
-    };
+    // Use the story engine to determine the next story node
+    const { node: nextNode, newFlags } = getNextStoryNode(
+      existing.storyPath || "entrance", 
+      choice.id, 
+      existing.storyFlags || {}, 
+      existing.choiceHistory || []
+    );
 
-    let newNarration = responses[choice.id] || `You chose to '${choice.text}'. The world holds its breath, waiting for the consequences of your action...`;
+    // Update choice history
+    const newChoiceHistory = [...(existing.choiceHistory || []), choice.id];
+
+    // Handle stat changes based on choice outcomes
     let newHealth = existing.health;
     let newMana = existing.mana;
 
-    // Handle mini-game results and stat changes
+    // Apply stat modifications based on specific choices
     if (choice.id === 'enhanced-vision-success') {
       newMana = Math.max(0, existing.mana - 25);
     } else if (choice.id === 'enhanced-vision-fail') {
-      newMana = Math.max(0, existing.mana - 35); // Extra penalty for failure
+      newMana = Math.max(0, existing.mana - 35);
     } else if (choice.id === 'pick-lock-fail') {
-      newHealth = Math.max(0, existing.health - 10); // Minor damage from shock
+      newHealth = Math.max(0, existing.health - 10);
     } else if (choice.id === 'face-dragon-success') {
-      newHealth = Math.max(0, existing.health - 20); // Some damage from combat
-      newMana = Math.min(existing.maxMana, existing.mana + 10); // Gain mana from victory
+      newHealth = Math.max(0, existing.health - 20);
+      newMana = Math.min(existing.maxMana, existing.mana + 10);
     } else if (choice.id === 'face-dragon-fail') {
-      newHealth = Math.max(0, existing.health - 40); // Significant damage from failure
+      newHealth = Math.max(0, existing.health - 40);
+    } else if (choice.id === 'claim-power') {
+      newHealth = existing.maxHealth;
+      newMana = existing.maxMana;
+    } else if (choice.id === 'destroy-source') {
+      newHealth = 0;
     }
 
-    // Generate new choices based on the action taken
-    let newChoices: Choice[] = [
-      { id: 'continue', icon: '🚶', text: 'Continue forward' },
-      { id: 'prepare', icon: '🛡️', text: 'Prepare for danger' },
-      { id: 'investigate', icon: '🔍', text: 'Investigate further' },
-      { id: 'retreat', icon: '↩️', text: 'Step back cautiously' }
-    ];
+    // Get available choices for the new node
+    const availableChoices = getAvailableChoices(nextNode, newFlags, newChoiceHistory);
 
-    // Add dragon encounter after certain successful actions
-    if (choice.id === 'pick-lock-success' || choice.id === 'continue') {
-      newChoices.push({ id: 'face-dragon', icon: '🐉', text: 'Face the dragon guardian', detail: '⚔️ Combat' });
-    }
+    // Create new scene data with animated elements
+    const newSceneData = {
+      runes: Array.from({ length: nextNode.isEnding ? 5 : 3 }, (_, i) => ({
+        x: 0.2 + i * 0.15,
+        y: 0.3 + Math.sin(i) * 0.2,
+        isRed: nextNode.endingType === 'defeat' || Math.random() > 0.7,
+        phase: Math.random() * Math.PI * 2
+      })),
+      particles: Array.from({ length: nextNode.isEnding ? 12 : 8 }, (_, i) => ({
+        x: Math.random(),
+        y: Math.random(),
+        phase: Math.random() * Math.PI * 2
+      })),
+      imageUrl: existing.sceneData?.imageUrl
+    };
 
     const updated: GameState = {
       ...existing,
-      narration: newNarration,
+      narration: nextNode.narration,
       health: newHealth,
       mana: newMana,
-      choices: newChoices
+      choices: availableChoices,
+      sceneData: newSceneData,
+      storyPath: nextNode.id,
+      choiceHistory: newChoiceHistory,
+      storyFlags: newFlags
     };
 
     this.gameStates.set(sessionId, updated);

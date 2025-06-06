@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { GameCanvas } from "@/components/GameCanvas";
 import { GameUI } from "@/components/GameUI";
+import { StoryProgress } from "@/components/StoryProgress";
 import { useGameState } from "@/hooks/useGameState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,6 +63,9 @@ export default function Game() {
           {/* Animated Game Scene */}
           <div className="relative h-64 scene-gradient overflow-hidden">
             <GameCanvas sceneData={gameState.sceneData} />
+            
+            {/* Story Progress */}
+            <StoryProgress gameState={gameState} />
             
             {/* AI Generated Badge */}
             <div className="absolute top-4 right-4 px-3 py-1.5 bg-white bg-opacity-10 backdrop-blur-md rounded-full">
