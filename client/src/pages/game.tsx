@@ -56,7 +56,7 @@ export default function Game() {
         <div className="relative bg-[hsl(var(--space-darker))] overflow-hidden" style={{ height: '600px' }}>
           
           {/* Animated Game Scene */}
-          <div className="relative h-96 scene-gradient overflow-hidden">
+          <div className="relative h-64 scene-gradient overflow-hidden">
             <GameCanvas sceneData={gameState.sceneData} />
             
             {/* AI Generated Badge */}
