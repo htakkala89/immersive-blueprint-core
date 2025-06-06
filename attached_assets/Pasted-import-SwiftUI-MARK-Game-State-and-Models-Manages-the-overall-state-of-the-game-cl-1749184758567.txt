@@ -1,0 +1,292 @@
+import SwiftUI
+
+// MARK: - Game State and Models
+
+/// Manages the overall state of the game.
+class GameState: ObservableObject {
+    @Published var narration: String
+    @Published var choices: [Choice]
+    @Published var health: Int = 85
+    @Published var maxHealth: Int = 100
+    @Published var mana: Int = 45
+    @Published var maxMana: Int = 50
+    
+    // Initial game state
+    init() {
+        self.narration = "You stand before an ancient door, its surface covered in glowing runes. Maya examines the symbols while Alex keeps watch. The air thrums with magical energy."
+        self.choices = [
+            Choice(icon: "🔍", text: "Examine the runes closely"),
+            Choice(icon: "🔓", text: "Attempt to pick the lock", detail: "🎲 75% Success"),
+            Choice(icon: "💬", text: "Ask Maya about the symbols"),
+            Choice(icon: "✨", text: "Generate enhanced vision", detail: "💎 25 Gems")
+        ]
+    }
+    
+    /// Processes a player's choice.
+    func handleChoice(choice: Choice) {
+        // --- AI LOGIC GOES HERE ---
+        // For this prototype, we'll just show a simple response.
+        self.narration = "You chose to '\(choice.text)'. The world holds its breath, waiting for the consequences of your action..."
+        self.choices = [
+            Choice(icon: "🚶", text: "Continue forward"),
+            Choice(icon: "🛡️", text: "Prepare for danger")
+        ]
+    }
+}
+
+/// Represents a single choice the player can make.
+struct Choice: Identifiable, Hashable {
+    let id = UUID()
+    let icon: String
+    let text: String
+    var detail: String? = nil
+}
+
+// MARK: - Main Content View
+
+struct ContentView: View {
+    @StateObject private var gameState = GameState()
+
+    var body: some View {
+        ZStack {
+            // Main background color for the entire screen
+            Color(red: 28/255, green: 28/255, blue: 30/255).ignoresSafeArea()
+            
+            // Recreating the iOS device frame for the prototype feel
+            VStack(spacing: 0) {
+                StatusBarView()
+                
+                // --- MAIN SCREEN CONTENT ---
+                ZStack(alignment: .bottom) {
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            // The top scene, rendered with Canvas
+                            GameSceneView()
+                                .frame(height: 380)
+
+                            // The bottom narrative section
+                            NarrativeView(gameState: gameState)
+                        }
+                    }
+                    .scrollIndicators(.hidden)
+                    
+                    BottomBarView()
+                }
+            }
+            .background(Color.black)
+            .clipShape(RoundedRectangle(cornerRadius: 40))
+            .padding()
+        }
+    }
+}
+
+// MARK: - UI Components
+
+/// The top status bar (Time, Network, Battery)
+struct StatusBarView: View {
+    var body: some View {
+        HStack {
+            Text("9:41")
+                .fontWeight(.semibold)
+            Spacer()
+            HStack(spacing: 6) {
+                Image(systemName: "wifi")
+                Image(systemName: "battery.100")
+            }
+        }
+        .font(.system(size: 15))
+        .foregroundColor(.white)
+        .padding(.horizontal, 30)
+        .frame(height: 44)
+        .background(Color.black.opacity(0.8))
+    }
+}
+
+/// The bottom input bar
+struct BottomBarView: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            TextField("Type an action or speak...", text: .constant(""))
+                .padding(.leading)
+            .frame(height: 44)
+            .background(Color.white.opacity(0.05))
+            .cornerRadius(22)
+            
+            Button(action: {}) {
+                Image(systemName: "backpack.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(.white)
+            }
+            .frame(width: 44, height: 44)
+            .background(Color.white.opacity(0.1))
+            .clipShape(Circle())
+        }
+        .padding()
+        .background(.ultraThinMaterial)
+    }
+}
+
+
+/// The view that holds the game narrative and player choices.
+struct NarrativeView: View {
+    @ObservedObject var gameState: GameState
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // AI Game Master message box
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("🎭")
+                        .font(.caption)
+                        .frame(width: 20, height: 20)
+                        .background(LinearGradient(colors: [Color(red: 0.4, green: 0.49, blue: 0.92), Color(red: 0.46, green: 0.29, blue: 0.64)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .clipShape(Circle())
+                    
+                    Text("AI Game Master")
+                        .font(.system(size: 12))
+                        .opacity(0.7)
+                }
+                
+                Text(gameState.narration)
+                    .font(.system(size: 15))
+                    .lineSpacing(4)
+            }
+            .padding()
+            .background(
+                LinearGradient(colors: [Color(red: 102/255, green: 126/255, blue: 234/255).opacity(0.1), Color(red: 118/255, green: 75/255, blue: 162/255).opacity(0.1)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color(red: 102/255, green: 126/255, blue: 234/255).opacity(0.3), lineWidth: 1)
+            )
+            
+            // Choice Buttons
+            ForEach(gameState.choices) { choice in
+                Button(action: {
+                    gameState.handleChoice(choice: choice)
+                }) {
+                    HStack(spacing: 12) {
+                        Text(choice.icon)
+                            .font(.title3)
+                            .frame(width: 32, height: 32)
+                            .background(Color.white.opacity(0.1))
+                            .cornerRadius(8)
+                        
+                        Text(choice.text)
+                            .font(.system(size: 14))
+                        
+                        Spacer()
+                        
+                        if let detail = choice.detail {
+                            Text(detail)
+                                .font(.system(size: 12))
+                                .opacity(0.6)
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                    )
+                }
+            }
+        }
+        .padding()
+        .background(Color(red: 15/255, green: 15/255, blue: 30/255).opacity(0.95))
+    }
+}
+
+// MARK: - The Main Scene (using Canvas)
+
+struct GameSceneView: View {
+    var body: some View {
+        // TimelineView is used to drive continuous animations in Canvas
+        TimelineView(.animation) { timeline in
+            Canvas { context, size in
+                let now = timeline.date.timeIntervalSinceReferenceDate
+                
+                // --- 1. Background Gradient ---
+                let backgroundGradient = LinearGradient(colors: [Color(red: 0.1, green: 0.1, blue: 0.18), Color(red: 0.06, green: 0.06, blue: 0.12)], startPoint: .top, endPoint: .bottom)
+                context.fill(Path(CGRect(origin: .zero, size: size)), with: .linearGradient(backgroundGradient, startPoint: .zero, endPoint: CGPoint(x: 0, y: size.height)))
+                
+                // --- 2. Centerpiece: The Ancient Door ---
+                let doorWidth: CGFloat = size.width * 0.4
+                let doorHeight: CGFloat = size.height * 0.8
+                let doorOrigin = CGPoint(x: (size.width - doorWidth) / 2, y: size.height * 0.1)
+                let doorRect = CGRect(origin: doorOrigin, size: CGSize(width: doorWidth, height: doorHeight))
+                
+                context.fill(Path(roundedRect: doorRect, cornerRadius: 5), with: .color(Color(red: 0.04, green: 0.04, blue: 0.06)))
+                
+                
+                // --- 3. The Glowing Runes (Animated) ---
+                drawRune(at: CGPoint(x: size.width/2, y: size.height * 0.4), time: now, context: &context)
+                drawRune(at: CGPoint(x: size.width/2 - 40, y: size.height * 0.3), time: now + 0.5, context: &context, isRed: true)
+                drawRune(at: CGPoint(x: size.width/2 + 40, y: size.height * 0.3), time: now + 0.8, context: &context, isRed: true)
+                drawRune(at: CGPoint(x: size.width/2 - 25, y: size.height * 0.6), time: now + 0.3, context: &context)
+                drawRune(at: CGPoint(x: size.width/2 + 25, y: size.height * 0.6), time: now + 0.6, context: &context)
+
+                // --- 4. Floating Particles (Animated) ---
+                drawParticle(at: CGPoint(x: size.width * 0.2, y: size.height * 0.8), time: now, size: size, context: &context)
+                drawParticle(at: CGPoint(x: size.width * 0.5, y: size.height * 0.9), time: now + 2.0, size: size, context: &context)
+                drawParticle(at: CGPoint(x: size.width * 0.8, y: size.height * 0.7), time: now + 4.0, size: size, context: &context)
+            }
+        }
+        .overlay(
+            // AI Generated Badge
+            Text("✨ AI-Generated Scene")
+                .font(.system(size: 11))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(.ultraThinMaterial)
+                .cornerRadius(20)
+                .padding(),
+            alignment: .topTrailing
+        )
+    }
+
+    /// Helper function to draw a single animated rune.
+    private func drawRune(at point: CGPoint, time: Double, context: inout Canvas.Context, isRed: Bool = false) {
+        let baseRadius: CGFloat = 8
+        let color = isRed ? Color(red: 1.0, green: 0.4, blue: 0.4) : Color(red: 0.4, green: 0.49, blue: 0.92)
+        
+        // Animate radius and opacity over time
+        let animationCycle = sin(time * 1.5)
+        let animatedRadius = baseRadius + (animationCycle * 2)
+        let animatedOpacity = 0.5 + (abs(animationCycle) * 0.5)
+        
+        // Draw the outer glow
+        context.addFilter(.blur(radius: animatedRadius))
+        context.fill(Path(ellipseIn: CGRect(x: point.x - animatedRadius, y: point.y - animatedRadius, width: animatedRadius*2, height: animatedRadius*2)), with: .color(color.opacity(animatedOpacity * 0.8)))
+        
+        // Draw the inner core
+        context.addFilter(.blur(radius: 2))
+        context.fill(Path(ellipseIn: CGRect(x: point.x - baseRadius/2, y: point.y - baseRadius/2, width: baseRadius, height: baseRadius)), with: .color(.white.opacity(animatedOpacity)))
+    }
+    
+    /// Helper function to draw a single animated particle.
+    private func drawParticle(at point: CGPoint, time: Double, size: CGSize, context: inout Canvas.Context) {
+        let animationDuration: Double = 8.0
+        let time Tapped = fmod(time, animationDuration)
+        
+        let progress = timeTapped / animationDuration
+        
+        // Calculate position and opacity based on progress
+        let yOffset = -progress * 150
+        let xOffset = sin(progress * .pi * 2) * 20
+        let currentPoint = CGPoint(x: point.x + xOffset, y: point.y + yOffset)
+        
+        let opacity = sin(progress * .pi)
+        
+        context.fill(Path(ellipseIn: CGRect(x: currentPoint.x - 2, y: currentPoint.y - 2, width: 4, height: 4)), with: .color(Color(red: 0.4, green: 0.49, blue: 0.92).opacity(opacity)))
+    }
+}
+
+
+// MARK: - SwiftUI Previews
+#Preview {
+    ContentView()
+}
