@@ -52,6 +52,8 @@ export class MemStorage implements IStorage {
       'ask-maya': "Maya looks up from her examination, her eyes bright with excitement. 'These runes tell a story,' she explains. 'They speak of a great treasure protected by trials of wisdom, courage, and sacrifice. But beware - the magic here is ancient and unpredictable.'",
       'enhanced-vision-success': "You successfully channel your magical energy, completing the complex runic sequence. Your vision transforms dramatically, revealing hidden magical pathways and secret passages throughout the chamber. The ancient mysteries become clear to you.",
       'enhanced-vision-fail': "Your attempt to activate enhanced vision falters as you misalign the magical sequence. The spell backfires, causing temporary disorientation and draining additional mana. The ancient magic resists your untrained approach.",
+      'face-dragon-success': "Victory! Your strategic combat prowess overwhelms the ancient dragon guardian. It retreats with a respectful nod, recognizing your worthiness. The path to the inner sanctum opens before you, and powerful artifacts await your discovery.",
+      'face-dragon-fail': "The dragon's flames prove too intense. You retreat with singed armor but valuable experience. The guardian allows you to withdraw safely, impressed by your courage if not your combat skills. You may return when better prepared.",
       continue: "You step forward through the ancient doorway. The air grows thick with magical energy as you enter a vast chamber. Crystalline formations along the walls pulse with an otherworldly light, illuminating mysterious symbols carved into the stone.",
       prepare: "You ready your weapons and focus your mind, sensing danger ahead. Alex nods approvingly while Maya begins weaving protective enchantments around your group. The ancient magic responds to your preparations, and you feel more confident.",
       investigate: "You search the area more thoroughly, discovering hidden passages and secret compartments. Your careful investigation reveals ancient artifacts and clues about the civilization that once inhabited this place.",
@@ -72,12 +74,17 @@ export class MemStorage implements IStorage {
     }
 
     // Generate new choices based on the action taken
-    const newChoices: Choice[] = [
+    let newChoices: Choice[] = [
       { id: 'continue', icon: '🚶', text: 'Continue forward' },
       { id: 'prepare', icon: '🛡️', text: 'Prepare for danger' },
       { id: 'investigate', icon: '🔍', text: 'Investigate further' },
       { id: 'retreat', icon: '↩️', text: 'Step back cautiously' }
     ];
+
+    // Add dragon encounter after certain successful actions
+    if (choice.id === 'pick-lock-success' || choice.id === 'continue') {
+      newChoices.push({ id: 'face-dragon', icon: '🐉', text: 'Face the dragon guardian', detail: '⚔️ Combat' });
+    }
 
     const updated: GameState = {
       ...existing,

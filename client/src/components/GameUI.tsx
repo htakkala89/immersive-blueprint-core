@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { GameState, Choice } from "@shared/schema";
-import { LockPickingGame, RuneSequenceGame } from "./MiniGames";
+import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "./MiniGames";
 
 interface GameUIProps {
   gameState: GameState;
@@ -19,6 +19,9 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
     } else if (choice.id === 'enhanced-vision') {
       console.log('Triggering rune sequence mini-game');
       setActiveMinigame('rune-sequence');
+    } else if (choice.id === 'face-dragon') {
+      console.log('Triggering dragon encounter mini-game');
+      setActiveMinigame('dragon-encounter');
     } else {
       console.log('Regular choice, no mini-game');
       onChoice(choice);
@@ -89,6 +92,12 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
       {activeMinigame === 'rune-sequence' && (
         <RuneSequenceGame
           onComplete={(success) => handleMinigameComplete(success, { id: 'enhanced-vision', icon: '✨', text: 'Generate enhanced vision' })}
+          onCancel={() => setActiveMinigame(null)}
+        />
+      )}
+      {activeMinigame === 'dragon-encounter' && (
+        <DragonEncounterGame
+          onComplete={(success) => handleMinigameComplete(success, { id: 'face-dragon', icon: '🐉', text: 'Face the dragon' })}
           onCancel={() => setActiveMinigame(null)}
         />
       )}
