@@ -64,16 +64,20 @@ export function useSpeechSynthesis() {
 
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Configure voice settings for dramatic storytelling
-    utterance.rate = options.rate || 0.9;
-    utterance.pitch = options.pitch || 0.8;
+    // Configure voice settings for mystical wizard narrator
+    utterance.rate = options.rate || 0.8; // Slower, more deliberate
+    utterance.pitch = options.pitch || 0.6; // Much deeper, older voice
     utterance.volume = options.volume || 0.8;
 
-    // Find a suitable voice
+    // Find a suitable deep male voice for wizard narrator
     if (voices.length > 0) {
       const preferredVoice = voices.find(voice => 
-        voice.lang.startsWith('en')
-      ) || voices[0];
+        voice.lang.startsWith('en') && 
+        (voice.name.toLowerCase().includes('male') || 
+         voice.name.toLowerCase().includes('david') ||
+         voice.name.toLowerCase().includes('alex') ||
+         voice.name.toLowerCase().includes('daniel'))
+      ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
       
       if (preferredVoice) {
         utterance.voice = preferredVoice;
