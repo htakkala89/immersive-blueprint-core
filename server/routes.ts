@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateSceneImage } from "./imageGenerator";
+import { getSceneImage } from "./preGeneratedImages";
 import { z } from "zod";
 
 const MakeChoiceSchema = z.object({
@@ -69,9 +70,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const gameState = await storage.processChoice(sessionId, choice);
       
-      // Generate AI image for the new scene
+      // Generate AI image for the new scene with fallback
       try {
-        const imageUrl = await generateSceneImage(gameState);
+        let imageUrl = null;
+        try {
+          imageUrl = await generateSceneImage(gameState);
+        } catch (aiError) {
+          console.log('AI generation failed, using pre-generated image');
+          imageUrl = getSceneImage(gameState);
+        }
+        
         if (imageUrl && gameState.sceneData) {
           gameState.sceneData.imageUrl = imageUrl;
           await storage.updateGameState(sessionId, { 
