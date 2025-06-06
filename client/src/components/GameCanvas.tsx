@@ -14,12 +14,13 @@ export function GameCanvas({ sceneData }: GameCanvasProps) {
   useEffect(() => {
     if (sceneData?.imageUrl) {
       const img = new Image();
-      img.crossOrigin = 'anonymous';
+      // Remove crossOrigin for OpenAI images to avoid CORS issues
       img.onload = () => {
         imageRef.current = img;
+        console.log('AI-generated image loaded successfully');
       };
-      img.onerror = () => {
-        console.log('Failed to load AI-generated image');
+      img.onerror = (error) => {
+        console.log('Failed to load AI-generated image:', error);
         imageRef.current = null;
       };
       img.src = sceneData.imageUrl;
