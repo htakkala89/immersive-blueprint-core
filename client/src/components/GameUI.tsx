@@ -64,13 +64,22 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
       // Create a custom action choice
       const customChoice: Choice = {
         id: `custom-${Date.now()}`,
-        icon: "💬",
+        icon: "⚔️",
         text: chatInput,
         detail: "Custom action"
       };
       onChoice(customChoice);
     } else {
-      // Handle speak action - convert text to speech
+      // Handle speak action - send to Maya and also speak aloud
+      const speakChoice: Choice = {
+        id: `speak-${Date.now()}`,
+        icon: "💬",
+        text: chatInput,
+        detail: "Speaking to characters"
+      };
+      onChoice(speakChoice);
+      
+      // Also convert text to speech if supported
       if (supported) {
         speak(chatInput, {
           rate: 0.9,

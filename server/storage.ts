@@ -62,12 +62,23 @@ export class MemStorage implements IStorage {
     // Handle custom choices (chat input) differently from story engine choices
     let nextNode, newFlags;
     
-    if (choice.id.startsWith('custom-')) {
-      // For custom choices, create a dynamic response based on the input
+    if (choice.id.startsWith('custom-') || choice.id.startsWith('speak-')) {
+      // For custom choices and speech, create a dynamic response based on the input
       const customText = choice.text.toLowerCase();
       let responseNarration = '';
       
-      if (customText.includes('maya') || customText.includes('ask maya') || customText.includes('talk to maya')) {
+      if (choice.id.startsWith('speak-')) {
+        // Handle speech to characters
+        if (customText.includes('maya') || customText.includes('hey maya') || customText.includes('hello maya')) {
+          responseNarration = `You speak directly to Maya: "${choice.text}". Maya turns to you with a warm smile. "Hello! I'm glad you're speaking up," she responds cheerfully. "What would you like to know? I can tell you about the ancient magic here, or perhaps you'd like some advice on our next move?"`;
+        } else if (customText.includes('alex')) {
+          responseNarration = `You address Alex: "${choice.text}". Alex looks up from checking his equipment and grins. "Good to hear from you! I was just thinking we should stick together in this place. These old ruins can be tricky, but with teamwork we'll get through just fine."`;
+        } else if (customText.includes('hello') || customText.includes('hi') || customText.includes('hey')) {
+          responseNarration = `You call out: "${choice.text}". Both Maya and Alex turn toward you. Maya responds first: "Hello there! It's good to hear your voice." Alex adds with a nod: "Hey! Ready for whatever comes next?"`;
+        } else {
+          responseNarration = `You say: "${choice.text}". Maya listens intently and responds: "I appreciate you sharing that with us. Communication is key in adventures like this. What are you thinking we should do next?"`;
+        }
+      } else if (customText.includes('maya') || customText.includes('ask maya') || customText.includes('talk to maya')) {
         responseNarration = `You turn to Maya with your question: "${choice.text}". Maya considers your words carefully before responding. "That's an interesting perspective," she says thoughtfully. "The ancient magic here responds to intention and wisdom. Your approach shows you're learning to think like an adventurer."`;
       } else if (customText.includes('examine') || customText.includes('look') || customText.includes('inspect')) {
         responseNarration = `You carefully examine the area as you suggested: "${choice.text}". Your detailed observation reveals subtle magical energies flowing through the ancient stonework. Alex nods approvingly at your thoroughness, while Maya points out mystical symbols you might have missed.`;
