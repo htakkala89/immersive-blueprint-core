@@ -74,16 +74,15 @@ export default function Game() {
               <span className="text-white text-xs drop-shadow-lg">✨ AI-Generated Scene</span>
             </div>
 
-            {/* Status Overlay - Transparent */}
-            <div className="absolute top-5 left-4 space-y-2">
+            {/* Status Overlay - Top Right */}
+            <div className="absolute top-16 right-4 space-y-2">
               {/* Health Bar */}
-              <div className="rounded-lg px-3 py-2 min-w-24 border border-red-500 border-opacity-30">
+              <div className="rounded-lg px-3 py-2 min-w-20 border border-red-500 border-opacity-30 bg-black bg-opacity-20 backdrop-blur-sm">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-red-400 text-xs drop-shadow-lg">❤️</span>
                   <span className="text-white text-xs drop-shadow-lg font-medium">{gameState.health}</span>
-                  <span className="text-white text-xs opacity-70 drop-shadow-lg">/ {gameState.maxHealth}</span>
                 </div>
-                <div className="w-16 h-1 bg-black bg-opacity-30 rounded-full overflow-hidden">
+                <div className="w-14 h-1 bg-black bg-opacity-30 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-red-500 rounded-full transition-all duration-300" 
                     style={{ width: `${(gameState.health / gameState.maxHealth) * 100}%` }}
@@ -92,13 +91,12 @@ export default function Game() {
               </div>
               
               {/* Mana Bar */}
-              <div className="rounded-lg px-3 py-2 min-w-24 border border-blue-500 border-opacity-30">
+              <div className="rounded-lg px-3 py-2 min-w-20 border border-blue-500 border-opacity-30 bg-black bg-opacity-20 backdrop-blur-sm">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-blue-400 text-xs drop-shadow-lg">💧</span>
                   <span className="text-white text-xs drop-shadow-lg font-medium">{gameState.mana}</span>
-                  <span className="text-white text-xs opacity-70 drop-shadow-lg">/ {gameState.maxMana}</span>
                 </div>
-                <div className="w-16 h-1 bg-black bg-opacity-30 rounded-full overflow-hidden">
+                <div className="w-14 h-1 bg-black bg-opacity-30 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-blue-500 rounded-full transition-all duration-300" 
                     style={{ width: `${(gameState.mana / gameState.maxMana) * 100}%` }}

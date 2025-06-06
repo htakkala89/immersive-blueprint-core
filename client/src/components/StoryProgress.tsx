@@ -45,8 +45,8 @@ export function StoryProgress({ gameState }: StoryProgressProps) {
   const flagCount = Object.values(storyFlags).filter(Boolean).length;
 
   return (
-    <div className="absolute top-4 left-4 rounded-lg p-3 min-w-48 border border-white border-opacity-20">
-      <div className="text-white text-xs space-y-2">
+    <div className="absolute top-4 left-4 rounded-lg p-2 max-w-48 border border-white border-opacity-20 bg-black bg-opacity-20 backdrop-blur-sm">
+      <div className="text-white text-xs space-y-1">
         {/* Current Story Section */}
         <div className="border-b border-white border-opacity-20 pb-2">
           <div className="flex items-center gap-2 mb-1">
