@@ -15,7 +15,7 @@ export function useGameState() {
   const queryClient = useQueryClient();
 
   const { data: gameState, isLoading } = useQuery<GameState>({
-    queryKey: ['/api/game-state', sessionId],
+    queryKey: [`/api/game-state/${sessionId}`],
   });
 
   const choiceMutation = useMutation({
@@ -27,7 +27,7 @@ export function useGameState() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/game-state', sessionId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/game-state/${sessionId}`] });
     }
   });
 
