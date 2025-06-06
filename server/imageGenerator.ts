@@ -4,8 +4,20 @@ import type { GameState } from "@shared/schema";
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Rate limiting for image generation
+let lastImageGeneration = 0;
+const IMAGE_GENERATION_COOLDOWN = 10000; // 10 seconds between generations
+
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
   try {
+    // Check rate limit
+    const now = Date.now();
+    if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
+      console.log('Image generation rate limited, skipping');
+      return null;
+    }
+    
+    lastImageGeneration = now;
     const prompt = createSoloLevelingPrompt(gameState);
     
     const response = await openai.images.generate({

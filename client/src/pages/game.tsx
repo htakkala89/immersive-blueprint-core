@@ -1,11 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GameCanvas } from "@/components/GameCanvas";
 import { GameUI } from "@/components/GameUI";
 import { useGameState } from "@/hooks/useGameState";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Game() {
   const { gameState, handleChoice, isLoading } = useGameState();
   const timeRef = useRef<HTMLSpanElement>(null);
+  const [showInventory, setShowInventory] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
 
   // Update clock
   useEffect(() => {
@@ -107,14 +111,24 @@ export default function Game() {
           {/* Bottom Input Bar */}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-white bg-opacity-10 backdrop-blur-md">
             <div className="flex gap-3">
-              <input 
-                type="text" 
+              <Input 
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && chatMessage.trim()) {
+                    handleChoice({ id: 'chat', icon: '💬', text: chatMessage });
+                    setChatMessage('');
+                  }
+                }}
                 placeholder="Type an action or speak..."
                 className="flex-1 bg-white bg-opacity-5 border-0 rounded-full px-4 py-3 text-white text-sm placeholder-white placeholder-opacity-50 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--mystical-primary))] focus:ring-opacity-50"
               />
-              <button className="w-11 h-11 bg-white bg-opacity-10 rounded-full flex items-center justify-center text-white hover:bg-opacity-20 transition-all duration-200">
+              <Button 
+                onClick={() => setShowInventory(!showInventory)}
+                className="w-11 h-11 bg-white bg-opacity-10 rounded-full flex items-center justify-center text-white hover:bg-opacity-20 transition-all duration-200 border-0"
+              >
                 🎒
-              </button>
+              </Button>
             </div>
           </div>
         </div>
