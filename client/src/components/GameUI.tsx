@@ -10,9 +10,10 @@ interface GameUIProps {
   gameState: GameState;
   onChoice: (choice: Choice) => void;
   isProcessing?: boolean;
+  onInventoryToggle: () => void;
 }
 
-export function GameUI({ gameState, onChoice, isProcessing = false }: GameUIProps) {
+export function GameUI({ gameState, onChoice, isProcessing = false, onInventoryToggle }: GameUIProps) {
   const [activeMinigame, setActiveMinigame] = useState<string | null>(null);
   const [chatInput, setChatInput] = useState("");
   const [actionType, setActionType] = useState<"action" | "speak">("action");
@@ -228,6 +229,16 @@ export function GameUI({ gameState, onChoice, isProcessing = false }: GameUIProp
         
         {/* Fixed Chat Interface */}
         <div className="absolute bottom-0 left-0 right-0 bg-[hsl(var(--space-darker))] bg-opacity-95 border-t border-white border-opacity-20 p-3">
+          {/* Inventory Button */}
+          <div className="absolute -top-14 right-3">
+            <Button 
+              onClick={onInventoryToggle}
+              className="w-12 h-12 bg-white bg-opacity-15 rounded-full flex items-center justify-center text-white hover:bg-opacity-25 transition-all duration-200 border border-white border-opacity-20 shadow-lg"
+            >
+              🎒
+            </Button>
+          </div>
+          
           <div className="flex gap-2 items-center">
             {/* Action/Speak Toggle */}
             <div className="flex bg-white bg-opacity-10 rounded-lg p-1">

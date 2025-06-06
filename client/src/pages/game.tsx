@@ -111,17 +111,8 @@ export default function Game() {
             gameState={gameState} 
             onChoice={handleChoice}
             isProcessing={isProcessing}
+            onInventoryToggle={() => setShowInventory(!showInventory)}
           />
-
-          {/* Inventory Button */}
-          <div className="absolute bottom-6 right-6 z-20">
-            <Button 
-              onClick={() => setShowInventory(!showInventory)}
-              className="w-12 h-12 bg-white bg-opacity-15 rounded-full flex items-center justify-center text-white hover:bg-opacity-25 transition-all duration-200 border border-white border-opacity-20 shadow-lg"
-            >
-              🎒
-            </Button>
-          </div>
         </div>
       </div>
 
