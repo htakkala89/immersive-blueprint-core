@@ -110,6 +110,7 @@ export default function Game() {
           <GameUI 
             gameState={gameState} 
             onChoice={handleChoice}
+            isProcessing={isProcessing}
           />
 
           {/* Inventory Button */}
@@ -129,12 +130,6 @@ export default function Game() {
         items={gameState?.inventory || []}
         isVisible={showInventory}
         onClose={() => setShowInventory(false)}
-      />
-
-      {/* Loading Overlay */}
-      <LoadingOverlay 
-        isVisible={isProcessing} 
-        message="Generating AI Story & Artwork"
       />
     </div>
   );

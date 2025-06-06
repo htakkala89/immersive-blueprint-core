@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface GameUIProps {
   gameState: GameState;
   onChoice: (choice: Choice) => void;
+  isProcessing?: boolean;
 }
 
-export function GameUI({ gameState, onChoice }: GameUIProps) {
+export function GameUI({ gameState, onChoice, isProcessing = false }: GameUIProps) {
   const [activeMinigame, setActiveMinigame] = useState<string | null>(null);
   const [chatInput, setChatInput] = useState("");
   const [actionType, setActionType] = useState<"action" | "speak">("action");
@@ -174,11 +175,37 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
           
           {/* Choice Buttons */}
           <div className="space-y-2">
+            {/* Show loading indicator when processing */}
+            {isProcessing && (
+              <div className="w-full bg-blue-500 bg-opacity-10 border border-blue-500 border-opacity-30 rounded-xl p-3">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-4 h-4 border-2 border-blue-500 border-opacity-20 rounded-full"></div>
+                    <div className="absolute top-0 left-0 w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-blue-300 text-sm">🎨 AI is generating your adventure...</span>
+                    <div className="text-blue-400 text-xs opacity-70 mt-1">
+                      Creating story and artwork
+                    </div>
+                  </div>
+                  <div className="flex space-x-1">
+                    <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {gameState.choices.map((choice) => (
               <button
                 key={choice.id}
                 onClick={() => handleChoice(choice)}
-                className="choice-hover w-full bg-white bg-opacity-5 border border-white border-opacity-10 rounded-xl p-3 text-left"
+                disabled={isProcessing}
+                className={`choice-hover w-full bg-white bg-opacity-5 border border-white border-opacity-10 rounded-xl p-3 text-left transition-opacity ${
+                  isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-10'
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-6 h-6 bg-white bg-opacity-10 rounded-lg flex items-center justify-center text-sm">
