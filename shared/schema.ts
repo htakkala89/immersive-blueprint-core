@@ -12,6 +12,9 @@ export const gameStates = pgTable("game_states", {
   maxMana: integer("max_mana").notNull().default(50),
   choices: jsonb("choices").notNull().$type<Choice[]>(),
   sceneData: jsonb("scene_data").$type<SceneData>(),
+  storyPath: text("story_path").notNull().default("entrance"),
+  choiceHistory: jsonb("choice_history").notNull().default([]).$type<string[]>(),
+  storyFlags: jsonb("story_flags").notNull().default({}).$type<Record<string, boolean>>(),
 });
 
 export const Choice = z.object({

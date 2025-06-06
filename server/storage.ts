@@ -1,4 +1,5 @@
 import type { GameState, InsertGameState, Choice } from "@shared/schema";
+import { getNextStoryNode, getAvailableChoices, STORY_NODES } from "./storyEngine";
 
 export interface IStorage {
   getGameState(sessionId: string): Promise<GameState | undefined>;
@@ -22,7 +23,21 @@ export class MemStorage implements IStorage {
 
   async createGameState(insertGameState: InsertGameState): Promise<GameState> {
     const id = this.currentId++;
-    const gameState: GameState = { ...insertGameState, id };
+    const startingNode = STORY_NODES.entrance;
+    const gameState: GameState = { 
+      id,
+      sessionId: insertGameState.sessionId,
+      narration: startingNode.narration,
+      health: insertGameState.health || 100,
+      maxHealth: insertGameState.maxHealth || 100,
+      mana: insertGameState.mana || 50,
+      maxMana: insertGameState.maxMana || 50,
+      choices: startingNode.choices,
+      sceneData: insertGameState.sceneData || null,
+      storyPath: "entrance",
+      choiceHistory: [],
+      storyFlags: {}
+    };
     this.gameStates.set(insertGameState.sessionId, gameState);
     return gameState;
   }
