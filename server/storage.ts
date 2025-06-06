@@ -71,6 +71,11 @@ export class MemStorage implements IStorage {
       newMana = Math.max(0, existing.mana - 35); // Extra penalty for failure
     } else if (choice.id === 'pick-lock-fail') {
       newHealth = Math.max(0, existing.health - 10); // Minor damage from shock
+    } else if (choice.id === 'face-dragon-success') {
+      newHealth = Math.max(0, existing.health - 20); // Some damage from combat
+      newMana = Math.min(existing.maxMana, existing.mana + 10); // Gain mana from victory
+    } else if (choice.id === 'face-dragon-fail') {
+      newHealth = Math.max(0, existing.health - 40); // Significant damage from failure
     }
 
     // Generate new choices based on the action taken
