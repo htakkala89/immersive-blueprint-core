@@ -13,6 +13,7 @@ export function useSpeechSynthesis() {
   const [enabled, setEnabled] = useState(true);
   const [userInteracted, setUserInteracted] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const speakingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const loadVoices = () => {
@@ -81,15 +82,24 @@ export function useSpeechSynthesis() {
 
     utterance.onstart = () => {
       console.log('Speech started');
+      if (speakingTimeoutRef.current) {
+        clearTimeout(speakingTimeoutRef.current);
+      }
       setSpeaking(true);
     };
     utterance.onend = () => {
       console.log('Speech ended');
-      setSpeaking(false);
+      // Add a small delay to prevent flickering
+      speakingTimeoutRef.current = setTimeout(() => {
+        setSpeaking(false);
+      }, 100);
     };
     utterance.onerror = (event) => {
       console.error('Speech error:', event);
-      setSpeaking(false);
+      // Add a small delay to prevent flickering
+      speakingTimeoutRef.current = setTimeout(() => {
+        setSpeaking(false);
+      }, 100);
     };
 
     utteranceRef.current = utterance;
@@ -105,6 +115,9 @@ export function useSpeechSynthesis() {
 
   const stop = () => {
     speechSynthesis.cancel();
+    if (speakingTimeoutRef.current) {
+      clearTimeout(speakingTimeoutRef.current);
+    }
     setSpeaking(false);
     utteranceRef.current = null;
   };

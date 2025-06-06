@@ -36,30 +36,7 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
     }
   };
 
-  // Auto-narration effect when story changes
-  useEffect(() => {
-    if (enabled && supported && gameState.narration) {
-      // Add a small delay to ensure DOM is ready
-      const timer = setTimeout(() => {
-        // Clean the narration text for better speech synthesis
-        const cleanNarration = gameState.narration
-          .replace(/[""]/g, '"')
-          .replace(/['']/g, "'")
-          .replace(/\.\.\./g, '... pause ...')
-          .replace(/!/g, '.')
-          .replace(/\?/g, '.');
-        
-        console.log('Attempting to speak narration:', cleanNarration.substring(0, 50) + '...');
-        speak(cleanNarration, {
-          rate: 0.8,
-          pitch: 1.0,
-          volume: 0.9
-        });
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [gameState.narration, enabled, supported, speak]);
+  // Manual speech control - removed auto-narration to prevent conflicts
 
   const handleMinigameComplete = (success: boolean, originalChoice: Choice) => {
     setActiveMinigame(null);
@@ -216,17 +193,21 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
                 if (speaking) {
                   stop();
                 } else {
-                  speak(gameState.narration);
+                  const cleanNarration = gameState.narration
+                    .replace(/[""]/g, '"')
+                    .replace(/['']/g, "'")
+                    .replace(/\.\.\./g, '... pause ...')
+                    .replace(/!/g, '.')
+                    .replace(/\?/g, '.');
+                  speak(cleanNarration, {
+                    rate: 0.8,
+                    pitch: 1.0,
+                    volume: 0.9
+                  });
                 }
               }}
-              className={`h-8 px-2 text-xs rounded transition-colors ${
-                speaking 
-                  ? 'bg-red-600 hover:bg-red-700 text-white' 
-                  : enabled 
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-gray-600 hover:bg-gray-700 text-white'
-              }`}
-              title={speaking ? "Stop narration" : "Play narration"}
+              className="h-8 px-2 text-xs rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              title="Play/Stop narration"
             >
               {speaking ? "⏸️" : "🔊"}
             </button>
