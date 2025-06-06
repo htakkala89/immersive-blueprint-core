@@ -6,7 +6,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Rate limiting for image generation
 let lastImageGeneration = 0;
-const IMAGE_GENERATION_COOLDOWN = 10000; // 10 seconds between generations
+const IMAGE_GENERATION_COOLDOWN = 1000; // 1 second between generations
 
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
   try {
