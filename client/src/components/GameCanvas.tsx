@@ -74,8 +74,8 @@ export function GameCanvas({ sceneData }: GameCanvasProps) {
         // Draw the AI image as background, covering the full canvas
         ctx.drawImage(imageRef.current, 0, 0, width, height);
         
-        // Add dark overlay to make animated elements visible
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        // Add subtle overlay to enhance image visibility
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
         ctx.fillRect(0, 0, width, height);
       } else {
         // Fallback gradient background
@@ -105,10 +105,7 @@ export function GameCanvas({ sceneData }: GameCanvasProps) {
         drawRune(ctx, rune.x * width, rune.y * height, time + rune.phase, rune.isRed);
       });
 
-      // Draw floating particles
-      particles.forEach(particle => {
-        drawParticle(ctx, particle.x * width, particle.y * height, time + particle.phase, width, height);
-      });
+      // Particles removed to show AI-generated images clearly
 
       animationRef.current = requestAnimationFrame(drawScene);
     }
