@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 229 84% 67%;
+  --primary-foreground: 229 100% 8%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+  
+  /* Mystical theme colors */
+  --mystical-primary: 229 84% 67%; /* #667eea */
+  --mystical-secondary: 274 55% 56%; /* #764ba2 */
+  --mystical-dark: 240 30% 11%; /* #1c1c1e */
+  --mystical-darker: 240 50% 6%; /* #0f0f1e */
+  --space-dark: 240 12% 11%; /* #1c1c1e */
+  --space-darker: 240 40% 6%; /* #0f0f1e */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 229 84% 67%;
+  --primary-foreground: 229 100% 8%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .mystical-gradient {
+    background: linear-gradient(135deg, hsl(var(--mystical-primary) / 0.1) 0%, hsl(var(--mystical-secondary) / 0.1) 100%);
+    border: 1px solid hsl(var(--mystical-primary) / 0.3);
+  }
+
+  .scene-gradient {
+    background: linear-gradient(180deg, hsl(240 46% 14%) 0%, hsl(240 50% 6%) 100%);
+  }
+
+  .choice-hover {
+    transition: all 0.3s ease;
+  }
+
+  .choice-hover:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px hsl(var(--mystical-primary) / 0.2);
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: hsl(var(--mystical-primary));
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .floating-particle {
+    animation: float-up 8s infinite linear;
+  }
+
+  .glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite alternate;
+  }
+
+  .rune-glow {
+    animation: rune-glow 3s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(0px) translateX(0px);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-150px) translateX(20px);
+  }
+}
+
+@keyframes glow-pulse {
+  0% {
+    filter: drop-shadow(0 0 8px hsl(var(--mystical-primary) / 0.5));
+    transform: scale(1);
+  }
+  100% {
+    filter: drop-shadow(0 0 20px hsl(var(--mystical-primary) / 0.8));
+    transform: scale(1.1);
+  }
+}
+
+@keyframes rune-glow {
+  0% {
+    filter: blur(8px);
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    filter: blur(12px);
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes core-pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
