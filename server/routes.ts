@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { generateSceneImage } from "./imageGenerator";
 import { z } from "zod";
 
 const MakeChoiceSchema = z.object({
@@ -67,6 +68,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { sessionId, choice } = MakeChoiceSchema.parse(req.body);
       
       const gameState = await storage.processChoice(sessionId, choice);
+      
+      // Generate AI image for the new scene
+      try {
+        const imageUrl = await generateSceneImage(gameState);
+        if (imageUrl && gameState.sceneData) {
+          gameState.sceneData.imageUrl = imageUrl;
+          await storage.updateGameState(sessionId, { 
+            sceneData: gameState.sceneData 
+          });
+        }
+      } catch (imageError) {
+        console.error('Image generation error:', imageError);
+        // Continue without image if generation fails
+      }
       
       res.json(gameState);
     } catch (error) {

@@ -33,6 +33,7 @@ export const SceneData = z.object({
     y: z.number(),
     phase: z.number(),
   })),
+  imageUrl: z.string().optional(),
 });
 
 export const insertGameStateSchema = createInsertSchema(gameStates).omit({
