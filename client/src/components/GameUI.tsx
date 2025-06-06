@@ -210,6 +210,27 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
               }}
             />
             
+            {/* Manual Speech Control */}
+            <button
+              onClick={() => {
+                if (speaking) {
+                  stop();
+                } else {
+                  speak(gameState.narration);
+                }
+              }}
+              className={`h-8 px-2 text-xs rounded transition-colors ${
+                speaking 
+                  ? 'bg-red-600 hover:bg-red-700 text-white' 
+                  : enabled 
+                    ? 'bg-green-600 hover:bg-green-700 text-white'
+                    : 'bg-gray-600 hover:bg-gray-700 text-white'
+              }`}
+              title={speaking ? "Stop narration" : "Play narration"}
+            >
+              {speaking ? "⏸️" : "🔊"}
+            </button>
+            
             <button
               onClick={handleChatSubmit}
               className="h-8 px-3 bg-gradient-to-r from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] hover:opacity-80 text-white text-xs rounded"
