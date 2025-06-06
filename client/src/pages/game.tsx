@@ -53,7 +53,7 @@ export default function Game() {
         </div>
 
         {/* Main Game Content */}
-        <div className="relative bg-[hsl(var(--space-darker))] overflow-hidden" style={{ height: '600px' }}>
+        <div className="relative bg-[hsl(var(--space-darker))] overflow-hidden" style={{ height: '700px' }}>
           
           {/* Animated Game Scene */}
           <div className="relative h-64 scene-gradient overflow-hidden">
