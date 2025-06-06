@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import type { GameState, Choice } from "@shared/schema";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "./MiniGames";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface GameUIProps {
   gameState: GameState;
@@ -10,6 +13,9 @@ interface GameUIProps {
 
 export function GameUI({ gameState, onChoice }: GameUIProps) {
   const [activeMinigame, setActiveMinigame] = useState<string | null>(null);
+  const [chatInput, setChatInput] = useState("");
+  const [actionType, setActionType] = useState<"action" | "speak">("action");
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const { speak, stop, toggle, speaking, enabled, supported } = useSpeechSynthesis();
 
   const handleChoice = (choice: Choice) => {
@@ -54,6 +60,43 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
     });
   };
 
+  const handleChatSubmit = () => {
+    if (!chatInput.trim()) return;
+    
+    if (actionType === "action") {
+      // Create a custom action choice
+      const customChoice: Choice = {
+        id: `custom-${Date.now()}`,
+        icon: "💬",
+        text: chatInput,
+        detail: "Custom action"
+      };
+      onChoice(customChoice);
+    } else {
+      // Handle speak action - convert text to speech
+      if (supported) {
+        speak(chatInput, {
+          rate: 0.9,
+          pitch: 1.0,
+          volume: 0.8
+        });
+      }
+    }
+    
+    setChatInput("");
+  };
+
+  // Monitor for image loading state
+  useEffect(() => {
+    if (gameState.sceneData?.imageUrl) {
+      setIsImageLoading(true);
+      const img = new Image();
+      img.onload = () => setIsImageLoading(false);
+      img.onerror = () => setIsImageLoading(false);
+      img.src = gameState.sceneData.imageUrl;
+    }
+  }, [gameState.sceneData?.imageUrl]);
+
   return (
     <>
       <div className="flex-1 bg-[hsl(var(--space-darker))] bg-opacity-95" style={{ height: 'calc(700px - 256px - 60px)' }}>
@@ -95,9 +138,17 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
                 </div>
               )}
             </div>
-            <p className="text-white text-sm leading-relaxed">
-              {gameState.narration}
-            </p>
+            <div className="space-y-2">
+              <p className="text-white text-sm leading-relaxed">
+                {gameState.narration}
+              </p>
+              {isImageLoading && (
+                <div className="flex items-center gap-2 text-white text-xs opacity-70">
+                  <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Generating scene image...</span>
+                </div>
+              )}
+            </div>
           </div>
           
           {/* Choice Buttons */}
@@ -123,6 +174,41 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
                 </div>
               </button>
             ))}
+          </div>
+          
+          {/* Chat Interface */}
+          <div className="border-t border-white border-opacity-20 pt-3 mt-3">
+            <div className="flex gap-2">
+              <Select value={actionType} onValueChange={(value: "action" | "speak") => setActionType(value)}>
+                <SelectTrigger className="w-24 h-8 bg-white bg-opacity-10 border-white border-opacity-20 text-white text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="action">Action</SelectItem>
+                  <SelectItem value="speak">Speak</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Input
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder={actionType === "action" ? "Type your action..." : "Type what to say..."}
+                className="flex-1 h-8 bg-white bg-opacity-10 border-white border-opacity-20 text-white text-xs placeholder:text-white placeholder:opacity-50"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleChatSubmit();
+                  }
+                }}
+              />
+              
+              <Button
+                onClick={handleChatSubmit}
+                size="sm"
+                className="h-8 px-3 bg-gradient-to-r from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] hover:opacity-80 text-white text-xs"
+              >
+                {actionType === "action" ? "📨" : "🗣️"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
