@@ -16,6 +16,7 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
   const [chatInput, setChatInput] = useState("");
   const [actionType, setActionType] = useState<"action" | "speak">("action");
   const [isImageLoading, setIsImageLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState<Array<{id: string, text: string, type: 'user' | 'system', timestamp: number}>>([]);
   const { speak, stop, toggle, speaking, enabled, supported } = useSpeechSynthesis();
 
   const handleChoice = (choice: Choice) => {
@@ -49,6 +50,15 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
 
   const handleChatSubmit = () => {
     if (!chatInput.trim()) return;
+    
+    // Add user message to chat history
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      text: chatInput,
+      type: 'user' as const,
+      timestamp: Date.now()
+    };
+    setChatHistory(prev => [...prev, userMessage]);
     
     if (actionType === "action") {
       // Create a custom action choice
@@ -89,6 +99,21 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
       <div className="flex-1 bg-[hsl(var(--space-darker))] bg-opacity-95 relative" style={{ height: 'calc(700px - 256px - 60px)' }}>
         <div className="p-3 space-y-3 h-full overflow-y-auto pb-16">
         
+          {/* Chat History */}
+          {chatHistory.map((message) => (
+            <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
+              {message.type === 'user' ? (
+                <div className="bg-blue-600 rounded-2xl rounded-br-md px-4 py-2 max-w-xs">
+                  <p className="text-white text-sm">{message.text}</p>
+                </div>
+              ) : (
+                <div className="bg-gray-700 rounded-2xl rounded-bl-md px-4 py-2 max-w-xs">
+                  <p className="text-white text-sm">{message.text}</p>
+                </div>
+              )}
+            </div>
+          ))}
+
           {/* AI Game Master Message */}
           <div className="mystical-gradient rounded-xl p-3">
             <div className="flex items-center justify-between mb-2">
@@ -167,25 +192,63 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
         
         {/* Fixed Chat Interface */}
         <div className="absolute bottom-0 left-0 right-0 bg-[hsl(var(--space-darker))] bg-opacity-95 border-t border-white border-opacity-20 p-3">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActionType(actionType === "action" ? "speak" : "action")}
-              className="w-20 h-8 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-xs rounded hover:bg-opacity-20 transition-all"
-            >
-              {actionType === "action" ? "Action" : "Speak"}
-            </button>
+          <div className="flex gap-2 items-center">
+            {/* Action/Speak Toggle */}
+            <div className="flex bg-white bg-opacity-10 rounded-lg p-1">
+              <button
+                onClick={() => setActionType("action")}
+                className={`px-3 py-1 text-xs rounded transition-all ${
+                  actionType === "action" 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-white hover:bg-white hover:bg-opacity-10'
+                }`}
+                title="Take action to move the story forward"
+              >
+                Action
+              </button>
+              <button
+                onClick={() => setActionType("speak")}
+                className={`px-3 py-1 text-xs rounded transition-all ${
+                  actionType === "speak" 
+                    ? 'bg-green-600 text-white shadow-sm' 
+                    : 'text-white hover:bg-white hover:bg-opacity-10'
+                }`}
+                title="Speak to characters in the story"
+              >
+                Speak
+              </button>
+            </div>
             
-            <input
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              placeholder={actionType === "action" ? "Type your action..." : "Type what to say..."}
-              className="flex-1 h-8 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-xs placeholder:text-white placeholder:opacity-50 rounded px-2"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleChatSubmit();
-                }
-              }}
-            />
+            {/* Input Field */}
+            <div className="flex-1 relative">
+              <input
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder={actionType === "action" ? "Take an action..." : "Say something..."}
+                className="w-full h-10 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-sm placeholder:text-white placeholder:opacity-50 rounded-lg px-4 pr-12"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleChatSubmit();
+                  }
+                }}
+              />
+              
+              {/* iOS-style Send Button */}
+              <button
+                onClick={handleChatSubmit}
+                disabled={!chatInput.trim()}
+                className={`absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                  chatInput.trim()
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                }`}
+                title={actionType === "action" ? "Send action" : "Send message"}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+              </button>
+            </div>
             
             {/* Manual Speech Control */}
             <button
@@ -206,17 +269,10 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
                   });
                 }
               }}
-              className="h-8 px-2 text-xs rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              className="w-10 h-10 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors flex items-center justify-center"
               title="Play/Stop narration"
             >
               {speaking ? "⏸️" : "🔊"}
-            </button>
-            
-            <button
-              onClick={handleChatSubmit}
-              className="h-8 px-3 bg-gradient-to-r from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] hover:opacity-80 text-white text-xs rounded"
-            >
-              {actionType === "action" ? "📨" : "🗣️"}
             </button>
           </div>
         </div>
