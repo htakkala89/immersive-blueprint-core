@@ -68,20 +68,20 @@ export default function Game() {
             <StoryProgress gameState={gameState} />
             
             {/* AI Generated Badge */}
-            <div className="absolute top-4 right-4 px-3 py-1.5 bg-white bg-opacity-10 backdrop-blur-md rounded-full">
-              <span className="text-white text-xs">✨ AI-Generated Scene</span>
+            <div className="absolute top-4 right-4 px-3 py-1.5 border border-white border-opacity-20 rounded-full">
+              <span className="text-white text-xs drop-shadow-lg">✨ AI-Generated Scene</span>
             </div>
 
-            {/* Status Overlay */}
+            {/* Status Overlay - Transparent */}
             <div className="absolute top-5 left-4 space-y-2">
               {/* Health Bar */}
-              <div className="bg-black bg-opacity-50 backdrop-blur-sm rounded-lg px-3 py-2 min-w-24">
+              <div className="rounded-lg px-3 py-2 min-w-24 border border-red-500 border-opacity-30">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-red-400 text-xs">❤️</span>
-                  <span className="text-white text-xs">{gameState.health}</span>
-                  <span className="text-white text-xs opacity-50">/ {gameState.maxHealth}</span>
+                  <span className="text-red-400 text-xs drop-shadow-lg">❤️</span>
+                  <span className="text-white text-xs drop-shadow-lg font-medium">{gameState.health}</span>
+                  <span className="text-white text-xs opacity-70 drop-shadow-lg">/ {gameState.maxHealth}</span>
                 </div>
-                <div className="w-16 h-1 bg-white bg-opacity-20 rounded-full overflow-hidden">
+                <div className="w-16 h-1 bg-black bg-opacity-30 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-red-500 rounded-full transition-all duration-300" 
                     style={{ width: `${(gameState.health / gameState.maxHealth) * 100}%` }}
@@ -90,13 +90,13 @@ export default function Game() {
               </div>
               
               {/* Mana Bar */}
-              <div className="bg-black bg-opacity-50 backdrop-blur-sm rounded-lg px-3 py-2 min-w-24">
+              <div className="rounded-lg px-3 py-2 min-w-24 border border-blue-500 border-opacity-30">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-blue-400 text-xs">💧</span>
-                  <span className="text-white text-xs">{gameState.mana}</span>
-                  <span className="text-white text-xs opacity-50">/ {gameState.maxMana}</span>
+                  <span className="text-blue-400 text-xs drop-shadow-lg">💧</span>
+                  <span className="text-white text-xs drop-shadow-lg font-medium">{gameState.mana}</span>
+                  <span className="text-white text-xs opacity-70 drop-shadow-lg">/ {gameState.maxMana}</span>
                 </div>
-                <div className="w-16 h-1 bg-white bg-opacity-20 rounded-full overflow-hidden">
+                <div className="w-16 h-1 bg-black bg-opacity-30 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-blue-500 rounded-full transition-all duration-300" 
                     style={{ width: `${(gameState.mana / gameState.maxMana) * 100}%` }}
