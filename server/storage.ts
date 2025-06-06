@@ -59,13 +59,42 @@ export class MemStorage implements IStorage {
       throw new Error('Game state not found');
     }
 
-    // Use the story engine to determine the next story node
-    const { node: nextNode, newFlags } = getNextStoryNode(
-      existing.storyPath || "entrance", 
-      choice.id, 
-      existing.storyFlags || {}, 
-      existing.choiceHistory || []
-    );
+    // Handle custom choices (chat input) differently from story engine choices
+    let nextNode, newFlags;
+    
+    if (choice.id.startsWith('custom-')) {
+      // For custom choices, create a dynamic response based on the input
+      const customText = choice.text.toLowerCase();
+      let responseNarration = '';
+      
+      if (customText.includes('maya') || customText.includes('ask maya') || customText.includes('talk to maya')) {
+        responseNarration = `You turn to Maya with your question: "${choice.text}". Maya considers your words carefully before responding. "That's an interesting perspective," she says thoughtfully. "The ancient magic here responds to intention and wisdom. Your approach shows you're learning to think like an adventurer."`;
+      } else if (customText.includes('examine') || customText.includes('look') || customText.includes('inspect')) {
+        responseNarration = `You carefully examine the area as you suggested: "${choice.text}". Your detailed observation reveals subtle magical energies flowing through the ancient stonework. Alex nods approvingly at your thoroughness, while Maya points out mystical symbols you might have missed.`;
+      } else if (customText.includes('cast') || customText.includes('magic') || customText.includes('spell')) {
+        responseNarration = `You attempt to channel magical energy as you described: "${choice.text}". The ancient runes around you respond with a faint glow, sensing your magical intent. Maya watches with interest, ready to guide you if the magic becomes unstable.`;
+      } else {
+        responseNarration = `You take action with your own approach: "${choice.text}". The ancient chamber seems to acknowledge your unique strategy. Your companions observe with curiosity as you forge your own path through this mystical adventure.`;
+      }
+      
+      // Stay in the same story node but provide custom response
+      const currentNode = STORY_NODES[existing.storyPath || "entrance"];
+      nextNode = {
+        ...currentNode,
+        narration: responseNarration
+      };
+      newFlags = existing.storyFlags || {};
+    } else {
+      // Use the story engine for predefined choices
+      const result = getNextStoryNode(
+        existing.storyPath || "entrance", 
+        choice.id, 
+        existing.storyFlags || {}, 
+        existing.choiceHistory || []
+      );
+      nextNode = result.node;
+      newFlags = result.newFlags;
+    }
 
     // Update choice history
     const newChoiceHistory = [...(existing.choiceHistory || []), choice.id];
