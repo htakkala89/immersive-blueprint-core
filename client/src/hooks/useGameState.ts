@@ -39,6 +39,6 @@ export function useGameState() {
     gameState,
     isLoading,
     handleChoice,
-    isProcessingChoice: choiceMutation.isPending
+    isProcessing: choiceMutation.isPending
   };
 }

@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { GameCanvas } from "@/components/GameCanvas";
 import { GameUI } from "@/components/GameUI";
 import { StoryProgress } from "@/components/StoryProgress";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { useGameState } from "@/hooks/useGameState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Game() {
-  const { gameState, handleChoice, isLoading } = useGameState();
+  const { gameState, handleChoice, isLoading, isProcessing } = useGameState();
   const timeRef = useRef<HTMLSpanElement>(null);
   const [showInventory, setShowInventory] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
@@ -123,6 +124,12 @@ export default function Game() {
           </div>
         </div>
       </div>
+
+      {/* Loading Overlay */}
+      <LoadingOverlay 
+        isVisible={isProcessing} 
+        message="Generating AI Story & Artwork"
+      />
     </div>
   );
 }
