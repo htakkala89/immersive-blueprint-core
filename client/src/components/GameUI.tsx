@@ -99,8 +99,8 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
 
   return (
     <>
-      <div className="flex-1 bg-[hsl(var(--space-darker))] bg-opacity-95" style={{ height: 'calc(700px - 256px - 60px)' }}>
-        <div className="p-3 space-y-3 h-full overflow-y-auto">
+      <div className="flex-1 bg-[hsl(var(--space-darker))] bg-opacity-95 relative" style={{ height: 'calc(700px - 256px - 60px)' }}>
+        <div className="p-3 space-y-3 h-full overflow-y-auto pb-16">
         
           {/* AI Game Master Message */}
           <div className="mystical-gradient rounded-xl p-3">
@@ -176,35 +176,36 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
             ))}
           </div>
           
-          {/* Chat Interface */}
-          <div className="border-t border-white border-opacity-20 pt-3 mt-3">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setActionType(actionType === "action" ? "speak" : "action")}
-                className="w-20 h-8 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-xs rounded hover:bg-opacity-20 transition-all"
-              >
-                {actionType === "action" ? "Action" : "Speak"}
-              </button>
-              
-              <input
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder={actionType === "action" ? "Type your action..." : "Type what to say..."}
-                className="flex-1 h-8 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-xs placeholder:text-white placeholder:opacity-50 rounded px-2"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleChatSubmit();
-                  }
-                }}
-              />
-              
-              <button
-                onClick={handleChatSubmit}
-                className="h-8 px-3 bg-gradient-to-r from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] hover:opacity-80 text-white text-xs rounded"
-              >
-                {actionType === "action" ? "📨" : "🗣️"}
-              </button>
-            </div>
+        </div>
+        
+        {/* Fixed Chat Interface */}
+        <div className="absolute bottom-0 left-0 right-0 bg-[hsl(var(--space-darker))] bg-opacity-95 border-t border-white border-opacity-20 p-3">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActionType(actionType === "action" ? "speak" : "action")}
+              className="w-20 h-8 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-xs rounded hover:bg-opacity-20 transition-all"
+            >
+              {actionType === "action" ? "Action" : "Speak"}
+            </button>
+            
+            <input
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder={actionType === "action" ? "Type your action..." : "Type what to say..."}
+              className="flex-1 h-8 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-xs placeholder:text-white placeholder:opacity-50 rounded px-2"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleChatSubmit();
+                }
+              }}
+            />
+            
+            <button
+              onClick={handleChatSubmit}
+              className="h-8 px-3 bg-gradient-to-r from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] hover:opacity-80 text-white text-xs rounded"
+            >
+              {actionType === "action" ? "📨" : "🗣️"}
+            </button>
           </div>
         </div>
       </div>
