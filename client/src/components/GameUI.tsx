@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { GameState, Choice } from "@shared/schema";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "./MiniGames";
+import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 
 interface GameUIProps {
   gameState: GameState;
@@ -9,6 +10,7 @@ interface GameUIProps {
 
 export function GameUI({ gameState, onChoice }: GameUIProps) {
   const [activeMinigame, setActiveMinigame] = useState<string | null>(null);
+  const { speak, stop, toggle, speaking, enabled, supported } = useSpeechSynthesis();
 
   const handleChoice = (choice: Choice) => {
     console.log('Choice clicked:', choice.id);
@@ -28,6 +30,21 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
     }
   };
 
+  // Auto-narration effect when story changes
+  useEffect(() => {
+    if (enabled && gameState.narration) {
+      // Clean the narration text for better speech synthesis
+      const cleanNarration = gameState.narration
+        .replace(/[""]/g, '"')
+        .replace(/['']/g, "'")
+        .replace(/\.\.\./g, '... pause ...')
+        .replace(/!/g, '.')
+        .replace(/\?/g, '.');
+      
+      speak(cleanNarration);
+    }
+  }, [gameState.narration, enabled, speak]);
+
   const handleMinigameComplete = (success: boolean, originalChoice: Choice) => {
     setActiveMinigame(null);
     // Pass the result to the game logic
@@ -44,11 +61,39 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
         
           {/* AI Game Master Message */}
           <div className="mystical-gradient rounded-xl p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-4 h-4 bg-gradient-to-br from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] rounded-full flex items-center justify-center text-xs">
-                🎭
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-gradient-to-br from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] rounded-full flex items-center justify-center text-xs">
+                  🎭
+                </div>
+                <span className="text-white text-xs opacity-70">AI Game Master</span>
               </div>
-              <span className="text-white text-xs opacity-70">AI Game Master</span>
+              
+              {/* Voice Control Toggle */}
+              {supported && (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={toggle}
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all duration-200 ${
+                      enabled 
+                        ? 'bg-green-500 bg-opacity-20 text-green-400 hover:bg-opacity-30' 
+                        : 'bg-white bg-opacity-10 text-white hover:bg-opacity-20'
+                    }`}
+                    title={enabled ? 'Disable voice narration' : 'Enable voice narration'}
+                  >
+                    {speaking ? '🔊' : enabled ? '🎧' : '🔇'}
+                  </button>
+                  {speaking && (
+                    <button
+                      onClick={stop}
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-xs bg-red-500 bg-opacity-20 text-red-400 hover:bg-opacity-30 transition-all duration-200"
+                      title="Stop narration"
+                    >
+                      ⏹️
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
             <p className="text-white text-sm leading-relaxed">
               {gameState.narration}
