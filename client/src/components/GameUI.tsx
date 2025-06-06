@@ -179,21 +179,18 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
           {/* Chat Interface */}
           <div className="border-t border-white border-opacity-20 pt-3 mt-3">
             <div className="flex gap-2">
-              <Select value={actionType} onValueChange={(value: "action" | "speak") => setActionType(value)}>
-                <SelectTrigger className="w-24 h-8 bg-white bg-opacity-10 border-white border-opacity-20 text-white text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="action">Action</SelectItem>
-                  <SelectItem value="speak">Speak</SelectItem>
-                </SelectContent>
-              </Select>
+              <button
+                onClick={() => setActionType(actionType === "action" ? "speak" : "action")}
+                className="w-20 h-8 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-xs rounded hover:bg-opacity-20 transition-all"
+              >
+                {actionType === "action" ? "Action" : "Speak"}
+              </button>
               
-              <Input
+              <input
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder={actionType === "action" ? "Type your action..." : "Type what to say..."}
-                className="flex-1 h-8 bg-white bg-opacity-10 border-white border-opacity-20 text-white text-xs placeholder:text-white placeholder:opacity-50"
+                className="flex-1 h-8 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-xs placeholder:text-white placeholder:opacity-50 rounded px-2"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleChatSubmit();
@@ -201,13 +198,12 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
                 }}
               />
               
-              <Button
+              <button
                 onClick={handleChatSubmit}
-                size="sm"
-                className="h-8 px-3 bg-gradient-to-r from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] hover:opacity-80 text-white text-xs"
+                className="h-8 px-3 bg-gradient-to-r from-[hsl(var(--mystical-primary))] to-[hsl(var(--mystical-secondary))] hover:opacity-80 text-white text-xs rounded"
               >
                 {actionType === "action" ? "📨" : "🗣️"}
-              </Button>
+              </button>
             </div>
           </div>
         </div>
