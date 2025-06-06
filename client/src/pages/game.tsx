@@ -44,7 +44,7 @@ export default function Game() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-800 via-gray-900 to-black flex items-center justify-center p-4">
       {/* iOS Device Frame */}
-      <div className="w-full max-w-sm mx-auto bg-black rounded-[40px] overflow-hidden shadow-2xl">
+      <div className="w-full max-w-sm mx-auto bg-black rounded-[40px] overflow-hidden shadow-2xl" style={{ height: '950px' }}>
         
         {/* Status Bar */}
         <div className="flex justify-between items-center px-7 py-3 bg-black bg-opacity-80 text-white text-sm font-semibold">
@@ -60,7 +60,7 @@ export default function Game() {
         </div>
 
         {/* Main Game Content */}
-        <div className="relative bg-[hsl(var(--space-darker))] overflow-hidden" style={{ height: '950px' }}>
+        <div className="relative bg-[hsl(var(--space-darker))] overflow-hidden" style={{ height: '900px' }}>
           
           {/* Animated Game Scene */}
           <div className="relative h-64 scene-gradient overflow-hidden">
@@ -114,10 +114,10 @@ export default function Game() {
           />
 
           {/* Inventory Button */}
-          <div className="absolute bottom-4 right-4">
+          <div className="absolute bottom-6 right-6 z-20">
             <Button 
               onClick={() => setShowInventory(!showInventory)}
-              className="w-11 h-11 bg-white bg-opacity-10 rounded-full flex items-center justify-center text-white hover:bg-opacity-20 transition-all duration-200 border-0"
+              className="w-12 h-12 bg-white bg-opacity-15 rounded-full flex items-center justify-center text-white hover:bg-opacity-25 transition-all duration-200 border border-white border-opacity-20 shadow-lg"
             >
               🎒
             </Button>
