@@ -86,19 +86,7 @@ export function GameCanvas({ sceneData }: GameCanvasProps) {
         ctx.fillRect(0, 0, width, height);
       }
 
-      // Ancient door
-      const doorWidth = width * 0.4;
-      const doorHeight = height * 0.8;
-      const doorX = (width - doorWidth) / 2;
-      const doorY = height * 0.1;
-
-      ctx.fillStyle = 'rgba(10, 10, 15, 1)';
-      ctx.fillRect(doorX, doorY, doorWidth, doorHeight);
-
-      // Door border
-      ctx.strokeStyle = 'rgba(102, 126, 234, 0.3)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(doorX, doorY, doorWidth, doorHeight);
+      // Ancient door overlay removed to show AI images clearly
 
       // Draw animated runes
       runes.forEach(rune => {
