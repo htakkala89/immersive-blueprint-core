@@ -24,6 +24,33 @@ export class MemStorage implements IStorage {
   async createGameState(insertGameState: InsertGameState): Promise<GameState> {
     const id = this.currentId++;
     const startingNode = STORY_NODES.entrance;
+    const startingInventory = [
+      {
+        id: "basic-sword",
+        name: "Iron Sword",
+        description: "A simple but reliable blade for dungeon exploration",
+        icon: "⚔️",
+        type: "weapon" as const,
+        quantity: 1
+      },
+      {
+        id: "health-potion",
+        name: "Health Potion",
+        description: "Restores health when consumed",
+        icon: "🧪",
+        type: "consumable" as const,
+        quantity: 3
+      },
+      {
+        id: "torch",
+        name: "Torch",
+        description: "Provides light in dark places",
+        icon: "🔥",
+        type: "misc" as const,
+        quantity: 5
+      }
+    ];
+
     const gameState: GameState = { 
       id,
       sessionId: insertGameState.sessionId,
@@ -36,7 +63,8 @@ export class MemStorage implements IStorage {
       sceneData: insertGameState.sceneData || null,
       storyPath: "entrance",
       choiceHistory: [],
-      storyFlags: {}
+      storyFlags: {},
+      inventory: startingInventory
     };
     this.gameStates.set(insertGameState.sessionId, gameState);
     return gameState;

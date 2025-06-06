@@ -126,6 +126,13 @@ export default function Game() {
         </div>
       </div>
 
+      {/* Inventory */}
+      <Inventory 
+        items={gameState?.inventory || []}
+        isVisible={showInventory}
+        onClose={() => setShowInventory(false)}
+      />
+
       {/* Loading Overlay */}
       <LoadingOverlay 
         isVisible={isProcessing} 
