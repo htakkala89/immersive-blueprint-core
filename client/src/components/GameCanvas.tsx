@@ -8,6 +8,25 @@ interface GameCanvasProps {
 export function GameCanvas({ sceneData }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
+  const imageRef = useRef<HTMLImageElement | null>(null);
+
+  // Load AI-generated image when sceneData changes
+  useEffect(() => {
+    if (sceneData?.imageUrl) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        imageRef.current = img;
+      };
+      img.onerror = () => {
+        console.log('Failed to load AI-generated image');
+        imageRef.current = null;
+      };
+      img.src = sceneData.imageUrl;
+    } else {
+      imageRef.current = null;
+    }
+  }, [sceneData?.imageUrl]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,12 +68,22 @@ export function GameCanvas({ sceneData }: GameCanvasProps) {
       // Clear canvas
       ctx.clearRect(0, 0, width, height);
 
-      // Background gradient
-      const backgroundGradient = ctx.createLinearGradient(0, 0, 0, height);
-      backgroundGradient.addColorStop(0, 'rgba(25, 25, 46, 1)');
-      backgroundGradient.addColorStop(1, 'rgba(15, 15, 30, 1)');
-      ctx.fillStyle = backgroundGradient;
-      ctx.fillRect(0, 0, width, height);
+      // Draw AI-generated background image if available
+      if (imageRef.current && imageRef.current.complete) {
+        // Draw the AI image as background, covering the full canvas
+        ctx.drawImage(imageRef.current, 0, 0, width, height);
+        
+        // Add dark overlay to make animated elements visible
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.fillRect(0, 0, width, height);
+      } else {
+        // Fallback gradient background
+        const backgroundGradient = ctx.createLinearGradient(0, 0, 0, height);
+        backgroundGradient.addColorStop(0, 'rgba(25, 25, 46, 1)');
+        backgroundGradient.addColorStop(1, 'rgba(15, 15, 30, 1)');
+        ctx.fillStyle = backgroundGradient;
+        ctx.fillRect(0, 0, width, height);
+      }
 
       // Ancient door
       const doorWidth = width * 0.4;
