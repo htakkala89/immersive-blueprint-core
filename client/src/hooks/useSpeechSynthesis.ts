@@ -64,19 +64,20 @@ export function useSpeechSynthesis() {
 
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Configure voice settings for mystical wizard narrator
-    utterance.rate = options.rate || 0.8; // Slower, more deliberate
-    utterance.pitch = options.pitch || 0.6; // Much deeper, older voice
-    utterance.volume = options.volume || 0.8;
+    // Configure voice settings for magical narrator
+    utterance.rate = options.rate || 0.7; // Slow, enchanting pace
+    utterance.pitch = options.pitch || 0.8; // Slightly higher for magical quality
+    utterance.volume = options.volume || 0.9;
 
-    // Find a suitable deep male voice for wizard narrator
+    // Find a suitable voice for magical narrator
     if (voices.length > 0) {
       const preferredVoice = voices.find(voice => 
         voice.lang.startsWith('en') && 
-        (voice.name.toLowerCase().includes('male') || 
-         voice.name.toLowerCase().includes('david') ||
-         voice.name.toLowerCase().includes('alex') ||
-         voice.name.toLowerCase().includes('daniel'))
+        (voice.name.toLowerCase().includes('female') || 
+         voice.name.toLowerCase().includes('samantha') ||
+         voice.name.toLowerCase().includes('zira') ||
+         voice.name.toLowerCase().includes('hazel') ||
+         voice.name.toLowerCase().includes('karen'))
       ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
       
       if (preferredVoice) {
