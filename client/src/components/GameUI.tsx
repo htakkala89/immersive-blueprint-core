@@ -11,12 +11,16 @@ export function GameUI({ gameState, onChoice }: GameUIProps) {
   const [activeMinigame, setActiveMinigame] = useState<string | null>(null);
 
   const handleChoice = (choice: Choice) => {
+    console.log('Choice clicked:', choice.id);
     // Check if choice triggers a mini-game
     if (choice.id === 'pick-lock') {
+      console.log('Triggering lock-picking mini-game');
       setActiveMinigame('lockpicking');
     } else if (choice.id === 'enhanced-vision') {
+      console.log('Triggering rune sequence mini-game');
       setActiveMinigame('rune-sequence');
     } else {
+      console.log('Regular choice, no mini-game');
       onChoice(choice);
     }
   };
