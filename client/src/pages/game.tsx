@@ -77,7 +77,7 @@ export default function Game() {
             {/* Status Overlay - Top Right */}
             <div className="absolute top-16 right-4 space-y-2">
               {/* Health Bar */}
-              <div className="rounded-lg px-3 py-2 min-w-20 border border-red-500 border-opacity-30 bg-black bg-opacity-20 backdrop-blur-sm">
+              <div className="rounded-lg px-3 py-2 min-w-20 border border-red-500 border-opacity-30 bg-black bg-opacity-30">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-red-400 text-xs drop-shadow-lg">❤️</span>
                   <span className="text-white text-xs drop-shadow-lg font-medium">{gameState.health}</span>
@@ -91,7 +91,7 @@ export default function Game() {
               </div>
               
               {/* Mana Bar */}
-              <div className="rounded-lg px-3 py-2 min-w-20 border border-blue-500 border-opacity-30 bg-black bg-opacity-20 backdrop-blur-sm">
+              <div className="rounded-lg px-3 py-2 min-w-20 border border-blue-500 border-opacity-30 bg-black bg-opacity-30">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-blue-400 text-xs drop-shadow-lg">💧</span>
                   <span className="text-white text-xs drop-shadow-lg font-medium">{gameState.mana}</span>
