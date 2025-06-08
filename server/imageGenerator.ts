@@ -11,30 +11,23 @@ let lastImageGeneration = 0;
 const IMAGE_GENERATION_COOLDOWN = 1000; // 1 second between generations
 
 // Content classification for mature scene detection
-function isMatureContent(gameState: GameState): boolean {
-  const narration = gameState.narration.toLowerCase();
-  const storyPath = gameState.storyPath.toLowerCase();
-  const sessionId = gameState.sessionId?.toLowerCase() || '';
+function isMatureContent(prompt: string, activityId?: string): boolean {
+  const promptLower = prompt.toLowerCase();
   
-  // Use Google Imagen for general content (cover, start, character scenes)
-  if (storyPath === 'cover' || storyPath === 'start' || narration.includes('cover art') || sessionId.includes('cover')) {
-    return false;
+  // Check for explicit intimate activity IDs
+  const matureActivityIds = ['strip_poker', 'make_love', 'shower_together', 'intimate_evening'];
+  if (activityId && matureActivityIds.includes(activityId)) {
+    return true;
   }
   
-  // Only treat explicitly intimate/sexual content as mature
-  // Most Solo Leveling content including romance should use Google Imagen
-  
+  // Check for mature content keywords in prompt
   const explicitMatureKeywords = [
-    'passionate kiss', 'intimate embrace', 'seductive', 'alluring pose',
-    'bedroom', 'undressing', 'sensual', 'erotic'
+    'strip poker', 'naked', 'nude', 'undressing', 'intimate', 'sensual', 'erotic',
+    'making love', 'passionate', 'bedroom scene', 'shower together', 'seductive',
+    'lingerie', 'revealing', 'sexual', 'romantic embrace', 'kissing passionately'
   ];
 
-  const explicitMatureScenes = [
-    'intimate_scene', 'bedroom_scene', 'passionate_moment'
-  ];
-  
-  return explicitMatureKeywords.some(keyword => narration.includes(keyword)) ||
-         explicitMatureScenes.some(scene => storyPath.includes(scene));
+  return explicitMatureKeywords.some(keyword => promptLower.includes(keyword));
 }
 
 async function generateWithNovelAI(prompt: string): Promise<string | null> {
@@ -248,6 +241,33 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
   }
 }
 
+export async function generateIntimateActivityImage(activityId: string, relationshipStatus: string, intimacyLevel: number): Promise<string | null> {
+  console.log(`🔞 Generating mature content for activity: ${activityId}`);
+
+  // Rate limiting
+  const now = Date.now();
+  if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
+    return null;
+  }
+  lastImageGeneration = now;
+
+  const prompt = createIntimatePrompt(activityId, relationshipStatus, intimacyLevel);
+  
+  // Use NovelAI for mature content
+  if (isMatureContent(prompt, activityId)) {
+    console.log('🎨 Using NovelAI for mature content...');
+    const result = await generateWithNovelAI(prompt);
+    if (result) {
+      console.log('✅ NovelAI generated mature image successfully');
+      return result;
+    }
+  }
+
+  // Fallback to Google Imagen for non-explicit content
+  console.log('🎯 Using Google Imagen fallback for intimate content');
+  return await generateWithGoogleImagen(prompt);
+}
+
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
   try {
     // Check rate limit
@@ -438,6 +458,44 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
   if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
 
   return `Professional anime portrait of Cha Hae-In from Solo Leveling manhwa, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, manhwa art style, high quality anime illustration, emotional close-up portrait, Solo Leveling character design`;
+}
+
+function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {
+  const baseStyle = "anime style, detailed, beautiful, romantic lighting, intimate atmosphere, Cha Hae-In and Jin-Woo from Solo Leveling";
+  
+  switch (activityId) {
+    case 'strip_poker':
+      return intimacyLevel >= 8 
+        ? `${baseStyle}, playing strip poker in cozy bedroom, romantic tension, sultry expressions, revealing clothing, playful atmosphere, cards scattered`
+        : `${baseStyle}, playing poker at home, flirtatious glances, romantic tension, warm lighting, casual clothing`;
+    
+    case 'make_love':
+      if (relationshipStatus === 'married') {
+        return intimacyLevel >= 9 
+          ? `${baseStyle}, passionate intimate embrace, married couple in bedroom, romantic atmosphere, beautiful lighting, sensual poses, loving expressions`
+          : `${baseStyle}, tender romantic moment, married couple embracing, soft lighting, intimate but tasteful, loving connection`;
+      } else {
+        return `${baseStyle}, romantic intimate moment, couple embracing tenderly, warm lighting, emotional connection, beautiful scene`;
+      }
+    
+    case 'shower_together':
+      return intimacyLevel >= 8 
+        ? `${baseStyle}, romantic shower scene, steam and water, intimate atmosphere, couple together, sensual but artistic, beautiful lighting`
+        : `${baseStyle}, romantic bathroom scene, couple together, steam effects, intimate but tasteful, warm lighting`;
+    
+    case 'intimate_evening':
+      return intimacyLevel >= 8 
+        ? `${baseStyle}, romantic bedroom scene, couple on bed, intimate atmosphere, beautiful lighting, passionate expressions, sensual poses`
+        : `${baseStyle}, romantic evening at home, couple cuddling, soft lighting, intimate but tasteful, loving atmosphere`;
+    
+    case 'wake_up_together':
+      return relationshipStatus === 'married' 
+        ? `${baseStyle}, married couple waking up together, bedroom scene, morning light, intimate but tasteful, loving expressions, beautiful composition`
+        : `${baseStyle}, couple waking up together, cozy bedroom, morning atmosphere, romantic but tasteful, warm lighting`;
+    
+    default:
+      return `${baseStyle}, romantic scene, beautiful couple, intimate atmosphere, tasteful composition, emotional connection`;
+  }
 }
 
 function createMatureSoloLevelingPrompt(gameState: GameState): string {

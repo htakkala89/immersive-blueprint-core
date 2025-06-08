@@ -117,6 +117,33 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       available: timeOfDay === 'night' && stats.intimacyLevel >= 5 && (stats.livingTogether || stats.relationshipStatus === 'married')
     },
     {
+      id: 'strip_poker',
+      title: 'Strip Poker Game',
+      description: 'Play a playful game of strip poker together.',
+      icon: '🃏',
+      energyCost: 1,
+      affectionReward: 2,
+      available: timeOfDay === 'night' && stats.intimacyLevel >= 6 && stats.relationshipStatus !== 'dating'
+    },
+    {
+      id: 'make_love',
+      title: 'Make Love',
+      description: 'Share intimate physical moments together.',
+      icon: '💋',
+      energyCost: 2,
+      affectionReward: 4,
+      available: stats.intimacyLevel >= 7 && (stats.livingTogether || stats.relationshipStatus === 'married')
+    },
+    {
+      id: 'shower_together',
+      title: 'Shower Together',
+      description: 'Share an intimate shower in the morning.',
+      icon: '🚿',
+      energyCost: 1,
+      affectionReward: 3,
+      available: timeOfDay === 'morning' && stats.intimacyLevel >= 8 && stats.livingTogether
+    },
+    {
       id: 'marriage_ceremony',
       title: 'Wedding Ceremony',
       description: 'Exchange vows and become husband and wife.',
@@ -209,6 +236,33 @@ const getIntimateDialogue = (activity: Activity, stats: PlayerStats): string => 
     } else {
       return "I love these quiet evenings together. Being close to you like this... it feels so right, Jin-Woo.";
     }
+  }
+
+  // Strip poker dialogue
+  if (activity.id === 'strip_poker') {
+    if (relationshipLevel === 'married') {
+      return "Strip poker with my husband? This should be fun... I hope you're ready to lose, Jin-Woo. I've been practicing my poker face.";
+    } else {
+      return "This is so naughty... but exciting. Just promise me you'll go easy on me? Actually, on second thought, don't.";
+    }
+  }
+
+  // Make love dialogue
+  if (activity.id === 'make_love') {
+    if (relationshipLevel === 'married') {
+      return intimacy >= 9 
+        ? "I need you, Jin-Woo... I want to feel every part of you. Make me yours completely." 
+        : "Being intimate with you always feels like our first time. You make me feel so loved and desired.";
+    } else {
+      return "I want to be close to you in every way possible. You mean everything to me, Jin-Woo.";
+    }
+  }
+
+  // Shower together dialogue
+  if (activity.id === 'shower_together') {
+    return relationshipLevel === 'married' 
+      ? "A hot shower together sounds perfect. I love how intimate these moments are... just us, warm water, and nothing else matters." 
+      : "Sharing a shower with you feels so natural now. I love how comfortable we are with each other.";
   }
 
   // Cooking together dialogue

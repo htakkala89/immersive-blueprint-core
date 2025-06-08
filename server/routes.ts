@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateSceneImage } from "./imageGenerator";
+import { generateSceneImage, generateIntimateActivityImage } from "./imageGenerator";
 import { getSceneImage } from "./preGeneratedImages";
 import { log } from "./vite";
 import { z } from "zod";
