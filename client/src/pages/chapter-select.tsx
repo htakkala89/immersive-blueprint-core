@@ -55,10 +55,18 @@ const CHAPTERS: Chapter[] = [
 
 export default function ChapterSelect() {
   const [, setLocation] = useLocation();
-  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
+
 
   const handleChapterSelect = (chapter: Chapter) => {
     if (!chapter.unlocked) return;
+    
+    // For gate raids, go directly to gate entrance
+    if (chapter.id === 'gate_raids') {
+      localStorage.setItem('gameStartScene', 'GATE_ENTRANCE');
+      localStorage.setItem('gameMode', 'gate_raids');
+      setLocation('/solo-leveling');
+      return;
+    }
     
     // Store the selected starting scene in localStorage
     localStorage.setItem('gameStartScene', chapter.startScene);
@@ -98,9 +106,8 @@ export default function ChapterSelect() {
                 chapter.unlocked
                   ? 'bg-white/10 border border-white/20 hover:bg-white/15 hover:border-white/30'
                   : 'bg-gray-800/50 border border-gray-600/30 cursor-not-allowed opacity-50'
-              } ${selectedChapter?.id === chapter.id ? 'ring-2 ring-purple-400' : ''}`}
-              onClick={() => chapter.unlocked && setSelectedChapter(chapter)}
-              onDoubleClick={() => chapter.unlocked && handleChapterSelect(chapter)}
+              }`}
+              onClick={() => chapter.unlocked && handleChapterSelect(chapter)}
             >
               {/* Chapter Icon */}
               <div className="text-4xl mb-4 text-center">
@@ -128,39 +135,16 @@ export default function ChapterSelect() {
                 </div>
               )}
 
-              {/* Selected indicator */}
-              {selectedChapter?.id === chapter.id && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">✓</span>
-                </div>
-              )}
+
             </div>
           ))}
         </div>
 
-        {/* Action Buttons */}
-        {selectedChapter && (
-          <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-            <div className="flex gap-4 p-4 bg-black/50 backdrop-blur-md rounded-xl border border-white/20">
-              <button
-                onClick={() => setSelectedChapter(null)}
-                className="px-6 py-3 bg-gray-600/80 hover:bg-gray-500/80 text-white rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleChapterSelect(selectedChapter)}
-                className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg font-semibold transition-all transform hover:scale-105"
-              >
-                Start Chapter
-              </button>
-            </div>
-          </div>
-        )}
+
 
         {/* Instructions */}
         <div className="text-center mt-12 text-gray-400 text-sm">
-          <p>Click to select a chapter, then click "Start Chapter" or double-click to begin immediately</p>
+          <p>Click on any chapter to begin your adventure</p>
         </div>
       </div>
     </div>
