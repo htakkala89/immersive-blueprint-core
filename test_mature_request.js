@@ -1,5 +1,5 @@
 // Test script for mature content generation through user requests
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function testMatureContentRequests() {
   console.log('Testing mature content generation system...\n');
