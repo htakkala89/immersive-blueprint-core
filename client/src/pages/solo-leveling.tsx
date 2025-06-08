@@ -2222,7 +2222,7 @@ export default function SoloLeveling() {
                 <div className={`absolute top-28 left-3 right-3 z-30 transition-opacity duration-300 ${chatPinned ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   {/* Story Narration - Compact Overlay */}
                   {currentStory && (
-                    <div className="mb-2 p-3 rounded-2xl bg-black/70 backdrop-blur-md border border-white/10">
+                    <div className="mb-2 p-3 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
                       <div className="flex items-center gap-2 mb-1">
                         <div className="text-xs text-gray-400 font-medium">GM</div>
                       </div>
@@ -2232,7 +2232,7 @@ export default function SoloLeveling() {
 
                   {/* System Notifications - Compact Style */}
                   {currentStory?.chat && currentStory.chat.map((msg, index) => (
-                    <div key={index} className="mb-2 p-3 rounded-2xl bg-gray-800/70 backdrop-blur-md border border-gray-600/30">
+                    <div key={index} className="mb-2 p-3 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
                       <div className="flex items-center gap-2 mb-1">
                         <div className="text-xs text-gray-400 font-medium">
                           {msg.sender === 'system' ? '⚙️ System' : msg.sender}
