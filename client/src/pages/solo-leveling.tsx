@@ -533,9 +533,9 @@ export default function SoloLeveling() {
                 </div>
               </div>
 
-              {/* Scene Container with Affection Meter - Full Immersion */}
-              <div id="scene-container" className="relative w-full h-80 flex-shrink-0 overflow-hidden bg-transparent">
-                <div id="effects-container" className="absolute inset-0 z-20 pointer-events-none" />
+              {/* Full Screen Game Container with Overlaid UI */}
+              <div className="flex-1 relative overflow-hidden">
+                {/* Background Image - Full Screen */}
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 filter brightness-110 contrast-110"
                   style={{ 
@@ -544,120 +544,124 @@ export default function SoloLeveling() {
                     backgroundPosition: 'center center'
                   }}
                 />
-                {/* Affection Meter */}
-                <div className="absolute top-3 right-3 z-40 w-32 bg-black/70 p-2 rounded-xl border border-pink-500/40 backdrop-blur-sm">
-                  <div className="text-xs text-pink-500 mb-1 text-center font-semibold">Cha Hae-In</div>
-                  <div className="flex justify-center gap-1">
-                    {renderAffectionHearts()}
-                  </div>
-                </div>
+                
+                {/* Dark overlay for better text readability */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+                
+                {/* Effects Layer */}
+                <div id="effects-container" className="absolute inset-0 z-20 pointer-events-none" />
+                
+                {/* Loading Overlay */}
                 {isLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-30">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-40">
                     <div className="spinner" />
                   </div>
                 )}
-              </div>
 
-              {/* Content Wrapper */}
-              <div className="flex-1 flex flex-col bg-gray-900/75 backdrop-blur-sm min-h-0 overflow-hidden">
-                {/* Stats Display */}
-                <div className="p-3 flex gap-4 text-sm font-bold items-center bg-black/30 border-b border-purple-500/30 flex-shrink-0">
-                  <div className="flex items-center gap-2 text-white">
-                    <span className="text-lg">❤️</span>
-                    <div className="w-20 h-2.5 bg-black/40 rounded-full border border-purple-500/30">
-                      <div 
-                        className="h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-full transition-all duration-500"
-                        style={{ width: `${(gameState.health / gameState.maxHealth) * 100}%` }}
-                      />
+                {/* Top UI Overlay - Stats and Affection */}
+                <div className="absolute top-3 left-3 right-3 z-30 flex justify-between items-start">
+                  {/* Top Left - Stats */}
+                  <div className="flex items-center gap-3 text-sm bg-black/70 backdrop-blur-md rounded-xl p-2 border border-white/20">
+                    <div className="flex items-center gap-1">
+                      <span className="text-red-500">❤️</span>
+                      <span className="text-white text-xs font-bold">{gameState.health}/{gameState.maxHealth}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-blue-500">💎</span>
+                      <span className="text-white text-xs font-bold">{gameState.mana}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-yellow-500">⭐</span>
+                      <span className="text-white text-xs font-bold">{gameState.level}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-blue-400">
-                    <span className="text-lg">💎</span>
-                    <span>{gameState.mana}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-yellow-400">
-                    <span className="text-lg">⭐</span>
-                    <span>{gameState.level}</span>
+
+                  {/* Top Right - Affection Meter */}
+                  <div className="w-32 bg-black/70 p-2 rounded-xl border border-pink-500/40 backdrop-blur-md">
+                    <div className="text-xs text-pink-500 mb-1 text-center font-semibold">Cha Hae-In</div>
+                    <div className="flex justify-center gap-1">
+                      {renderAffectionHearts()}
+                    </div>
                   </div>
                 </div>
 
-                {/* Chat Container - Simple bottom-anchored layout */}
-                <div className="flex-1 flex flex-col min-h-0">
-                  <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto">
-                    {/* Story Narration */}
-                    {currentStory && (
-                      <div className="mb-3 p-3 rounded-xl bg-gray-800/60 border border-purple-500/20">
-                        <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
-                          <div className="w-5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
-                            🎭
+                {/* Chat and Story Overlay - Lower Half */}
+                <div className="absolute bottom-0 left-0 right-0 z-30 h-2/3 flex flex-col">
+                  {/* Chat Container */}
+                  <div className="flex-1 flex flex-col">
+                    <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto">
+                      {/* Story Narration */}
+                      {currentStory && (
+                        <div className="mb-3 p-3 rounded-xl bg-black/80 border border-purple-500/40 backdrop-blur-md">
+                          <div className="flex items-center gap-2 mb-2 text-xs opacity-90 font-semibold">
+                            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
+                              🎭
+                            </div>
+                            <span className="text-white">Game Master</span>
                           </div>
-                          <span className="text-white">Game Master</span>
+                          <div className="text-gray-100 text-sm leading-relaxed">{currentStory.narration}</div>
                         </div>
-                        <div className="text-gray-200 text-sm leading-relaxed">{currentStory.narration}</div>
+                      )}
+
+                      {/* Chat Messages */}
+                      {chatMessages.map(msg => (
+                        <div 
+                          key={msg.id}
+                          className={`mb-3 p-3 rounded-xl max-w-[90%] backdrop-blur-md ${
+                            msg.sender === 'player' 
+                              ? 'bg-purple-900/80 border border-purple-400/60 ml-auto' 
+                              : msg.sender === 'Cha Hae-In'
+                              ? 'bg-pink-900/80 border border-pink-400/60'
+                              : 'bg-gray-800/80 border border-purple-400/40'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-1 text-xs opacity-90 font-semibold">
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+                              msg.sender === 'player' 
+                                ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
+                                : msg.sender === 'Cha Hae-In'
+                                ? 'bg-gradient-to-r from-pink-600 to-pink-700'
+                                : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
+                            }`}>
+                              {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
+                            </div>
+                            <span className="text-white">{msg.sender}</span>
+                          </div>
+                          <div className="text-gray-100 text-sm leading-relaxed">{msg.text}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Choices Section - Bottom Overlay */}
+                    {currentStory?.choices && (
+                      <div className="p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40">
+                        <div className="text-xs text-white/80 font-semibold mb-2">Choose your action:</div>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {currentStory.choices.map((choice, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleChoice(choice)}
+                              className="w-full bg-purple-500/20 border border-purple-400/50 rounded-lg p-3 flex items-center gap-2 hover:bg-purple-500/30 transition-all text-left backdrop-blur-sm"
+                            >
+                              <div className="w-6 h-6 bg-purple-500/30 rounded-md flex items-center justify-center text-xs flex-shrink-0">
+                                ⚔️
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-white text-sm font-semibold truncate">{choice.text}</div>
+                                {choice.detail && (
+                                  <div className="text-white/80 text-xs truncate">{choice.detail}</div>
+                                )}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
-
-                    {/* Chat Messages */}
-                    {chatMessages.map(msg => (
-                      <div 
-                        key={msg.id}
-                        className={`mb-3 p-3 rounded-xl max-w-[90%] ${
-                          msg.sender === 'player' 
-                            ? 'bg-purple-900/60 border border-purple-500/40 ml-auto' 
-                            : msg.sender === 'Cha Hae-In'
-                            ? 'bg-pink-900/60 border border-pink-500/40'
-                            : 'bg-gray-800/60 border border-purple-500/20'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 mb-1 text-xs opacity-80 font-semibold">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
-                            msg.sender === 'player' 
-                              ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
-                              : msg.sender === 'Cha Hae-In'
-                              ? 'bg-gradient-to-r from-pink-600 to-pink-700'
-                              : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
-                          }`}>
-                            {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
-                          </div>
-                          <span className="text-white">{msg.sender}</span>
-                        </div>
-                        <div className="text-gray-200 text-sm leading-relaxed">{msg.text}</div>
-                      </div>
-                    ))}
-
-                    {/* Spacer to push content up */}
-                    <div style={{ height: '1px' }} />
                   </div>
-
-                  {/* Choices Section - Fixed at bottom */}
-                  {currentStory?.choices && (
-                    <div className="p-3 bg-gray-800/40 border-t border-purple-500/20">
-                      <div className="text-xs text-white/70 font-semibold mb-2">Choose your action:</div>
-                      <div className="space-y-2 max-h-32 overflow-y-auto">
-                        {currentStory.choices.map((choice, index) => (
-                          <button
-                            key={index}
-                            onClick={() => handleChoice(choice)}
-                            className="w-full bg-purple-500/15 border border-purple-500/30 rounded-lg p-3 flex items-center gap-2 hover:bg-purple-500/25 transition-all text-left"
-                          >
-                            <div className="w-6 h-6 bg-purple-500/20 rounded-md flex items-center justify-center text-xs flex-shrink-0">
-                              ⚔️
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-white text-sm font-semibold truncate">{choice.text}</div>
-                              {choice.detail && (
-                                <div className="text-white/70 text-xs truncate">{choice.detail}</div>
-                              )}
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
 
-                {/* Bottom Bar */}
-                <div className="p-3 bg-gray-900/80 backdrop-blur-md border-t border-purple-500/20 flex items-center gap-3 flex-shrink-0">
+                {/* Bottom Bar - Overlaid */}
+                <div className="absolute bottom-0 left-0 right-0 z-40 p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40 flex items-center gap-3">
                   <button 
                     onClick={() => setShowInventory(true)}
                     className="w-11 h-11 bg-purple-500/15 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all"
