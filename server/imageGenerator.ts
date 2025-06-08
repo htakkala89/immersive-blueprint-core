@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import type { GameState } from "@shared/schema";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 
 // Rate limiting for image generation
 let lastImageGeneration = 0;
@@ -84,6 +84,47 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   }
 }
 
+async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
+  try {
+    // Google Imagen via Vertex AI
+    if (!process.env.GOOGLE_API_KEY) {
+      console.log('Google API key not available');
+      return null;
+    }
+
+    // Simple Imagen REST API call (requires proper project setup)
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${process.env.GOOGLE_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors",
+        outputOptions: {
+          mimeType: "image/png"
+        }
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Google Imagen API error:', response.status, response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    const imageData = data.generatedImages?.[0]?.imageBytes;
+    
+    if (imageData) {
+      return `data:image/png;base64,${imageData}`;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Google Imagen generation error:', error);
+    return null;
+  }
+}
+
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
   try {
     // Check rate limit
@@ -107,20 +148,43 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
         return image;
       }
       
-      console.log('⚠️ NovelAI failed, falling back to OpenAI with safe prompt');
+      console.log('⚠️ NovelAI failed, trying alternative generators');
     }
     
-    // Use OpenAI for general content or as fallback
+    // Try Google Imagen first (good for anime/manga style)
     const prompt = createSoloLevelingPrompt(gameState);
-    const response = await openai.images.generate({
-      model: "dall-e-3",
-      prompt: prompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "standard",
-    });
+    if (process.env.GOOGLE_API_KEY) {
+      console.log('🖼️ Trying Google Imagen for Solo Leveling scene');
+      const googleImage = await generateWithGoogleImagen(prompt);
+      if (googleImage) {
+        console.log('✅ Google Imagen generated image successfully');
+        return googleImage;
+      }
+      console.log('⚠️ Google Imagen failed, trying OpenAI');
+    }
+    
+    // Fallback to OpenAI if available
+    if (openai && process.env.OPENAI_API_KEY) {
+      try {
+        const response = await openai.images.generate({
+          model: "dall-e-3",
+          prompt: prompt,
+          n: 1,
+          size: "1024x1024",
+          quality: "standard",
+        });
+        
+        const imageUrl = response.data?.[0]?.url;
+        if (imageUrl) {
+          console.log('✅ OpenAI generated fallback image successfully');
+          return imageUrl;
+        }
+      } catch (openaiError: any) {
+        console.log('⚠️ OpenAI generation failed:', openaiError?.message || 'Unknown error');
+      }
+    }
 
-    return response.data?.[0]?.url || null;
+    return null;
   } catch (error) {
     console.error('Error generating image:', error);
     return null;
