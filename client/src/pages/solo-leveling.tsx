@@ -2384,11 +2384,8 @@ export default function SoloLeveling() {
 
         const data = await response.json();
         
-        // Add AI response and ensure it's visible
+        // Add AI response and ensure it's visible (voice will be automatically triggered by addChatMessage)
         addChatMessage('Cha Hae-In', data.response);
-        
-        // Play voice for Cha Hae-In's response
-        playVoice(data.response, 'cha-hae-in');
         
         // If chat response includes an image, update background
         if (data.imageUrl) {
@@ -2527,8 +2524,7 @@ export default function SoloLeveling() {
         setTimeout(() => {
           const response = intimateResponses[Math.floor(Math.random() * intimateResponses.length)];
           addChatMessage('Cha Hae-In', response);
-          // Play voice for intimate responses
-          playVoice(response, 'cha-hae-in');
+          // Voice will be automatically triggered by addChatMessage
         }, 1500);
         
       } else {
