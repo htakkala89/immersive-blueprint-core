@@ -51,8 +51,11 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
   // Chat response mutation with AI and image generation
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const response = await apiRequest('/api/chat-with-hae-in', {
+      const response = await fetch('/api/chat-with-hae-in', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           message,
           gameState,
@@ -60,7 +63,12 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
           sessionId: gameState?.sessionId || 'default'
         })
       });
-      return response;
+      
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+      
+      return await response.json();
     },
     onSuccess: (data) => {
       const newMessage: ChatMessage = {

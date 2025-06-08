@@ -242,6 +242,48 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
   }
 }
 
+// Generate images for realtime chat interactions
+export async function generateRealtimeChatImage(chatResponse: string, userMessage: string, emotion: string, gameState: any): Promise<string | null> {
+  try {
+    // Rate limiting check
+    const now = Date.now();
+    if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
+      console.log('Image generation rate limited, skipping');
+      return null;
+    }
+    
+    // Create prompt based on chat context and emotion
+    const relationshipStatus = gameState?.relationshipStatus || 'dating';
+    const intimacyLevel = gameState?.intimacyLevel || 5;
+    
+    const contextualPrompt = createRealtimeChatPrompt(chatResponse, userMessage, relationshipStatus, intimacyLevel);
+    const emotionPrompt = `Cha Hae-In from Solo Leveling, beautiful Korean female S-rank hunter, long blonde hair, ${emotion} expression, ${contextualPrompt}, manhwa art style, high quality, detailed artwork`;
+    
+    console.log('🎨 Generating realtime chat image...');
+    
+    // Try NovelAI first for character interactions
+    const novelAIResult = await generateWithNovelAI(emotionPrompt);
+    if (novelAIResult) {
+      lastImageGeneration = now;
+      console.log('✅ NovelAI generated chat image successfully');
+      return novelAIResult;
+    }
+    
+    // Fallback to Google Imagen
+    const googleResult = await generateWithGoogleImagen(emotionPrompt);
+    if (googleResult) {
+      lastImageGeneration = now;
+      console.log('✅ Google Imagen generated chat image successfully');
+      return googleResult;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error generating realtime chat image:', error);
+    return null;
+  }
+}
+
 export async function generateIntimateActivityImage(activityId: string, relationshipStatus: string, intimacyLevel: number): Promise<string | null> {
   console.log(`🔞 Generating mature content for activity: ${activityId}`);
 
@@ -460,6 +502,39 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
   if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
 
   return `Professional anime portrait of Cha Hae-In from Solo Leveling manhwa, ${emotionDesc} beautiful Korean S-rank hunter with short blonde hair and striking purple eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, manhwa art style, high quality anime illustration, emotional close-up portrait, Solo Leveling character design`;
+}
+
+function createRealtimeChatPrompt(chatResponse: string, userMessage: string, relationshipStatus: string, intimacyLevel: number): string {
+  const contextualElements = [];
+  
+  // Add relationship context
+  if (relationshipStatus === 'married') {
+    contextualElements.push('married couple at home');
+  } else if (relationshipStatus === 'engaged') {
+    contextualElements.push('engaged couple sharing intimate moment');
+  } else {
+    contextualElements.push('romantic dating scene');
+  }
+  
+  // Add emotional context from chat
+  if (chatResponse.includes('blush') || chatResponse.includes('shy')) {
+    contextualElements.push('blushing, shy expression');
+  } else if (chatResponse.includes('smile') || chatResponse.includes('happy')) {
+    contextualElements.push('warm smile, happy expression');
+  } else if (chatResponse.includes('love') || chatResponse.includes('adore')) {
+    contextualElements.push('loving gaze, romantic atmosphere');
+  }
+  
+  // Add activity context from user message
+  if (userMessage.toLowerCase().includes('cook') || userMessage.toLowerCase().includes('kitchen')) {
+    contextualElements.push('in modern kitchen setting');
+  } else if (userMessage.toLowerCase().includes('bed') || userMessage.toLowerCase().includes('sleep')) {
+    contextualElements.push('in bedroom, comfortable setting');
+  } else if (userMessage.toLowerCase().includes('dress') || userMessage.toLowerCase().includes('outfit')) {
+    contextualElements.push('showing elegant outfit');
+  }
+  
+  return contextualElements.join(', ');
 }
 
 function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {
