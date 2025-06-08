@@ -3203,69 +3203,8 @@ export default function SoloLeveling() {
                   </div>
                 </div>
 
-                {/* Bottom Bar - Overlaid */}
+                {/* Bottom Bar - Clean text input only */}
                 <div className="absolute bottom-0 left-0 right-0 z-50 p-3 bg-white/10 backdrop-blur-xl border-t border-white/20 shadow-lg flex items-center gap-3">
-                  <button 
-                    onClick={() => setShowSkillTree(true)}
-                    className="w-11 h-11 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all relative shadow-lg"
-                    title="Skills & Stats"
-                  >
-                    👑
-                    {((gameState.skillPoints || 0) + (gameState.statPoints || 0)) > 0 && (
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold">
-                        {(gameState.skillPoints || 0) + (gameState.statPoints || 0)}
-                      </div>
-                    )}
-                  </button>
-                  <button 
-                    onClick={() => setShowInventory(true)}
-                    className="w-11 h-11 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-lg"
-                  >
-                    🎒
-                  </button>
-                  {/* Daily Life Hub Button - Available after romantic relationship */}
-                  {gameState.affection >= 3 && (
-                    <button 
-                      onClick={() => {
-                        setPreviousPage('story');
-                        setShowDailyLifeHub(true);
-                      }}
-                      className="w-11 h-11 bg-pink-600/90 backdrop-blur-xl border border-pink-400/30 rounded-full flex items-center justify-center text-white hover:bg-pink-500/90 transition-all shadow-lg"
-                      title="Daily Life Hub"
-                    >
-                      🏠
-                    </button>
-                  )}
-                  {/* Marketplace Button - Available after meeting Cha Hae-In */}
-                  {gameState.affection >= 1 && (
-                    <button 
-                      onClick={() => {
-                        setPreviousPage('story');
-                        setShowMarketplace(true);
-                      }}
-                      className="w-11 h-11 bg-yellow-600/90 backdrop-blur-xl border border-yellow-400/30 rounded-full flex items-center justify-center text-white hover:bg-yellow-500/90 transition-all shadow-lg"
-                      title="Hunter Marketplace"
-                    >
-                      🛒
-                    </button>
-                  )}
-                  {/* Raid System Button - Available after level 5 */}
-                  {gameState.level >= 5 && (
-                    <button 
-                      onClick={() => setShowRaidSystem(true)}
-                      className="w-11 h-11 bg-red-600/90 backdrop-blur-xl border border-red-400/30 rounded-full flex items-center justify-center text-white hover:bg-red-500/90 transition-all shadow-lg"
-                      title="Gate Raids"
-                    >
-                      ⚔️
-                    </button>
-                  )}
-                  <button 
-                    onClick={() => setShowChatTutorial(true)}
-                    className="w-11 h-11 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-lg"
-                    title="Chat Help"
-                  >
-                    💡
-                  </button>
                   <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full h-11 flex items-center px-1 shadow-lg">
                     <input
                       type="text"
