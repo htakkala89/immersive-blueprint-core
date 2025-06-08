@@ -1,38 +1,23 @@
-import { useState, useEffect } from "react";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Star, Flame, Crown } from "lucide-react";
-
-interface RelationshipData {
-  affectionLevel: number;
-  intimacyPoints: number;
-  trustLevel: number;
-  romanticProgression: 'stranger' | 'acquaintance' | 'friend' | 'close_friend' | 'romantic_interest' | 'dating' | 'committed' | 'soulmate';
-  personalityTraits: {
-    confidence: number;
-    playfulness: number;
-    vulnerability: number;
-    protectiveness: number;
-  };
-  memoryBank: Array<{
-    event: string;
-    impact: number;
-    timestamp: number;
-    emotion: 'happy' | 'sad' | 'excited' | 'touched' | 'grateful' | 'impressed';
-  }>;
-  unlockedScenes: string[];
-  favoriteActivities: string[];
-}
+import { useState } from "react";
+import { Heart, X, Star, Flame, Shield } from "lucide-react";
 
 interface RelationshipSystemProps {
-  relationshipData: RelationshipData;
-  onRelationshipUpdate: (data: Partial<RelationshipData>) => void;
-  currentScene: string;
+  isVisible: boolean;
+  onClose: () => void;
+  gameState: {
+    affection: number;
+    level: number;
+    currentScene: string;
+  };
 }
 
-export function RelationshipSystem({ relationshipData, onRelationshipUpdate, currentScene }: RelationshipSystemProps) {
+export function RelationshipSystem({ isVisible, onClose, gameState }: RelationshipSystemProps) {
   const [showDetails, setShowDetails] = useState(false);
 
+  if (!isVisible) return null;
+
+  const affectionLevel = gameState.affection;
+  
   const getRelationshipTitle = (affectionLevel: number): string => {
     if (affectionLevel === 0) return "Cha Hae-In";
     if (affectionLevel === 1) return "Fellow S-Rank Hunter";
@@ -43,247 +28,162 @@ export function RelationshipSystem({ relationshipData, onRelationshipUpdate, cur
     return "Cha Hae-In";
   };
 
-  const getProgressionIcon = (progression: string) => {
-    const icons = {
-      stranger: <Star className="w-4 h-4" />,
-      acquaintance: <Star className="w-4 h-4" />,
-      friend: <Heart className="w-4 h-4" />,
-      close_friend: <Heart className="w-4 h-4 text-pink-500" />,
-      romantic_interest: <Flame className="w-4 h-4 text-red-500" />,
-      dating: <Crown className="w-4 h-4 text-purple-500" />,
-      committed: <Crown className="w-4 h-4 text-gold-500" />,
-      soulmate: <Crown className="w-4 h-4 text-yellow-500" />
-    };
-    return icons[progression as keyof typeof icons] || <Star className="w-4 h-4" />;
+  const getStatusDescription = (affectionLevel: number): string => {
+    if (affectionLevel === 0) return "You've just met the legendary S-Rank Hunter Cha Hae-In";
+    if (affectionLevel === 1) return "Building mutual respect as fellow hunters";
+    if (affectionLevel === 2) return "Growing trust through shared battles";
+    if (affectionLevel === 3) return "Developing a close friendship";
+    if (affectionLevel === 4) return "Romantic feelings are blossoming";
+    if (affectionLevel >= 5) return "Deep love and unbreakable bond";
+    return "Unknown relationship status";
   };
 
-  const calculatePersonalityResponse = (choice: any): string => {
-    const { personalityTraits } = relationshipData;
-    
-    // Dynamic personality based on accumulated traits
-    if (personalityTraits.confidence > 70) {
-      return "chaHaeIn_confident";
-    } else if (personalityTraits.playfulness > 60) {
-      return "chaHaeIn_playful";
-    } else if (personalityTraits.vulnerability > 50) {
-      return "chaHaeIn_vulnerable";
-    } else {
-      return "chaHaeIn_balanced";
-    }
-  };
+  // Convert 0-5 affection to percentage systems
+  const affectionPercent = Math.round((affectionLevel / 5) * 100);
+  const intimacyPercent = Math.max(0, Math.round((affectionLevel / 5) * 100 * 0.8));
+  const trustPercent = Math.min(100, Math.round((affectionLevel / 5) * 100 * 1.2));
 
-  const processChoiceImpact = (choice: any) => {
-    let affectionChange = 0;
-    let intimacyChange = 0;
-    let trustChange = 0;
-    let traitChanges = { confidence: 0, playfulness: 0, vulnerability: 0, protectiveness: 0 };
-
-    // Analyze choice type and content to determine impact
-    if (choice.type.includes('romantic')) {
-      affectionChange = 5;
-      intimacyChange = 3;
-      traitChanges.vulnerability = 2;
-    } else if (choice.type.includes('protective')) {
-      trustChange = 4;
-      traitChanges.protectiveness = 3;
-      affectionChange = 3;
-    } else if (choice.type.includes('playful')) {
-      traitChanges.playfulness = 4;
-      affectionChange = 2;
-    } else if (choice.type.includes('confident')) {
-      traitChanges.confidence = 3;
-      affectionChange = 2;
-    }
-
-    // Add memory
-    const newMemory = {
-      event: choice.text,
-      impact: affectionChange,
-      timestamp: Date.now(),
-      emotion: affectionChange > 3 ? 'touched' : 'happy' as const
-    };
-
-    // Update relationship data
-    onRelationshipUpdate({
-      affectionLevel: Math.min(100, relationshipData.affectionLevel + affectionChange),
-      intimacyPoints: Math.min(100, relationshipData.intimacyPoints + intimacyChange),
-      trustLevel: Math.min(100, relationshipData.trustLevel + trustChange),
-      personalityTraits: {
-        confidence: Math.min(100, relationshipData.personalityTraits.confidence + traitChanges.confidence),
-        playfulness: Math.min(100, relationshipData.personalityTraits.playfulness + traitChanges.playfulness),
-        vulnerability: Math.min(100, relationshipData.personalityTraits.vulnerability + traitChanges.vulnerability),
-        protectiveness: Math.min(100, relationshipData.personalityTraits.protectiveness + traitChanges.protectiveness),
-      },
-      memoryBank: [...relationshipData.memoryBank, newMemory].slice(-50) // Keep last 50 memories
-    });
-  };
-
-  const checkProgressionUnlock = () => {
-    const { affectionLevel, intimacyPoints, trustLevel } = relationshipData;
-    let newProgression = relationshipData.romanticProgression;
-
-    if (affectionLevel >= 80 && intimacyPoints >= 70 && trustLevel >= 80) {
-      newProgression = 'soulmate';
-    } else if (affectionLevel >= 70 && intimacyPoints >= 60) {
-      newProgression = 'committed';
-    } else if (affectionLevel >= 60 && intimacyPoints >= 40) {
-      newProgression = 'dating';
-    } else if (affectionLevel >= 40 && trustLevel >= 50) {
-      newProgression = 'romantic_interest';
-    } else if (affectionLevel >= 30) {
-      newProgression = 'close_friend';
-    } else if (affectionLevel >= 15) {
-      newProgression = 'friend';
-    } else if (affectionLevel >= 5) {
-      newProgression = 'acquaintance';
-    }
-
-    if (newProgression !== relationshipData.romanticProgression) {
-      onRelationshipUpdate({ romanticProgression: newProgression });
-      return true; // Progression unlocked
-    }
-    return false;
-  };
-
-  return (
-    <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-md border border-purple-500/30 rounded-lg p-4 min-w-[280px]">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          {getProgressionIcon(relationshipData.romanticProgression)}
-          <span className="text-purple-300 font-medium">
-            {getRelationshipTitle(relationshipData.romanticProgression)}
-          </span>
-        </div>
-        <button
-          onClick={() => setShowDetails(!showDetails)}
-          className="text-purple-400 hover:text-purple-300 text-sm"
-        >
-          {showDetails ? 'Hide' : 'Details'}
-        </button>
-      </div>
-
-      <div className="space-y-2">
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-pink-300">Affection</span>
-            <span className="text-pink-300">{relationshipData.affectionLevel}%</span>
-          </div>
-          <Progress value={relationshipData.affectionLevel} className="h-2 bg-gray-700">
-            <div className="h-full bg-gradient-to-r from-pink-500 to-red-500 rounded-full transition-all duration-300" 
-                 style={{ width: `${relationshipData.affectionLevel}%` }} />
-          </Progress>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-purple-300">Intimacy</span>
-            <span className="text-purple-300">{relationshipData.intimacyPoints}%</span>
-          </div>
-          <Progress value={relationshipData.intimacyPoints} className="h-2 bg-gray-700">
-            <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-300" 
-                 style={{ width: `${relationshipData.intimacyPoints}%` }} />
-          </Progress>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-blue-300">Trust</span>
-            <span className="text-blue-300">{relationshipData.trustLevel}%</span>
-          </div>
-          <Progress value={relationshipData.trustLevel} className="h-2 bg-gray-700">
-            <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-300" 
-                 style={{ width: `${relationshipData.trustLevel}%` }} />
-          </Progress>
-        </div>
-      </div>
-
-      {showDetails && (
-        <div className="mt-4 pt-3 border-t border-purple-500/30">
-          <div className="space-y-2">
-            <div className="text-sm">
-              <span className="text-gray-300">Personality Traits:</span>
-              <div className="grid grid-cols-2 gap-1 mt-1">
-                <Badge variant="outline" className="text-xs">
-                  Confident: {relationshipData.personalityTraits.confidence}%
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  Playful: {relationshipData.personalityTraits.playfulness}%
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  Vulnerable: {relationshipData.personalityTraits.vulnerability}%
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  Protective: {relationshipData.personalityTraits.protectiveness}%
-                </Badge>
-              </div>
-            </div>
-
-            <div className="text-sm">
-              <span className="text-gray-300">Recent Memories:</span>
-              <div className="mt-1 max-h-20 overflow-y-auto">
-                {relationshipData.memoryBank.slice(-3).map((memory, index) => (
-                  <div key={index} className="text-xs text-gray-400 truncate">
-                    • {memory.event}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+  const ProgressBar = ({ value, color }: { value: number; color: string }) => (
+    <div className="w-full bg-gray-700 rounded-full h-2">
+      <div 
+        className={`h-2 rounded-full transition-all duration-300 ${color}`}
+        style={{ width: `${value}%` }}
+      />
     </div>
   );
-}
 
-// Hook for relationship system integration
-export function useRelationshipSystem() {
-  const [relationshipData, setRelationshipData] = useState<RelationshipData>({
-    affectionLevel: 0,
-    intimacyPoints: 0,
-    trustLevel: 0,
-    romanticProgression: 'stranger',
-    personalityTraits: {
-      confidence: 50,
-      playfulness: 30,
-      vulnerability: 20,
-      protectiveness: 40
-    },
-    memoryBank: [],
-    unlockedScenes: [],
-    favoriteActivities: []
-  });
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-purple-900/90 to-pink-900/90 backdrop-blur-md border border-purple-500/30 rounded-lg p-6 max-w-md w-full mx-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Heart className="w-6 h-6 text-pink-400" />
+            <div>
+              <h3 className="text-xl font-bold text-white">
+                {getRelationshipTitle(affectionLevel)}
+              </h3>
+              <p className="text-purple-300 text-sm">S-Rank Hunter</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-  const updateRelationship = (updates: Partial<RelationshipData>) => {
-    setRelationshipData(prev => ({ ...prev, ...updates }));
-  };
+        {/* Relationship Status */}
+        <div className="mb-6">
+          <p className="text-gray-300 text-sm leading-relaxed">
+            {getStatusDescription(affectionLevel)}
+          </p>
+        </div>
 
-  const processChoice = (choice: any) => {
-    // Process choice impact on relationship
-    let affectionChange = 0;
-    let intimacyChange = 0;
-    let trustChange = 0;
+        {/* Hearts Display */}
+        <div className="flex justify-center mb-6">
+          <div className="flex gap-2">
+            {Array.from({ length: 5 }, (_, i) => (
+              <span 
+                key={i}
+                className={`text-2xl transition-all duration-300 ${
+                  i < affectionLevel 
+                    ? 'filter drop-shadow-[0_0_8px_rgba(255,107,157,0.8)] scale-110' 
+                    : 'opacity-30'
+                }`}
+              >
+                {i < affectionLevel ? '❤️' : '🤍'}
+              </span>
+            ))}
+          </div>
+        </div>
 
-    // Determine impact based on choice
-    if (choice.type.includes('romantic')) {
-      affectionChange = 5;
-      intimacyChange = 3;
-    } else if (choice.type.includes('caring')) {
-      affectionChange = 3;
-      trustChange = 4;
-    } else if (choice.type.includes('playful')) {
-      affectionChange = 2;
-    }
+        {/* Relationship Stats */}
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-pink-300 flex items-center gap-1">
+                <Heart className="w-4 h-4" />
+                Affection
+              </span>
+              <span className="text-pink-300">{affectionPercent}%</span>
+            </div>
+            <ProgressBar value={affectionPercent} color="bg-gradient-to-r from-pink-500 to-red-500" />
+          </div>
 
-    updateRelationship({
-      affectionLevel: Math.min(100, relationshipData.affectionLevel + affectionChange),
-      intimacyPoints: Math.min(100, relationshipData.intimacyPoints + intimacyChange),
-      trustLevel: Math.min(100, relationshipData.trustLevel + trustChange),
-    });
-  };
+          <div>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-purple-300 flex items-center gap-1">
+                <Flame className="w-4 h-4" />
+                Intimacy
+              </span>
+              <span className="text-purple-300">{intimacyPercent}%</span>
+            </div>
+            <ProgressBar value={intimacyPercent} color="bg-gradient-to-r from-purple-500 to-pink-500" />
+          </div>
 
-  return {
-    relationshipData,
-    updateRelationship,
-    processChoice
-  };
+          <div>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-blue-300 flex items-center gap-1">
+                <Shield className="w-4 h-4" />
+                Trust
+              </span>
+              <span className="text-blue-300">{trustPercent}%</span>
+            </div>
+            <ProgressBar value={trustPercent} color="bg-gradient-to-r from-blue-500 to-cyan-500" />
+          </div>
+        </div>
+
+        {/* Relationship Milestones */}
+        {affectionLevel > 0 && (
+          <div className="mt-6 pt-4 border-t border-purple-500/20">
+            <h4 className="text-sm font-semibold text-purple-300 mb-3">Relationship Milestones</h4>
+            <div className="space-y-2 text-xs">
+              {affectionLevel >= 1 && (
+                <div className="flex items-center gap-2 text-green-400">
+                  <Star className="w-3 h-3" />
+                  <span>First meeting completed</span>
+                </div>
+              )}
+              {affectionLevel >= 2 && (
+                <div className="flex items-center gap-2 text-green-400">
+                  <Shield className="w-3 h-3" />
+                  <span>Trust established</span>
+                </div>
+              )}
+              {affectionLevel >= 3 && (
+                <div className="flex items-center gap-2 text-green-400">
+                  <Heart className="w-3 h-3" />
+                  <span>Close friendship formed</span>
+                </div>
+              )}
+              {affectionLevel >= 4 && (
+                <div className="flex items-center gap-2 text-pink-400">
+                  <Flame className="w-3 h-3" />
+                  <span>Romantic feelings awakened</span>
+                </div>
+              )}
+              {affectionLevel >= 5 && (
+                <div className="flex items-center gap-2 text-red-400">
+                  <Heart className="w-3 h-3" />
+                  <span>Deep love confession</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Action Button */}
+        <div className="mt-6 pt-4 border-t border-purple-500/20">
+          <button
+            onClick={onClose}
+            className="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300"
+          >
+            Continue Story
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

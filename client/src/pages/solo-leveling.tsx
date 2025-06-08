@@ -7,7 +7,7 @@ import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/compon
 import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import { RaidSystem } from "@/components/RaidSystem";
 import { Marketplace } from "../components/Marketplace";
-import { RelationshipSystem, useRelationshipSystem } from "@/components/RelationshipSystem";
+import { RelationshipSystem } from "@/components/RelationshipSystem";
 import { CombatSystem } from "@/components/CombatSystem";
 import { AchievementSystem, useAchievementSystem } from "@/components/AchievementSystem";
 import { StoryBranching, EnhancedChoiceButton } from "@/components/StoryBranching";
@@ -3873,14 +3873,13 @@ export default function SoloLeveling() {
               </button>
             </div>
             <RelationshipSystem
-              relationshipData={{
-                ...relationshipData,
-                affectionLevel: Math.floor(gameState.affection * 20),
-                intimacyPoints: relationshipData.intimacyPoints,
-                trustLevel: relationshipData.trustLevel
+              isVisible={true}
+              onClose={() => setShowRelationshipSystem(false)}
+              gameState={{
+                affection: gameState.affection,
+                level: gameState.level,
+                currentScene: gameState.currentScene
               }}
-              onRelationshipUpdate={updateRelationship}
-              currentScene={gameState.currentScene}
             />
           </div>
         </div>
