@@ -2521,12 +2521,34 @@ export default function SoloLeveling() {
               </div>
 
               {/* Full Screen Game Container with Overlaid UI */}
-              <div className="flex-1 relative overflow-hidden bg-gradient-to-b from-gray-900 via-black to-gray-900">
+              <div className="flex-1 relative overflow-hidden">
+                {/* AI-Generated Scene Background - Full Screen iPhone Display */}
+                {(sceneBackground || currentBackground.startsWith('data:')) && (
+                  <img 
+                    key={sceneBackground || currentBackground}
+                    src={sceneBackground || currentBackground}
+                    alt="AI Generated Scene"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ zIndex: 1 }}
+                    onLoad={() => console.log('AI scene background loaded and displayed')}
+                    onError={(e) => console.log('AI scene background failed:', e)}
+                  />
+                )}
+                
+                {/* Fallback gradient if no AI image */}
+                {!sceneBackground && !currentBackground.startsWith('data:') && (
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-b from-gray-900 via-black to-gray-900"
+                    style={{ zIndex: 1 }}
+                  />
+                )}
+                
+                {/* Dark overlay for UI readability */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" style={{ zIndex: 2 }} />
                 
 
                 
-                {/* Dark overlay for better text readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" style={{ zIndex: 2 }} />
+
                 
                 {/* Effects Layer */}
                 <div id="effects-container" className="absolute inset-0 z-20 pointer-events-none" />
