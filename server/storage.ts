@@ -352,30 +352,59 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createGameState(insertGameState: InsertGameState): Promise<GameState> {
+    const defaultStats = {
+      strength: 10,
+      agility: 10,
+      intelligence: 10,
+      vitality: 10,
+      sense: 10
+    };
+
+    const defaultSkills = [
+      {
+        id: "shadow_extraction",
+        name: "Shadow Extraction",
+        description: "Extract shadows from defeated enemies",
+        type: "ultimate" as const,
+        level: 1,
+        maxLevel: 10,
+        unlocked: true,
+        prerequisites: [],
+        effects: { shadowCapacity: 5 }
+      }
+    ];
+
     const [gameState] = await db
       .insert(gameStates)
       .values({
-        ...insertGameState,
-        stats: insertGameState.stats || {
-          strength: 10,
-          agility: 10,
-          intelligence: 10,
-          vitality: 10,
-          sense: 10
-        },
-        skills: insertGameState.skills || [
-          {
-            id: "shadow_extraction",
-            name: "Shadow Extraction",
-            description: "Extract shadows from defeated enemies",
-            type: "ultimate",
-            level: 1,
-            maxLevel: 10,
-            unlocked: true,
-            prerequisites: [],
-            effects: { shadowCapacity: 5 }
-          }
-        ]
+        sessionId: insertGameState.sessionId,
+        narration: insertGameState.narration,
+        health: insertGameState.health || 100,
+        maxHealth: insertGameState.maxHealth || 100,
+        mana: insertGameState.mana || 50,
+        maxMana: insertGameState.maxMana || 50,
+        level: insertGameState.level || 1,
+        experience: insertGameState.experience || 0,
+        statPoints: insertGameState.statPoints || 0,
+        skillPoints: insertGameState.skillPoints || 0,
+        gold: insertGameState.gold || 100,
+        affectionLevel: insertGameState.affectionLevel || 0,
+        energy: insertGameState.energy || 100,
+        maxEnergy: insertGameState.maxEnergy || 100,
+        relationshipStatus: insertGameState.relationshipStatus || "dating",
+        intimacyLevel: insertGameState.intimacyLevel || 1,
+        sharedMemories: insertGameState.sharedMemories || 0,
+        livingTogether: insertGameState.livingTogether || 0,
+        daysTogether: insertGameState.daysTogether || 1,
+        currentScene: insertGameState.currentScene || "entrance",
+        choices: insertGameState.choices || [],
+        sceneData: insertGameState.sceneData || null,
+        storyPath: insertGameState.storyPath || "entrance",
+        choiceHistory: insertGameState.choiceHistory || [],
+        storyFlags: insertGameState.storyFlags || {},
+        inventory: insertGameState.inventory || [],
+        stats: insertGameState.stats || defaultStats,
+        skills: insertGameState.skills || defaultSkills
       })
       .returning();
     return gameState;
@@ -396,33 +425,35 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Game state not found");
     }
 
-    const currentNode = STORY_NODES[gameState.storyPath];
-    if (!currentNode) {
-      throw new Error("Invalid story path");
-    }
+    // Generate scene data for visual effects
+    const sceneData = {
+      runes: Array.from({ length: 5 }, (_, i) => ({
+        x: Math.random() * 800,
+        y: Math.random() * 600,
+        isRed: Math.random() > 0.7,
+        phase: i * 0.3
+      })),
+      particles: Array.from({ length: 10 }, (_, i) => ({
+        x: Math.random() * 800,
+        y: Math.random() * 600,
+        phase: i * 0.2
+      }))
+    };
 
-    const nextPath = currentNode.leadsTo?.[choice.id] || gameState.storyPath;
-    const { node: nextNode, newFlags } = getNextStoryNode(nextPath, gameState.storyFlags, gameState.choiceHistory);
+    // Update choice history and add new choices for continued interaction
+    const newChoices = [
+      { id: "continue", icon: "💬", text: "Continue chatting with Cha Hae-In" },
+      { id: "daily_life", icon: "🏠", text: "Open Daily Life Hub" },
+      { id: "skills", icon: "⭐", text: "View Skills & Stats" }
+    ];
 
     const updated = await this.updateGameState(sessionId, {
-      narration: nextNode.narration,
-      choices: getAvailableChoices(nextNode, gameState.storyFlags, gameState.choiceHistory),
-      storyPath: nextPath,
+      narration: `You chose: ${choice.text}. Cha Hae-In responds warmly to your interaction.`,
+      choices: newChoices,
       choiceHistory: [...gameState.choiceHistory, choice.id],
-      storyFlags: newFlags,
-      sceneData: {
-        runes: Array.from({ length: 5 }, (_, i) => ({
-          x: Math.random() * 800,
-          y: Math.random() * 600,
-          isRed: Math.random() > 0.7,
-          phase: i * 0.3
-        })),
-        particles: Array.from({ length: 10 }, (_, i) => ({
-          x: Math.random() * 800,
-          y: Math.random() * 600,
-          phase: i * 0.2
-        }))
-      }
+      sceneData: sceneData,
+      experience: gameState.experience + 10,
+      affectionLevel: Math.min(100, gameState.affectionLevel + 1)
     });
 
     return updated;
