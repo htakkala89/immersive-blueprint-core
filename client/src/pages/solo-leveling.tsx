@@ -14,6 +14,8 @@ import { AchievementSystem, useAchievementSystem } from "@/components/Achievemen
 import { StoryBranching, EnhancedChoiceButton } from "@/components/StoryBranching";
 import { DungeonRaidSystem } from "@/components/DungeonRaidSystem";
 import { ShadowArmyManager } from "@/components/ShadowArmyManager";
+import { InventorySystem } from "@/components/InventorySystem";
+import { CombatTactics } from "@/components/CombatTactics";
 import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
