@@ -160,59 +160,31 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     
     lastImageGeneration = now;
     
-    // Prioritize OpenAI for character accuracy (especially Jin-Woo)
-    const isCharacterFocused = gameState.narration.toLowerCase().includes('jin-woo') || 
-                              gameState.narration.toLowerCase().includes('sung') ||
-                              gameState.storyPath === 'cover';
-    
-    if (isCharacterFocused && openai) {
-      console.log('🎯 Character-focused content - using OpenAI for accuracy');
-      const prompt = createMatureSoloLevelingPrompt(gameState);
-      const enhancedPrompt = prompt + ". Korean male protagonist with short BLACK hair, dark eyes, NOT blonde, accurate Solo Leveling character design";
-      
-      try {
-        const response = await openai.images.generate({
-          model: "dall-e-3",
-          prompt: enhancedPrompt,
-          n: 1,
-          size: "1024x1024",
-          quality: "standard",
-        });
-        
-        const imageUrl = response.data?.[0]?.url;
-        if (imageUrl) {
-          console.log('✅ OpenAI generated character-accurate image');
-          return imageUrl;
-        }
-      } catch (error) {
-        console.log('⚠️ OpenAI failed, trying NovelAI');
-      }
-    }
-    
-    // Use NovelAI for mature/romantic content
+    // Check if this is mature/romantic content
     const useMatureGenerator = isMatureContent(gameState);
+    
     if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
+      // Use NovelAI specifically for mature/romantic themes
       console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
-      const prompt = createMatureSoloLevelingPrompt(gameState);
-      const image = await generateWithNovelAI(prompt);
-      if (image) {
+      const maturePrompt = createMatureSoloLevelingPrompt(gameState);
+      const novelaiImage = await generateWithNovelAI(maturePrompt);
+      if (novelaiImage) {
         console.log('✅ NovelAI generated mature content successfully');
-        return image;
+        return novelaiImage;
       }
-      
-      console.log('⚠️ NovelAI failed, trying alternative generators');
+      console.log('⚠️ NovelAI failed, trying Google Imagen fallback');
     }
     
-    // Try Google Imagen first (good for anime/manga style)
-    const prompt = createSoloLevelingPrompt(gameState);
+    // Use Google Imagen for characters and general scenes (better anime style)
+    const generalPrompt = createSoloLevelingPrompt(gameState);
     if (process.env.GOOGLE_API_KEY) {
-      console.log('🖼️ Trying Google Imagen for Solo Leveling scene');
-      const googleImage = await generateWithGoogleImagen(prompt);
+      console.log('🎯 Using Google Imagen for Solo Leveling content');
+      const googleImage = await generateWithGoogleImagen(generalPrompt);
       if (googleImage) {
         console.log('✅ Google Imagen generated image successfully');
         return googleImage;
       }
-      console.log('⚠️ Google Imagen failed, trying OpenAI');
+      console.log('⚠️ Google Imagen failed, trying OpenAI fallback');
     }
     
     // Fallback to OpenAI if available
