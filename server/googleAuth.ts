@@ -1,5 +1,5 @@
 // Google Cloud authentication utility
-import { createHash } from 'crypto';
+import jwt from 'jsonwebtoken';
 
 interface ServiceAccountKey {
   type: string;
@@ -26,17 +26,7 @@ function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string 
     iat: now
   };
 
-  const header = { alg: 'RS256', typ: 'JWT' };
-  
-  const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  
-  const signInput = `${encodedHeader}.${encodedPayload}`;
-  
-  // Simple signature placeholder - in production would use proper crypto signing
-  const signature = createHash('sha256').update(signInput + serviceAccount.private_key_id).digest('base64url');
-  
-  return `${signInput}.${signature}`;
+  return jwt.sign(payload, serviceAccount.private_key, { algorithm: 'RS256' });
 }
 
 // Get OAuth access token from Google
