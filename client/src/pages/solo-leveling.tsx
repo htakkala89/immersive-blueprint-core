@@ -1561,7 +1561,12 @@ export default function SoloLeveling() {
         const data = await response.json();
         if (data.imageUrl) {
           // Set the generated image as background
-          setCurrentBackground(`url("${data.imageUrl}")`);
+          console.log('Generated image received:', {
+            type: data.imageUrl.startsWith('data:') ? 'base64' : 'url',
+            length: data.imageUrl.length,
+            preview: data.imageUrl.substring(0, 50) + '...'
+          });
+          setCurrentBackground(data.imageUrl);
         } else {
           // Fallback to gradient if no image generated
           const fallbackGradients = [
@@ -1866,15 +1871,25 @@ export default function SoloLeveling() {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       {/* Fullscreen background */}
-      <div 
-        className="fixed inset-0 bg-cover bg-center transition-all duration-700 transform scale-110"
-        style={{ 
-          background: currentBackground,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'blur(15px) brightness(0.4)'
-        }}
-      />
+      {currentBackground.startsWith('data:') ? (
+        <img 
+          src={currentBackground}
+          alt="Generated scene"
+          className="fixed inset-0 w-full h-full object-cover transition-all duration-700 transform scale-110"
+          style={{ filter: 'blur(15px) brightness(0.4)' }}
+        />
+      ) : (
+        <div 
+          className="fixed inset-0 transition-all duration-700 transform scale-110"
+          style={{ 
+            backgroundImage: currentBackground,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            filter: 'blur(15px) brightness(0.4)'
+          }}
+        />
+      )}
       
       {/* iOS Device Frame */}
       <div className="relative w-[390px] h-[844px] bg-gray-800 bg-opacity-20 rounded-[40px] p-3 shadow-2xl border border-white border-opacity-10">
