@@ -39,6 +39,7 @@ export default function Game() {
 
   // Handle raid victory rewards
   const handleRaidVictory = (rewards: { gold: number; exp: number; affection: number }) => {
+    if (!gameState) return;
     const updatedState = {
       gold: gameState.gold + rewards.gold,
       experience: gameState.experience + rewards.exp,
@@ -50,6 +51,7 @@ export default function Game() {
 
   // Handle marketplace purchases
   const handleMarketplacePurchase = (item: any, quantity: number) => {
+    if (!gameState) return;
     const totalCost = item.price * quantity;
     if (gameState.gold >= totalCost) {
       const updatedState = {
@@ -62,6 +64,7 @@ export default function Game() {
 
   // Handle special activity selections
   const handleSpecialChoice = (activityId: string) => {
+    if (!gameState) return;
     switch (activityId) {
       case 'solo_raid':
       case 'joint_raid':
@@ -73,7 +76,6 @@ export default function Game() {
       case 'propose_living_together':
         if (gameState.affectionLevel >= 80) {
           saveProgress({ 
-            livingTogether: true,
             affectionLevel: gameState.affectionLevel + 20 
           });
         }
@@ -176,6 +178,25 @@ export default function Game() {
         items={gameState?.inventory || []}
         isVisible={showInventory}
         onClose={() => setShowInventory(false)}
+      />
+
+      {/* Raid System */}
+      <RaidSystem
+        isVisible={showRaidSystem}
+        onClose={() => setShowRaidSystem(false)}
+        onVictory={handleRaidVictory}
+        playerLevel={gameState?.level || 1}
+        affectionLevel={gameState?.affectionLevel || 0}
+      />
+
+      {/* Marketplace */}
+      <Marketplace
+        isVisible={showMarketplace}
+        onClose={() => setShowMarketplace(false)}
+        onPurchase={handleMarketplacePurchase}
+        playerGold={gameState?.gold || 0}
+        playerLevel={gameState?.level || 1}
+        affectionLevel={gameState?.affectionLevel || 0}
       />
     </div>
   );
