@@ -102,10 +102,63 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
 }
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
-  // Google Imagen is not currently available through Google AI Studio API
-  // Falling back to OpenAI for reliable image generation
-  console.log('Google Imagen not available, using OpenAI for character generation');
-  return null;
+  try {
+    if (!process.env.GOOGLE_IMAGEN_API_KEY) {
+      console.log('Google Imagen API key not available');
+      return null;
+    }
+
+    const apiKey = process.env.GOOGLE_IMAGEN_API_KEY;
+    
+    // Try Google AI Studio endpoint for image generation
+    const endpoints = [
+      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-fast-generate-001:generateImage?key=${apiKey}`
+    ];
+    
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt: {
+              text: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style"
+            },
+            safetySettings: [{
+              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+              threshold: "BLOCK_ONLY_HIGH"
+            }],
+            personGeneration: "ALLOW_ADULT"
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const imageData = data.generatedImages?.[0]?.bytesBase64Encoded || data.candidates?.[0]?.image?.bytesBase64Encoded;
+          
+          if (imageData) {
+            console.log('✅ Google Imagen generated image successfully');
+            return `data:image/png;base64,${imageData}`;
+          }
+        } else {
+          const errorText = await response.text();
+          console.log(`Endpoint ${endpoint} failed:`, response.status, errorText);
+        }
+      } catch (endpointError) {
+        console.log(`Endpoint ${endpoint} error:`, endpointError);
+      }
+    }
+    
+    console.log('All Google Imagen endpoints failed, falling back to OpenAI');
+    return null;
+  } catch (error) {
+    console.error('Google Imagen generation error:', error);
+    return null;
+  }
 }
 
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
