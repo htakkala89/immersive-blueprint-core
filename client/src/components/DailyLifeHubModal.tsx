@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { useVoice } from '../hooks/useVoice';
 
 interface PlayerStats {
   gold: number;
@@ -173,7 +174,30 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
   return baseActivities.filter(activity => activity.available);
 };
 
+const getActivityDialogue = (activity: Activity): string => {
+  const dialogues: Record<string, string> = {
+    morning_coffee: "Good morning, Jin-Woo! Want to start the day with some coffee together?",
+    lunch_date: "Let's have lunch together! I found this nice place we could try.",
+    evening_walk: "The evening is perfect for a walk. Care to join me?",
+    training_together: "Want to train together? I could use a sparring partner.",
+    shopping_trip: "I need to pick up some things. Want to come shopping with me?",
+    movie_night: "There's a good movie playing tonight. Interested in watching it together?",
+    solo_raid: "I'm heading to clear a dungeon. This should be quick work.",
+    joint_raid: "Let's take on this dangerous gate together as a team!",
+    marketplace_visit: "The marketplace has some interesting items today.",
+    propose_living_together: "Jin-Woo, I've been thinking... maybe we could live together?",
+    cuddle_together: "Come here, let's just relax together for a while.",
+    shower_together: "Want to join me? The water's nice and warm.",
+    make_love: "I love you so much, Jin-Woo. Let me show you how much.",
+    intimate_massage: "You look tense. Let me help you relax with a massage.",
+    intimate_bath: "I've prepared a nice warm bath for us both."
+  };
+  
+  return dialogues[activity.id] || "Let's spend some quality time together!";
+};
+
 export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImageGenerated, gameState }: DailyLifeHubModalProps) {
+  const { playVoice } = useVoice();
   const [currentTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'morning';
@@ -235,6 +259,14 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
       } catch (error) {
         console.error('Error generating activity image:', error);
       }
+    }
+
+    // Generate activity-specific dialogue
+    const activityDialogue = getActivityDialogue(activity);
+    
+    // Play voice for activity dialogue
+    if (activityDialogue) {
+      setTimeout(() => playVoice(activityDialogue, 'cha-hae-in'), 500);
     }
 
     // Pass activity context to enable continuous interaction

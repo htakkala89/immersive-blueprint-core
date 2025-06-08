@@ -22,7 +22,13 @@ class VoiceService {
   private async generateVoice(text: string, voiceId: string): Promise<Buffer | null> {
     try {
       if (!this.config.apiKey || !voiceId) {
-        console.log('ElevenLabs API key or voice ID missing');
+        console.log('⚠️ ElevenLabs API configuration incomplete - voice disabled');
+        return null;
+      }
+
+      // Clean and validate text
+      const cleanText = this.cleanTextForVoice(text);
+      if (cleanText.length < 3) {
         return null;
       }
 
@@ -34,26 +40,28 @@ class VoiceService {
           'xi-api-key': this.config.apiKey
         },
         body: JSON.stringify({
-          text: text,
+          text: cleanText,
           model_id: 'eleven_monolingual_v1',
           voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5,
-            style: 0.5,
+            stability: 0.6,
+            similarity_boost: 0.8,
+            style: 0.3,
             use_speaker_boost: true
           }
         })
       });
 
       if (!response.ok) {
-        console.error('ElevenLabs API error:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error(`🚫 ElevenLabs API Error ${response.status}:`, errorText);
         return null;
       }
 
       const audioBuffer = await response.buffer();
+      console.log('✅ Voice generated successfully');
       return audioBuffer;
     } catch (error) {
-      console.error('Voice generation error:', error);
+      console.error('🔊 Voice generation failed:', error.message);
       return null;
     }
   }
