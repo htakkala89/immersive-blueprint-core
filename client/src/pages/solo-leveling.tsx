@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { SkillTree } from "@/components/SkillTree";
 import { useCharacterProgression } from "@/hooks/useCharacterProgression";
+import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/components/MiniGames";
 import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
@@ -123,6 +124,7 @@ export default function SoloLeveling() {
   const [inputMode, setInputMode] = useState<'action' | 'speak'>('action');
   const [showInventory, setShowInventory] = useState(false);
   const [activeMiniGame, setActiveMiniGame] = useState<string | null>(null);
+  const [pendingChoice, setPendingChoice] = useState<any>(null);
   const [showChatTutorial, setShowChatTutorial] = useState(false);
   const [currentChoiceIndex, setCurrentChoiceIndex] = useState(0);
   const [showSkillTree, setShowSkillTree] = useState(false);
@@ -1907,12 +1909,194 @@ export default function SoloLeveling() {
     }
   };
 
+  const isCombatChoice = (choice: any, scene: string, narration: string) => {
+    const combatKeywords = [
+      'attack', 'fight', 'battle', 'strike', 'assault', 'combat', 'defeat', 'kill',
+      'shadow_attack', 'sword_strike', 'magic_blast', 'combined_attack', 'finisher',
+      'boss_fight', 'dragon_fight', 'monster_battle', 'final_attack', 'ultimate_strike',
+      'engage', 'charge', 'slash', 'pierce', 'crush', 'destroy', 'eliminate'
+    ];
+    
+    const combatScenes = [
+      'BOSS_BATTLE', 'DRAGON_FIGHT', 'MONSTER_ENCOUNTER', 'COMBAT_SCENE',
+      'BATTLE_START', 'ENEMY_ENCOUNTER', 'FINAL_BOSS', 'DUNGEON_BOSS'
+    ];
+    
+    const combatNarration = [
+      'monster', 'enemy', 'boss', 'dragon', 'creature', 'beast', 'demon',
+      'attack', 'battle', 'fight', 'combat', 'strike', 'weapon', 'sword'
+    ];
+    
+    return combatKeywords.some(keyword => 
+      choice.type.includes(keyword) || choice.text.toLowerCase().includes(keyword)
+    ) || combatScenes.includes(scene) ||
+    combatNarration.some(keyword => narration.toLowerCase().includes(keyword));
+  };
+
+  const triggerCombatMiniGame = (choice: any) => {
+    setPendingChoice(choice);
+    
+    // Determine mini-game type based on choice
+    if (choice.type.includes('boss') || choice.type.includes('dragon') || choice.type.includes('final')) {
+      setActiveMiniGame('dragon');
+    } else if (choice.type.includes('magic') || choice.type.includes('rune') || choice.type.includes('spell')) {
+      setActiveMiniGame('runes');
+    } else {
+      setActiveMiniGame('lockpicking');
+    }
+  };
+
+  const handleMiniGameComplete = (success: boolean) => {
+    setActiveMiniGame(null);
+    
+    if (pendingChoice) {
+      // Process the original choice with success/failure modifier
+      const modifiedChoice = {
+        ...pendingChoice,
+        success: success
+      };
+      
+      // Add combat result message
+      if (success) {
+        addChatMessage('system', '🎯 Combat successful! Your skills prevailed.');
+        createShadowSlashEffect();
+        addScreenShake();
+      } else {
+        addChatMessage('system', '💥 Combat challenging but you managed to survive.');
+      }
+      
+      // Process the choice normally
+      processChoice(modifiedChoice);
+      setPendingChoice(null);
+    }
+  };
+
+  const processChoice = (choice: any) => {
+    const currentStory = story[gameState.currentScene];
+    
+    // Universal gate navigation - if choice contains "gate" or "mission", go to gate
+    const isGateChoice = choice.type.includes('gate') || choice.type.includes('mission') || 
+                        choice.text.toLowerCase().includes('gate') || choice.text.toLowerCase().includes('mission');
+    
+    if (isGateChoice && !currentStory?.leadsTo?.[choice.type]) {
+      const nextStory = story['GATE_ENTRANCE'];
+      if (nextStory) {
+        setGameState(prev => ({ ...prev, currentScene: 'GATE_ENTRANCE' }));
+        addChatMessage('player', choice.text);
+        nextStory.chat.forEach(msg => {
+          addChatMessage(msg.sender, msg.text);
+        });
+        generateSceneImage(nextStory.prompt);
+        return;
+      }
+    }
+    
+    if (currentStory?.leadsTo?.[choice.type]) {
+      const nextScene = currentStory.leadsTo[choice.type];
+      const nextStory = story[nextScene];
+      
+      if (nextStory) {
+        setGameState(prev => ({ ...prev, currentScene: nextScene }));
+        addChatMessage('player', choice.text);
+        
+        // Add story messages
+        nextStory.chat.forEach(msg => {
+          addChatMessage(msg.sender, msg.text);
+        });
+        
+        // Generate images for significant actions
+        const significantActions = [
+          'enter_dungeon', 'boss_fight', 'new_location', 'major_battle', 
+          'confession', 'kiss', 'date', 'travel', 'guild_meeting',
+          'awakening', 'power_up', 'transformation', 'death', 'victory'
+        ];
+        
+        const isSignificantAction = significantActions.some(action => 
+          choice.type.includes(action) || nextScene.toLowerCase().includes(action)
+        );
+        
+        if (isSignificantAction) {
+          generateSceneImage(nextStory.prompt);
+        }
+
+        // Special effects for certain actions
+        if (choice.type === 'summon' || choice.type === 'shadow_attack' || choice.type === 'extract_shadow') {
+          createShadowSlashEffect();
+          addScreenShake();
+        }
+
+        if (choice.type === 'confess' || choice.type === 'kiss') {
+          // Create romantic particle effects
+          setTimeout(() => {
+            const container = document.querySelector('#scene-container');
+            if (container) {
+              for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                  position: absolute;
+                  width: 4px;
+                  height: 4px;
+                  background: #ff69b4;
+                  border-radius: 50%;
+                  left: ${Math.random() * 100}%;
+                  top: ${Math.random() * 100}%;
+                  animation: float-up 2s ease-out forwards;
+                  pointer-events: none;
+                  box-shadow: 0 0 6px #ff69b4;
+                `;
+                container.appendChild(particle);
+                setTimeout(() => particle.remove(), 2000);
+              }
+            }
+          }, 500);
+        }
+      }
+    }
+
+    // Handle affection changes with visual feedback
+    const affectionGain = getAffectionGain(choice.type);
+    if (affectionGain > 0) {
+      setGameState(prev => ({ 
+        ...prev, 
+        affection: Math.min(5, prev.affection + affectionGain) 
+      }));
+      
+      // Show affection gain effect
+      setTimeout(() => {
+        const container = document.querySelector('#scene-container');
+        if (container) {
+          const heart = document.createElement('div');
+          heart.style.cssText = `
+            position: absolute;
+            font-size: 24px;
+            left: 50%;
+            top: 20%;
+            transform: translateX(-50%);
+            animation: float-up 2s ease-out forwards;
+            pointer-events: none;
+            z-index: 1000;
+          `;
+          heart.textContent = '💕';
+          container.appendChild(heart);
+          setTimeout(() => heart.remove(), 2000);
+        }
+      }, 300);
+    }
+  };
+
   const handleChoice = (choice: any) => {
     const currentStory = story[gameState.currentScene];
     console.log('Choice clicked:', choice);
     console.log('Current scene:', gameState.currentScene);
     console.log('Current story leadsTo:', currentStory?.leadsTo);
     console.log('Looking for choice type:', choice.type);
+    
+    // Check if this is a combat choice and trigger mini-game
+    if (isCombatChoice(choice, gameState.currentScene, currentStory?.narration || '')) {
+      console.log('Combat detected! Triggering mini-game...');
+      triggerCombatMiniGame(choice);
+      return;
+    }
     
     // Universal gate navigation - if choice contains "gate" or "mission", go to gate
     const isGateChoice = choice.type.includes('gate') || choice.type.includes('mission') || 
