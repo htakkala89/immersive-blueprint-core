@@ -2020,7 +2020,7 @@ export default function SoloLeveling() {
           {!gameStarted && (
             <div className="absolute inset-0 z-50 flex flex-col justify-end transition-opacity duration-1000">
               {/* AI-Generated Jin-Woo Cover */}
-              {currentBackground.startsWith('data:') ? (
+              {(currentBackground.startsWith('data:') || currentBackground.startsWith('http')) ? (
                 <img 
                   src={currentBackground}
                   alt="Jin-Woo Solo Leveling Cover"
