@@ -2195,8 +2195,8 @@ export default function SoloLeveling() {
                   {chatPinned ? '📌' : '💬'}
                 </button>
 
-                {/* Overlay Messages - Always visible compact style */}
-                <div className="absolute top-28 left-3 right-3 z-30">
+                {/* Overlay Messages - Toggleable compact style */}
+                <div className={`absolute top-28 left-3 right-3 z-30 transition-opacity duration-300 ${chatPinned ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   {/* Story Narration - Compact Overlay */}
                   {currentStory && (
                     <div className="mb-2 p-3 rounded-2xl bg-black/70 backdrop-blur-md border border-white/10">
@@ -2280,9 +2280,13 @@ export default function SoloLeveling() {
                     </div>
                   </div>
 
+                </div>
+
+                {/* Actions Panel - Always Visible */}
+                <div className="absolute bottom-20 left-0 right-0 z-35">
                   {/* Choices Section - Apple-style Carousel */}
                   {currentStory?.choices && currentStory.choices.length > 0 && (
-                    <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4" style={{ height: '160px' }}>
+                    <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4 mx-3 rounded-t-2xl" style={{ height: '160px' }}>
                       <div className="text-sm text-white font-medium mb-4 flex items-center justify-between">
                         <span>Choose your action</span>
                         <div className="bg-black/20 px-3 py-1 rounded-full text-xs font-mono text-white/80">
