@@ -1369,6 +1369,11 @@ export default function SoloLeveling() {
     }
   }, [chatMessages]);
 
+  // Reset choice index when story changes to prevent out-of-bounds errors
+  useEffect(() => {
+    setCurrentChoiceIndex(0); // Always reset to first choice when scene changes
+  }, [gameState.currentScene]);
+
   // Update fade effects every 5 seconds for immersion
   useEffect(() => {
     const interval = setInterval(() => {
@@ -1961,9 +1966,9 @@ export default function SoloLeveling() {
                               </div>
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
                                 <div className="text-white text-base font-semibold mb-1 leading-tight">
-                                  {currentStory.choices[currentChoiceIndex].text}
+                                  {currentStory.choices[currentChoiceIndex]?.text || 'Choose an action'}
                                 </div>
-                                {currentStory.choices[currentChoiceIndex].detail && (
+                                {currentStory.choices[currentChoiceIndex]?.detail && (
                                   <div className="text-white/80 text-sm leading-relaxed font-light">
                                     {currentStory.choices[currentChoiceIndex].detail}
                                   </div>
