@@ -195,6 +195,8 @@ export default function SoloLeveling() {
   const [showMemoryLane, setShowMemoryLane] = useState(false);
   const [showAffectionIncrease, setShowAffectionIncrease] = useState(false);
   const [affectionIncreaseAmount, setAffectionIncreaseAmount] = useState(0);
+  const [showAffectionDecrease, setShowAffectionDecrease] = useState(false);
+  const [affectionDecreaseAmount, setAffectionDecreaseAmount] = useState(0);
   const [showCombatSystem, setShowCombatSystem] = useState(false);
   const [showAchievementSystem, setShowAchievementSystem] = useState(false);
   const [currentCombatEnemy, setCurrentCombatEnemy] = useState(null);
@@ -2202,6 +2204,19 @@ export default function SoloLeveling() {
     }
   };
 
+  const showAffectionDecreaseIndicator = (newLevel: number, previousLevel: number) => {
+    const decrease = previousLevel - newLevel;
+    if (decrease > 0) {
+      setAffectionDecreaseAmount(decrease);
+      setShowAffectionDecrease(true);
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        setShowAffectionDecrease(false);
+      }, 3000);
+    }
+  };
+
   const createHeartEffect = () => {
     const hearts = document.querySelectorAll('.heart');
     const targetHeart = hearts[gameState.affection - 1] as HTMLElement; // -1 because we just incremented affection
@@ -2542,23 +2557,60 @@ export default function SoloLeveling() {
           .catch(err => console.log('Image generation skipped:', err.message));
         }
         
-        // Check for affection increase
-        const affectionKeywords = [
+        // Check for affection changes based on user behavior and Cha Hae-In's response
+        const affectionIncreaseKeywords = [
           'blush', 'smile', 'happy', 'glad', 'warm', 'comfort', 'drawn', 
           'heart', 'feel', 'love', 'care', 'special', 'close', 'trust'
         ];
         
+        const affectionDecreaseKeywords = [
+          'upset', 'hurt', 'disappointed', 'angry', 'annoyed', 'frustrated',
+          'uncomfortable', 'offended', 'bothered', 'disturbed', 'concerned',
+          'worried', 'sad', 'distance', 'cold', 'withdrawn', 'hesitant'
+        ];
+        
+        // Check user message for rude/mean behavior
+        const userRudeBehavior = [
+          'shut up', 'stupid', 'dumb', 'idiot', 'hate you', 'annoying',
+          'boring', 'whatever', 'don\'t care', 'leave me alone', 'go away',
+          'ugly', 'worthless', 'pathetic', 'loser', 'weak', 'useless'
+        ];
+        
+        const userMessageLower = message.toLowerCase();
         const responseText = data.response.toLowerCase();
-        const hasAffectionTrigger = affectionKeywords.some(keyword => 
+        
+        const hasRudeBehavior = userRudeBehavior.some(keyword => 
+          userMessageLower.includes(keyword)
+        );
+        
+        const hasAffectionIncrease = affectionIncreaseKeywords.some(keyword => 
           responseText.includes(keyword)
         );
         
-        if (hasAffectionTrigger && gameState.affection < 5) {
+        const hasAffectionDecrease = affectionDecreaseKeywords.some(keyword => 
+          responseText.includes(keyword)
+        ) || hasRudeBehavior;
+        
+        // Apply affection changes with balanced difficulty
+        if (hasAffectionDecrease && gameState.affection > 0) {
+          const previousAffection = gameState.affection;
+          setGameState(prev => ({ 
+            ...prev, 
+            affection: Math.max(0, prev.affection - 1) 
+          }));
+          setTimeout(() => {
+            showAffectionDecreaseIndicator(Math.max(0, previousAffection - 1), previousAffection);
+          }, 500);
+        } else if (hasAffectionIncrease && gameState.affection < 5) {
+          const previousAffection = gameState.affection;
           setGameState(prev => ({ 
             ...prev, 
             affection: Math.min(5, prev.affection + 1) 
           }));
-          setTimeout(() => createHeartEffect(), 500);
+          setTimeout(() => {
+            createHeartEffect();
+            showAffectionIncreaseIndicator(Math.min(5, previousAffection + 1), previousAffection);
+          }, 500);
         }
       }
     } catch (error) {
@@ -2877,13 +2929,16 @@ export default function SoloLeveling() {
     } else {
       // Action mode - detect intimate actions and explicit image requests
       const intimateKeywords = [
+        // Direct intimate requests
+        'lets make love', 'let\'s make love', 'make love', 'have sex', 'fuck', 'fucking',
+        'fuck me', 'fuck her', 'sex', 'sexual', 'intimate', 'intimacy',
         // Explicit requests for mature images
         'show me', 'generate', 'create image', 'make image', 'picture of', 'scene of',
         // Physical intimate actions
         'grab her hair', 'from behind', 'doggystyle', 'doggy style', 'position', 'missionary', 
         'on top', 'underneath', 'legs', 'kiss her neck', 'touch her', 'caress', 'massage',
-        'undress', 'clothes off', 'naked', 'bare', 'skin', 'breast', 'thigh', 'intimate',
-        'make love', 'passionate', 'thrust', 'moan', 'whisper', 'gentle', 'rough',
+        'undress', 'clothes off', 'naked', 'bare', 'skin', 'breast', 'thigh',
+        'passionate', 'thrust', 'moan', 'whisper', 'gentle', 'rough',
         'bedroom', 'bed', 'sheet', 'pillow', 'cuddle', 'embrace', 'hold close',
         // Explicit content requests
         'nude', 'strip', 'sexy', 'hot', 'sensual', 'erotic', 'aroused', 'desire',
@@ -3922,6 +3977,23 @@ export default function SoloLeveling() {
             previousChoices: storyFlags
           }}
         />
+      )}
+
+      {/* Affection Increase Indicator */}
+      {showAffectionIncrease && (
+        <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
+          <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-6 py-3 rounded-full shadow-lg animate-bounce flex items-center gap-2">
+            <span className="text-2xl">💖</span>
+            <span className="font-bold">Affection +{affectionIncreaseAmount}</span>
+            <div className="flex gap-1">
+              {Array.from({ length: 5 }, (_, i) => (
+                <span key={i} className="text-lg">
+                  {i < gameState.affection ? '❤️' : '🤍'}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
