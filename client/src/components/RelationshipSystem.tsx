@@ -174,8 +174,20 @@ export function RelationshipSystem({ isVisible, onClose, gameState }: Relationsh
           </div>
         )}
 
-        {/* Action Button */}
-        <div className="mt-6 pt-4 border-t border-purple-500/20">
+        {/* Action Buttons */}
+        <div className="mt-6 pt-4 border-t border-purple-500/20 space-y-3">
+          {affectionLevel >= 1 && (
+            <button
+              onClick={() => {
+                // Open Memory Lane - we'll need to pass this up to parent
+                window.dispatchEvent(new CustomEvent('openMemoryLane'));
+              }}
+              className="w-full py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <span>📸</span>
+              Memory Lane
+            </button>
+          )}
           <button
             onClick={onClose}
             className="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300"

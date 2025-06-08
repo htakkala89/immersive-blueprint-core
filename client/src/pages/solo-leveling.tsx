@@ -193,6 +193,8 @@ export default function SoloLeveling() {
   const [showRaidSystem, setShowRaidSystem] = useState(false);
   const [showRelationshipSystem, setShowRelationshipSystem] = useState(false);
   const [showMemoryLane, setShowMemoryLane] = useState(false);
+  const [showAffectionIncrease, setShowAffectionIncrease] = useState(false);
+  const [affectionIncreaseAmount, setAffectionIncreaseAmount] = useState(0);
   const [showCombatSystem, setShowCombatSystem] = useState(false);
   const [showAchievementSystem, setShowAchievementSystem] = useState(false);
   const [currentCombatEnemy, setCurrentCombatEnemy] = useState(null);
@@ -2187,6 +2189,19 @@ export default function SoloLeveling() {
     }, 300);
   };
 
+  const showAffectionIncreaseIndicator = (newLevel: number, previousLevel: number) => {
+    const increase = newLevel - previousLevel;
+    if (increase > 0) {
+      setAffectionIncreaseAmount(increase);
+      setShowAffectionIncrease(true);
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        setShowAffectionIncrease(false);
+      }, 3000);
+    }
+  };
+
   const createHeartEffect = () => {
     const hearts = document.querySelectorAll('.heart');
     const targetHeart = hearts[gameState.affection - 1] as HTMLElement; // -1 because we just incremented affection
@@ -3275,16 +3290,7 @@ export default function SoloLeveling() {
                     💖
                   </button>
 
-                  {/* Memory Lane Button - Available after first meeting */}
-                  {gameState.affection >= 1 && (
-                    <button 
-                      onClick={() => setShowMemoryLane(true)}
-                      className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-purple-500/50 transition-all border border-purple-400/30 shadow-lg"
-                      title="Memory Lane - Relationship Timeline"
-                    >
-                      📸
-                    </button>
-                  )}
+
 
                   {/* Help Button */}
                   <button 
