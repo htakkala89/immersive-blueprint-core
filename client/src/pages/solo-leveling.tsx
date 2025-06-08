@@ -1297,9 +1297,10 @@ export default function SoloLeveling() {
       ],
       choices: [
         { text: "Share your deepest thoughts", detail: "Vulnerability", type: 'deepest_thoughts' },
-        { text: "Ask about her dreams", detail: "Learn about her", type: 'her_dreams' }
+        { text: "Ask about her dreams", detail: "Learn about her", type: 'her_dreams' },
+        { text: "Suggest an adventure together", detail: "Action and bonding", type: 'adventure_together' }
       ],
-      leadsTo: { deepest_thoughts: 'DEEP_SHARING', her_dreams: 'DREAM_SHARING' }
+      leadsTo: { deepest_thoughts: 'DEEP_SHARING', her_dreams: 'DREAM_SHARING', adventure_together: 'GATE_ENTRANCE' }
     },
     'FRIENDSHIP_BUILDING': {
       prompt: "Building a strong friendship foundation. Platonic but meaningful connection, anime style.",
