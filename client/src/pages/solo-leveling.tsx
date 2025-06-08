@@ -36,7 +36,7 @@ export default function SoloLeveling() {
   const [gameStarted, setGameStarted] = useState(false);
   const [currentBackground, setCurrentBackground] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [chatMessages, setChatMessages] = useState<Array<{ sender: string; text: string; id: number }>>([]);
+  const [chatMessages, setChatMessages] = useState<Array<{ sender: string; text: string; id: number; timestamp: number }>>([]);
   const [userInput, setUserInput] = useState('');
   const [inputMode, setInputMode] = useState<'action' | 'speak'>('action');
   const [showInventory, setShowInventory] = useState(false);
@@ -236,6 +236,14 @@ export default function SoloLeveling() {
     }
   }, [chatMessages]);
 
+  // Update fade effects every 5 seconds for immersion
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChatMessages(prev => [...prev]); // Force re-render to update fade effects
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Smooth scroll to bottom for better UX
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -265,10 +273,24 @@ export default function SoloLeveling() {
     const newMessage = {
       sender,
       text,
-      id: Date.now() + Math.random()
+      id: Date.now() + Math.random(),
+      timestamp: Date.now()
     };
     setChatMessages(prev => [...prev, newMessage]);
     scrollToBottom();
+  };
+
+  // Calculate message opacity for fade effect
+  const getMessageOpacity = (timestamp: number) => {
+    const age = Date.now() - timestamp;
+    const fadeStart = 30000; // Start fading after 30 seconds
+    const fadeComplete = 60000; // Completely faded after 60 seconds
+    
+    if (age < fadeStart) return 1;
+    if (age > fadeComplete) return 0.15;
+    
+    const fadeProgress = (age - fadeStart) / (fadeComplete - fadeStart);
+    return Math.max(0.15, 1 - (fadeProgress * 0.85));
   };
 
   const createShadowSlashEffect = () => {
@@ -603,40 +625,44 @@ export default function SoloLeveling() {
                         </div>
                       )}
 
-                      {/* Chat Messages */}
-                      {chatMessages.map(msg => (
-                        <div 
-                          key={msg.id}
-                          className={`mb-3 p-3 rounded-xl max-w-[90%] backdrop-blur-md ${
-                            msg.sender === 'player' 
-                              ? 'bg-purple-900/80 border border-purple-400/60 ml-auto' 
-                              : msg.sender === 'Cha Hae-In'
-                              ? 'bg-pink-900/80 border border-pink-400/60'
-                              : 'bg-gray-800/80 border border-purple-400/40'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 mb-1 text-xs opacity-90 font-semibold">
-                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+                      {/* Chat Messages with Fade Effect */}
+                      {chatMessages.map(msg => {
+                        const opacity = getMessageOpacity(msg.timestamp);
+                        return (
+                          <div 
+                            key={msg.id}
+                            className={`mb-3 p-3 rounded-xl max-w-[90%] backdrop-blur-md transition-opacity duration-1000 ${
                               msg.sender === 'player' 
-                                ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
+                                ? 'bg-purple-900/80 border border-purple-400/60 ml-auto' 
                                 : msg.sender === 'Cha Hae-In'
-                                ? 'bg-gradient-to-r from-pink-600 to-pink-700'
-                                : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
-                            }`}>
-                              {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
+                                ? 'bg-pink-900/80 border border-pink-400/60'
+                                : 'bg-gray-800/80 border border-purple-400/40'
+                            }`}
+                            style={{ opacity }}
+                          >
+                            <div className="flex items-center gap-2 mb-1 text-xs opacity-90 font-semibold">
+                              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+                                msg.sender === 'player' 
+                                  ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
+                                  : msg.sender === 'Cha Hae-In'
+                                  ? 'bg-gradient-to-r from-pink-600 to-pink-700'
+                                  : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
+                              }`}>
+                                {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
+                              </div>
+                              <span className="text-white">{msg.sender}</span>
                             </div>
-                            <span className="text-white">{msg.sender}</span>
+                            <div className="text-gray-100 text-sm leading-relaxed">{msg.text}</div>
                           </div>
-                          <div className="text-gray-100 text-sm leading-relaxed">{msg.text}</div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     {/* Choices Section - Bottom Overlay */}
                     {currentStory?.choices && (
-                      <div className="p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40">
+                      <div className="p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40 flex-shrink-0">
                         <div className="text-xs text-white/80 font-semibold mb-2">Choose your action:</div>
-                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                        <div className="space-y-2 max-h-40 overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-purple-500/30">
                           {currentStory.choices.map((choice, index) => (
                             <button
                               key={index}
@@ -647,9 +673,9 @@ export default function SoloLeveling() {
                                 ⚔️
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="text-white text-sm font-semibold truncate">{choice.text}</div>
+                                <div className="text-white text-sm font-semibold">{choice.text}</div>
                                 {choice.detail && (
-                                  <div className="text-white/80 text-xs truncate">{choice.detail}</div>
+                                  <div className="text-white/80 text-xs mt-1">{choice.detail}</div>
                                 )}
                               </div>
                             </button>
