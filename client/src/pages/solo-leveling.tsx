@@ -2008,23 +2008,7 @@ export default function SoloLeveling() {
                   }}
                 />
                 
-                {/* Debug overlay to show background status */}
-                {sceneBackground && (
-                  <div className="absolute top-4 right-4 bg-green-500 text-white px-2 py-1 rounded text-xs z-50">
-                    AI Background Active ({sceneBackground.length} chars)
-                  </div>
-                )}
-                
-                {/* Test image element to verify base64 works */}
-                {sceneBackground && (
-                  <img 
-                    src={sceneBackground} 
-                    alt="AI Generated Scene" 
-                    className="absolute top-16 right-4 w-24 h-24 object-cover border-2 border-white z-50"
-                    onLoad={() => console.log('Test image loaded successfully')}
-                    onError={() => console.log('Test image failed to load')}
-                  />
-                )}
+
                 
                 {/* Dark overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" style={{ zIndex: 2 }} />
