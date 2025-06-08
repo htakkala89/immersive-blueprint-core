@@ -2219,9 +2219,9 @@ export default function SoloLeveling() {
                 </button>
 
                 {/* Combined Messages Container - Full Screen Coverage */}
-                <div className={`absolute top-16 left-0 right-0 bottom-36 z-30 flex flex-col transition-opacity duration-300 ${(chatPinned || autoMessageVisible) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`absolute top-16 left-0 right-0 bottom-52 z-30 flex flex-col transition-opacity duration-300 ${(chatPinned || autoMessageVisible) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   <div className="flex-1 min-h-0 overflow-hidden">
-                    <div ref={chatContainerRef} className="h-full p-3 pb-6 overflow-y-auto chat-container space-y-3">
+                    <div ref={chatContainerRef} className="h-full p-3 pb-8 overflow-y-auto chat-container space-y-3">
                       
                       {/* Story Narration - Game Master Message */}
                       {currentStory && (
@@ -2309,7 +2309,7 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Actions Panel - Always Visible */}
-                <div className="absolute bottom-20 left-0 right-0 z-40">
+<div className="absolute bottom-20 left-0 right-0 z-40" style={{ marginTop: '12px' }}>
                   {/* Choices Section - Apple-style Carousel */}
                   {currentStory?.choices && currentStory.choices.length > 0 && (
                     <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-3 mx-3 rounded-t-2xl" style={{ height: '130px' }}>
