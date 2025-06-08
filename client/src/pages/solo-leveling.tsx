@@ -1245,27 +1245,80 @@ export default function SoloLeveling() {
                   </div>
                 )}
 
-                {/* Top UI Overlay - Stats and Affection */}
-                <div className="absolute top-3 left-3 right-3 z-30 flex justify-between items-start">
-                  {/* Top Left - Stats */}
-                  <div className="flex items-center gap-3 text-sm bg-black/70 backdrop-blur-md rounded-xl p-2 border border-white/20">
-                    <div className="flex items-center gap-1">
-                      <span className="text-red-500">❤️</span>
-                      <span className="text-white text-xs font-bold">{gameState.health}/{gameState.maxHealth}</span>
+                {/* Top UI Overlay - Apple-style Stats */}
+                <div className="absolute top-4 left-4 right-4 z-30 flex justify-between items-start">
+                  {/* Top Left - Gamified Stats Panel */}
+                  <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3 border border-white/20 shadow-xl min-w-[200px]">
+                    {/* Health Bar */}
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center text-xs">
+                            ❤️
+                          </div>
+                          <span className="text-white text-xs font-medium">Health</span>
+                        </div>
+                        <span className="text-white/80 text-xs">{gameState.health}/{gameState.maxHealth}</span>
+                      </div>
+                      <div className="w-full h-2 bg-black/30 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all duration-500"
+                          style={{ width: `${(gameState.health / gameState.maxHealth) * 100}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-blue-500">💎</span>
-                      <span className="text-white text-xs font-bold">{gameState.mana}</span>
+
+                    {/* Mana Bar */}
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-xs">
+                            💎
+                          </div>
+                          <span className="text-white text-xs font-medium">Mana</span>
+                        </div>
+                        <span className="text-white/80 text-xs">{gameState.mana}</span>
+                      </div>
+                      <div className="w-full h-2 bg-black/30 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500"
+                          style={{ width: `${Math.min(100, (gameState.mana / 100) * 100)}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-yellow-500">⭐</span>
-                      <span className="text-white text-xs font-bold">{gameState.level}</span>
+
+                    {/* Level Display */}
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center text-xs">
+                            ⭐
+                          </div>
+                          <span className="text-white text-xs font-medium">Level {gameState.level}</span>
+                        </div>
+                        <span className="text-white/80 text-xs">Shadow Monarch</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Top Right - Affection Meter */}
-                  <div className="w-32 bg-black/70 p-2 rounded-xl border border-pink-500/40 backdrop-blur-md">
-                    <div className="text-xs text-pink-500 mb-1 text-center font-semibold">Cha Hae-In</div>
+                  {/* Top Right - Affection Panel */}
+                  <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3 border border-pink-500/30 shadow-xl min-w-[160px]">
+                    <div className="text-center mb-2">
+                      <div className="text-xs text-pink-400 font-medium mb-1">Cha Hae-In</div>
+                      <div className="text-xs text-white/80">Affection Level</div>
+                    </div>
+                    
+                    {/* Affection Progress Bar */}
+                    <div className="mb-2">
+                      <div className="w-full h-2 bg-black/30 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-500"
+                          style={{ width: `${(gameState.affection / 5) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Heart Display */}
                     <div className="flex justify-center gap-1">
                       {renderAffectionHearts()}
                     </div>
