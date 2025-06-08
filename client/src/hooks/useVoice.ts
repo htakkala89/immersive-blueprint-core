@@ -8,12 +8,14 @@ interface VoiceQueueItem {
 
 interface VoiceHookReturn {
   isPlaying: boolean;
+  currentSpeaker: string | null;
   playVoice: (text: string, character: string) => Promise<void>;
   stopVoice: () => void;
 }
 
 export function useVoice(): VoiceHookReturn {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const queueRef = useRef<VoiceQueueItem[]>([]);
   const processingRef = useRef(false);
@@ -25,6 +27,7 @@ export function useVoice(): VoiceHookReturn {
       audioRef.current = null;
     }
     setIsPlaying(false);
+    setCurrentSpeaker(null);
     queueRef.current = [];
     processingRef.current = false;
   }, []);
@@ -57,8 +60,13 @@ export function useVoice(): VoiceHookReturn {
       const audio = new Audio(audioUrl);
       audioRef.current = audio;
 
+      setIsPlaying(true);
+      setCurrentSpeaker(character);
+
       return new Promise<void>((resolve) => {
         audio.onended = () => {
+          setIsPlaying(false);
+          setCurrentSpeaker(null);
           URL.revokeObjectURL(audioUrl);
           audioRef.current = null;
           resolve();
@@ -66,6 +74,8 @@ export function useVoice(): VoiceHookReturn {
 
         audio.onerror = () => {
           console.log('Audio playback error');
+          setIsPlaying(false);
+          setCurrentSpeaker(null);
           URL.revokeObjectURL(audioUrl);
           audioRef.current = null;
           resolve();
@@ -73,6 +83,8 @@ export function useVoice(): VoiceHookReturn {
 
         audio.play().catch(() => {
           console.log('Audio play failed');
+          setIsPlaying(false);
+          setCurrentSpeaker(null);
           URL.revokeObjectURL(audioUrl);
           audioRef.current = null;
           resolve();
@@ -133,6 +145,7 @@ export function useVoice(): VoiceHookReturn {
 
   return {
     isPlaying,
+    currentSpeaker,
     playVoice,
     stopVoice,
   };
