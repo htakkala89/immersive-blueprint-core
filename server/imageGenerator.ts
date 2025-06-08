@@ -15,15 +15,13 @@ function isMatureContent(gameState: GameState): boolean {
   const storyPath = gameState.storyPath.toLowerCase();
   const sessionId = gameState.sessionId?.toLowerCase() || '';
   
-  // Use OpenAI for cover generation and character-focused content for accuracy
-  if (storyPath === 'cover' || narration.includes('cover art') || sessionId.includes('cover')) {
+  // Use Google Imagen for general content (cover, start, character scenes)
+  if (storyPath === 'cover' || storyPath === 'start' || narration.includes('cover art') || sessionId.includes('cover')) {
     return false;
   }
   
-  // Use NovelAI for romantic/mature Solo Leveling content
-  if (sessionId.includes('solo-leveling') || sessionId.includes('solo_leveling')) {
-    return true;
-  }
+  // Don't treat general Solo Leveling content as mature by default
+  // Only specific romantic/intimate content should use NovelAI
   
   const matureKeywords = [
     'intimate', 'passionate', 'embrace', 'kiss', 'romantic', 'love', 'tender',
@@ -191,9 +189,10 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     if (openai) {
       try {
         // Enhance prompt for accurate character generation
-        const enhancedPrompt = prompt.includes('Jin-Woo') || prompt.includes('Sung') ? 
-          prompt + ". Korean male protagonist with short BLACK hair, dark eyes, NOT blonde, accurate Solo Leveling character design" : 
-          prompt;
+        const fallbackPrompt = useMatureGenerator ? createMatureSoloLevelingPrompt(gameState) : generalPrompt;
+        const enhancedPrompt = (fallbackPrompt.includes('Jin-Woo') || fallbackPrompt.includes('Sung')) ? 
+          `${fallbackPrompt}. Korean male protagonist with short BLACK hair, dark eyes, NOT blonde, accurate Solo Leveling character design` : 
+          fallbackPrompt;
           
         const response = await openai.images.generate({
           model: "dall-e-3",

@@ -10,12 +10,18 @@ export const gameStates = pgTable("game_states", {
   maxHealth: integer("max_health").notNull().default(100),
   mana: integer("mana").notNull().default(50),
   maxMana: integer("max_mana").notNull().default(50),
+  level: integer("level").notNull().default(1),
+  experience: integer("experience").notNull().default(0),
+  statPoints: integer("stat_points").notNull().default(0),
+  skillPoints: integer("skill_points").notNull().default(0),
   choices: jsonb("choices").notNull().$type<Choice[]>(),
   sceneData: jsonb("scene_data").$type<SceneData>(),
   storyPath: text("story_path").notNull().default("entrance"),
   choiceHistory: jsonb("choice_history").notNull().default([]).$type<string[]>(),
   storyFlags: jsonb("story_flags").notNull().default({}).$type<Record<string, boolean>>(),
   inventory: jsonb("inventory").notNull().default([]).$type<z.infer<typeof InventoryItem>[]>(),
+  stats: jsonb("stats").notNull().default({}).$type<z.infer<typeof CharacterStats>>(),
+  skills: jsonb("skills").notNull().default([]).$type<z.infer<typeof Skill>[]>(),
 });
 
 export const Choice = z.object({
@@ -32,6 +38,28 @@ export const InventoryItem = z.object({
   icon: z.string(),
   type: z.enum(['weapon', 'armor', 'consumable', 'key', 'treasure', 'misc']),
   quantity: z.number().default(1),
+});
+
+export const Skill = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  type: z.enum(['passive', 'active', 'ultimate']),
+  level: z.number().default(1),
+  maxLevel: z.number().default(10),
+  cooldown: z.number().optional(),
+  manaCost: z.number().optional(),
+  unlocked: z.boolean().default(false),
+  prerequisites: z.array(z.string()).default([]),
+  effects: z.record(z.number()).default({}),
+});
+
+export const CharacterStats = z.object({
+  strength: z.number().default(10),
+  agility: z.number().default(10),
+  intelligence: z.number().default(10),
+  vitality: z.number().default(10),
+  sense: z.number().default(10),
 });
 
 export const SceneData = z.object({
@@ -55,6 +83,8 @@ export const insertGameStateSchema = createInsertSchema(gameStates).omit({
 
 export type Choice = z.infer<typeof Choice>;
 export type InventoryItem = z.infer<typeof InventoryItem>;
+export type Skill = z.infer<typeof Skill>;
+export type CharacterStats = z.infer<typeof CharacterStats>;
 export type SceneData = z.infer<typeof SceneData>;
 export type InsertGameState = z.infer<typeof insertGameStateSchema>;
 export type GameState = typeof gameStates.$inferSelect;
