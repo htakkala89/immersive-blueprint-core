@@ -152,7 +152,7 @@ class VoiceService {
     if (cleanText.length < 5) {
       return null;
     }
-    return this.generateVoice(cleanText, this.config.narratorVoice);
+    return this.generateVoiceInternal(cleanText, this.config.narratorVoice);
   }
 
   // Clean text for voice generation (remove formatting, emotes, etc.)

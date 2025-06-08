@@ -314,12 +314,29 @@ Respond as Cha Hae-In would, keeping responses natural and in character. Include
     }
   });
 
+  // Voice timing tracker to ensure proper playback order
+  let lastNarratorTime = 0;
+  const NARRATOR_DELAY = 2000; // 2 second delay for narrator priority
+
   app.post("/api/generate-voice", async (req, res) => {
     try {
       const { text, character } = req.body;
       
       if (!text || !character) {
         return res.status(400).json({ error: "Missing text or character parameter" });
+      }
+
+      // Add delay for character voices to ensure narrator plays first
+      if (character !== 'narrator' && character !== 'story-narration') {
+        const timeSinceLastNarrator = Date.now() - lastNarratorTime;
+        if (timeSinceLastNarrator < NARRATOR_DELAY) {
+          const delayNeeded = NARRATOR_DELAY - timeSinceLastNarrator;
+          console.log(`⏰ Delaying ${character} voice by ${delayNeeded}ms to ensure narrator plays first`);
+          await new Promise(resolve => setTimeout(resolve, delayNeeded));
+        }
+      } else {
+        // Update narrator timestamp
+        lastNarratorTime = Date.now();
       }
       
       const audioBuffer = await voiceService.generateVoiceByCharacter(character, text);
@@ -346,6 +363,9 @@ Respond as Cha Hae-In would, keeping responses natural and in character. Include
       if (!text) {
         return res.status(400).json({ error: "Missing text parameter" });
       }
+      
+      // Update narrator timestamp for story narration
+      lastNarratorTime = Date.now();
       
       const audioBuffer = await voiceService.generateStoryNarrationVoice(text);
       
