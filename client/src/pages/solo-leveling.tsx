@@ -2182,14 +2182,16 @@ export default function SoloLeveling() {
 
   const createHeartEffect = () => {
     const hearts = document.querySelectorAll('.heart');
-    const targetHeart = hearts[gameState.affection] as HTMLElement;
+    const targetHeart = hearts[gameState.affection - 1] as HTMLElement; // -1 because we just incremented affection
     if (targetHeart) {
-      targetHeart.classList.add('filled');
-      // Heart beat animation
-      targetHeart.style.animation = 'heartBeat 0.5s ease';
+      // Animate the heart filling
+      targetHeart.style.animation = 'heartFill 0.8s ease';
+      targetHeart.style.transform = 'scale(1.3)';
+      
       setTimeout(() => {
         targetHeart.style.animation = '';
-      }, 500);
+        targetHeart.style.transform = 'scale(1.1)';
+      }, 800);
     }
   };
 
@@ -3040,9 +3042,16 @@ export default function SoloLeveling() {
     return Array.from({ length: 5 }, (_, i) => (
       <span 
         key={i} 
-        className={`heart ${i < gameState.affection ? 'filled' : ''}`}
+        className={`heart ${i < gameState.affection ? 'filled' : 'empty'}`}
+        style={{
+          fontSize: '18px',
+          margin: '0 2px',
+          filter: i < gameState.affection ? 'drop-shadow(0 0 6px rgba(255, 107, 157, 0.8))' : 'none',
+          transform: i < gameState.affection ? 'scale(1.1)' : 'scale(1)',
+          transition: 'all 0.3s ease'
+        }}
       >
-        ❤️
+        {i < gameState.affection ? '❤️' : '🤍'}
       </span>
     ));
   };

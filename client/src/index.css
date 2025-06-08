@@ -125,6 +125,22 @@
   filter: drop-shadow(0 0 8px rgba(255, 107, 157, 0.6));
 }
 
+/* Heart filling animation */
+@keyframes heartFill {
+  0% {
+    transform: scale(1);
+    filter: none;
+  }
+  50% {
+    transform: scale(1.4);
+    filter: drop-shadow(0 0 12px rgba(255, 107, 157, 1));
+  }
+  100% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 6px rgba(255, 107, 157, 0.8));
+  }
+}
+
 /* Dynamic text fading for "Lyric Mode" */
 .lyric-mode {
   animation: lyricFade 8s ease-in-out forwards;
