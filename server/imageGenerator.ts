@@ -211,17 +211,16 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     // Check if this is mature/romantic content
     const useMatureGenerator = isMatureContent(gameState);
     
-    // Temporarily disable NovelAI routing to test Google Imagen
-    // if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
-    //   console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
-    //   const maturePrompt = createMatureSoloLevelingPrompt(gameState);
-    //   const novelaiImage = await generateWithNovelAI(maturePrompt);
-    //   if (novelaiImage) {
-    //     console.log('✅ NovelAI generated mature content successfully');
-    //     return novelaiImage;
-    //   }
-    //   console.log('⚠️ NovelAI failed, trying Google Imagen fallback');
-    // }
+    if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
+      console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
+      const maturePrompt = createMatureSoloLevelingPrompt(gameState);
+      const novelaiImage = await generateWithNovelAI(maturePrompt);
+      if (novelaiImage) {
+        console.log('✅ NovelAI generated mature content successfully');
+        return novelaiImage;
+      }
+      console.log('⚠️ NovelAI failed, trying Google Imagen fallback');
+    }
     
     // Use Google Imagen for characters and general scenes (better anime style)
     const generalPrompt = createSoloLevelingPrompt(gameState);
