@@ -231,28 +231,19 @@ export default function SoloLeveling() {
   // Auto-scroll chat to bottom when new messages arrive
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      const element = chatContainerRef.current;
+      element.scrollTop = element.scrollHeight;
     }
   }, [chatMessages]);
 
-  // Force scroll to bottom immediately and reliably
+  // Smooth scroll to bottom for better UX
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
       const element = chatContainerRef.current;
-      element.scrollTop = element.scrollHeight;
-      
-      // Multiple fallbacks to ensure scroll happens
-      requestAnimationFrame(() => {
-        element.scrollTop = element.scrollHeight;
+      element.scrollTo({
+        top: element.scrollHeight,
+        behavior: 'smooth'
       });
-      
-      setTimeout(() => {
-        element.scrollTop = element.scrollHeight;
-      }, 10);
-      
-      setTimeout(() => {
-        element.scrollTop = element.scrollHeight;
-      }, 100);
     }
   };
 
