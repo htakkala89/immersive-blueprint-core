@@ -21,24 +21,20 @@ function isMatureContent(gameState: GameState): boolean {
     return false;
   }
   
-  // Don't treat general Solo Leveling content as mature by default
-  // Only specific romantic/intimate content should use NovelAI
+  // Only treat explicitly intimate/sexual content as mature
+  // Most Solo Leveling content including romance should use Google Imagen
   
-  const matureKeywords = [
-    'intimate', 'passionate', 'embrace', 'kiss', 'romantic', 'love', 'tender',
-    'close', 'touch', 'caress', 'desire', 'attraction', 'seductive', 'alluring',
-    'beautiful', 'gorgeous', 'stunning', 'enchanting', 'captivating', 'date',
-    'confession', 'feelings', 'heart', 'soul', 'bond', 'connection', 'affection',
-    'hae-in', 'cha', 'jin-woo', 'hunter', 'guild'
+  const explicitMatureKeywords = [
+    'passionate kiss', 'intimate embrace', 'seductive', 'alluring pose',
+    'bedroom', 'undressing', 'sensual', 'erotic'
   ];
 
-  const matureScenes = [
-    'romantic', 'love', 'kiss', 'embrace', 'intimate', 'tender', 'confession',
-    'date', 'passion', 'heart', 'soul', 'bond', 'appreciation', 'start'
+  const explicitMatureScenes = [
+    'intimate_scene', 'bedroom_scene', 'passionate_moment'
   ];
   
-  return matureKeywords.some(keyword => narration.includes(keyword)) ||
-         matureScenes.some(scene => storyPath.includes(scene));
+  return explicitMatureKeywords.some(keyword => narration.includes(keyword)) ||
+         explicitMatureScenes.some(scene => storyPath.includes(scene));
 }
 
 async function generateWithNovelAI(prompt: string): Promise<string | null> {
@@ -324,12 +320,13 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
 function createSoloLevelingPrompt(gameState: GameState): string {
   const baseStyle = "Solo Leveling manhwa art style, CHUGONG webtoon aesthetic, Korean manhwa illustration, detailed digital art, dramatic shadows, sharp angular character designs, purple and blue color scheme, cinematic lighting, high contrast, professional manhwa quality";
   
-  // Determine scene type based on current narration
+  // Determine scene type based on current narration and story path
   const narration = gameState.narration.toLowerCase();
+  const storyPath = gameState.storyPath?.toLowerCase() || '';
   
   // Solo Leveling specific character designs
-  const includeJinWoo = narration.includes("jin-woo") || narration.includes("sung") || narration.includes("shadow monarch") || narration.includes("you are");
-  const includeHaeIn = narration.includes("hae-in") || narration.includes("cha") || narration.includes("sword saint");
+  const includeJinWoo = narration.includes("jin-woo") || narration.includes("sung") || narration.includes("shadow monarch") || narration.includes("you are") || storyPath.includes("jin");
+  const includeHaeIn = narration.includes("hae-in") || narration.includes("cha") || narration.includes("sword saint") || storyPath.includes("cha");
   
   let characterDescription = "";
   if (includeJinWoo) {
@@ -337,6 +334,23 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   }
   if (includeHaeIn) {
     characterDescription += ", Cha Hae-In (beautiful Korean female, blonde hair, red armor, elegant sword stance, S-rank hunter, graceful but powerful, Solo Leveling character design)";
+  }
+
+  // Prioritize environmental and location-based scenes over character portraits
+  
+  // Daily Life Hub - apartment/city scenes
+  if (storyPath.includes("daily_life") || narration.includes("apartment") || narration.includes("daily life")) {
+    return `${baseStyle}, modern Korean apartment interior with city skyline view through large windows, cozy living space with contemporary furniture, evening lighting, urban hunter lifestyle setting, detailed architecture and interior design, manhwa environment art`;
+  }
+  
+  // Hunter Association/Guild scenes
+  if (narration.includes("association") || narration.includes("guild") || narration.includes("hunter facility")) {
+    return `${baseStyle}, Korean Hunter Association headquarters interior, modern glass and steel architecture, professional meeting halls with holographic displays, high-tech hunter equipment, official government building atmosphere, detailed architectural environment`;
+  }
+  
+  // Marketplace scenes
+  if (storyPath.includes("marketplace") || narration.includes("marketplace") || narration.includes("shopping")) {
+    return `${baseStyle}, bustling Korean hunter marketplace street scene, magical item vendors, weapon shops, gift stores, crowded shopping district with hunters browsing wares, detailed urban environment with Korean signage and architecture`;
   }
   
   // Gate and dungeon scenes

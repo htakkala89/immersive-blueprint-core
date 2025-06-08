@@ -393,6 +393,75 @@ export default function SoloLeveling() {
       ],
       leadsTo: { enter_gate: 'DUNGEON_START', return_home: 'DAILY_LIFE_HUB' }
     },
+    'DUNGEON_START': {
+      prompt: "Dark stone dungeon corridor with glowing purple crystals, monster shadows lurking ahead.",
+      narration: "The dungeon air is thick with malevolent energy. Strange sounds echo from the depths ahead. Several large monsters block your path forward - dire wolves and an orc chieftain guard the passage.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Multiple hostiles detected ahead. I count at least four enemies." },
+        { sender: 'system', text: "Combat encounter! Choose your approach carefully." }
+      ],
+      choices: [
+        { text: "Launch shadow attack", detail: "Strike first with shadow soldiers", type: 'shadow_attack' },
+        { text: "Coordinate sword strike", detail: "Team attack with Hae-In", type: 'sword_strike' },
+        { text: "Cast magic blast", detail: "Use mana for ranged assault", type: 'magic_blast' }
+      ],
+      leadsTo: { shadow_attack: 'COMBAT_VICTORY', sword_strike: 'COMBAT_VICTORY', magic_blast: 'COMBAT_VICTORY' }
+    },
+    'COMBAT_VICTORY': {
+      prompt: "Jin-Woo and Cha Hae-In standing victorious over defeated monsters, glowing with post-battle energy.",
+      narration: "Your combined skills proved overwhelming. The monsters lie defeated, and valuable loot sparkles in the dungeon light.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Excellent teamwork! Your combat skills have improved significantly." },
+        { sender: 'system', text: "Victory! +500 EXP, +200 Gold, Rare Item Found!" }
+      ],
+      choices: [
+        { text: "Continue deeper", detail: "Explore further into the dungeon", type: 'explore_deeper' },
+        { text: "Search for treasure", detail: "Look for hidden loot", type: 'treasure_hunt' },
+        { text: "Take a break together", detail: "Rest and recover with Hae-In", type: 'rest_together' }
+      ],
+      leadsTo: { explore_deeper: 'BOSS_CHAMBER', treasure_hunt: 'TREASURE_ROOM', rest_together: 'ROMANTIC_REST' }
+    },
+    'BOSS_CHAMBER': {
+      prompt: "Massive chamber with ancient dragon sleeping on pile of gold, epic boss arena, dramatic lighting.",
+      narration: "You've reached the boss chamber. An enormous ancient dragon stirs as you enter, its eyes glowing with centuries of accumulated power and fury.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Jin-Woo... this is a legendary-class monster. We need to be perfectly coordinated." },
+        { sender: 'system', text: "BOSS FIGHT: Ancient Shadow Dragon - Level 95!" }
+      ],
+      choices: [
+        { text: "Engage the dragon", detail: "Direct confrontation with the beast", type: 'dragon_fight' },
+        { text: "Ultimate shadow extraction", detail: "Use your most powerful ability", type: 'ultimate_strike' },
+        { text: "Combined finisher attack", detail: "Coordinate with Hae-In for maximum damage", type: 'combined_attack' }
+      ],
+      leadsTo: { dragon_fight: 'DRAGON_BATTLE', ultimate_strike: 'DRAGON_BATTLE', combined_attack: 'DRAGON_BATTLE' }
+    },
+    'DRAGON_BATTLE': {
+      prompt: "Epic battle scene with Jin-Woo and Cha Hae-In fighting massive dragon, energy blasts and sword strikes.",
+      narration: "The battle is fierce and intense. The dragon's roar shakes the entire chamber as you and Hae-In fight with everything you have.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Now Jin-Woo! Strike while it's distracted!" },
+        { sender: 'system', text: "The dragon staggers! This is your chance for a finishing blow!" }
+      ],
+      choices: [
+        { text: "Deliver final attack", detail: "End the battle with decisive strike", type: 'final_attack' },
+        { text: "Extract dragon's shadow", detail: "Attempt to gain the dragon as ally", type: 'extract_shadow' },
+        { text: "Protect Hae-In", detail: "Ensure her safety above all", type: 'protect_hae_in' }
+      ],
+      leadsTo: { final_attack: 'VICTORY_CELEBRATION', extract_shadow: 'SHADOW_DRAGON_VICTORY', protect_hae_in: 'HEROIC_MOMENT' }
+    },
+    'VICTORY_CELEBRATION': {
+      prompt: "Jin-Woo and Cha Hae-In celebrating their epic dragon victory together.",
+      narration: "The mighty dragon lies defeated. You and Hae-In stand triumphant, your teamwork having conquered one of the most dangerous monsters in existence.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "We did it! That was incredible teamwork, Jin-Woo!" },
+        { sender: 'system', text: "Epic Victory! +2000 EXP, +1000 Gold, Legendary Dragon Core obtained!" }
+      ],
+      choices: [
+        { text: "Celebrate with Hae-In", detail: "Share this moment together", type: 'celebrate_together' },
+        { text: "Return to Daily Life Hub", detail: "Head back home", type: 'return_hub' }
+      ],
+      leadsTo: { celebrate_together: 'ROMANTIC_CELEBRATION', return_hub: 'DAILY_LIFE_HUB' }
+    },
     'PROTECTIVE_ROUTE': {
       prompt: "Jin-Woo showing concern for Cha Hae-In's safety. Protective gesture, anime style.",
       narration: "Your protective instinct shows, and Hae-In's expression softens at your concern.",
@@ -1911,10 +1980,10 @@ export default function SoloLeveling() {
 
   const isCombatChoice = (choice: any, scene: string, narration: string) => {
     const combatKeywords = [
-      'attack', 'fight', 'battle', 'strike', 'assault', 'combat', 'defeat', 'kill',
       'shadow_attack', 'sword_strike', 'magic_blast', 'combined_attack', 'finisher',
       'boss_fight', 'dragon_fight', 'monster_battle', 'final_attack', 'ultimate_strike',
-      'engage', 'charge', 'slash', 'pierce', 'crush', 'destroy', 'eliminate'
+      'engage_enemy', 'charge_monster', 'slash_beast', 'pierce_dragon', 'crush_boss', 
+      'destroy_monster', 'eliminate_threat', 'extract_shadow'
     ];
     
     const combatScenes = [
@@ -1923,14 +1992,25 @@ export default function SoloLeveling() {
     ];
     
     const combatNarration = [
-      'monster', 'enemy', 'boss', 'dragon', 'creature', 'beast', 'demon',
-      'attack', 'battle', 'fight', 'combat', 'strike', 'weapon', 'sword'
+      'monsters block your path', 'hostile detected', 'battle is fierce',
+      'dragon roar', 'creature lurking', 'beast attacks', 'demon emerges',
+      'enemy encounters', 'combat encounter'
     ];
     
-    return combatKeywords.some(keyword => 
-      choice.type.includes(keyword) || choice.text.toLowerCase().includes(keyword)
-    ) || combatScenes.includes(scene) ||
-    combatNarration.some(keyword => narration.toLowerCase().includes(keyword));
+    // Check for exact combat keywords in choice type (more specific)
+    const hasExactCombatKeyword = combatKeywords.some(keyword => 
+      choice.type === keyword || choice.type.includes('_attack') || choice.type.includes('_strike')
+    );
+    
+    // Check if scene is explicitly combat
+    const isCombatScene = combatScenes.includes(scene);
+    
+    // Check for combat phrases in narration (more specific)
+    const hasCombatNarration = combatNarration.some(phrase => 
+      narration.toLowerCase().includes(phrase)
+    );
+    
+    return hasExactCombatKeyword || isCombatScene || hasCombatNarration;
   };
 
   const triggerCombatMiniGame = (choice: any) => {
