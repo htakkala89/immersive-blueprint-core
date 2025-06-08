@@ -17,16 +17,32 @@ interface CombatState {
     health: number;
     maxHealth: number;
     attack: number;
-    type: 'knight' | 'archer' | 'mage' | 'assassin';
+    defense: number;
+    level: number;
+    experience: number;
+    type: 'knight' | 'archer' | 'mage' | 'assassin' | 'beast' | 'elite';
+    abilities: string[];
+    rarity: 'common' | 'rare' | 'epic' | 'legendary';
   }>;
-  extractableEnemies: Array<{
+  activeShadows: string[];
+  enemyFormation: Array<{
     id: string;
     name: string;
-    extractionDifficulty: number;
-    shadowType: 'knight' | 'archer' | 'mage' | 'assassin';
+    health: number;
+    maxHealth: number;
+    attack: number;
+    defense: number;
+    level: number;
+    type: 'minion' | 'elite' | 'boss';
+    abilities: string[];
+    extractable: boolean;
+    lootTable: Array<{ item: string; chance: number }>;
   }>;
-  combatPhase: 'preparation' | 'combat' | 'extraction' | 'victory';
-  activeSkills: string[];
+  combatPhase: 'preparation' | 'combat' | 'extraction' | 'victory' | 'defeat';
+  turnOrder: Array<{ id: string; type: 'player' | 'shadow' | 'enemy'; initiative: number }>;
+  currentTurn: number;
+  combatRound: number;
+  activeEffects: Array<{ id: string; name: string; duration: number; effect: any }>;
 }
 
 interface ShadowExtractionProps {
