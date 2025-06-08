@@ -3275,6 +3275,17 @@ export default function SoloLeveling() {
                     💖
                   </button>
 
+                  {/* Memory Lane Button - Available after first meeting */}
+                  {gameState.affection >= 1 && (
+                    <button 
+                      onClick={() => setShowMemoryLane(true)}
+                      className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-purple-500/50 transition-all border border-purple-400/30 shadow-lg"
+                      title="Memory Lane - Relationship Timeline"
+                    >
+                      📸
+                    </button>
+                  )}
+
                   {/* Help Button */}
                   <button 
                     onClick={() => setShowChatTutorial(true)}
@@ -3902,7 +3913,7 @@ export default function SoloLeveling() {
             affection: gameState.affection,
             level: gameState.level,
             currentScene: gameState.currentScene,
-            previousChoices: gameState.previousChoices || []
+            previousChoices: storyFlags
           }}
         />
       )}
