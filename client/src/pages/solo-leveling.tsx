@@ -405,10 +405,18 @@ export default function SoloLeveling() {
         const data = await response.json();
         addChatMessage('Cha Hae-In', data.response);
         
-        // Add affection based on positive conversation
-        if (data.response.toLowerCase().includes('smile') || 
-            data.response.toLowerCase().includes('happy') || 
-            data.response.toLowerCase().includes('glad')) {
+        // Dynamic affection tracking based on conversation depth
+        const affectionKeywords = [
+          'blush', 'smile', 'happy', 'glad', 'warm', 'comfort', 'drawn', 
+          'heart', 'feel', 'love', 'care', 'special', 'close', 'trust'
+        ];
+        
+        const responseText = data.response.toLowerCase();
+        const hasAffectionTrigger = affectionKeywords.some(keyword => 
+          responseText.includes(keyword)
+        );
+        
+        if (hasAffectionTrigger && gameState.affection < 5) {
           setGameState(prev => ({ 
             ...prev, 
             affection: Math.min(5, prev.affection + 1) 
