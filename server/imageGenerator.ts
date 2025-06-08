@@ -406,17 +406,20 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   // STRICT CHARACTER APPEARANCE RULES - DO NOT DEVIATE
   let characterDescription = "";
   
-  // Prioritize Cha Hae-In when she's speaking
-  if (chaHaeInSpeaking) {
-    characterDescription = ", focus on Cha Hae-In (MANDATORY: Korean female, age 23, GOLDEN BLONDE HAIR ALWAYS - ABSOLUTELY NO purple/black/brown/any other hair color, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style). CRITICAL: Her hair MUST be bright golden blonde, never dark, never purple, ALWAYS BLONDE";
+  // PRIORITIZE CHA HAE-IN in conversation scenes - reduce Jin-Woo focus
+  if (chaHaeInSpeaking || narration.includes("conversation") || narration.includes("talking") || narration.includes("speaking")) {
+    characterDescription = ", close-up focus on Cha Hae-In (MANDATORY: Korean female, age 23, GOLDEN BLONDE HAIR ALWAYS - ABSOLUTELY NO purple/black/brown/any other hair color, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style). CRITICAL: Her hair MUST be bright golden blonde, never dark, never purple, ALWAYS BLONDE. Focus on her facial expressions and emotions";
   }
-  // For romantic/interaction scenes, show both characters together
-  else if (isRomanticScene || (includeJinWoo && includeHaeIn)) {
+  // Only show both together in specific romantic moments
+  else if (narration.includes("both look") || narration.includes("together they") || narration.includes("side by side")) {
     characterDescription = ", Sung Jin-Woo and Cha Hae-In together (Jin-Woo: Korean male, age 24, SHORT BLACK HAIR ONLY - never blonde or purple, sharp features, dark eyes, black hunter outfit; Cha Hae-In: Korean female, age 23, GOLDEN BLONDE HAIR MANDATORY - NEVER purple/black/brown/dark hair, beautiful features, red armor or elegant clothing), romantic interaction, standing close together, meaningful eye contact, gentle expressions, couple scene. ABSOLUTE REQUIREMENT: Cha Hae-In has bright golden blonde hair, NOT any other color";
-  } else if (includeJinWoo) {
+  } 
+  // Default to Cha Hae-In for most conversation scenes
+  else if (includeHaeIn || isRomanticScene) {
+    characterDescription = ", focus on Cha Hae-In (MANDATORY: Korean female, age 23, GOLDEN BLONDE HAIR ALWAYS - ABSOLUTELY NO purple/black/brown/any other hair color, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style). CRITICAL: Her hair MUST be bright golden blonde, never dark, never purple, ALWAYS BLONDE";
+  } 
+  else if (includeJinWoo && !includeHaeIn) {
     characterDescription = ", Sung Jin-Woo (MUST BE: Korean male, age 24, SHORT BLACK HAIR ONLY - NOT blonde/long/purple, sharp angular facial features, dark eyes, athletic build, wearing black hunter outfit or casual dark clothing, confident posture, Solo Leveling manhwa art style - NEVER make him blonde or feminine)";
-  } else if (includeHaeIn) {
-    characterDescription = ", Cha Hae-In (MANDATORY: Korean female, age 23, GOLDEN BLONDE HAIR ALWAYS - ABSOLUTELY NO purple/black/brown/any other hair color, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style). CRITICAL: Her hair MUST be bright golden blonde, never dark, never purple, ALWAYS BLONDE";
   }
 
   // Prioritize environmental and location-based scenes over character portraits
@@ -445,8 +448,8 @@ function createSoloLevelingPrompt(gameState: GameState): string {
     return `${baseStyle}, shadow soldiers emerging from darkness, purple shadowy figures with glowing eyes, Solo Leveling shadow army, dark magic summoning${characterDescription}, monarch's power`;
   }
   
-  if (narration.includes("boss") || narration.includes("monster") || narration.includes("combat")) {
-    return `${baseStyle}, intense boss battle scene, powerful dungeon monster, dramatic combat lighting, hunter vs monster, action-packed fight scene${characterDescription}, Solo Leveling battle aesthetic`;
+  if (narration.includes("boss") || narration.includes("monster") || narration.includes("combat") || narration.includes("battle") || narration.includes("enemy") || narration.includes("attack")) {
+    return `${baseStyle}, terrifying dungeon monsters in battle - massive orcs with glowing red eyes and sharp fangs, giant goblins wielding crude weapons, magical beasts breathing fire, stone golems with glowing cores, menacing creatures in dark dungeon setting with dramatic lighting, Solo Leveling monster design, fierce and intimidating enemies`;
   }
   
   if (narration.includes("level up") || narration.includes("system") || narration.includes("status")) {
