@@ -5,6 +5,7 @@ interface VoiceConfig {
   chaHaeInVoice: string;
   gameMasterVoice: string;
   systemVoice: string;
+  narratorVoice: string;
 }
 
 class VoiceService {
@@ -15,7 +16,8 @@ class VoiceService {
       apiKey: process.env.ELEVENLABS_API_KEY || '',
       chaHaeInVoice: process.env.ELEVENLABS_VOICE_CHA_HAE_IN_NEW || process.env.ELEVENLABS_VOICE_CHA_HAE_IN || '',
       gameMasterVoice: process.env.ELEVENLABS_VOICE_GAME_MASTER || '',
-      systemVoice: process.env.ELEVENLABS_VOICE_SYSTEM || ''
+      systemVoice: process.env.ELEVENLABS_VOICE_SYSTEM || '',
+      narratorVoice: process.env.ELEVENLABS_VOICE_GAME_MASTER || '' // Use Game Master voice for story narration
     };
   }
 
@@ -81,6 +83,15 @@ class VoiceService {
     return this.generateVoice(text, this.config.systemVoice);
   }
 
+  async generateStoryNarrationVoice(text: string): Promise<Buffer | null> {
+    console.log('🎭 Generating Story Narration voice...');
+    const cleanText = this.cleanTextForStoryNarration(text);
+    if (cleanText.length < 5) {
+      return null;
+    }
+    return this.generateVoice(cleanText, this.config.narratorVoice);
+  }
+
   // Clean text for voice generation (remove formatting, emotes, etc.)
   private cleanTextForVoice(text: string): string {
     return text
@@ -89,6 +100,18 @@ class VoiceService {
       .replace(/[🎵🎶🎤🎧🔊🔉🔈🔇]/g, '') // Remove music emojis
       .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '') // Remove emojis
       .replace(/\s+/g, ' ') // Normalize whitespace
+      .trim();
+  }
+
+  // Clean text specifically for story narration (preserve narrative flow)
+  private cleanTextForStoryNarration(text: string): string {
+    return text
+      .replace(/\*[^*]*\*/g, '') // Remove *actions* but keep narrative descriptions
+      .replace(/[🎵🎶🎤🎧🔊🔉🔈🔇]/g, '') // Remove music emojis
+      .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '') // Remove emojis
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .replace(/\.\.\./g, '.') // Convert ellipsis to period for better speech
+      .replace(/([.!?])\s*([.!?])/g, '$1 ') // Clean up repeated punctuation
       .trim();
   }
 
@@ -110,9 +133,14 @@ class VoiceService {
       
       case 'game master':
       case 'game-master':
-      case 'narrator':
       case 'gm':
         return this.generateGameMasterVoice(cleanText);
+      
+      case 'narrator':
+      case 'story':
+      case 'narration':
+      case 'story-narrator':
+        return this.generateStoryNarrationVoice(cleanText);
       
       case 'system':
       case 'game':

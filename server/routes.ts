@@ -331,6 +331,31 @@ Respond as Cha Hae-In would, keeping responses natural and in character. Include
     }
   });
 
+  app.post("/api/generate-story-narration", async (req, res) => {
+    try {
+      const { text } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ error: "Missing text parameter" });
+      }
+      
+      const audioBuffer = await voiceService.generateStoryNarrationVoice(text);
+      
+      if (audioBuffer) {
+        res.set({
+          'Content-Type': 'audio/mpeg',
+          'Content-Length': audioBuffer.length.toString()
+        });
+        res.send(audioBuffer);
+      } else {
+        res.status(500).json({ error: "Failed to generate story narration" });
+      }
+    } catch (error) {
+      console.error(`Failed to generate story narration: ${error}`);
+      res.status(500).json({ error: "Failed to generate story narration" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
