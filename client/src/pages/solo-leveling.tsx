@@ -2090,13 +2090,30 @@ export default function SoloLeveling() {
   const triggerCombatMiniGame = (choice: any) => {
     setPendingChoice(choice);
     
-    // Determine mini-game type based on choice
-    if (choice.type.includes('boss') || choice.type.includes('dragon') || choice.type.includes('final')) {
+    // Determine mini-game type based on choice and scene context
+    const choiceType = choice.type.toLowerCase();
+    const choiceText = choice.text.toLowerCase();
+    const currentScene = gameState.currentScene;
+    
+    // Dragon encounters for boss-level enemies
+    if (choiceType.includes('boss') || choiceType.includes('dragon') || choiceType.includes('final') ||
+        currentScene.includes('BOSS') || choiceText.includes('boss') || choiceText.includes('dragon')) {
       setActiveMiniGame('dragon');
-    } else if (choice.type.includes('magic') || choice.type.includes('rune') || choice.type.includes('spell')) {
+    }
+    // Rune sequence for magic/shadow attacks and spells
+    else if (choiceType.includes('magic') || choiceType.includes('rune') || choiceType.includes('spell') ||
+             choiceType.includes('shadow') || choiceType.includes('cast') || choiceType.includes('blast') ||
+             choiceText.includes('magic') || choiceText.includes('shadow') || choiceText.includes('cast')) {
       setActiveMiniGame('runes');
-    } else {
+    }
+    // Lockpicking only for actual lockpicking scenarios (doors, chests, etc.)
+    else if (choiceType.includes('lock') || choiceType.includes('pick') || choiceType.includes('unlock') ||
+             choiceText.includes('lock') || choiceText.includes('unlock') || choiceText.includes('door')) {
       setActiveMiniGame('lockpicking');
+    }
+    // Default to rune sequence for general combat attacks
+    else {
+      setActiveMiniGame('runes');
     }
   };
 
