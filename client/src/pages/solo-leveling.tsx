@@ -1371,8 +1371,21 @@ export default function SoloLeveling() {
 
   // Reset choice index when story changes to prevent out-of-bounds errors
   useEffect(() => {
-    setCurrentChoiceIndex(0); // Always reset to first choice when scene changes
+    const currentStory = story[gameState.currentScene];
+    if (currentStory?.choices && currentStory.choices.length > 0) {
+      setCurrentChoiceIndex(0); // Always reset to first choice when scene changes
+    }
   }, [gameState.currentScene]);
+
+  // Ensure choice index is always valid
+  useEffect(() => {
+    const currentStory = story[gameState.currentScene];
+    if (currentStory?.choices && currentStory.choices.length > 0) {
+      if (currentChoiceIndex >= currentStory.choices.length) {
+        setCurrentChoiceIndex(0);
+      }
+    }
+  }, [currentChoiceIndex, gameState.currentScene]);
 
   // Update fade effects every 5 seconds for immersion
   useEffect(() => {
@@ -1488,7 +1501,8 @@ export default function SoloLeveling() {
 
   // Navigation functions for choice carousel
   const nextChoice = () => {
-    if (currentStory?.choices) {
+    const currentStory = story[gameState.currentScene];
+    if (currentStory?.choices && currentStory.choices.length > 0) {
       setCurrentChoiceIndex((prev) => 
         prev < currentStory.choices.length - 1 ? prev + 1 : 0
       );
@@ -1496,17 +1510,15 @@ export default function SoloLeveling() {
   };
 
   const prevChoice = () => {
-    if (currentStory?.choices) {
+    const currentStory = story[gameState.currentScene];
+    if (currentStory?.choices && currentStory.choices.length > 0) {
       setCurrentChoiceIndex((prev) => 
         prev > 0 ? prev - 1 : currentStory.choices.length - 1
       );
     }
   };
 
-  // Reset choice index when story changes
-  useEffect(() => {
-    setCurrentChoiceIndex(0);
-  }, [gameState.currentScene]);
+
 
   const createShadowSlashEffect = () => {
     const effectsContainer = document.querySelector('#effects-container');
@@ -1957,7 +1969,10 @@ export default function SoloLeveling() {
                         {/* Current Choice Display */}
                         <div className="flex-1 h-full">
                           <button
-                            onClick={() => handleChoice(currentStory.choices[currentChoiceIndex])}
+                            onClick={() => {
+                              const choice = currentStory.choices?.[currentChoiceIndex];
+                              if (choice) handleChoice(choice);
+                            }}
                             className="w-full h-full bg-white/10 backdrop-blur-xl rounded-2xl p-4 hover:bg-white/15 active:bg-white/8 transition-all duration-200 text-left border border-white/20 shadow-xl group"
                           >
                             <div className="flex items-center gap-4 h-full">
