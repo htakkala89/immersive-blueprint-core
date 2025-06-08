@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { GameState } from "@shared/schema";
 import AdmZip from 'adm-zip';
+import { getGoogleAccessToken, getProjectId } from './googleAuth';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -103,57 +104,92 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    if (!process.env.GOOGLE_IMAGEN_API_KEY) {
-      console.log('Google Imagen API key not available');
+    const projectId = getProjectId();
+    if (!projectId) {
+      console.log('Google Cloud project ID not available');
       return null;
     }
 
-    const apiKey = process.env.GOOGLE_IMAGEN_API_KEY;
-    
-    // Try Google AI Studio endpoint for image generation
-    const endpoints = [
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`,
-      `https://generativelanguage.googleapis.com/v1/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`,
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-fast-generate-001:generateImage?key=${apiKey}`
-    ];
-    
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            prompt: {
-              text: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style"
-            },
-            safetySettings: [{
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_ONLY_HIGH"
-            }],
-            personGeneration: "ALLOW_ADULT"
-          })
-        });
+    // Get OAuth access token using service account
+    const accessToken = await getGoogleAccessToken();
+    if (!accessToken) {
+      console.log('Failed to get Google Cloud access token');
+      return null;
+    }
 
-        if (response.ok) {
-          const data = await response.json();
-          const imageData = data.generatedImages?.[0]?.bytesBase64Encoded || data.candidates?.[0]?.image?.bytesBase64Encoded;
-          
-          if (imageData) {
-            console.log('✅ Google Imagen generated image successfully');
-            return `data:image/png;base64,${imageData}`;
-          }
-        } else {
-          const errorText = await response.text();
-          console.log(`Endpoint ${endpoint} failed:`, response.status, errorText);
+    const location = 'us-central1';
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagegeneration@006:predict`;
+    
+    console.log('🎨 Attempting Google Imagen generation...');
+    
+    const response = await fetch(vertexEndpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        instances: [{
+          prompt: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style"
+        }],
+        parameters: {
+          sampleCount: 1,
+          aspectRatio: "1:1",
+          safetyFilterLevel: "block_only_high",
+          personGeneration: "allow_adult"
         }
-      } catch (endpointError) {
-        console.log(`Endpoint ${endpoint} error:`, endpointError);
+      })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const prediction = data.predictions?.[0];
+      const imageData = prediction?.bytesBase64Encoded;
+      
+      if (imageData) {
+        console.log('✅ Google Imagen generated image successfully');
+        return `data:image/png;base64,${imageData}`;
+      }
+    } else {
+      const errorText = await response.text();
+      console.log('Vertex AI Imagen failed:', response.status, errorText);
+      
+      // Try alternative Imagen model
+      const altEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-001:predict`;
+      
+      const altResponse = await fetch(altEndpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          instances: [{
+            prompt: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style"
+          }],
+          parameters: {
+            sampleCount: 1,
+            aspectRatio: "1:1",
+            safetyFilterLevel: "block_only_high"
+          }
+        })
+      });
+
+      if (altResponse.ok) {
+        const altData = await altResponse.json();
+        const altPrediction = altData.predictions?.[0];
+        const altImageData = altPrediction?.bytesBase64Encoded;
+        
+        if (altImageData) {
+          console.log('✅ Google Imagen (alternative model) generated image successfully');
+          return `data:image/png;base64,${altImageData}`;
+        }
+      } else {
+        const altErrorText = await altResponse.text();
+        console.log('Alternative Imagen model also failed:', altResponse.status, altErrorText);
       }
     }
     
-    console.log('All Google Imagen endpoints failed, falling back to OpenAI');
     return null;
   } catch (error) {
     console.error('Google Imagen generation error:', error);
