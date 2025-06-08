@@ -822,7 +822,7 @@ export default function SoloLeveling() {
     return () => clearInterval(interval);
   }, []);
 
-  // Handle scrollbar fade effects
+  // Handle scrollbar fade effects and message visibility
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
     if (!chatContainer) return;
@@ -835,6 +835,26 @@ export default function SoloLeveling() {
       scrollTimeout = setTimeout(() => {
         chatContainer.classList.remove('scrolling');
       }, 1500); // Hide after 1.5 seconds of no scrolling
+
+      // Check message visibility during scroll
+      const messageElements = chatContainer.querySelectorAll('[data-message-id]');
+      const containerRect = chatContainer.getBoundingClientRect();
+      const newVisibility: Record<number, boolean> = {};
+
+      messageElements.forEach((element) => {
+        const messageId = parseInt(element.getAttribute('data-message-id') || '0');
+        const messageRect = element.getBoundingClientRect();
+        
+        // Check if message is in viewport
+        const isInViewport = messageRect.bottom >= containerRect.top && 
+                            messageRect.top <= containerRect.bottom;
+        
+        if (isInViewport) {
+          newVisibility[messageId] = true;
+        }
+      });
+
+      setScrollBasedVisibility(prev => ({ ...prev, ...newVisibility }));
     };
 
     chatContainer.addEventListener('scroll', handleScroll);
@@ -842,7 +862,7 @@ export default function SoloLeveling() {
       chatContainer.removeEventListener('scroll', handleScroll);
       clearTimeout(scrollTimeout);
     };
-  }, []);
+  }, [chatMessages]);
 
   // Smooth scroll to bottom for better UX
   const scrollToBottom = () => {
@@ -880,9 +900,15 @@ export default function SoloLeveling() {
     scrollToBottom();
   };
 
-  // Calculate message opacity for fade effect
-  const getMessageOpacity = (timestamp: number | undefined) => {
+  // State for tracking scroll-based message visibility
+  const [scrollBasedVisibility, setScrollBasedVisibility] = useState<Record<number, boolean>>({});
+
+  // Calculate message opacity for fade effect with scroll visibility
+  const getMessageOpacity = (timestamp: number | undefined, messageId: number) => {
     if (!timestamp) return 1; // Show full opacity for messages without timestamp
+    
+    // Check if message is currently visible due to scrolling
+    if (scrollBasedVisibility[messageId]) return 1;
     
     const age = Date.now() - timestamp;
     const fadeStart = 15000; // Start fading after 15 seconds
@@ -895,9 +921,9 @@ export default function SoloLeveling() {
     return Math.max(0.1, 1 - (fadeProgress * 0.9));
   };
 
-  // Get only recent messages for display (last 3 messages)
-  const getRecentMessages = () => {
-    return chatMessages.slice(-3);
+  // Get all messages for display (not just recent)
+  const getDisplayMessages = () => {
+    return chatMessages;
   };
 
   // Navigation functions for choice carousel
@@ -1044,7 +1070,10 @@ export default function SoloLeveling() {
     
     const message = userInput;
     setUserInput('');
+    
+    // Add user message immediately and scroll to show it
     addChatMessage('player', message);
+    setTimeout(() => scrollToBottom(), 100);
     
     if (inputMode === 'speak') {
       // Use Gemini for dynamic conversation with Cha Hae-In
@@ -1067,10 +1096,17 @@ export default function SoloLeveling() {
         }
 
         const data = await response.json();
+        
+        // Add AI response and ensure it's visible
         addChatMessage('Cha Hae-In', data.response);
         
-        // Extra scroll to ensure visibility of new response
+        // Scroll to show the new AI response
         setTimeout(() => scrollToBottom(), 200);
+        
+        // Clear any temporary visibility states for older messages
+        setTimeout(() => {
+          setScrollBasedVisibility({});
+        }, 1000);
         
         // Dynamic affection tracking based on conversation depth
         const affectionKeywords = [
@@ -1254,12 +1290,13 @@ export default function SoloLeveling() {
                         </div>
                       )}
 
-                      {/* Chat Messages - Recent Only with Fade Effect */}
-                      {getRecentMessages().map(msg => {
-                        const opacity = getMessageOpacity(msg.timestamp);
+                      {/* Chat Messages - All messages with scroll-based visibility */}
+                      {getDisplayMessages().map((msg: any) => {
+                        const opacity = getMessageOpacity(msg.timestamp, msg.id);
                         return (
                           <div 
                             key={msg.id}
+                            data-message-id={msg.id}
                             className={`mb-3 p-3 rounded-xl max-w-[90%] backdrop-blur-md transition-opacity duration-1000 ${
                               msg.sender === 'player' 
                                 ? 'bg-purple-900/80 border border-purple-400/60 ml-auto' 
