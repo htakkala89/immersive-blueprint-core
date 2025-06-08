@@ -3181,6 +3181,24 @@ export default function SoloLeveling() {
                     </button>
                   )}
 
+                  {/* Achievement System Button */}
+                  <button 
+                    onClick={() => setShowAchievementSystem(true)}
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-yellow-500/50 transition-all border border-yellow-400/30 shadow-lg"
+                    title="Achievements"
+                  >
+                    🏆
+                  </button>
+
+                  {/* Relationship System Button */}
+                  <button 
+                    onClick={() => setShowRelationshipSystem(true)}
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-pink-500/50 transition-all border border-pink-400/30 shadow-lg"
+                    title="Relationship Status"
+                  >
+                    💖
+                  </button>
+
                   {/* Help Button */}
                   <button 
                     onClick={() => setShowChatTutorial(true)}
@@ -3704,6 +3722,101 @@ export default function SoloLeveling() {
         }}
         gameState={gameState}
       />
+
+      {/* Enhanced Combat System */}
+      {showCombatSystem && currentCombatEnemy && (
+        <CombatSystem
+          isVisible={showCombatSystem}
+          onCombatEnd={(result: 'victory' | 'defeat', rewards?: any) => {
+            setShowCombatSystem(false);
+            setCurrentCombatEnemy(null);
+            
+            if (result === 'victory') {
+              trackCombatWin();
+              
+              if (rewards) {
+                setGameState(prev => ({
+                  ...prev,
+                  experience: (prev.experience || 0) + rewards.experience,
+                  gold: (prev.gold || 500) + rewards.gold
+                }));
+                
+                if (rewards.shadowSoldier) {
+                  trackShadowExtraction();
+                  addChatMessage('System', `Shadow extraction successful! ${rewards.shadowSoldier.name} has joined your army.`);
+                }
+                
+                addChatMessage('System', `Victory! Gained ${rewards.experience} EXP and ${rewards.gold} gold.`);
+              }
+            } else {
+              addChatMessage('System', 'Defeat... You retreat to safety.');
+            }
+          }}
+          playerLevel={gameState.level}
+          playerStats={gameState}
+          enemy={currentCombatEnemy}
+        />
+      )}
+
+      {/* Achievement System */}
+      {showAchievementSystem && (
+        <AchievementSystem
+          isVisible={showAchievementSystem}
+          onClose={() => setShowAchievementSystem(false)}
+          playerStats={{
+            affectionLevel: Math.floor(gameState.affection * 20),
+            combatWins: achievementStats.combatWins,
+            shadowSoldiers: achievementStats.shadowSoldiers,
+            scenesUnlocked: achievementStats.scenesUnlocked,
+            optimalChoices: achievementStats.optimalChoices,
+            storyProgress: achievementStats.storyProgress
+          }}
+          onAchievementUnlock={(achievement: any) => {
+            addChatMessage('System', `🏆 Achievement Unlocked: ${achievement.title}!`);
+            
+            if (achievement.rewards?.unlockedScenes) {
+              achievement.rewards.unlockedScenes.forEach((scene: string) => {
+                trackSceneUnlock();
+              });
+            }
+            
+            if (achievement.rewards?.experience) {
+              setGameState(prev => ({
+                ...prev,
+                experience: (prev.experience || 0) + achievement.rewards.experience
+              }));
+            }
+          }}
+        />
+      )}
+
+      {/* Relationship System Display */}
+      {showRelationshipSystem && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center">
+          <div className="bg-gradient-to-b from-gray-900 to-black border border-purple-500 rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-purple-300">Relationship Status</h2>
+              <button 
+                onClick={() => setShowRelationshipSystem(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+            <RelationshipSystem
+              relationshipData={{
+                ...relationshipData,
+                affectionLevel: Math.floor(gameState.affection * 20),
+                intimacyPoints: relationshipData.intimacyPoints,
+                trustLevel: relationshipData.trustLevel
+              }}
+              onRelationshipUpdate={updateRelationship}
+              currentScene={gameState.currentScene}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
