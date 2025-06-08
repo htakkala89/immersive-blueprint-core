@@ -2328,6 +2328,18 @@ export default function SoloLeveling() {
                 {/* Bottom Bar - Overlaid */}
                 <div className="absolute bottom-0 left-0 right-0 z-40 p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40 flex items-center gap-3">
                   <button 
+                    onClick={() => setShowSkillTree(true)}
+                    className="w-11 h-11 bg-purple-500/15 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all relative"
+                    title="Skills & Stats"
+                  >
+                    👑
+                    {((gameState.skillPoints || 0) + (gameState.statPoints || 0)) > 0 && (
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold">
+                        {(gameState.skillPoints || 0) + (gameState.statPoints || 0)}
+                      </div>
+                    )}
+                  </button>
+                  <button 
                     onClick={() => setShowInventory(true)}
                     className="w-11 h-11 bg-purple-500/15 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all"
                   >
@@ -2411,6 +2423,53 @@ export default function SoloLeveling() {
           </div>
         </div>
       )}
+
+      {/* Skill Tree Modal */}
+      <SkillTree
+        gameState={gameState as any}
+        onUpgradeSkill={(skillId) => {
+          characterProgression.upgradeSkill(skillId);
+          // Update local state for immediate feedback
+          setGameState(prev => ({
+            ...prev,
+            skillPoints: (prev.skillPoints || 0) - 1,
+            skills: prev.skills?.map(skill => 
+              skill.id === skillId 
+                ? { ...skill, level: skill.level + 1 }
+                : skill
+            ) || []
+          }));
+        }}
+        onAllocateStat={(stat) => {
+          characterProgression.allocateStat(stat);
+          // Update local state for immediate feedback
+          setGameState(prev => ({
+            ...prev,
+            statPoints: (prev.statPoints || 0) - 1,
+            stats: {
+              ...prev.stats,
+              [stat]: (prev.stats?.[stat] || 0) + 1
+            }
+          }));
+        }}
+        onLevelUp={() => {
+          characterProgression.levelUp();
+          const expNeeded = gameState.level * 100;
+          setGameState(prev => ({
+            ...prev,
+            level: prev.level + 1,
+            experience: (prev.experience || 0) - expNeeded,
+            statPoints: (prev.statPoints || 0) + 5,
+            skillPoints: (prev.skillPoints || 0) + 1,
+            maxHealth: prev.maxHealth + 20,
+            maxMana: prev.maxMana + 10,
+            health: prev.maxHealth + 20,
+            mana: prev.maxMana + 10
+          }));
+        }}
+        isVisible={showSkillTree}
+        onClose={() => setShowSkillTree(false)}
+      />
 
       {/* Chat Tutorial Modal */}
       {showChatTutorial && (
