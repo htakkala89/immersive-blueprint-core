@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { SkillTree } from "@/components/SkillTree";
 import { useCharacterProgression } from "@/hooks/useCharacterProgression";
 import { useVoice } from "@/hooks/useVoice";
+import { useStoryNarration } from "@/hooks/useStoryNarration";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/components/MiniGames";
 import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import { RaidSystem } from "@/components/RaidSystem";
@@ -146,6 +147,7 @@ export default function SoloLeveling() {
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
   const { playVoice, stopVoice, isPlaying } = useVoice();
+  const { generateStoryNarration, isPlaying: isNarrationPlaying, stopNarration } = useStoryNarration();
 
   const timeRef = useRef<HTMLSpanElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -1769,15 +1771,15 @@ export default function SoloLeveling() {
     }
   }, [currentChoiceIndex, gameState.currentScene]);
 
-  // Play Game Master narration when scene changes
+  // Play story narration when scene changes
   useEffect(() => {
     const currentStory = story[gameState.currentScene];
     if (currentStory?.narration) {
       setTimeout(() => {
-        playVoice(currentStory.narration, 'game-master');
+        generateStoryNarration(currentStory.narration);
       }, 1000); // Delay to allow scene transition
     }
-  }, [gameState.currentScene]);
+  }, [gameState.currentScene, generateStoryNarration]);
 
   // Update fade effects every 5 seconds for immersion
   useEffect(() => {
@@ -2921,13 +2923,18 @@ export default function SoloLeveling() {
                       {currentStory && (
                         <div className="mb-4">
                           <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 glassmorphism flex items-center justify-center flex-shrink-0">
+                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 glassmorphism flex items-center justify-center flex-shrink-0 ${
+                              isNarrationPlaying ? 'animate-pulse ring-2 ring-purple-400' : ''
+                            }`}>
                               <span className="text-white text-sm">📖</span>
                             </div>
                             <div className="flex-1">
                               <div className="glassmorphism rounded-2xl p-4">
                                 <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-white font-semibold text-sm">Game Master</span>
+                                  <span className="text-white font-semibold text-sm">Narrator</span>
+                                  {isNarrationPlaying && (
+                                    <span className="text-purple-300 text-xs animate-pulse">🎵 Speaking...</span>
+                                  )}
                                 </div>
                                 <div className="text-white text-sm leading-relaxed">{currentStory.narration}</div>
                               </div>
