@@ -275,7 +275,7 @@ RESPONSE GUIDELINES:
   });
 
   // Chat emotion-based image generation endpoint
-  app.post('/api/generate-chat-image', async (req: Request, res: Response) => {
+  app.post('/api/generate-chat-image', async (req, res) => {
     try {
       const { chatResponse, userMessage } = req.body;
       
