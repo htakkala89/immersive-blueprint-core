@@ -1,4 +1,4 @@
-import type { GameState, InsertGameState, Choice } from "@shared/schema";
+import type { GameState, InsertGameState, Choice, CharacterStats } from "@shared/schema";
 import { STORY_NODES, getNextStoryNode, getAvailableChoices } from "./storyEngine";
 
 export interface IStorage {
@@ -6,6 +6,9 @@ export interface IStorage {
   createGameState(gameState: InsertGameState): Promise<GameState>;
   updateGameState(sessionId: string, updates: Partial<InsertGameState>): Promise<GameState>;
   processChoice(sessionId: string, choice: Choice): Promise<GameState>;
+  levelUp(sessionId: string): Promise<GameState>;
+  upgradeSkill(sessionId: string, skillId: string): Promise<GameState>;
+  allocateStatPoint(sessionId: string, stat: keyof CharacterStats): Promise<GameState>;
 }
 
 export class MemStorage implements IStorage {
@@ -51,6 +54,39 @@ export class MemStorage implements IStorage {
       }
     ];
 
+    const initialStats = {
+      strength: 10,
+      agility: 10,
+      intelligence: 10,
+      vitality: 10,
+      sense: 10
+    };
+
+    const initialSkills = [
+      {
+        id: "shadow-extraction",
+        name: "Shadow Extraction",
+        description: "Extract shadows from defeated enemies to create loyal soldiers",
+        type: "ultimate" as const,
+        level: 1,
+        maxLevel: 10,
+        unlocked: true,
+        prerequisites: [],
+        effects: { shadowCapacity: 5 }
+      },
+      {
+        id: "dagger-mastery",
+        name: "Dagger Mastery", 
+        description: "Increases damage and attack speed with daggers",
+        type: "passive" as const,
+        level: 1,
+        maxLevel: 10,
+        unlocked: true,
+        prerequisites: [],
+        effects: { daggerDamage: 10, attackSpeed: 5 }
+      }
+    ];
+
     const gameState: GameState = { 
       id,
       sessionId: insertGameState.sessionId,
@@ -59,12 +95,18 @@ export class MemStorage implements IStorage {
       maxHealth: insertGameState.maxHealth || 100,
       mana: insertGameState.mana || 50,
       maxMana: insertGameState.maxMana || 50,
+      level: 1,
+      experience: 0,
+      statPoints: 0,
+      skillPoints: 0,
       choices: startingNode.choices,
       sceneData: insertGameState.sceneData || null,
       storyPath: "entrance",
       choiceHistory: [],
       storyFlags: {},
-      inventory: startingInventory
+      inventory: startingInventory,
+      stats: initialStats,
+      skills: initialSkills
     };
     this.gameStates.set(insertGameState.sessionId, gameState);
     return gameState;
@@ -190,6 +232,109 @@ export class MemStorage implements IStorage {
       storyPath: nextNode.id,
       choiceHistory: newChoiceHistory,
       storyFlags: newFlags
+    };
+
+    this.gameStates.set(sessionId, updated);
+    return updated;
+  }
+
+  async levelUp(sessionId: string): Promise<GameState> {
+    const existing = this.gameStates.get(sessionId);
+    if (!existing) {
+      throw new Error('Game state not found');
+    }
+
+    const expNeeded = existing.level * 100;
+    if (existing.experience < expNeeded) {
+      throw new Error('Not enough experience to level up');
+    }
+
+    const updated = {
+      ...existing,
+      level: existing.level + 1,
+      experience: existing.experience - expNeeded,
+      statPoints: existing.statPoints + 5,
+      skillPoints: existing.skillPoints + 1,
+      maxHealth: existing.maxHealth + 20,
+      maxMana: existing.maxMana + 10,
+      health: existing.maxHealth + 20,
+      mana: existing.maxMana + 10
+    };
+
+    this.gameStates.set(sessionId, updated);
+    return updated;
+  }
+
+  async upgradeSkill(sessionId: string, skillId: string): Promise<GameState> {
+    const existing = this.gameStates.get(sessionId);
+    if (!existing) {
+      throw new Error('Game state not found');
+    }
+
+    if (existing.skillPoints < 1) {
+      throw new Error('Not enough skill points');
+    }
+
+    const skillIndex = existing.skills.findIndex(s => s.id === skillId);
+    if (skillIndex === -1) {
+      throw new Error('Skill not found');
+    }
+
+    const skill = existing.skills[skillIndex];
+    if (skill.level >= skill.maxLevel) {
+      throw new Error('Skill already at max level');
+    }
+
+    const updatedSkills = [...existing.skills];
+    updatedSkills[skillIndex] = {
+      ...skill,
+      level: skill.level + 1
+    };
+
+    const updated = {
+      ...existing,
+      skills: updatedSkills,
+      skillPoints: existing.skillPoints - 1
+    };
+
+    this.gameStates.set(sessionId, updated);
+    return updated;
+  }
+
+  async allocateStatPoint(sessionId: string, stat: keyof CharacterStats): Promise<GameState> {
+    const existing = this.gameStates.get(sessionId);
+    if (!existing) {
+      throw new Error('Game state not found');
+    }
+
+    if (existing.statPoints < 1) {
+      throw new Error('Not enough stat points');
+    }
+
+    const updatedStats = {
+      ...existing.stats,
+      [stat]: existing.stats[stat] + 1
+    };
+
+    // Calculate stat bonuses
+    let healthBonus = 0;
+    let manaBonus = 0;
+    
+    if (stat === 'vitality') {
+      healthBonus = 15;
+    }
+    if (stat === 'intelligence') {
+      manaBonus = 8;
+    }
+
+    const updated = {
+      ...existing,
+      stats: updatedStats,
+      statPoints: existing.statPoints - 1,
+      maxHealth: existing.maxHealth + healthBonus,
+      maxMana: existing.maxMana + manaBonus,
+      health: existing.health + healthBonus,
+      mana: existing.mana + manaBonus
     };
 
     this.gameStates.set(sessionId, updated);
