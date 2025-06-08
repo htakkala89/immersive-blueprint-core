@@ -8,8 +8,18 @@ interface VoiceConfig {
   narratorVoice: string;
 }
 
+interface VoiceRequest {
+  text: string;
+  voiceId: string;
+  priority: number;
+  character: string;
+  timestamp: number;
+}
+
 class VoiceService {
   private config: VoiceConfig;
+  private voiceQueue: VoiceRequest[] = [];
+  private isProcessing: boolean = false;
 
   constructor() {
     this.config = {
@@ -21,7 +31,56 @@ class VoiceService {
     };
   }
 
-  private async generateVoice(text: string, voiceId: string): Promise<Buffer | null> {
+  private async processVoiceQueue(): Promise<void> {
+    if (this.isProcessing || this.voiceQueue.length === 0) {
+      return;
+    }
+
+    this.isProcessing = true;
+    
+    // Sort queue by priority (lower number = higher priority), then by timestamp
+    this.voiceQueue.sort((a, b) => {
+      if (a.priority !== b.priority) {
+        return a.priority - b.priority;
+      }
+      return a.timestamp - b.timestamp;
+    });
+
+    const request = this.voiceQueue.shift();
+    if (request) {
+      console.log(`🎭 Processing voice for ${request.character} (priority ${request.priority})`);
+      await this.generateVoiceInternal(request.text, request.voiceId);
+      
+      // Add delay between voice generations to ensure proper sequencing
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    this.isProcessing = false;
+    
+    // Process next item in queue
+    if (this.voiceQueue.length > 0) {
+      setTimeout(() => this.processVoiceQueue(), 100);
+    }
+  }
+
+  private async addToVoiceQueue(text: string, voiceId: string, priority: number, character: string): Promise<Buffer | null> {
+    const request: VoiceRequest = {
+      text,
+      voiceId,
+      priority,
+      character,
+      timestamp: Date.now()
+    };
+
+    this.voiceQueue.push(request);
+    this.processVoiceQueue();
+    
+    // For now, return null immediately as we're queueing
+    // In a full implementation, we'd return a promise that resolves when the voice is ready
+    return null;
+  }
+
+  private async generateVoiceInternal(text: string, voiceId: string): Promise<Buffer | null> {
     try {
       if (!this.config.apiKey || !voiceId) {
         console.log('⚠️ ElevenLabs API configuration incomplete - voice disabled');
@@ -74,17 +133,17 @@ class VoiceService {
 
   async generateChaHaeInVoice(text: string): Promise<Buffer | null> {
     console.log('🎤 Generating Cha Hae-In voice...');
-    return this.generateVoice(text, this.config.chaHaeInVoice);
+    return this.generateVoiceInternal(text, this.config.chaHaeInVoice);
   }
 
   async generateGameMasterVoice(text: string): Promise<Buffer | null> {
     console.log('🎤 Generating Game Master voice...');
-    return this.generateVoice(text, this.config.gameMasterVoice);
+    return this.generateVoiceInternal(text, this.config.gameMasterVoice);
   }
 
   async generateSystemVoice(text: string): Promise<Buffer | null> {
     console.log('🎤 Generating System voice...');
-    return this.generateVoice(text, this.config.systemVoice);
+    return this.generateVoiceInternal(text, this.config.systemVoice);
   }
 
   async generateStoryNarrationVoice(text: string): Promise<Buffer | null> {
