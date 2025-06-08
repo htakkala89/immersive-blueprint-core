@@ -1456,6 +1456,66 @@ export default function SoloLeveling() {
       ],
       leadsTo: { great_team: 'TEAM_RECOGNITION', know_better: 'DEEPER_KNOWING', thank_trust: 'TRUST_APPRECIATION' }
     },
+    'ADVENTURE_SHARING': {
+      prompt: "Jin-Woo sharing his adventure stories with Cha Hae-In. Storytelling moment, anime style.",
+      narration: "You share tales of dungeons and battles, and she listens with fascination.",
+      chat: [
+        { sender: 'player', text: "The dungeon was unlike anything I'd seen before. Ancient magic everywhere..." },
+        { sender: 'Cha Hae-In', text: "That sounds incredible! I love how you notice the details others miss." },
+        { sender: 'Cha Hae-In', text: "Your perspective on dungeons is so different from other hunters." }
+      ],
+      choices: [
+        { text: "What about your experiences?", detail: "Ask about her adventures", type: 'her_experiences' },
+        { text: "We should explore one together", detail: "Suggest partnership", type: 'explore_together' },
+        { text: "You see things differently too", detail: "Compliment her insight", type: 'different_perspective' }
+      ],
+      leadsTo: { her_experiences: 'HER_ADVENTURES', explore_together: 'PARTNERSHIP_PROPOSAL', different_perspective: 'PERSPECTIVE_APPRECIATION' }
+    },
+    'COFFEE_INVITATION': {
+      prompt: "Jin-Woo suggesting coffee and extended conversation. Casual invitation, anime style.",
+      narration: "Your invitation for coffee creates a warm, intimate atmosphere between you.",
+      chat: [
+        { sender: 'player', text: "Want to grab some coffee? We could continue this conversation somewhere more comfortable." },
+        { sender: 'Cha Hae-In', text: "I'd like that very much. There's this quiet café I know..." },
+        { sender: 'Cha Hae-In', text: "It'll be nice to talk somewhere we won't be interrupted." }
+      ],
+      choices: [
+        { text: "Lead the way", detail: "Follow her suggestion", type: 'follow_lead' },
+        { text: "I know a perfect spot", detail: "Suggest your own place", type: 'suggest_spot' },
+        { text: "Anywhere with you sounds perfect", detail: "Romantic response", type: 'anywhere_perfect' }
+      ],
+      leadsTo: { follow_lead: 'CAFE_SCENE', suggest_spot: 'YOUR_CHOICE_CAFE', anywhere_perfect: 'ROMANTIC_CAFE' }
+    },
+    'MUTUAL_GROWTH': {
+      prompt: "Jin-Woo and Cha Hae-In acknowledging their mutual growth. Deep connection, anime style.",
+      narration: "The recognition of how you've both grown creates a powerful bond between you.",
+      chat: [
+        { sender: 'player', text: "We really do complement each other, don't we?" },
+        { sender: 'Cha Hae-In', text: "More than I ever imagined. You've helped me become stronger in ways I didn't know I needed." },
+        { sender: 'Cha Hae-In', text: "And I hope I've done the same for you." }
+      ],
+      choices: [
+        { text: "You've changed my whole world", detail: "Deep confession", type: 'changed_world' },
+        { text: "We're stronger together", detail: "Partnership focus", type: 'stronger_together' },
+        { text: "I never want to lose this", detail: "Express attachment", type: 'never_lose' }
+      ],
+      leadsTo: { changed_world: 'WORLD_CHANGED', stronger_together: 'UNITED_STRENGTH', never_lose: 'PROTECTIVE_BOND' }
+    },
+    'TEAM_RECOGNITION': {
+      prompt: "Acknowledging the perfect partnership between Jin-Woo and Cha Hae-In. Team unity, anime style.",
+      narration: "Your partnership feels natural and powerful, like you were meant to work together.",
+      chat: [
+        { sender: 'player', text: "We really do make an incredible team." },
+        { sender: 'Cha Hae-In', text: "It's like we can read each other's movements in battle. I've never felt this synchronized with anyone." },
+        { sender: 'Cha Hae-In', text: "Both in combat and... in conversation." }
+      ],
+      choices: [
+        { text: "We're unstoppable together", detail: "Confident partnership", type: 'unstoppable' },
+        { text: "It feels natural with you", detail: "Acknowledge chemistry", type: 'feels_natural' },
+        { text: "I trust you completely", detail: "Express deep trust", type: 'complete_trust' }
+      ],
+      leadsTo: { unstoppable: 'UNSTOPPABLE_DUO', feels_natural: 'NATURAL_CHEMISTRY', complete_trust: 'ABSOLUTE_TRUST' }
+    },
     'STORY_SHARING': {
       prompt: "Jin-Woo sharing his adventures with Cha Hae-In. Storytelling moment, anime style.",
       narration: "As you recount your experiences, she listens with genuine interest.",
