@@ -357,7 +357,7 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
 }
 
 function createSoloLevelingPrompt(gameState: GameState): string {
-  const baseStyle = "Solo Leveling manhwa art style, CHUGONG webtoon aesthetic, Korean manhwa illustration, detailed digital art, dramatic shadows, sharp angular character designs, purple and blue color scheme, cinematic lighting, high contrast, professional manhwa quality";
+  const baseStyle = "Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel, Korean manhwa illustration, dramatic shadows, cinematic lighting, high contrast";
   
   // Determine scene type based on current narration and story path
   const narration = gameState.narration.toLowerCase();
@@ -542,7 +542,7 @@ function createIntimatePrompt(activityId: string, relationshipStatus: string, in
 }
 
 function createMatureSoloLevelingPrompt(gameState: GameState): string {
-  const baseStyle = "Solo Leveling manhwa art style, CHUGONG official artwork, Korean webtoon illustration, professional manhwa quality, detailed digital art, sharp character designs, dramatic shadows, purple and blue color palette, high contrast lighting";
+  const baseStyle = "Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel, Korean manhwa illustration, dramatic shadows, cinematic lighting, high contrast";
   const narration = gameState.narration.toLowerCase();
   
   // Accurate Solo Leveling character descriptions
