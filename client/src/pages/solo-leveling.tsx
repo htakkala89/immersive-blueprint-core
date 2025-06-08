@@ -2946,9 +2946,18 @@ export default function SoloLeveling() {
                 {/* Chat Toggle Button */}
                 <button
                   onClick={() => setChatPinned(!chatPinned)}
-                  className="absolute top-16 right-3 z-40 w-8 h-8 glassmorphism rounded-full flex items-center justify-center text-white hover:glassmorphism-dark transition-all"
+                  className="absolute top-16 right-3 z-40 w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all border border-white/10 shadow-lg"
                 >
-                  {chatPinned ? '📌' : '💬'}
+                  {chatPinned ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-purple-300">
+                      <path d="M12 2C13.1 2 14 2.9 14 4V6H16C17.1 6 18 6.9 18 8S17.1 10 16 10H14V12C14 13.1 13.1 14 12 14S10 13.1 10 12V10H8C6.9 10 6 9.1 6 8S6.9 6 8 6H10V4C10 2.9 10.9 2 12 2Z" fill="currentColor"/>
+                      <path d="M12 16L8 20H16L12 16Z" fill="currentColor"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-blue-300">
+                      <path d="M8 12H16M8 8H16M8 16H12M21 12C21 16.9706 16.9706 21 12 21C10.2734 21 8.65849 20.4784 7.31387 19.5849L3 21L4.41506 16.6861C3.52157 15.3415 3 13.7266 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
                 </button>
 
                 {/* Combined Messages Container - Full Screen Coverage */}
