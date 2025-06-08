@@ -128,6 +128,7 @@ export default function SoloLeveling() {
   const [showSkillTree, setShowSkillTree] = useState(false);
   const [chatPinned, setChatPinned] = useState(false);
   const [autoMessageVisible, setAutoMessageVisible] = useState(true);
+  const [autoHiddenMessages, setAutoHiddenMessages] = useState<Set<number>>(new Set());
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
 
@@ -1728,7 +1729,11 @@ export default function SoloLeveling() {
     
     // Hide individual message after 10 seconds
     setTimeout(() => {
-      setAutoHiddenMessages(prev => new Set([...prev, messageId]));
+      setAutoHiddenMessages((prev: Set<number>) => {
+        const newSet = new Set(prev);
+        newSet.add(messageId);
+        return newSet;
+      });
     }, 10000);
     
     // Auto-hide overlay after 12 seconds if not pinned
@@ -2155,7 +2160,7 @@ export default function SoloLeveling() {
                 {/* Minimal Stats Overlay */}
                 <div className="absolute top-3 left-3 right-3 z-30 flex justify-between items-start">
                   {/* Compact Stats */}
-                  <div className="bg-black/40 backdrop-blur-md rounded-xl p-2 border border-white/10">
+                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-2 border border-white/20 shadow-lg">
                     <div className="flex items-center gap-3">
                       {/* Health */}
                       <div className="flex items-center gap-1">
@@ -2188,7 +2193,7 @@ export default function SoloLeveling() {
                   </div>
 
                   {/* Compact Affection */}
-                  <div className="bg-black/40 backdrop-blur-md rounded-xl p-2 border border-pink-500/20">
+                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-2 border border-white/20 shadow-lg">
                     <div className="flex items-center gap-2">
                       <span className="text-pink-400 text-xs">💕</span>
                       <div className="flex gap-1">
@@ -2208,7 +2213,7 @@ export default function SoloLeveling() {
                 {/* Chat Toggle Button */}
                 <button
                   onClick={() => setChatPinned(!chatPinned)}
-                  className="absolute top-16 right-3 z-40 w-8 h-8 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all"
+                  className="absolute top-16 right-3 z-40 w-8 h-8 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 shadow-lg flex items-center justify-center text-white hover:bg-white/20 transition-all"
                 >
                   {chatPinned ? '📌' : '💬'}
                 </button>
