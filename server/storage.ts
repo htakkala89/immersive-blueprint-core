@@ -1,5 +1,8 @@
 import type { GameState, InsertGameState, Choice, CharacterStats } from "@shared/schema";
+import { gameStates } from "@shared/schema";
 import { STORY_NODES, getNextStoryNode, getAvailableChoices } from "./storyEngine";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getGameState(sessionId: string): Promise<GameState | undefined>;
@@ -342,4 +345,169 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  async getGameState(sessionId: string): Promise<GameState | undefined> {
+    const [gameState] = await db.select().from(gameStates).where(eq(gameStates.sessionId, sessionId));
+    return gameState || undefined;
+  }
+
+  async createGameState(insertGameState: InsertGameState): Promise<GameState> {
+    const [gameState] = await db
+      .insert(gameStates)
+      .values({
+        ...insertGameState,
+        stats: insertGameState.stats || {
+          strength: 10,
+          agility: 10,
+          intelligence: 10,
+          vitality: 10,
+          sense: 10
+        },
+        skills: insertGameState.skills || [
+          {
+            id: "shadow_extraction",
+            name: "Shadow Extraction",
+            description: "Extract shadows from defeated enemies",
+            type: "ultimate",
+            level: 1,
+            maxLevel: 10,
+            unlocked: true,
+            prerequisites: [],
+            effects: { shadowCapacity: 5 }
+          }
+        ]
+      })
+      .returning();
+    return gameState;
+  }
+
+  async updateGameState(sessionId: string, updates: Partial<InsertGameState>): Promise<GameState> {
+    const [gameState] = await db
+      .update(gameStates)
+      .set(updates)
+      .where(eq(gameStates.sessionId, sessionId))
+      .returning();
+    return gameState;
+  }
+
+  async processChoice(sessionId: string, choice: Choice): Promise<GameState> {
+    const gameState = await this.getGameState(sessionId);
+    if (!gameState) {
+      throw new Error("Game state not found");
+    }
+
+    const currentNode = STORY_NODES[gameState.storyPath];
+    if (!currentNode) {
+      throw new Error("Invalid story path");
+    }
+
+    const nextPath = currentNode.leadsTo?.[choice.id] || gameState.storyPath;
+    const { node: nextNode, newFlags } = getNextStoryNode(nextPath, gameState.storyFlags, gameState.choiceHistory);
+
+    const updated = await this.updateGameState(sessionId, {
+      narration: nextNode.narration,
+      choices: getAvailableChoices(nextNode, gameState.storyFlags, gameState.choiceHistory),
+      storyPath: nextPath,
+      choiceHistory: [...gameState.choiceHistory, choice.id],
+      storyFlags: newFlags,
+      sceneData: {
+        runes: Array.from({ length: 5 }, (_, i) => ({
+          x: Math.random() * 800,
+          y: Math.random() * 600,
+          isRed: Math.random() > 0.7,
+          phase: i * 0.3
+        })),
+        particles: Array.from({ length: 10 }, (_, i) => ({
+          x: Math.random() * 800,
+          y: Math.random() * 600,
+          phase: i * 0.2
+        }))
+      }
+    });
+
+    return updated;
+  }
+
+  async levelUp(sessionId: string): Promise<GameState> {
+    const gameState = await this.getGameState(sessionId);
+    if (!gameState) {
+      throw new Error("Game state not found");
+    }
+
+    const expNeeded = gameState.level * 100;
+    if (gameState.experience < expNeeded) {
+      throw new Error("Not enough experience to level up");
+    }
+
+    return await this.updateGameState(sessionId, {
+      level: gameState.level + 1,
+      experience: gameState.experience - expNeeded,
+      statPoints: gameState.statPoints + 5,
+      skillPoints: gameState.skillPoints + 1,
+      maxHealth: gameState.maxHealth + 20,
+      maxMana: gameState.maxMana + 10,
+      health: gameState.maxHealth + 20,
+      mana: gameState.maxMana + 10
+    });
+  }
+
+  async upgradeSkill(sessionId: string, skillId: string): Promise<GameState> {
+    const gameState = await this.getGameState(sessionId);
+    if (!gameState) {
+      throw new Error("Game state not found");
+    }
+
+    if (gameState.skillPoints <= 0) {
+      throw new Error("No skill points available");
+    }
+
+    const skillIndex = gameState.skills.findIndex(skill => skill.id === skillId);
+    if (skillIndex === -1) {
+      throw new Error("Skill not found");
+    }
+
+    const skill = gameState.skills[skillIndex];
+    if (skill.level >= skill.maxLevel) {
+      throw new Error("Skill already at max level");
+    }
+
+    const updatedSkills = [...gameState.skills];
+    updatedSkills[skillIndex] = { ...skill, level: skill.level + 1 };
+
+    return await this.updateGameState(sessionId, {
+      skills: updatedSkills,
+      skillPoints: gameState.skillPoints - 1
+    });
+  }
+
+  async allocateStatPoint(sessionId: string, stat: keyof CharacterStats): Promise<GameState> {
+    const gameState = await this.getGameState(sessionId);
+    if (!gameState) {
+      throw new Error("Game state not found");
+    }
+
+    if (gameState.statPoints <= 0) {
+      throw new Error("No stat points available");
+    }
+
+    const currentStats = gameState.stats || {
+      strength: 10,
+      agility: 10,
+      intelligence: 10,
+      vitality: 10,
+      sense: 10
+    };
+
+    const updatedStats = {
+      ...currentStats,
+      [stat]: (currentStats[stat] || 0) + 1
+    };
+
+    return await this.updateGameState(sessionId, {
+      stats: updatedStats,
+      statPoints: gameState.statPoints - 1
+    });
+  }
+}
+
+export const storage = new DatabaseStorage();

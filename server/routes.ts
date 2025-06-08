@@ -132,12 +132,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxHealth: 100,
         mana: 50,
         maxMana: 50,
+        level: 1,
+        experience: 0,
+        statPoints: 0,
+        skillPoints: 0,
+        gold: 100,
+        affectionLevel: 50,
+        energy: 100,
+        maxEnergy: 100,
+        relationshipStatus: "dating",
+        intimacyLevel: 1,
+        sharedMemories: 0,
+        livingTogether: 0,
+        daysTogether: 1,
+        currentScene: "romantic",
         choices: [],
         sceneData: null,
         storyPath: gameState?.storyPath || "romantic",
         choiceHistory: [],
         storyFlags: {},
-        inventory: []
+        inventory: [],
+        stats: {
+          strength: 10,
+          agility: 10,
+          intelligence: 10,
+          vitality: 10,
+          sense: 10
+        },
+        skills: []
       };
 
       // Use the existing dual-generator system
