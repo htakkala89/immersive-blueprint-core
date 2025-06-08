@@ -45,6 +45,7 @@ export default function SoloLeveling() {
     experience: 750,
     statPoints: 5,
     skillPoints: 2,
+    gold: 500,
     stats: {
       strength: 342,
       agility: 298,
