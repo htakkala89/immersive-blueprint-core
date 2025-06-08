@@ -1839,9 +1839,33 @@ export default function SoloLeveling() {
 
   const handleChoice = (choice: any) => {
     const currentStory = story[gameState.currentScene];
+    console.log('Choice clicked:', choice);
+    console.log('Current scene:', gameState.currentScene);
+    console.log('Current story leadsTo:', currentStory?.leadsTo);
+    console.log('Looking for choice type:', choice.type);
+    
+    // Universal gate navigation - if choice contains "gate" or "mission", go to gate
+    const isGateChoice = choice.type.includes('gate') || choice.type.includes('mission') || 
+                        choice.text.toLowerCase().includes('gate') || choice.text.toLowerCase().includes('mission');
+    
+    if (isGateChoice && !currentStory?.leadsTo?.[choice.type]) {
+      console.log('Universal gate navigation triggered');
+      const nextStory = story['GATE_ENTRANCE'];
+      if (nextStory) {
+        setGameState(prev => ({ ...prev, currentScene: 'GATE_ENTRANCE' }));
+        addChatMessage('player', choice.text);
+        nextStory.chat.forEach(msg => {
+          addChatMessage(msg.sender, msg.text);
+        });
+        generateSceneImage(nextStory.prompt);
+        return;
+      }
+    }
+    
     if (currentStory?.leadsTo?.[choice.type]) {
       const nextScene = currentStory.leadsTo[choice.type];
       const nextStory = story[nextScene];
+      console.log('Next scene found:', nextScene);
       
       if (nextStory) {
         setGameState(prev => ({ ...prev, currentScene: nextScene }));
