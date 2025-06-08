@@ -127,6 +127,7 @@ export default function SoloLeveling() {
   const [isLoading, setIsLoading] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{ sender: string; text: string; id: number; timestamp: number }>>([]);
   const [userInput, setUserInput] = useState('');
+  const [chatInput, setChatInput] = useState('');
   const [inputMode, setInputMode] = useState<'action' | 'speak'>('action');
   const [showInventory, setShowInventory] = useState(false);
   const [activeMiniGame, setActiveMiniGame] = useState<string | null>(null);
@@ -2223,6 +2224,31 @@ export default function SoloLeveling() {
     }
   };
 
+  // Add missing chat handlers
+  const handleChatKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleChatSubmit();
+    }
+  };
+
+  const handleChatSubmit = () => {
+    if (!chatInput.trim()) return;
+    
+    const message = chatInput.trim();
+    setChatInput('');
+    
+    // Add user message to chat
+    addChatMessage('player', message);
+    
+    // Process the chat message
+    handleChatWithHaeIn(message);
+  };
+
+  const handleChoiceClick = (choice: any) => {
+    handleChoice(choice);
+  };
+
   const handleChoice = (choice: any) => {
     const currentStory = story[gameState.currentScene];
     console.log('Choice clicked:', choice);
@@ -2841,72 +2867,104 @@ export default function SoloLeveling() {
 
                 </div>
 
-                {/* Actions Panel - Always Visible */}
-<div className="absolute bottom-20 left-0 right-0 z-40" style={{ marginTop: '12px' }}>
-                  {/* Choices Section - Apple-style Carousel */}
+                {/* New Combined Chat and Actions Panel */}
+                <div className="absolute bottom-0 left-0 right-0 z-50">
+                  {/* Action Pills - Above Chat Input */}
                   {currentStory?.choices && currentStory.choices.length > 0 && (
-                    <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-3 mx-3 rounded-t-2xl" style={{ height: '130px' }}>
-                      <div className="text-sm text-white font-medium mb-4 flex items-center justify-between">
-                        <span>Choose your action</span>
-                        <div className="bg-black/20 px-3 py-1 rounded-full text-xs font-mono text-white/80">
-                          {currentChoiceIndex + 1} of {currentStory.choices.length}
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-4" style={{ height: '80px' }}>
-                        {/* Previous Button */}
-                        {currentStory.choices.length > 1 && (
+                    <div className="px-4 pb-3">
+                      <div className="flex flex-wrap gap-2 justify-center max-w-full">
+                        {currentStory.choices.map((choice, index) => (
                           <button
-                            onClick={prevChoice}
-                            className="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/25 active:bg-white/20 transition-all duration-200 flex-shrink-0 text-lg shadow-lg border border-white/10"
+                            key={index}
+                            onClick={() => handleChoice(choice)}
+                            disabled={isLoading}
+                            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600/90 to-purple-700/90 backdrop-blur-xl border border-white/30 rounded-full px-4 py-2 text-white text-sm font-medium hover:from-blue-500 hover:to-purple-600 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed max-w-xs"
+                            title={choice.detail}
                           >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                              <path d="m15 18-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                            <span className="text-base">⚡</span>
+                            <span className="truncate">{choice.text}</span>
                           </button>
-                        )}
-
-                        {/* Current Choice Display - Compact Style */}
-                        <div className="flex-1 h-full">
-                          <button
-                            onClick={() => {
-                              const choice = currentStory.choices?.[currentChoiceIndex];
-                              if (choice) handleChoice(choice);
-                            }}
-                            className="w-full h-full bg-white/10 backdrop-blur-xl rounded-2xl p-2 hover:bg-white/15 active:bg-white/20 transition-all duration-200 text-left border border-white/20 shadow-lg group"
-                          >
-                            <div className="flex items-center gap-2 h-full">
-                              <div className="w-6 h-6 flex items-center justify-center text-xs flex-shrink-0">
-                                📱
-                              </div>
-                              <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                <div className="text-white text-xs font-medium mb-1 leading-tight">
-                                  {currentStory.choices[currentChoiceIndex]?.text || 'Choose an action'}
-                                </div>
-                                {currentStory.choices[currentChoiceIndex]?.detail && (
-                                  <div className="text-white/70 text-[10px] leading-snug">
-                                    {currentStory.choices[currentChoiceIndex].detail}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </button>
-                        </div>
-
-                        {/* Next Button */}
-                        {currentStory.choices.length > 1 && (
-                          <button
-                            onClick={nextChoice}
-                            className="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/25 active:bg-white/20 transition-all duration-200 flex-shrink-0 text-lg shadow-lg border border-white/10"
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                              <path d="m9 18 6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </button>
-                        )}
+                        ))}
                       </div>
                     </div>
                   )}
+
+                  {/* Chat Input Bar */}
+                  <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4">
+                    <div className="flex items-center gap-3">
+                      {/* Navigation Buttons */}
+                      <button 
+                        onClick={() => setShowSkillTree(true)}
+                        className="w-10 h-10 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all relative shadow-lg flex-shrink-0"
+                        title="Skills & Stats"
+                      >
+                        👑
+                        {((gameState.skillPoints || 0) + (gameState.statPoints || 0)) > 0 && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold">
+                            {(gameState.skillPoints || 0) + (gameState.statPoints || 0)}
+                          </div>
+                        )}
+                      </button>
+                      <button 
+                        onClick={() => setShowInventory(true)}
+                        className="w-10 h-10 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-lg flex-shrink-0"
+                      >
+                        🎒
+                      </button>
+                      {gameState.affection >= 3 && (
+                        <button 
+                          onClick={() => {
+                            setPreviousPage('story');
+                            setShowDailyLifeHub(true);
+                          }}
+                          className="w-10 h-10 bg-pink-600/90 backdrop-blur-xl border border-pink-400/30 rounded-full flex items-center justify-center text-white hover:bg-pink-500/90 transition-all shadow-lg flex-shrink-0"
+                          title="Daily Life Hub"
+                        >
+                          🏠
+                        </button>
+                      )}
+                      {gameState.affection >= 1 && (
+                        <button 
+                          onClick={() => {
+                            setPreviousPage('story');
+                            setShowMarketplace(true);
+                          }}
+                          className="w-10 h-10 bg-green-600/90 backdrop-blur-xl border border-green-400/30 rounded-full flex items-center justify-center text-white hover:bg-green-500/90 transition-all shadow-lg flex-shrink-0"
+                          title="Marketplace"
+                        >
+                          🛒
+                        </button>
+                      )}
+
+                      {/* Chat Input */}
+                      <div className="flex-1 relative">
+                        <input
+                          type="text"
+                          value={chatInput}
+                          onChange={(e) => setChatInput(e.target.value)}
+                          onKeyPress={handleChatKeyPress}
+                          placeholder="Chat with Cha Hae-In..."
+                          disabled={isLoading}
+                          className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-4 py-2.5 text-white placeholder-white/60 focus:outline-none focus:border-white/40 transition-all disabled:opacity-50"
+                        />
+                      </div>
+
+                      {/* Send Button */}
+                      <button
+                        onClick={handleChatSubmit}
+                        disabled={isLoading || !chatInput.trim()}
+                        className="w-10 h-10 bg-blue-600/90 backdrop-blur-xl border border-blue-400/30 rounded-full flex items-center justify-center text-white hover:bg-blue-500/90 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                      >
+                        {isLoading ? (
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="m22 2-7 20-4-9-9-4 20-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Bottom Bar - Overlaid */}
