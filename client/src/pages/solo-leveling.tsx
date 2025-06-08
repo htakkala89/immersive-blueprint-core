@@ -1357,9 +1357,10 @@ export default function SoloLeveling() {
       ],
       choices: [
         { text: "Plan our future", detail: "Look ahead together", type: 'plan_future' },
+        { text: "Start building a life together", detail: "Begin your shared journey", type: 'daily_life_hub' },
         { text: "Savor this moment", detail: "Stay in the present", type: 'savor_now' }
       ],
-      leadsTo: { plan_future: 'FUTURE_PLANNING', savor_now: 'PRESENT_BLISS' }
+      leadsTo: { plan_future: 'FUTURE_PLANNING', daily_life_hub: 'DAILY_LIFE_HUB', savor_now: 'PRESENT_BLISS' }
     },
     'SOUL_BOND': {
       prompt: "Jin-Woo and Cha Hae-In forming a soul bond. Spiritual connection, anime style.",
@@ -1397,9 +1398,10 @@ export default function SoloLeveling() {
       choices: [
         { text: "Share your deepest thoughts", detail: "Vulnerability", type: 'deepest_thoughts' },
         { text: "Ask about her dreams", detail: "Learn about her", type: 'her_dreams' },
+        { text: "Build a life together", detail: "Start your shared journey", type: 'daily_life_hub' },
         { text: "Suggest an adventure together", detail: "Action and bonding", type: 'adventure_together' }
       ],
-      leadsTo: { deepest_thoughts: 'DEEP_SHARING', her_dreams: 'DREAM_SHARING', adventure_together: 'GATE_ENTRANCE' }
+      leadsTo: { deepest_thoughts: 'DEEP_SHARING', her_dreams: 'DREAM_SHARING', daily_life_hub: 'DAILY_LIFE_HUB', adventure_together: 'GATE_ENTRANCE' }
     },
     'FRIENDSHIP_BUILDING': {
       prompt: "Building a strong friendship foundation. Platonic but meaningful connection, anime style.",
@@ -2170,6 +2172,14 @@ export default function SoloLeveling() {
     console.log('Current scene:', gameState.currentScene);
     console.log('Current story leadsTo:', currentStory?.leadsTo);
     console.log('Looking for choice type:', choice.type);
+    
+    // Check for Daily Life Hub navigation
+    if (choice.type === 'daily_life_hub') {
+      console.log('Navigating to Daily Life Hub...');
+      // Navigate to Daily Life Hub page
+      window.location.href = '/daily-life-hub';
+      return;
+    }
     
     // Check if this is a combat choice and trigger mini-game
     if (isCombatChoice(choice, gameState.currentScene, currentStory?.narration || '')) {
