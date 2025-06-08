@@ -2325,34 +2325,49 @@ export default function SoloLeveling() {
         // Generate voice for her response
         playVoice(data.response, 'Cha Hae-In');
         
-        // Generate new image for emotional reactions and scene changes in chat
-        const emotionalReactions = [
-          // Detailed facial expressions for immersion
-          /\*.*(?:small smile|gentle smile|shy smile|warm smile|soft smile).*\*/gi,
-          /\*.*(?:bites her lip|biting her lip|lip bite|nervously bites).*\*/gi,
-          /\*.*(?:touches her lips|runs her finger|traces her lip).*\*/gi,
-          /\*.*(?:looks away shyly|glances away|averts her gaze|looks down bashfully).*\*/gi,
-          /\*.*(?:cheeks flush|face turns red|blushes deeply|rosy cheeks|pink cheeks).*\*/gi,
-          // Physical reactions  
-          /\*.*(?:blushes|smiles|laughs|giggles|tears up|cries|gasps|shocked|surprised).*\*/gi,
-          /\*.*(?:kisses|embraces|holds close|pulls away|touches|caresses|hugs).*\*/gi,
-          // Emotional states
+        // Enhanced visual description detection for comprehensive image generation
+        const visualDescriptions = [
+          // Facial expressions and micro-expressions
+          /\*.*(?:slight smile|small smile|gentle smile|shy smile|warm smile|soft smile|knowing smile|playful smile).*\*/gi,
+          /\*.*(?:bites her lip|biting her lip|lip bite|nervously bites|touches her lips|runs her finger|traces her lip).*\*/gi,
+          /\*.*(?:looks away shyly|glances away|averts her gaze|looks down bashfully|meets your eyes|stares into|gazes at).*\*/gi,
+          /\*.*(?:cheeks flush|face turns red|blushes deeply|rosy cheeks|pink cheeks|blushes).*\*/gi,
+          /\*.*(?:raises an eyebrow|eyebrow raised|arched eyebrow|questioning look).*\*/gi,
+          
+          // Body language and posture
+          /\*.*(?:tilts her head|head tilt|leans forward|leans back|sits up straight|relaxes).*\*/gi,
+          /\*.*(?:crosses her arms|uncrosses arms|hands on hips|adjusts her stance|shifts position).*\*/gi,
+          /\*.*(?:steps closer|moves away|takes a step back|moves forward|approaches).*\*/gi,
+          
+          // Equipment and clothing descriptions
+          /\*.*(?:red armor|armor gleaming|gleaming faintly|armor shining|adjusts her sword|sword at her side).*\*/gi,
+          /\*.*(?:blonde hair|hair catches the light|hair flowing|hair gleaming|golden hair).*\*/gi,
+          
+          // Physical interactions
+          /\*.*(?:reaches out|extends her hand|takes your hand|touches|caresses|embraces|hugs).*\*/gi,
+          /\*.*(?:kisses|pulls close|holds close|pulls away|leans in|sits closer|stands up).*\*/gi,
+          
+          // Emotional states with visual cues
           /(confession|first time|never felt|heart racing|can't breathe|overwhelmed|moved|touched)/gi,
           /(she blushes|her cheeks turn red|her face turns red|eyes light up|smiles warmly|face softens)/gi,
           /(tears in her eyes|starts crying|gets emotional|voice trembles|voice breaks|choked up)/gi,
-          // Actions and movements
-          /(steps closer|moves away|looks away|looks down|meets your eyes|stares into|gazes at)/gi,
-          /(takes your hand|reaches out|pulls back|leans in|sits closer|stands up)/gi,
-          // Setting changes in conversation
-          /(we should go|let's move to|walks to|heads to|arrives at|enters the|leaves the)/gi
+          /(gasps|shocked|surprised|laughs|giggles|sighs)/gi,
+          
+          // Environmental and lighting descriptions
+          /(in the light|light catches|gleaming|shining|glowing|soft lighting|warm glow)/gi,
+          /(red armor gleaming|armor catching light|faintly gleaming|gleams softly)/gi,
+          
+          // Conversational visual cues  
+          /(genuinely curious|thoughtful expression|contemplative look|focused gaze|intense stare)/gi,
+          /(playful grin|mischievous smile|teasing look|competitive glint|challenging expression)/gi
         ];
         
-        const hasEmotionalReaction = emotionalReactions.some(pattern => 
+        const hasVisualDescription = visualDescriptions.some(pattern => 
           pattern.test(data.response)
         );
         
-        if (hasEmotionalReaction) {
-          console.log('Generating image for emotional reaction or scene change');
+        if (hasVisualDescription) {
+          console.log('Generating image for visual description in chat:', data.response);
           fetch('/api/generate-chat-image', {
             method: 'POST',
             headers: {
