@@ -8,6 +8,11 @@ interface PlayerStats {
   affectionLevel: number;
   energy: number;
   maxEnergy: number;
+  relationshipStatus: 'dating' | 'engaged' | 'married';
+  intimacyLevel: number;
+  sharedMemories: number;
+  livingTogether: boolean;
+  daysTogether: number;
 }
 
 interface Activity {
@@ -23,64 +28,135 @@ interface Activity {
   cooldown?: number;
 }
 
-const DAILY_ACTIVITIES: Activity[] = [
-  {
-    id: 'dungeon_raid',
-    title: 'Solo Dungeon Raid',
-    description: 'Clear a C-rank dungeon alone to earn gold and experience.',
-    icon: '⚔️',
-    energyCost: 2,
-    goldReward: 150,
-    experienceReward: 50,
-    available: true
-  },
-  {
-    id: 'team_dungeon',
-    title: 'Team Up with Hae-In',
-    description: 'Partner with Cha Hae-In for a challenging B-rank dungeon.',
-    icon: '👥',
-    energyCost: 3,
-    goldReward: 300,
-    experienceReward: 100,
-    affectionReward: 1,
-    available: true
-  },
-  {
-    id: 'training',
-    title: 'Shadow Training',
-    description: 'Train with your shadow soldiers to improve your abilities.',
-    icon: '🥋',
-    energyCost: 1,
-    experienceReward: 25,
-    available: true
-  },
-  {
-    id: 'hunter_association',
-    title: 'Hunter Association Tasks',
-    description: 'Complete paperwork and administrative duties.',
-    icon: '📋',
-    energyCost: 1,
-    goldReward: 75,
-    available: true
-  },
-  {
-    id: 'date_activity',
-    title: 'Ask Hae-In on a Date',
-    description: 'Spend quality time together to strengthen your bond.',
-    icon: '💕',
-    energyCost: 2,
-    affectionReward: 2,
-    available: true
-  },
-  {
-    id: 'marketplace',
-    title: 'Visit Hunter Marketplace',
-    description: 'Browse and purchase gifts for Cha Hae-In.',
-    icon: '🛒',
-    energyCost: 0,
-    available: true
-  }
-];
+const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity[] => {
+  const baseActivities: Activity[] = [
+    {
+      id: 'wake_up_together',
+      title: 'Wake Up with Hae-In',
+      description: stats.livingTogether ? 'Start your morning together in your shared apartment.' : 'Hae-In stayed over last night...',
+      icon: '🌅',
+      energyCost: 0,
+      affectionReward: 1,
+      available: timeOfDay === 'morning' && stats.relationshipStatus !== 'dating'
+    },
+    {
+      id: 'morning_coffee',
+      title: 'Morning Coffee Together',
+      description: 'Share a quiet moment over coffee before the day begins.',
+      icon: '☕',
+      energyCost: 0,
+      affectionReward: 1,
+      available: timeOfDay === 'morning' && stats.livingTogether
+    },
+    {
+      id: 'cook_together',
+      title: 'Cook Breakfast Together',
+      description: 'Prepare a meal together in your kitchen.',
+      icon: '🍳',
+      energyCost: 1,
+      affectionReward: 2,
+      available: timeOfDay === 'morning' && stats.intimacyLevel >= 3
+    },
+    {
+      id: 'team_dungeon',
+      title: 'Dungeon Raid as Partners',
+      description: 'Clear dangerous gates together as the ultimate hunter duo.',
+      icon: '👥',
+      energyCost: 3,
+      goldReward: 300,
+      experienceReward: 100,
+      affectionReward: 2,
+      available: true
+    },
+    {
+      id: 'romantic_dinner',
+      title: 'Romantic Dinner',
+      description: 'Take Hae-In to an upscale restaurant for an intimate evening.',
+      icon: '🍽️',
+      energyCost: 2,
+      goldReward: -200,
+      affectionReward: 3,
+      available: timeOfDay === 'evening'
+    },
+    {
+      id: 'propose_marriage',
+      title: 'Propose Marriage',
+      description: 'Take the next step in your relationship with Cha Hae-In.',
+      icon: '💍',
+      energyCost: 0,
+      goldReward: -5000,
+      affectionReward: 10,
+      available: stats.relationshipStatus === 'dating' && stats.affectionLevel >= 8 && stats.intimacyLevel >= 7
+    },
+    {
+      id: 'wedding_planning',
+      title: 'Plan Wedding Together',
+      description: 'Work together to plan your perfect wedding ceremony.',
+      icon: '📋',
+      energyCost: 2,
+      affectionReward: 2,
+      available: stats.relationshipStatus === 'engaged'
+    },
+    {
+      id: 'apartment_hunting',
+      title: 'Look for Apartment Together',
+      description: 'Find the perfect place to start your life together.',
+      icon: '🏠',
+      energyCost: 2,
+      goldReward: -1000,
+      affectionReward: 2,
+      available: stats.relationshipStatus === 'engaged' && !stats.livingTogether
+    },
+    {
+      id: 'intimate_evening',
+      title: 'Spend Intimate Evening',
+      description: 'Enjoy a private, romantic evening together at home.',
+      icon: '🌙',
+      energyCost: 0,
+      affectionReward: 3,
+      available: timeOfDay === 'night' && stats.intimacyLevel >= 5 && (stats.livingTogether || stats.relationshipStatus === 'married')
+    },
+    {
+      id: 'marriage_ceremony',
+      title: 'Wedding Ceremony',
+      description: 'Exchange vows and become husband and wife.',
+      icon: '💒',
+      energyCost: 0,
+      goldReward: -10000,
+      affectionReward: 15,
+      available: stats.relationshipStatus === 'engaged' && stats.sharedMemories >= 10
+    },
+    {
+      id: 'honeymoon',
+      title: 'Honeymoon Trip',
+      description: 'Take a romantic getaway to celebrate your marriage.',
+      icon: '✈️',
+      energyCost: 5,
+      goldReward: -3000,
+      affectionReward: 5,
+      available: stats.relationshipStatus === 'married' && stats.daysTogether < 7
+    },
+    {
+      id: 'marketplace',
+      title: 'Shopping Together',
+      description: stats.livingTogether ? 'Shop for household items together.' : 'Browse for the perfect gift for Hae-In.',
+      icon: '🛒',
+      energyCost: 1,
+      available: true
+    },
+    {
+      id: 'lazy_sunday',
+      title: 'Lazy Day Together',
+      description: 'Spend a relaxing day at home, just enjoying each other\'s company.',
+      icon: '🛋️',
+      energyCost: 0,
+      affectionReward: 2,
+      available: stats.livingTogether && timeOfDay === 'afternoon'
+    }
+  ];
+
+  return baseActivities.filter(activity => activity.available);
+};
 
 export default function DailyLifeHub() {
   const [, setLocation] = useLocation();
@@ -90,12 +166,22 @@ export default function DailyLifeHub() {
     experience: 750,
     affectionLevel: 3,
     energy: 8,
-    maxEnergy: 10
+    maxEnergy: 10,
+    relationshipStatus: 'dating',
+    intimacyLevel: 3,
+    sharedMemories: 5,
+    livingTogether: false,
+    daysTogether: 14
   });
 
-  const [activities] = useState<Activity[]>(DAILY_ACTIVITIES);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('morning');
+
+  // Update activities based on stats and time
+  useEffect(() => {
+    setActivities(getAvailableActivities(playerStats, timeOfDay));
+  }, [playerStats, timeOfDay]);
 
   // Time progression system
   useEffect(() => {
@@ -135,13 +221,36 @@ export default function DailyLifeHub() {
     }
 
     // Handle immediate activities
-    setPlayerStats(prev => ({
-      ...prev,
-      energy: prev.energy - activity.energyCost,
-      gold: prev.gold + (activity.goldReward || 0),
-      experience: prev.experience + (activity.experienceReward || 0),
-      affectionLevel: Math.min(10, prev.affectionLevel + (activity.affectionReward || 0))
-    }));
+    setPlayerStats(prev => {
+      const newStats = {
+        ...prev,
+        energy: prev.energy - activity.energyCost,
+        gold: prev.gold + (activity.goldReward || 0),
+        experience: prev.experience + (activity.experienceReward || 0),
+        affectionLevel: Math.min(10, prev.affectionLevel + (activity.affectionReward || 0)),
+        daysTogether: prev.daysTogether + 1
+      };
+
+      // Handle special relationship milestones
+      if (activity.id === 'propose_marriage') {
+        newStats.relationshipStatus = 'engaged';
+        newStats.intimacyLevel = Math.min(10, prev.intimacyLevel + 2);
+        newStats.sharedMemories = prev.sharedMemories + 3;
+      } else if (activity.id === 'marriage_ceremony') {
+        newStats.relationshipStatus = 'married';
+        newStats.intimacyLevel = Math.min(10, prev.intimacyLevel + 3);
+        newStats.sharedMemories = prev.sharedMemories + 5;
+        newStats.livingTogether = true;
+      } else if (activity.id === 'apartment_hunting') {
+        newStats.livingTogether = true;
+        newStats.sharedMemories = prev.sharedMemories + 2;
+      } else if (activity.id.includes('together') || activity.id.includes('intimate')) {
+        newStats.intimacyLevel = Math.min(10, prev.intimacyLevel + 1);
+        newStats.sharedMemories = prev.sharedMemories + 1;
+      }
+
+      return newStats;
+    });
 
     setSelectedActivity(activity);
   };
@@ -207,7 +316,29 @@ export default function DailyLifeHub() {
             <div className="text-center">
               <div className="text-pink-400 text-2xl">💕</div>
               <div className="text-white font-semibold">{playerStats.affectionLevel}/10</div>
-              <div className="text-gray-300 text-sm">Hae-In's Affection</div>
+              <div className="text-gray-300 text-sm">Hae-In's Love</div>
+            </div>
+          </div>
+          
+          {/* Relationship Status */}
+          <div className="mt-4 flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <div className="bg-pink-500/20 px-3 py-1 rounded-full">
+                <span className="text-pink-300 text-sm font-medium">
+                  {playerStats.relationshipStatus === 'dating' && '💑 Dating'}
+                  {playerStats.relationshipStatus === 'engaged' && '💍 Engaged'}
+                  {playerStats.relationshipStatus === 'married' && '💒 Married'}
+                </span>
+              </div>
+              <div className="bg-purple-500/20 px-3 py-1 rounded-full">
+                <span className="text-purple-300 text-sm">
+                  {playerStats.livingTogether ? '🏠 Living Together' : '🏠 Separate Homes'}
+                </span>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-white text-sm">Days Together: {playerStats.daysTogether}</div>
+              <div className="text-gray-300 text-xs">Intimacy: {playerStats.intimacyLevel}/10 • Memories: {playerStats.sharedMemories}</div>
             </div>
           </div>
         </div>
@@ -286,12 +417,24 @@ export default function DailyLifeHub() {
           </button>
         </div>
 
-        {/* Activity Result Modal */}
+        {/* Activity Result Modal with Intimate Dialogue */}
         {selectedActivity && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 max-w-md">
-              <h3 className="text-xl font-semibold text-white mb-4">Activity Complete!</h3>
-              <p className="text-gray-300 mb-4">You completed: {selectedActivity.title}</p>
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 max-w-lg">
+              <h3 className="text-xl font-semibold text-white mb-4">
+                {getActivityResultTitle(selectedActivity, playerStats)}
+              </h3>
+              
+              {/* Cha Hae-In's Response */}
+              <div className="bg-pink-500/20 rounded-lg p-4 mb-4">
+                <div className="flex items-center mb-2">
+                  <div className="text-2xl mr-3">💖</div>
+                  <div className="text-pink-300 font-medium">Cha Hae-In</div>
+                </div>
+                <p className="text-white italic">
+                  "{getIntimateDialogue(selectedActivity, playerStats)}"
+                </p>
+              </div>
               
               <div className="space-y-2 mb-6">
                 {selectedActivity.goldReward && (
@@ -301,7 +444,10 @@ export default function DailyLifeHub() {
                   <div className="text-purple-300">✨ +{selectedActivity.experienceReward} Experience</div>
                 )}
                 {selectedActivity.affectionReward && (
-                  <div className="text-pink-300">💕 +{selectedActivity.affectionReward} Affection</div>
+                  <div className="text-pink-300">💕 +{selectedActivity.affectionReward} Love</div>
+                )}
+                {selectedActivity.id.includes('together') && (
+                  <div className="text-blue-300">🌟 +1 Intimacy • +1 Shared Memory</div>
                 )}
               </div>
               
