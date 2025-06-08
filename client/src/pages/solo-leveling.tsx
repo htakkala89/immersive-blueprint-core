@@ -40,28 +40,35 @@ export default function SoloLeveling() {
   const [messageStates, setMessageStates] = useState<Record<number, 'entering' | 'staying' | 'exiting' | 'hidden'>>({});
   const [messageTimers, setMessageTimers] = useState<Record<number, NodeJS.Timeout>>({});
   
-  const [gameState, setGameState] = useState<GameState>({
-    level: 146,
-    health: 15420,
-    maxHealth: 15420,
-    mana: 8750,
-    maxMana: 8750,
-    affection: 0,
-    currentScene: 'START',
-    inventory: [],
-    inCombat: false,
-    experience: 750,
-    statPoints: 5,
-    skillPoints: 2,
-    gold: 500,
-    stats: {
-      strength: 342,
-      agility: 298,
-      intelligence: 176,
-      vitality: 285,
-      sense: 243
-    },
-    skills: [
+  // Initialize game state with saved data or defaults
+  const initializeGameState = (): GameState => {
+    const savedState = loadGameState();
+    if (savedState) {
+      return savedState;
+    }
+    
+    return {
+      level: 146,
+      health: 15420,
+      maxHealth: 15420,
+      mana: 8750,
+      maxMana: 8750,
+      affection: 0,
+      currentScene: 'START',
+      inventory: [],
+      inCombat: false,
+      experience: 750,
+      statPoints: 5,
+      skillPoints: 2,
+      gold: 500,
+      stats: {
+        strength: 342,
+        agility: 298,
+        intelligence: 176,
+        vitality: 285,
+        sense: 243
+      },
+      skills: [
       {
         id: "shadow-extraction",
         name: "Shadow Extraction",
@@ -123,9 +130,10 @@ export default function SoloLeveling() {
         manaCost: 100,
         cooldown: 300
       }
-    ]
-  });
+    ];
+  };
 
+  const [gameState, setGameState] = useState<GameState>(initializeGameState());
   const [gameStarted, setGameStarted] = useState(false);
   const [currentBackground, setCurrentBackground] = useState('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
   const [sceneBackground, setSceneBackground] = useState('');
@@ -2032,36 +2040,26 @@ export default function SoloLeveling() {
     }
   };
 
-  const resetGame = () => {
-    setGameState({
-      level: 146,
-      health: 15420,
-      maxHealth: 15420,
-      mana: 8750,
-      maxMana: 8750,
-      affection: 0,
-      currentScene: 'START',
-      inventory: [],
-      inCombat: false,
-      experience: 750,
-      statPoints: 5,
-      skillPoints: 2,
-      gold: 500,
-      stats: {
-        strength: 342,
-        agility: 298,
-        intelligence: 176,
-        vitality: 285,
-        sense: 243
-      },
-      skills: [
-        { id: 'shadow_extraction', name: 'Shadow Extraction', level: 10, description: 'Extract shadows from defeated enemies' },
-        { id: 'shadow_exchange', name: 'Shadow Exchange', level: 8, description: 'Instantly swap positions with shadows' },
-        { id: 'monarch_domain', name: 'Monarch\'s Domain', level: 5, description: 'Create a domain of absolute shadow control' }
-      ]
-    });
-    setChatMessages([]);
-    setCurrentChoiceIndex(0);
+  // Save game state to localStorage
+  const saveGameState = (state: GameState) => {
+    try {
+      localStorage.setItem('solo-leveling-game-state', JSON.stringify(state));
+    } catch (error) {
+      console.warn('Failed to save game state:', error);
+    }
+  };
+
+  // Load game state from localStorage
+  const loadGameState = (): GameState | null => {
+    try {
+      const saved = localStorage.getItem('solo-leveling-game-state');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.warn('Failed to load game state:', error);
+    }
+    return null;
   };
 
 
@@ -3349,12 +3347,6 @@ export default function SoloLeveling() {
                               ❤️
                             </span>
                           ))}
-                          <button
-                            onClick={resetGame}
-                            className="ml-2 px-2 py-1 text-xs bg-red-500/20 text-red-300 rounded border border-red-500/30 hover:bg-red-500/30 transition-colors"
-                          >
-                            Reset
-                          </button>
                         </div>
                       </div>
                     </div>
