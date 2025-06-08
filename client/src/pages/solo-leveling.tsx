@@ -1903,6 +1903,13 @@ export default function SoloLeveling() {
     };
     setChatMessages(prev => [...prev, newMessage]);
     
+    // Play voice for character dialogue automatically
+    if (sender === 'Cha Hae-In') {
+      setTimeout(() => playVoice(text, 'cha-hae-in'), 300);
+    } else if (sender === 'system') {
+      setTimeout(() => playVoice(text, 'game-master'), 300);
+    }
+    
     // Show overlay automatically when new messages appear
     setAutoMessageVisible(true);
     
@@ -2363,6 +2370,9 @@ export default function SoloLeveling() {
         // Add AI response and ensure it's visible
         addChatMessage('Cha Hae-In', data.response);
         
+        // Play voice for Cha Hae-In's response
+        playVoice(data.response, 'cha-hae-in');
+        
         // If chat response includes an image, update background
         if (data.imageUrl) {
           setCurrentBackground(data.imageUrl);
@@ -2500,6 +2510,8 @@ export default function SoloLeveling() {
         setTimeout(() => {
           const response = intimateResponses[Math.floor(Math.random() * intimateResponses.length)];
           addChatMessage('Cha Hae-In', response);
+          // Play voice for intimate responses
+          playVoice(response, 'cha-hae-in');
         }, 1500);
         
       } else {
