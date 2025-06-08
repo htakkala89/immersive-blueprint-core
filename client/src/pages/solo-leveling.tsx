@@ -1411,6 +1411,51 @@ export default function SoloLeveling() {
       ],
       leadsTo: { growth_interest: 'GROWTH_DISCUSSION', acknowledge_change: 'CHANGE_RECOGNITION', growth_journey: 'PERSONAL_JOURNEY' }
     },
+    'GROWTH_DISCUSSION': {
+      prompt: "Cha Hae-In opening up about her personal growth. Deep conversation, anime style.",
+      narration: "She appreciates your genuine interest and opens up more than usual.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I used to be so focused on just being stronger, but lately I've realized strength isn't everything." },
+        { sender: 'Cha Hae-In', text: "Having someone who understands... someone like you... it changes how I see things." },
+        { sender: 'player', text: "You've helped me grow too, Hae-In. More than you know." }
+      ],
+      choices: [
+        { text: "We complement each other", detail: "Acknowledge mutual growth", type: 'mutual_complement' },
+        { text: "Tell me more", detail: "Continue the deep conversation", type: 'continue_deep' },
+        { text: "Suggest spending more time together", detail: "Propose closer relationship", type: 'more_time' }
+      ],
+      leadsTo: { mutual_complement: 'MUTUAL_GROWTH', continue_deep: 'DEEPER_CONVERSATION', more_time: 'TIME_TOGETHER' }
+    },
+    'CHANGE_RECOGNITION': {
+      prompt: "Jin-Woo acknowledging Cha Hae-In's positive changes. Recognition moment, anime style.",
+      narration: "Your acknowledgment of her growth touches her deeply.",
+      chat: [
+        { sender: 'player', text: "You have changed. You seem more... confident. More at peace with yourself." },
+        { sender: 'Cha Hae-In', text: "You noticed... I wasn't sure if anyone could see the difference." },
+        { sender: 'Cha Hae-In', text: "It's partly because of you, Jin-Woo. Your presence makes me feel more myself." }
+      ],
+      choices: [
+        { text: "You bring out the best in me too", detail: "Share mutual feelings", type: 'mutual_best' },
+        { text: "I'm glad I could help", detail: "Express happiness", type: 'glad_help' },
+        { text: "You're amazing as you are", detail: "Affirm her worth", type: 'amazing_as_is' }
+      ],
+      leadsTo: { mutual_best: 'MUTUAL_BEST', glad_help: 'HELPFUL_MOMENT', amazing_as_is: 'AFFIRMATION_MOMENT' }
+    },
+    'PERSONAL_JOURNEY': {
+      prompt: "Cha Hae-In sharing details about her personal journey. Intimate conversation, anime style.",
+      narration: "She trusts you enough to share her deeper thoughts and experiences.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Meeting other hunters, facing difficult dungeons... but mostly meeting you." },
+        { sender: 'Cha Hae-In', text: "You showed me that strength doesn't mean being alone." },
+        { sender: 'player', text: "And you showed me that partnership can make us both stronger." }
+      ],
+      choices: [
+        { text: "We make a great team", detail: "Emphasize partnership", type: 'great_team' },
+        { text: "I want to know you better", detail: "Express deeper interest", type: 'know_better' },
+        { text: "Thank you for trusting me", detail: "Acknowledge her openness", type: 'thank_trust' }
+      ],
+      leadsTo: { great_team: 'TEAM_RECOGNITION', know_better: 'DEEPER_KNOWING', thank_trust: 'TRUST_APPRECIATION' }
+    },
     'STORY_SHARING': {
       prompt: "Jin-Woo sharing his adventures with Cha Hae-In. Storytelling moment, anime style.",
       narration: "As you recount your experiences, she listens with genuine interest.",
