@@ -1,0 +1,30 @@
+. Core Visual Design & Layout
+Full-Screen Cinematic View: The AI-generated artwork is the centerpiece of the experience. It fills the entire background of the game screen, with no bezels or borders, creating a fully immersive and cinematic feel for every scene.
+
+Glassmorphism UI: All UI elements that appear over the scene—including the stats display, dialogue boxes, choice menus, and all modal pop-ups—feature a semi-transparent, blurred background. This creates a sleek, "frosted glass" effect that provides a sense of depth while ensuring text remains legible.
+
+Cinematic Ken Burns Effect: To add a dynamic and engaging quality to the visuals, all background images use a slow, subtle pan-and-zoom animation. Each scene starts fully "zoomed out" and then gradually moves in, creating a constant sense of motion.
+
+2. Narrative & Dialogue Interface
+"Lyric Mode" Text Fading: To keep the screen clean and focused, dialogue and narration text now remain on screen for 12 seconds before automatically fading away. This mimics the experience of a music app's lyrics view.
+
+"Keep Text" Toggle (💬): You have full control over the text fading. A dedicated toggle button on the right side of the screen allows you to disable the auto-fade effect, keeping all messages on screen until you turn it off again.
+
+Smart Scrolling: Manually scrolling through the chat history temporarily disables the fade-out effect, allowing you to catch up on the conversation without interruption.
+
+Auto-Hiding Scrollbar: The scrollbar for the narrative container is invisible by default. It only appears when you hover your mouse over the text area, preventing visual clutter.
+
+Custom Avatars: Each speaker has a unique, stylized avatar to make conversations easy to follow.
+
+Sung Jin-Woo: A custom avatar with a dark, purple theme.
+
+Cha Hae-In: A custom avatar with a pink and gold theme.
+
+System & GM: Simple, clean icons (⚙️ and 🎲) to clearly distinguish system messages and narration.
+
+3. Interactive Elements
+Consolidated Input Toggle: The "Action" (⚔️) and "Speak" (💬) modes have been combined into a single, efficient toggle button, saving space and simplifying the input controls.
+
+Horizontal Choice Carousel: Instead of a vertical list, your choices are presented in a sleek, horizontal carousel. You can cycle through options one at a time using "previous" (‹) and "next" (›) buttons. A pagination counter (e.g., "1 of 4") clearly indicates your position in the list.
+
+Intuitive Modal Closing: All pop-up windows (Inventory, Shop, System Info, etc.) now feature a dedicated "X" button in the top-right corner, providing a clear and familiar way to close them.

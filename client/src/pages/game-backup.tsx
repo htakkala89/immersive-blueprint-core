@@ -49,7 +49,7 @@ export default function Game() {
   }
 
   if (showLifeHub) {
-    return <Home />;
+    return <Home onClose={() => setShowLifeHub(false)} />;
   }
 
   return (
