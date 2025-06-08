@@ -1848,7 +1848,20 @@ export default function SoloLeveling() {
           addChatMessage(msg.sender, msg.text);
         });
         
-        generateSceneImage(nextStory.prompt);
+        // Only generate images for significant scene changes and major actions
+        const significantActions = [
+          'enter_dungeon', 'boss_fight', 'new_location', 'major_battle', 
+          'confession', 'kiss', 'date', 'travel', 'guild_meeting',
+          'awakening', 'power_up', 'transformation', 'death', 'victory'
+        ];
+        
+        const isSignificantAction = significantActions.some(action => 
+          choice.type.includes(action) || nextScene.toLowerCase().includes(action)
+        );
+        
+        if (isSignificantAction) {
+          generateSceneImage(nextStory.prompt);
+        }
 
         // Special effects for certain actions
         if (choice.type === 'summon' || choice.type === 'shadow_attack' || choice.type === 'extract_shadow') {
@@ -1951,19 +1964,29 @@ export default function SoloLeveling() {
           setSceneBackground(data.imageUrl);
           console.log('Chat response generated image, updating background');
         } else {
-          // Check for emotional descriptions in the response and generate appropriate images
-          const emotionPatterns = [
-            /\(([^)]+)\)/g, // Text in parentheses like (cheeks flushed red)
-            /\*([^*]+)\*/g, // Text in asterisks like *smiles softly*
-            /(blush|smile|laugh|giggle|eyes|cheeks|face|expression|flushed|red|pink|shy|bashful|confident|surprised|thoughtful)/gi
+          // Only generate images for significant emotional moments
+          const significantEmotions = [
+            /\(.*(?:blush|flushed|tears|crying|shocked|gasped|eyes wide).*\)/gi,
+            /\*.*(?:kisses|embraces|holds close|pulls away).*\*/gi,
+            /(confession|first time|never felt|heart racing|can't breathe)/gi
           ];
           
-          const hasEmotionalDescription = emotionPatterns.some(pattern => 
+          const isSignificantEmotion = significantEmotions.some(pattern => 
             pattern.test(data.response)
           );
           
-          if (hasEmotionalDescription) {
-            // Generate emotion-based scene image
+          // Also check if this is a major conversational moment
+          const majorConversationTopics = [
+            'love', 'confession', 'feelings', 'heart', 'first time', 'never felt',
+            'marry', 'future', 'together forever', 'soul', 'destiny'
+          ];
+          
+          const isMajorTopic = majorConversationTopics.some(topic =>
+            message.toLowerCase().includes(topic) || data.response.toLowerCase().includes(topic)
+          );
+          
+          if (isSignificantEmotion || isMajorTopic) {
+            // Generate emotion-based scene image only for major moments
             fetch('/api/generate-chat-image', {
               method: 'POST',
               headers: {
@@ -1979,7 +2002,7 @@ export default function SoloLeveling() {
               if (imageData.imageUrl) {
                 setCurrentBackground(imageData.imageUrl);
                 setSceneBackground(imageData.imageUrl);
-                console.log('Generated emotion-based image from chat description');
+                console.log('Generated image for significant emotional moment');
               }
             })
             .catch(err => console.log('Image generation skipped:', err.message));
