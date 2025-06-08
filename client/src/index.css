@@ -431,16 +431,16 @@
     opacity: 0;
     transform: translateY(10px);
   }
-  10% {
+  8% {
     opacity: 1;
     transform: translateY(0);
   }
-  85% {
+  90% {
     opacity: 1;
     transform: translateY(0);
   }
   100% {
-    opacity: 0.3;
+    opacity: 0.7;
     transform: translateY(0);
   }
 }

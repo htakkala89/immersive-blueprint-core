@@ -1795,7 +1795,7 @@ export default function SoloLeveling() {
         }, 500); // Exit animation duration
         
         setMessageTimers(prev => ({ ...prev, [messageId]: hideTimer }));
-      }, 6000); // Stay visible for 6 seconds for comfortable reading
+      }, 8000); // Stay visible for 8 seconds for comfortable reading
       
       setMessageTimers(prev => ({ ...prev, [messageId]: exitTimer }));
     }, 300); // Entering animation duration
@@ -2958,7 +2958,7 @@ export default function SoloLeveling() {
                       
                       {/* Story Narration - Game Master Message */}
                       {currentStory && (
-                        <div className="mb-4">
+                        <div className="chat-message message-bubble message-staying mb-4">
                           <div className="flex items-start gap-3">
                             <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 glassmorphism flex items-center justify-center flex-shrink-0 ${
                               isPlaying ? 'animate-pulse ring-2 ring-purple-400' : ''
@@ -2980,9 +2980,9 @@ export default function SoloLeveling() {
                         </div>
                       )}
 
-                      {/* System/Story Messages */}
+                      {/* System/Story Messages with iMessage-style animation */}
                       {currentStory?.chat && currentStory.chat.map((msg, index) => (
-                        <div key={`story-${index}`} className="mb-4">
+                        <div key={`story-${index}`} className="chat-message message-bubble message-staying mb-4">
                           <div className="flex items-start gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 glassmorphism flex items-center justify-center flex-shrink-0">
                               <span className="text-white text-sm">
