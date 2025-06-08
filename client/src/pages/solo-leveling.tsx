@@ -729,6 +729,44 @@ export default function SoloLeveling() {
           </div>
         </div>
       )}
+
+      {/* Chat Tutorial Modal */}
+      {showChatTutorial && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-6 rounded-2xl w-96 max-w-[90%] border border-blue-500/30">
+            <div className="text-lg font-semibold mb-5 text-white">💡 Enhanced Chat System</div>
+            
+            <div className="space-y-4 text-sm text-gray-300">
+              <div className="bg-blue-500/10 p-4 rounded-lg border border-blue-500/20">
+                <h3 className="text-blue-400 font-semibold mb-2">🔮 AI-Powered Conversations</h3>
+                <p>Your Gemini API key enables dynamic conversations with Cha Hae-In. She responds intelligently based on your affection level and story context.</p>
+              </div>
+              
+              <div className="bg-pink-500/10 p-4 rounded-lg border border-pink-500/20">
+                <h3 className="text-pink-400 font-semibold mb-2">💬 Chat Mode</h3>
+                <p>Click the pink chat button to enter conversation mode. Ask Cha Hae-In anything - about missions, her feelings, or just casual talk.</p>
+              </div>
+              
+              <div className="bg-purple-500/10 p-4 rounded-lg border border-purple-500/20">
+                <h3 className="text-purple-400 font-semibold mb-2">⚔️ Action Mode</h3>
+                <p>Use the purple action button for gameplay actions like using shadow skills or exploring the environment.</p>
+              </div>
+              
+              <div className="bg-red-500/10 p-4 rounded-lg border border-red-500/20">
+                <h3 className="text-red-400 font-semibold mb-2">❤️ Affection System</h3>
+                <p>Positive conversations increase Cha Hae-In's affection. Her responses become warmer as your relationship develops.</p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => setShowChatTutorial(false)}
+              className="w-full mt-6 py-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700 transition-colors"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
