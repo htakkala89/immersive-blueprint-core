@@ -228,12 +228,25 @@ export default function SoloLeveling() {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-scroll chat
+  // Auto-scroll chat to bottom when new messages arrive
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      setTimeout(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+      }, 100);
     }
   }, [chatMessages]);
+
+  // Force scroll to bottom when adding new messages
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
+    }, 50);
+  };
 
   const generateSceneImage = async (prompt: string) => {
     // Use themed backgrounds instead of API generation for now
@@ -256,6 +269,7 @@ export default function SoloLeveling() {
       id: Date.now() + Math.random()
     };
     setChatMessages(prev => [...prev, newMessage]);
+    scrollToBottom();
   };
 
   const createShadowSlashEffect = () => {
@@ -404,6 +418,9 @@ export default function SoloLeveling() {
 
         const data = await response.json();
         addChatMessage('Cha Hae-In', data.response);
+        
+        // Extra scroll to ensure visibility of new response
+        setTimeout(() => scrollToBottom(), 200);
         
         // Dynamic affection tracking based on conversation depth
         const affectionKeywords = [
