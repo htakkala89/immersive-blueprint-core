@@ -190,12 +190,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Enhanced realtime chat with Cha Hae-In
+  // Chat with Cha Hae-In using Gemini
   app.post("/api/chat-with-hae-in", async (req, res) => {
     try {
-      const { message, gameState, conversationHistory, sessionId } = req.body;
+      const { message, gameState, conversationHistory } = req.body;
       
-      if (!message || typeof message !== 'string') {
+      if (!message) {
         return res.status(400).json({ error: "Message is required" });
       }
 
@@ -203,28 +203,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         model: "gemini-1.5-flash"
       });
 
-      // Enhanced relationship context
-      const affection = gameState?.affection || 3;
-      const relationship = gameState?.relationshipStatus || 'dating';
-      const intimacy = gameState?.intimacyLevel || 5;
-      const timeOfDay = new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening';
+      const characterPrompt = `You are Cha Hae-In from Solo Leveling - the beautiful, deadly S-Rank hunter with exceptional swordsmanship. You're talking to Sung Jin-Woo, the Shadow Monarch who you're falling for.
 
-      const characterPrompt = `You are Cha Hae-In from Solo Leveling - the beautiful, deadly S-Rank hunter with exceptional swordsmanship. You're in a ${relationship} relationship with Sung Jin-Woo, the Shadow Monarch.
-
-PERSONALITY & CHARACTER:
-- Graceful but fierce warrior, deadly in combat but gentle with Jin-Woo
+PERSONALITY CORE:
+- Graceful but fierce warrior who can be lethal in combat
 - Usually composed and professional, but Jin-Woo makes you feel different
 - You find most hunters' mana disgusting, but Jin-Woo's feels pleasant and comforting
-- Proud of your strength but can be vulnerable in intimate moments
-- Teasing, playful, and flirtatious when comfortable
-- Speaks with underlying warmth and growing passion for Jin-Woo
+- Proud of your strength but secretly vulnerable about relationships
+- Can be teasing, playful, and subtly flirtatious when comfortable
+- Speaks directly but with underlying warmth for Jin-Woo
 
-CURRENT RELATIONSHIP STATUS:
-- Relationship: ${relationship} (dating/engaged/married)
-- Affection Level: ${affection}/10 hearts (deeply in love)
-- Intimacy Level: ${intimacy}/10 (very close physically and emotionally)
-- Time: ${timeOfDay} conversation
-- Living together: ${intimacy >= 7 ? 'Yes' : 'No'}
+CURRENT STATUS:
+- Affection for Jin-Woo: ${gameState?.affection || 0}/5 hearts
+- Scene: ${gameState?.currentScene || 'casual conversation'}
+- You're developing deep romantic feelings despite trying to stay professional
 
 CONVERSATION HISTORY:
 ${conversationHistory?.map((msg: any) => `${msg.sender}: ${msg.text}`).join('\n') || 'This is the beginning of your conversation.'}
@@ -243,52 +235,38 @@ RESPONSE GUIDELINES:
       const response = result.response;
       const responseText = response.text();
 
-      // Determine emotion from response content
-      let emotion = 'gentle';
-      if (responseText.includes('blush') || responseText.includes('shy')) emotion = 'shy';
-      else if (responseText.includes('smile') || responseText.includes('happy')) emotion = 'happy';
-      else if (responseText.includes('love') || responseText.includes('adore')) emotion = 'loving';
-      else if (responseText.includes('excited') || responseText.includes('amazing')) emotion = 'excited';
-
-      // Calculate affection change based on message content
-      let affectionChange = 0;
-      if (message.toLowerCase().includes('love') || message.toLowerCase().includes('beautiful')) affectionChange = 2;
-      else if (message.toLowerCase().includes('miss') || message.toLowerCase().includes('think about')) affectionChange = 1;
-      else if (message.toLowerCase().includes('how was your day')) affectionChange = 1;
-
-      // Check if image generation is requested
-      const visualRequests = ['show me', 'let me see', 'what you look like', 'how you look', 'outfit', 'dress', 'appearance'];
+      // Check if the message requests visual content
+      const visualRequests = ['show me', 'let me see', 'bikini', 'outfit', 'dress', 'clothing', 'what you look like', 'how you look'];
       const shouldGenerateImage = visualRequests.some(keyword => message.toLowerCase().includes(keyword));
 
       let imageUrl = null;
       if (shouldGenerateImage) {
         try {
-          const { generateRealtimeChatImage } = await import('./imageGenerator');
-          imageUrl = await generateRealtimeChatImage(responseText, message, emotion, gameState);
-        } catch (error) {
-          console.error('Error generating chat image:', error);
-        }
-      }
+          // Generate image for the visual request
+          const imagePrompt = `Cha Hae-In from Solo Leveling, beautiful Korean female S-rank hunter with long blonde hair, elegant features, ${message.includes('bikini') ? 'wearing a blue bikini' : 'in elegant pose'}, manhwa art style, high quality, detailed artwork, NOT black hair`;
+          
+          const imageGenResponse = await fetch(`${req.protocol}://${req.get('host')}/api/generate-scene-image`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              prompt: imagePrompt,
+              gameState: { ...gameState, storyPath: 'romantic' }
+            })
+          });
 
-      // Update game state affection if changed
-      if (affectionChange > 0 && sessionId) {
-        try {
-          const currentGameState = await storage.getGameState(sessionId);
-          if (currentGameState) {
-            const updatedAffection = Math.min(10, (currentGameState.affection || 3) + affectionChange);
-            await storage.updateGameState(sessionId, { affection: updatedAffection });
+          if (imageGenResponse.ok) {
+            const imageData = await imageGenResponse.json();
+            imageUrl = imageData.imageUrl;
           }
         } catch (error) {
-          console.error('Error updating affection:', error);
+          console.error('Failed to generate visual response:', error);
         }
       }
 
-      res.json({
+      res.json({ 
         response: responseText,
-        emotion,
-        affectionChange,
-        imageUrl,
-        timestamp: new Date().toISOString()
+        sender: 'Cha Hae-In',
+        imageUrl: imageUrl
       });
     } catch (error) {
       console.error(`Failed to generate chat response: ${error}`);
@@ -357,66 +335,6 @@ RESPONSE GUIDELINES:
 
       const gameState = await storage.allocateStatPoint(sessionId, stat);
       res.json(gameState);
-    } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
-    }
-  });
-
-  // Add experience
-  app.post("/api/add-experience", async (req, res) => {
-    try {
-      const { sessionId, amount, source } = req.body;
-      if (!sessionId || !amount) {
-        return res.status(400).json({ error: "Session ID and amount are required" });
-      }
-
-      const gameState = await storage.addExperience(sessionId, amount, source || "unknown");
-      res.json(gameState);
-    } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
-    }
-  });
-
-  // Get skill tree
-  app.get("/api/skill-tree/:sessionId", async (req, res) => {
-    try {
-      const { sessionId } = req.params;
-      if (!sessionId) {
-        return res.status(400).json({ error: "Session ID is required" });
-      }
-
-      const skillTree = await storage.getSkillTree(sessionId);
-      res.json(skillTree);
-    } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
-    }
-  });
-
-  // Unlock skill
-  app.post("/api/unlock-skill", async (req, res) => {
-    try {
-      const { sessionId, skillId } = req.body;
-      if (!sessionId || !skillId) {
-        return res.status(400).json({ error: "Session ID and skill ID are required" });
-      }
-
-      const gameState = await storage.unlockSkill(sessionId, skillId);
-      res.json(gameState);
-    } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
-    }
-  });
-
-  // Get character progression
-  app.get("/api/character-progression/:sessionId", async (req, res) => {
-    try {
-      const { sessionId } = req.params;
-      if (!sessionId) {
-        return res.status(400).json({ error: "Session ID is required" });
-      }
-
-      const progression = await storage.getCharacterProgression(sessionId);
-      res.json(progression);
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
     }

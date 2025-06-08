@@ -9,9 +9,9 @@ async function testMatureContentGeneration() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        activityId: 'nude_modeling',
+        activityId: 'strip_poker',
         relationshipStatus: 'married',
-        intimacyLevel: 10
+        intimacyLevel: 9
       })
     });
 
@@ -26,19 +26,18 @@ async function testMatureContentGeneration() {
       const base64Data = data.imageUrl.replace(/^data:image\/\w+;base64,/, '');
       const buffer = Buffer.from(base64Data, 'base64');
       
-      fs.writeFileSync('nude_enhanced_test.png', buffer);
-      console.log('✅ Nude modeling image generated and saved');
+      fs.writeFileSync('generated_mature_content.png', buffer);
+      console.log('✅ Mature content image generated and saved as generated_mature_content.png');
       console.log('📊 Image size:', buffer.length, 'bytes');
-      console.log('🔞 Activity: nude_modeling');
-      console.log('💑 Relationship: married (intimacy level 10)');
-      console.log('👱‍♀️ Character: Cha Hae-In completely nude');
+      console.log('🔞 Activity: strip_poker');
+      console.log('💑 Relationship: married (intimacy level 9)');
       
       return {
         success: true,
         imageSize: buffer.length,
-        activity: 'intimate_evening',
-        intimacyLevel: 8,
-        filePath: 'corrected_cha_haein_image.png'
+        activity: 'strip_poker',
+        intimacyLevel: 9,
+        filePath: 'generated_mature_content.png'
       };
     } else {
       console.log('❌ No image URL returned');

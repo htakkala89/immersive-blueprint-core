@@ -1,6 +1,5 @@
-import type { GameState, InsertGameState, Choice, CharacterStats, SkillNode, CharacterProgression, ExperienceGain } from "@shared/schema";
+import type { GameState, InsertGameState, Choice, CharacterStats } from "@shared/schema";
 import { STORY_NODES, getNextStoryNode, getAvailableChoices } from "./storyEngine";
-import { SKILL_TREE_DATA, getSkillRequirementsMet, calculateSkillCost, getExperienceForLevel, getUnlockedSkills } from "./skillTreeData";
 
 export interface IStorage {
   getGameState(sessionId: string): Promise<GameState | undefined>;
@@ -10,10 +9,6 @@ export interface IStorage {
   levelUp(sessionId: string): Promise<GameState>;
   upgradeSkill(sessionId: string, skillId: string): Promise<GameState>;
   allocateStatPoint(sessionId: string, stat: keyof CharacterStats): Promise<GameState>;
-  addExperience(sessionId: string, amount: number, source: string): Promise<GameState>;
-  getSkillTree(sessionId: string): Promise<Record<string, SkillNode>>;
-  unlockSkill(sessionId: string, skillId: string): Promise<GameState>;
-  getCharacterProgression(sessionId: string): Promise<CharacterProgression>;
 }
 
 export class MemStorage implements IStorage {
@@ -95,7 +90,7 @@ export class MemStorage implements IStorage {
     const gameState: GameState = { 
       id,
       sessionId: insertGameState.sessionId,
-      narration: startingNode?.narration || "Welcome to your new life with Cha Hae-In. You wake up in your shared apartment, sunlight streaming through the windows.",
+      narration: startingNode.narration,
       health: insertGameState.health || 100,
       maxHealth: insertGameState.maxHealth || 100,
       mana: insertGameState.mana || 50,
@@ -104,10 +99,7 @@ export class MemStorage implements IStorage {
       experience: 0,
       statPoints: 0,
       skillPoints: 0,
-      choices: startingNode?.choices || [
-        { id: "explore_home", icon: "🏠", text: "Look around your home", detail: "Explore your shared living space" },
-        { id: "find_hae_in", icon: "💕", text: "Find Cha Hae-In", detail: "See what she's up to" }
-      ],
+      choices: startingNode.choices,
       sceneData: insertGameState.sceneData || null,
       storyPath: "entrance",
       choiceHistory: [],
@@ -209,24 +201,20 @@ export class MemStorage implements IStorage {
       newMana = existing.maxMana;
     } else if (choice.id === 'destroy-source') {
       newHealth = 0;
-    } else if (choice.id === 'rest_and_recover' || choice.id === 'wake_up_refreshed') {
-      // Full health and mana restoration when sleeping
-      newHealth = existing.maxHealth;
-      newMana = existing.maxMana;
     }
 
     // Get available choices for the new node
-    const availableChoices = nextNode ? getAvailableChoices(nextNode, newFlags, newChoiceHistory) : [];
+    const availableChoices = getAvailableChoices(nextNode, newFlags, newChoiceHistory);
 
     // Create new scene data with animated elements
     const newSceneData = {
-      runes: Array.from({ length: nextNode?.isEnding ? 5 : 3 }, (_, i) => ({
+      runes: Array.from({ length: nextNode.isEnding ? 5 : 3 }, (_, i) => ({
         x: 0.2 + i * 0.15,
         y: 0.3 + Math.sin(i) * 0.2,
-        isRed: nextNode?.endingType === 'defeat' || Math.random() > 0.7,
+        isRed: nextNode.endingType === 'defeat' || Math.random() > 0.7,
         phase: Math.random() * Math.PI * 2
       })),
-      particles: Array.from({ length: nextNode?.isEnding ? 12 : 8 }, (_, i) => ({
+      particles: Array.from({ length: nextNode.isEnding ? 12 : 8 }, (_, i) => ({
         x: Math.random(),
         y: Math.random(),
         phase: Math.random() * Math.PI * 2
@@ -236,12 +224,12 @@ export class MemStorage implements IStorage {
 
     const updated: GameState = {
       ...existing,
-      narration: nextNode?.narration || existing.narration,
+      narration: nextNode.narration,
       health: newHealth,
       mana: newMana,
       choices: availableChoices,
       sceneData: newSceneData,
-      storyPath: nextNode?.id || existing.storyPath,
+      storyPath: nextNode.id,
       choiceHistory: newChoiceHistory,
       storyFlags: newFlags
     };
@@ -351,165 +339,6 @@ export class MemStorage implements IStorage {
 
     this.gameStates.set(sessionId, updated);
     return updated;
-  }
-
-  async addExperience(sessionId: string, amount: number, source: string): Promise<GameState> {
-    const existing = this.gameStates.get(sessionId);
-    if (!existing) {
-      throw new Error('Game state not found');
-    }
-
-    const newExperience = existing.experience + amount;
-    const currentLevelExp = getExperienceForLevel(existing.level);
-    const nextLevelExp = getExperienceForLevel(existing.level + 1);
-    
-    let newLevel = existing.level;
-    let remainingExp = newExperience;
-    let statPointsGained = 0;
-    let skillPointsGained = 0;
-
-    // Check for level ups
-    while (remainingExp >= nextLevelExp && newLevel < 200) {
-      remainingExp -= nextLevelExp;
-      newLevel++;
-      statPointsGained += 5;
-      skillPointsGained += 1;
-    }
-
-    const experienceGain: ExperienceGain = {
-      amount,
-      source,
-      timestamp: Date.now()
-    };
-
-    const updated = {
-      ...existing,
-      level: newLevel,
-      experience: remainingExp,
-      statPoints: existing.statPoints + statPointsGained,
-      skillPoints: existing.skillPoints + skillPointsGained,
-      maxHealth: existing.maxHealth + (statPointsGained * 4),
-      maxMana: existing.maxMana + (statPointsGained * 2)
-    };
-
-    this.gameStates.set(sessionId, updated);
-    return updated;
-  }
-
-  async getSkillTree(sessionId: string): Promise<Record<string, SkillNode>> {
-    const gameState = this.gameStates.get(sessionId);
-    if (!gameState) {
-      throw new Error('Game state not found');
-    }
-
-    // Get unlocked skills from game state
-    const unlockedSkills = getUnlockedSkills(
-      gameState.skills.reduce((acc, skill) => {
-        acc[skill.id] = skill.level;
-        return acc;
-      }, {} as Record<string, number>)
-    );
-
-    // Return skill tree with unlock status updated
-    const skillTree = { ...SKILL_TREE_DATA };
-    Object.keys(skillTree).forEach(skillId => {
-      const skill = skillTree[skillId];
-      skill.unlocked = skill.unlocked || getSkillRequirementsMet(skillId, unlockedSkills);
-      
-      // Update level from game state
-      const gameSkill = gameState.skills.find(s => s.id === skillId);
-      if (gameSkill) {
-        skill.level = gameSkill.level;
-      }
-    });
-
-    return skillTree;
-  }
-
-  async unlockSkill(sessionId: string, skillId: string): Promise<GameState> {
-    const existing = this.gameStates.get(sessionId);
-    if (!existing) {
-      throw new Error('Game state not found');
-    }
-
-    const skill = SKILL_TREE_DATA[skillId];
-    if (!skill) {
-      throw new Error('Skill not found');
-    }
-
-    const unlockedSkills = getUnlockedSkills(
-      existing.skills.reduce((acc, s) => {
-        acc[s.id] = s.level;
-        return acc;
-      }, {} as Record<string, number>)
-    );
-
-    if (!getSkillRequirementsMet(skillId, unlockedSkills)) {
-      throw new Error('Prerequisites not met');
-    }
-
-    const existingSkill = existing.skills.find(s => s.id === skillId);
-    const currentLevel = existingSkill?.level || 0;
-    const skillCost = calculateSkillCost(currentLevel, skill.tier);
-
-    if (existing.skillPoints < skillCost) {
-      throw new Error('Not enough skill points');
-    }
-
-    if (currentLevel >= skill.maxLevel) {
-      throw new Error('Skill already at maximum level');
-    }
-
-    const updatedSkills = existing.skills.map(s => 
-      s.id === skillId 
-        ? { ...s, level: s.level + 1, unlocked: true }
-        : s
-    );
-
-    // Add skill if it doesn't exist
-    if (!existingSkill) {
-      updatedSkills.push({
-        id: skillId,
-        name: skill.name,
-        description: skill.description,
-        type: skill.type,
-        level: 1,
-        maxLevel: skill.maxLevel,
-        unlocked: true,
-        prerequisites: skill.prerequisites,
-        effects: skill.effects,
-        cooldown: skill.cooldown,
-        manaCost: skill.manaCost
-      });
-    }
-
-    const updated = {
-      ...existing,
-      skills: updatedSkills,
-      skillPoints: existing.skillPoints - skillCost
-    };
-
-    this.gameStates.set(sessionId, updated);
-    return updated;
-  }
-
-  async getCharacterProgression(sessionId: string): Promise<CharacterProgression> {
-    const gameState = this.gameStates.get(sessionId);
-    if (!gameState) {
-      throw new Error('Game state not found');
-    }
-
-    const experienceToNext = getExperienceForLevel(gameState.level + 1) - gameState.experience;
-    
-    return {
-      level: gameState.level,
-      experience: gameState.experience,
-      experienceToNext,
-      statPoints: gameState.statPoints,
-      skillPoints: gameState.skillPoints,
-      totalExperience: gameState.experience + (gameState.level * 100),
-      recentGains: [] // This would be tracked separately in a real implementation
-    };
   }
 }
 
