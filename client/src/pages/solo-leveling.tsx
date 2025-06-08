@@ -313,8 +313,8 @@ export default function SoloLeveling() {
       leadsTo: { cafe_suggestion: 'COFFEE_DATE', gate_priority: 'GATE_ENTRANCE', ask_preference: 'PREFERENCE_RESPONSE' }
     },
     'COFFEE_DATE': {
-      prompt: "Jin-Woo and Cha Hae-In sitting together at a cozy café, sharing coffee and conversation. Intimate dating scene, anime style.",
-      narration: "The café is quiet and warm. Hae-In relaxes visibly, her usual hunter alertness softening into something more personal.",
+      prompt: "Wide shot of cozy Korean café interior with Sung Jin-Woo and Cha Hae-In sitting across from each other at a wooden table, coffee cups between them, warm ambient lighting, intimate conversation, both characters visible in frame, Solo Leveling manhwa art style.",
+      narration: "The café is quiet and warm. Hae-In relaxes visibly, her usual hunter alertness softening into something more personal. You're both sitting at a cozy table, coffee steaming between you.",
       chat: [
         { sender: 'Cha Hae-In', text: "This is nice. It's been a while since I could just... talk with someone who understands this life." },
         { sender: 'Cha Hae-In', text: "Your mana feels so calm here. It's comforting." }
@@ -340,8 +340,8 @@ export default function SoloLeveling() {
       leadsTo: { take_hand: 'HAND_HOLDING', mission_continue: 'GATE_ENTRANCE' }
     },
     'HAND_HOLDING': {
-      prompt: "Jin-Woo and Cha Hae-In holding hands across the café table, both blushing softly. Sweet romantic moment, anime style.",
-      narration: "Your hand finds hers naturally. She doesn't pull away - instead, her fingers intertwine with yours.",
+      prompt: "Close-up wide shot of cozy Korean café table with Sung Jin-Woo and Cha Hae-In holding hands across the wooden surface, coffee cups nearby, both characters visible with gentle blushes, warm lighting, intimate romantic moment, Solo Leveling manhwa art style.",
+      narration: "Your hand finds hers naturally. She doesn't pull away - instead, her fingers intertwine with yours. The café feels even more intimate now.",
       chat: [
         { sender: 'Cha Hae-In', text: "Jin-Woo... I've been hoping you'd do that." },
         { sender: 'player', text: "I've wanted to for a long time." }

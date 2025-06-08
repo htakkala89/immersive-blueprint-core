@@ -360,7 +360,19 @@ function createSoloLevelingPrompt(gameState: GameState): string {
     return `${baseStyle}, Korean Hunter Association building interior, modern hunter facility, professional meeting room, S-rank hunters gathered${characterDescription}, official hunter setting`;
   }
   
-  if (narration.includes("romantic") || narration.includes("date") || narration.includes("together")) {
+  if (narration.includes("café") || narration.includes("coffee") || narration.includes("table") || narration.includes("sitting")) {
+    return `${baseStyle}, wide establishing shot of cozy Korean café interior showing full scene, Sung Jin-Woo (Korean male, black hair, dark hunter outfit) and Cha Hae-In (Korean female, blonde hair, elegant hunter attire) sitting across from each other at wooden table, coffee cups and steam visible, warm ambient lighting from windows, intimate conversation scene, both characters clearly visible in frame, detailed café environment with wooden furniture and soft lighting, manhwa romance composition`;
+  }
+  
+  if (narration.includes("holding hands") || narration.includes("hand finds") || narration.includes("fingers intertwine")) {
+    return `${baseStyle}, medium shot focused on café table showing Sung Jin-Woo and Cha Hae-In holding hands across wooden surface, coffee cups nearby, both characters partially visible with hands prominently featured, warm intimate lighting, romantic moment, detailed hand positioning, café setting background, manhwa romance style`;
+  }
+  
+  if (narration.includes("date") || narration.includes("together")) {
+    return `${baseStyle}, wide shot of cozy Korean café interior, Sung Jin-Woo and Cha Hae-In sitting across from each other at a table, coffee cups between them, warm lighting, intimate conversation, both characters visible in frame, manhwa romance scene composition, detailed café setting with windows and ambient lighting`;
+  }
+  
+  if (narration.includes("romantic") || narration.includes("intimate")) {
     return `${baseStyle}, romantic scene between hunters, soft lighting, emotional moment, beautiful Korean setting${characterDescription}, intimate atmosphere with manhwa romance style`;
   }
   
