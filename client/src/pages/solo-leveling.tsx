@@ -1906,7 +1906,7 @@ export default function SoloLeveling() {
     // Play voice for character dialogue automatically
     if (sender === 'Cha Hae-In') {
       setTimeout(() => playVoice(text, 'cha-hae-in'), 300);
-    } else if (sender === 'system') {
+    } else if (sender === 'system' || sender === 'Game Master') {
       setTimeout(() => playVoice(text, 'game-master'), 300);
     }
     

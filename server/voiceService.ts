@@ -103,11 +103,13 @@ class VoiceService {
     switch (character.toLowerCase()) {
       case 'cha hae-in':
       case 'cha hae in':
+      case 'cha-hae-in':
       case 'hae-in':
       case 'chahaein':
         return this.generateChaHaeInVoice(cleanText);
       
       case 'game master':
+      case 'game-master':
       case 'narrator':
       case 'gm':
         return this.generateGameMasterVoice(cleanText);
