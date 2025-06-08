@@ -8,6 +8,7 @@ import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import { RaidSystem } from "@/components/RaidSystem";
 import { Marketplace } from "../components/Marketplace";
 import { RelationshipSystem } from "@/components/RelationshipSystem";
+import { MemoryLaneAnimation } from "@/components/MemoryLaneAnimation";
 import { CombatSystem } from "@/components/CombatSystem";
 import { AchievementSystem, useAchievementSystem } from "@/components/AchievementSystem";
 import { StoryBranching, EnhancedChoiceButton } from "@/components/StoryBranching";
@@ -191,6 +192,7 @@ export default function SoloLeveling() {
   const [previousPage, setPreviousPage] = useState<'hub' | 'story'>('story');
   const [showRaidSystem, setShowRaidSystem] = useState(false);
   const [showRelationshipSystem, setShowRelationshipSystem] = useState(false);
+  const [showMemoryLane, setShowMemoryLane] = useState(false);
   const [showCombatSystem, setShowCombatSystem] = useState(false);
   const [showAchievementSystem, setShowAchievementSystem] = useState(false);
   const [currentCombatEnemy, setCurrentCombatEnemy] = useState(null);
@@ -200,7 +202,12 @@ export default function SoloLeveling() {
   const characterProgression = useCharacterProgression('solo-leveling-session');
   const { playVoice, stopVoice, isPlaying, currentSpeaker } = useVoice();
   const { generateStoryNarration, isPlaying: isNarrationPlaying, stopNarration } = useStoryNarration();
-  const { relationshipData, updateRelationship, processChoice: processRelationshipChoice } = useRelationshipSystem();
+  // Relationship system state
+  const [relationshipData, setRelationshipData] = useState({
+    affectionLevel: gameState.affection * 20,
+    intimacyPoints: gameState.affection * 15,
+    trustLevel: gameState.affection * 25
+  });
   const { 
     playerStats: achievementStats, 
     trackChoice, 
@@ -3883,6 +3890,21 @@ export default function SoloLeveling() {
             />
           </div>
         </div>
+      )}
+
+      {/* Memory Lane Animation */}
+      {showMemoryLane && (
+        <MemoryLaneAnimation
+          isVisible={showMemoryLane}
+          onClose={() => setShowMemoryLane(false)}
+          currentAffectionLevel={gameState.affection}
+          gameState={{
+            affection: gameState.affection,
+            level: gameState.level,
+            currentScene: gameState.currentScene,
+            previousChoices: gameState.previousChoices || []
+          }}
+        />
       )}
     </div>
   );
