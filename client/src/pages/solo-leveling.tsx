@@ -1561,10 +1561,9 @@ export default function SoloLeveling() {
         const data = await response.json();
         if (data.imageUrl) {
           // Set the generated image as background
-          console.log('Generated image received:', {
+          console.log('AI image generated successfully:', {
             type: data.imageUrl.startsWith('data:') ? 'base64' : 'url',
-            length: data.imageUrl.length,
-            preview: data.imageUrl.substring(0, 50) + '...'
+            length: data.imageUrl.length
           });
           setCurrentBackground(data.imageUrl);
         } else {
