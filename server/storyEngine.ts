@@ -16,7 +16,8 @@ export const STORY_NODES: Record<string, StoryNode> = {
     narration: "You are Sung Jin-Woo, the Shadow Monarch. After countless battles and becoming the world's strongest hunter, you've realized something is missing. Your heart races whenever you see S-Rank Hunter Cha Hae-In. Today, you've decided to pursue something more challenging than any dungeon boss - her heart.",
     choices: [
       { id: "accept_quest", icon: "💝", text: "Accept the quest", detail: "Time to level up in romance!" },
-      { id: "check_stats", icon: "📊", text: "Check your stats first", detail: "What are my current abilities?" }
+      { id: "check_stats", icon: "📊", text: "Check your stats first", detail: "What are my current abilities?" },
+      { id: "explore_home", icon: "🏠", text: "Go home", detail: "Return to your daily life with Cha Hae-In" }
     ]
   },
 
@@ -198,6 +199,96 @@ export const STORY_NODES: Record<string, StoryNode> = {
     isEnding: true,
     endingType: 'secret',
     conditions: (flags, history) => flags.spiritsAppeased && flags.artifactsStudied && history.includes("commune-spirits")
+  },
+
+  // Daily Life Hub Nodes
+  'explore_home': {
+    id: 'explore_home',
+    narration: "You find yourself in the comfortable home you share with Cha Hae-In. The evening light filters through the windows, creating a warm atmosphere. What would you like to do?",
+    choices: [
+      {
+        id: 'find_hae_in',
+        text: 'Look for Cha Hae-In',
+        icon: '💕',
+        detail: 'Find your beloved and spend time together'
+      },
+      {
+        id: 'rest_and_recover',
+        text: 'Rest and Restore',
+        icon: '🛌',
+        detail: 'Sleep to restore health and mana'
+      },
+      {
+        id: 'train_skills',
+        text: 'Training Session',
+        icon: '⚔️',
+        detail: 'Practice your Shadow Monarch abilities'
+      },
+      {
+        id: 'continue_story',
+        text: 'Continue Adventure',
+        icon: '🚪',
+        detail: 'Return to the main storyline'
+      }
+    ]
+  },
+
+  'find_hae_in': {
+    id: 'find_hae_in',
+    narration: "You find Cha Hae-In in the living room, reading a book about sword techniques. She looks up with a gentle smile as you approach. 'Jin-Woo, perfect timing. I was just thinking about you.'",
+    choices: [
+      {
+        id: 'casual_conversation',
+        text: 'Start a Conversation',
+        icon: '💬',
+        detail: 'Talk about your day and interests'
+      },
+      {
+        id: 'romantic_moment',
+        text: 'Share an Intimate Moment',
+        icon: '💝',
+        detail: 'Spend quality romantic time together'
+      },
+      {
+        id: 'suggest_date',
+        text: 'Suggest Going Out',
+        icon: '🌃',
+        detail: 'Plan a date in the city'
+      },
+      {
+        id: 'explore_home',
+        text: 'Return to Daily Life',
+        icon: '🏠',
+        detail: 'Go back to home activities'
+      }
+    ]
+  },
+
+  'rest_and_recover': {
+    id: 'rest_and_recover',
+    narration: "You decide to rest and let your body recover. As the Shadow Monarch, even you need time to restore your energy. You feel your health and mana returning to full strength.",
+    choices: [
+      {
+        id: 'wake_up_refreshed',
+        text: 'Wake Up Refreshed',
+        icon: '🌅',
+        detail: 'Start a new day with full energy'
+      }
+    ],
+    effects: (flags) => ({ ...flags, rested: true })
+  },
+
+  'wake_up_refreshed': {
+    id: 'wake_up_refreshed',
+    narration: "You wake up feeling completely refreshed. Your health and mana are fully restored, and you're ready for whatever challenges await.",
+    choices: [
+      {
+        id: 'explore_home',
+        text: 'Start Your Day',
+        icon: '🏠',
+        detail: 'Begin daily activities'
+      }
+    ]
   }
 };
 
@@ -217,7 +308,26 @@ export function getNextStoryNode(
   const storyProgression: Record<string, Record<string, string>> = {
     'START': {
       'accept_quest': 'FIRST_MEETING',
-      'check_stats': 'FIRST_MEETING'
+      'check_stats': 'FIRST_MEETING',
+      'explore_home': 'explore_home'
+    },
+    'explore_home': {
+      'find_hae_in': 'find_hae_in',
+      'rest_and_recover': 'rest_and_recover',
+      'train_skills': 'explore_home',
+      'continue_story': 'START'
+    },
+    'find_hae_in': {
+      'casual_conversation': 'find_hae_in',
+      'romantic_moment': 'find_hae_in',
+      'suggest_date': 'find_hae_in',
+      'explore_home': 'explore_home'
+    },
+    'rest_and_recover': {
+      'wake_up_refreshed': 'wake_up_refreshed'
+    },
+    'wake_up_refreshed': {
+      'explore_home': 'explore_home'
     },
     'FIRST_MEETING': {
       'play_cool': 'COOL_RESPONSE',
@@ -294,7 +404,7 @@ export function getAvailableChoices(
   storyFlags: Record<string, boolean>, 
   choiceHistory: string[]
 ): Choice[] {
-  if (node.isEnding) {
+  if (!node || node.isEnding) {
     return [];
   }
 

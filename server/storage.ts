@@ -209,6 +209,10 @@ export class MemStorage implements IStorage {
       newMana = existing.maxMana;
     } else if (choice.id === 'destroy-source') {
       newHealth = 0;
+    } else if (choice.id === 'rest_and_recover' || choice.id === 'wake_up_refreshed') {
+      // Full health and mana restoration when sleeping
+      newHealth = existing.maxHealth;
+      newMana = existing.maxMana;
     }
 
     // Get available choices for the new node
