@@ -2905,13 +2905,13 @@ export default function SoloLeveling() {
                       {currentStory?.chat && currentStory.chat.map((msg, index) => (
                         <div key={`story-${index}`} className="mb-4">
                           <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 glassmorphism flex items-center justify-center flex-shrink-0">
                               <span className="text-white text-sm">
                                 {msg.sender === 'system' ? '⚙️' : '⚔️'}
                               </span>
                             </div>
                             <div className="flex-1">
-                              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg">
+                              <div className="glassmorphism rounded-2xl p-4">
                                 <div className="flex items-center gap-2 mb-2">
                                   <span className="text-white font-semibold text-sm">
                                     {msg.sender === 'system' ? 'System' : msg.sender}
@@ -2938,7 +2938,7 @@ export default function SoloLeveling() {
                             style={{ opacity }}
                           >
                             <div className="flex items-start gap-3">
-                              <div className={`w-10 h-10 rounded-full backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0 shadow-lg ${
+                              <div className={`w-10 h-10 rounded-full glassmorphism flex items-center justify-center flex-shrink-0 ${
                                 isPlayer 
                                   ? 'bg-gradient-to-br from-blue-600 to-purple-700' 
                                   : isHaeIn 
@@ -2950,7 +2950,7 @@ export default function SoloLeveling() {
                                 </span>
                               </div>
                               <div className="flex-1">
-                                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg">
+                                <div className="glassmorphism rounded-2xl p-4">
                                   <div className="flex items-center gap-2 mb-2">
                                     <span className="text-white font-semibold text-sm">{msg.sender}</span>
                                   </div>
