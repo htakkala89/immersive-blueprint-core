@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { GameState, Choice } from "@shared/schema";
-import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "./MiniGames";
+import { LockPickingGame, RuneSequenceGame, DragonEncounterGame, ShadowExtractGame, DungeonNavigationGame, ReflexTestGame, MagicCircleGame, BossRaidGame } from "./MiniGames";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,21 @@ export function GameUI({ gameState, onChoice, isProcessing = false, onInventoryT
     } else if (choice.id === 'face-dragon') {
       console.log('Triggering dragon encounter mini-game');
       setActiveMinigame('dragon-encounter');
+    } else if (choice.id === 'extract-shadows') {
+      console.log('Triggering shadow extraction mini-game');
+      setActiveMinigame('shadow-extract');
+    } else if (choice.id === 'navigate-dungeon') {
+      console.log('Triggering dungeon navigation mini-game');
+      setActiveMinigame('dungeon-navigation');
+    } else if (choice.id === 'test-reflexes') {
+      console.log('Triggering reflex test mini-game');
+      setActiveMinigame('reflex-test');
+    } else if (choice.id === 'magic-ritual') {
+      console.log('Triggering magic circle mini-game');
+      setActiveMinigame('magic-circle');
+    } else if (choice.id === 'boss-raid') {
+      console.log('Triggering boss raid mini-game');
+      setActiveMinigame('boss-raid');
     } else {
       console.log('Regular choice, no mini-game');
       onChoice(choice);
