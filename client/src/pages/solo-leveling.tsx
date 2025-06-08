@@ -34,7 +34,7 @@ export default function SoloLeveling() {
   });
 
   const [gameStarted, setGameStarted] = useState(false);
-  const [currentBackground, setCurrentBackground] = useState('');
+  const [currentBackground, setCurrentBackground] = useState('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
   const [isLoading, setIsLoading] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{ sender: string; text: string; id: number; timestamp: number }>>([]);
   const [userInput, setUserInput] = useState('');
@@ -1869,26 +1869,17 @@ export default function SoloLeveling() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      {/* Fullscreen background */}
-      {currentBackground.startsWith('data:') ? (
-        <img 
-          src={currentBackground}
-          alt="Generated scene"
-          className="fixed inset-0 w-full h-full object-cover transition-all duration-700 transform scale-110"
-          style={{ filter: 'blur(15px) brightness(0.4)' }}
-        />
-      ) : (
-        <div 
-          className="fixed inset-0 transition-all duration-700 transform scale-110"
-          style={{ 
-            backgroundImage: currentBackground,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            filter: 'blur(15px) brightness(0.4)'
-          }}
-        />
-      )}
+      {/* AI-Generated Background */}
+      <div 
+        className="fixed inset-0 transition-all duration-700 transform scale-110"
+        style={{ 
+          backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          filter: 'blur(15px) brightness(0.4)'
+        }}
+      />
       
       {/* iOS Device Frame */}
       <div className="relative w-[390px] h-[844px] bg-gray-800 bg-opacity-20 rounded-[40px] p-3 shadow-2xl border border-white border-opacity-10">
