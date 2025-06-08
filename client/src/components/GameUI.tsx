@@ -359,6 +359,36 @@ export function GameUI({ gameState, onChoice, isProcessing = false, onInventoryT
           onCancel={() => setActiveMinigame(null)}
         />
       )}
+      {activeMinigame === 'shadow-extract' && (
+        <ShadowExtractGame
+          onComplete={(success) => handleMinigameComplete(success, { id: 'extract-shadows', icon: '👤', text: 'Extract shadows' })}
+          onCancel={() => setActiveMinigame(null)}
+        />
+      )}
+      {activeMinigame === 'dungeon-navigation' && (
+        <DungeonNavigationGame
+          onComplete={(success) => handleMinigameComplete(success, { id: 'navigate-dungeon', icon: '🗺️', text: 'Navigate dungeon' })}
+          onCancel={() => setActiveMinigame(null)}
+        />
+      )}
+      {activeMinigame === 'reflex-test' && (
+        <ReflexTestGame
+          onComplete={(success) => handleMinigameComplete(success, { id: 'test-reflexes', icon: '⚡', text: 'Test reflexes' })}
+          onCancel={() => setActiveMinigame(null)}
+        />
+      )}
+      {activeMinigame === 'magic-circle' && (
+        <MagicCircleGame
+          onComplete={(success) => handleMinigameComplete(success, { id: 'magic-ritual', icon: '🔮', text: 'Magic ritual' })}
+          onCancel={() => setActiveMinigame(null)}
+        />
+      )}
+      {activeMinigame === 'boss-raid' && (
+        <BossRaidGame
+          onComplete={(success) => handleMinigameComplete(success, { id: 'boss-raid', icon: '⚔️', text: 'Boss raid' })}
+          onCancel={() => setActiveMinigame(null)}
+        />
+      )}
     </>
   );
 }

@@ -44,6 +44,61 @@ export const STORY_NODES: Record<string, StoryNode> = {
     conditions: (flags, history) => history.includes("pick-lock") || history.includes("prepare")
   },
 
+  shadow_realm: {
+    id: "shadow_realm",
+    narration: "You discover a hidden passage leading to the Shadow Realm, where Jin-Woo's true power awaits. Dark energy swirls around you as shadow soldiers emerge from the void, ready to be extracted and added to your army. The realm pulses with supernatural power.",
+    choices: [
+      { id: "extract-shadows", icon: "👤", text: "Extract shadow soldiers", detail: "Capture shadows to build your army" },
+      { id: "commune-darkness", icon: "🌑", text: "Commune with darkness", detail: "Connect with the shadow realm's essence" },
+      { id: "shadow-training", icon: "⚔️", text: "Train in shadow arts", detail: "Master the art of shadow manipulation" }
+    ],
+    conditions: (flags, history) => history.includes("enhanced-vision-success") || flags.shadowPowerUnlocked
+  },
+
+  dungeon_depths: {
+    id: "dungeon_depths",
+    narration: "You descend into the labyrinthine depths of an S-rank dungeon. Ancient traps and magical barriers block your path at every turn. The maze shifts and changes, testing not just your combat skills but your ability to navigate through impossible geometry.",
+    choices: [
+      { id: "navigate-dungeon", icon: "🗺️", text: "Navigate the maze", detail: "Use strategy to find the correct path" },
+      { id: "brute-force", icon: "💥", text: "Break through walls", detail: "Use raw power to forge a new path" },
+      { id: "map-layout", icon: "📍", text: "Map the dungeon", detail: "Carefully chart the maze structure" }
+    ],
+    conditions: (flags, history) => history.includes("face-dragon-success") || history.includes("tactical-retreat")
+  },
+
+  trials_chamber: {
+    id: "trials_chamber",
+    narration: "You enter the Trials Chamber, where hunters are tested to their absolute limits. Lightning-fast reflexes, precise timing, and split-second decisions determine survival. The chamber awakens, preparing to challenge every aspect of your hunter abilities.",
+    choices: [
+      { id: "test-reflexes", icon: "⚡", text: "Accept the reflex trial", detail: "Test your reaction speed and agility" },
+      { id: "endurance-test", icon: "💪", text: "Take the endurance test", detail: "Prove your stamina and determination" },
+      { id: "skip-trials", icon: "🚪", text: "Seek another path", detail: "Look for an alternative route" }
+    ],
+    conditions: (flags, history) => history.includes("pick-lock-success") || flags.trialsUnlocked
+  },
+
+  arcane_sanctuary: {
+    id: "arcane_sanctuary",
+    narration: "Ancient magic circles glow with mystical power as you enter the Arcane Sanctuary. Each circle must be activated in the correct sequence to unlock the chamber's secrets. The air crackles with raw magical energy, waiting for the right touch to awaken.",
+    choices: [
+      { id: "magic-ritual", icon: "🔮", text: "Perform the ritual", detail: "Activate the magic circles in sequence" },
+      { id: "absorb-mana", icon: "✨", text: "Absorb magical energy", detail: "Draw power from the sanctuary" },
+      { id: "study-patterns", icon: "📚", text: "Study the patterns", detail: "Learn the magical formations" }
+    ],
+    conditions: (flags, history) => history.includes("commune-spirits") || flags.magicUnlocked
+  },
+
+  boss_arena: {
+    id: "boss_arena",
+    narration: "You stand before the ultimate challenge - an Ancient Guardian awakened from eons of slumber. This legendary boss commands devastating attacks across multiple phases of combat. Victory here will establish you as one of the world's most powerful hunters.",
+    choices: [
+      { id: "boss-raid", icon: "⚔️", text: "Challenge the Guardian", detail: "Engage in the ultimate boss battle" },
+      { id: "study-weakness", icon: "🔍", text: "Study its weaknesses", detail: "Analyze the boss before attacking" },
+      { id: "rally-allies", icon: "👥", text: "Call for reinforcements", detail: "Summon help for the battle" }
+    ],
+    conditions: (flags, history) => history.includes("navigate-dungeon-success") || history.includes("magic-ritual-success")
+  },
+
   inner_sanctum: {
     id: "inner_sanctum",
     narration: "You emerge into the heart of the ancient temple - a vast crystalline chamber where time itself seems to bend. Floating islands of pure energy drift through the air, each containing fragments of ultimate knowledge and power. The choice you make here will echo through eternity.",
