@@ -216,17 +216,17 @@ export class MemStorage implements IStorage {
     }
 
     // Get available choices for the new node
-    const availableChoices = getAvailableChoices(nextNode, newFlags, newChoiceHistory);
+    const availableChoices = nextNode ? getAvailableChoices(nextNode, newFlags, newChoiceHistory) : [];
 
     // Create new scene data with animated elements
     const newSceneData = {
-      runes: Array.from({ length: nextNode.isEnding ? 5 : 3 }, (_, i) => ({
+      runes: Array.from({ length: nextNode?.isEnding ? 5 : 3 }, (_, i) => ({
         x: 0.2 + i * 0.15,
         y: 0.3 + Math.sin(i) * 0.2,
-        isRed: nextNode.endingType === 'defeat' || Math.random() > 0.7,
+        isRed: nextNode?.endingType === 'defeat' || Math.random() > 0.7,
         phase: Math.random() * Math.PI * 2
       })),
-      particles: Array.from({ length: nextNode.isEnding ? 12 : 8 }, (_, i) => ({
+      particles: Array.from({ length: nextNode?.isEnding ? 12 : 8 }, (_, i) => ({
         x: Math.random(),
         y: Math.random(),
         phase: Math.random() * Math.PI * 2

@@ -394,7 +394,7 @@ export function getNextStoryNode(
     newFlags.dailyLifeUnlocked = true;
   }
 
-  const node = STORY_NODES[nextNodeId] || STORY_NODES[currentPath];
+  const node = STORY_NODES[nextNodeId] || STORY_NODES[currentPath] || STORY_NODES['START'];
   
   return { node, newFlags };
 }
