@@ -150,7 +150,7 @@ export default function SoloLeveling() {
   const [showRaidSystem, setShowRaidSystem] = useState(false);
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
-  const { playVoice, stopVoice, isPlaying } = useVoice();
+  const { playVoice, stopVoice, isPlaying, currentSpeaker } = useVoice();
   const { generateStoryNarration, isPlaying: isNarrationPlaying, stopNarration } = useStoryNarration();
 
   const timeRef = useRef<HTMLSpanElement>(null);
@@ -2958,10 +2958,12 @@ export default function SoloLeveling() {
                       
                       {/* Story Narration - Game Master Message */}
                       {currentStory && (
-                        <div className="chat-message message-bubble message-staying mb-4">
+                        <div className={`chat-message message-bubble message-staying mb-4 ${
+                          currentSpeaker && currentSpeaker.includes('narrator') ? 'message-speaking-narrator' : ''
+                        }`}>
                           <div className="flex items-start gap-3">
                             <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 glassmorphism flex items-center justify-center flex-shrink-0 ${
-                              isPlaying ? 'animate-pulse ring-2 ring-purple-400' : ''
+                              isPlaying && currentSpeaker && currentSpeaker.includes('narrator') ? 'animate-pulse ring-2 ring-purple-400' : ''
                             }`}>
                               <span className="text-white text-sm">📖</span>
                             </div>
@@ -2982,7 +2984,9 @@ export default function SoloLeveling() {
 
                       {/* System/Story Messages with iMessage-style animation */}
                       {currentStory?.chat && currentStory.chat.map((msg, index) => (
-                        <div key={`story-${index}`} className="chat-message message-bubble message-staying mb-4">
+                        <div key={`story-${index}`} className={`chat-message message-bubble message-staying mb-4 ${
+                          currentSpeaker && currentSpeaker.includes('system') ? 'message-speaking' : ''
+                        }`}>
                           <div className="flex items-start gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 glassmorphism flex items-center justify-center flex-shrink-0">
                               <span className="text-white text-sm">
@@ -3015,12 +3019,24 @@ export default function SoloLeveling() {
                                              messageState === 'staying' ? 'message-staying' :
                                              messageState === 'exiting' ? 'message-exiting' :
                                              'opacity-0';
+
+                        // Apply speaking glow effects based on current speaker
+                        const isSpeaking = currentSpeaker && (
+                          (isHaeIn && currentSpeaker.includes('cha-hae-in')) ||
+                          (isPlayer && currentSpeaker.includes('player')) ||
+                          (msg.sender === 'System' && currentSpeaker.includes('system'))
+                        );
+                        
+                        const speakingClass = isSpeaking ? 
+                          (isHaeIn ? 'message-speaking-cha-hae-in' : 
+                           isPlayer ? 'message-speaking' : 
+                           'message-speaking') : '';
                         
                         return (
                           <div 
                             key={msg.id}
                             data-message-id={msg.id}
-                            className={`chat-message message-bubble ${animationClass} mb-4`}
+                            className={`chat-message message-bubble ${animationClass} ${speakingClass} mb-4`}
                             style={{ opacity: messageState === 'hidden' ? 0 : opacity }}
                           >
                             <div className="flex items-start gap-3">
