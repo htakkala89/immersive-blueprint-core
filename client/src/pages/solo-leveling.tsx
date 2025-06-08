@@ -1435,8 +1435,13 @@ export default function SoloLeveling() {
 
   // Generate initial cover image and update time display
   useEffect(() => {
-    // Generate Solo Leveling cover image with Jin-Woo
-    generateSceneImage("Jin-Woo Sung from Solo Leveling, powerful shadow monarch, glowing purple eyes, black hunter coat, dark aura, standing confidently in dramatic pose, Korean manhwa art style, epic cover artwork");
+    // Generate Solo Leveling cover image with Jin-Woo on component mount
+    const loadCoverImage = async () => {
+      console.log('Loading Solo Leveling cover image...');
+      await generateSceneImage("Jin-Woo Sung from Solo Leveling, powerful shadow monarch hunter, glowing purple eyes, black coat, dark shadows, standing confidently, Korean manhwa art style, epic cover artwork");
+    };
+    
+    loadCoverImage();
     
     const updateTime = () => {
       if (timeRef.current) {
@@ -1568,6 +1573,7 @@ export default function SoloLeveling() {
             type: data.imageUrl.startsWith('data:') ? 'base64' : 'url',
             length: data.imageUrl.length
           });
+          console.log('Setting background to:', data.imageUrl.substring(0, 50) + '...');
           setCurrentBackground(data.imageUrl);
         } else {
           // Fallback to gradient if no image generated
@@ -1890,12 +1896,22 @@ export default function SoloLeveling() {
           
           {/* Start Overlay */}
           {!gameStarted && (
-            <div 
-              className="absolute inset-0 z-50 flex flex-col justify-end transition-opacity duration-1000 bg-cover bg-center bg-no-repeat"
-              style={{
-                backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f0f0f 70%, #2d1b69 100%)'
-              }}
-            >
+            <div className="absolute inset-0 z-50 flex flex-col justify-end transition-opacity duration-1000">
+              {/* AI Generated Cover Background */}
+              {currentBackground.startsWith('data:') ? (
+                <img 
+                  src={currentBackground}
+                  alt="Jin-Woo Solo Leveling Cover"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <div 
+                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                  style={{
+                    backgroundImage: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f0f0f 70%, #2d1b69 100%)'
+                  }}
+                />
+              )}
               <div className="absolute bottom-0 left-0 right-0 h-3/4 bg-gradient-to-t from-black via-black/80 to-transparent" />
               <div className="relative z-10 p-6 text-center text-white">
                 <h1 className="text-4xl font-bold mb-1 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
