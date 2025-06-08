@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Immersive AI - Solo Leveling: Shadow & Heart</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+
+        #fullscreen-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(15px) brightness(0.4);
+            transform: scale(1.1);
+            transition: background-image 0.7s ease-in-out;
+            z-index: 0;
+        }
+        
+        /* iOS Device Frame */
+        .ios-device {
+            width: 390px;
+            height: 844px;
+            background: rgba(28, 28, 30, 0.2);
+            border-radius: 40px;
+            padding: 12px;
+            position: relative;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
+            z-index: 1;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .screen.shake {
+            animation: screenShake 0.4s ease-in-out;
+        }
+        
+        @keyframes screenShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background: rgba(0, 0, 0, 0.3);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 14px;
+            position: absolute;
+            top: 0;
+            left:0;
+            right: 0;
+            z-index: 200;
+            color: #fff;
+        }
+        .status-time { font-weight: 600; }
+        .status-icons { display: flex; gap: 6px; align-items: center; }
+
+        /* Scene Container */
+        #scene-container {
+            position: relative;
+            width: 100%;
+            height: 40%;
+            overflow: hidden;
+            background: transparent;
+            flex-shrink: 0;
+        }
+        
+        #scene-background {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            z-index: 1; transition: opacity 0.5s ease-in-out, background-color 0.5s ease;
+            transform: scale(1.05); animation-name: none; animation-duration: 20s;
+            animation-timing-function: ease-in-out; animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+        
+        @keyframes kenBurns-1 { from { transform: scale(1.05) translate(0%, 0%); } to { transform: scale(1.2) translate(-4%, 2%); } }
+        @keyframes kenBurns-2 { from { transform: scale(1.05) translate(0%, 0%); } to { transform: scale(1.2) translate(3%, -1%); } }
+        @keyframes kenBurns-3 { from { transform: scale(1.05) translate(0%, 0%); } to { transform: scale(1.2) translate(-2%, -3%); } }
+        
+        #effects-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 5; overflow: hidden;
+        }
+
+        .shadow-slash {
+            position: absolute;
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #7c4dff, #9c27b0, transparent);
+            box-shadow: 0 0 20px #7c4dff, 0 0 40px #9c27b0;
+            animation: slash-move 0.3s ease-out forwards;
+        }
+        
+        @keyframes slash-move {
+            0% { transform: translate(-50%, -50%) rotate(45deg) scaleX(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) rotate(45deg) scaleX(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) rotate(45deg) scaleX(1); opacity: 0; }
+        }
+
+        .damage-number {
+            position: absolute;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            animation: damage-float 1s ease-out forwards;
+            z-index: 10;
+        }
+        
+        @keyframes damage-float {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+        
+        #scene-container.loading #scene-background { filter: blur(8px); opacity: 0.6; }
+        .spinner {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2);
+            border-top-color: #7c4dff; border-radius: 50%;
+            animation: spin 1s linear infinite; z-index: 2; display: none; opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #scene-container.loading .spinner { display: block; opacity: 1; }
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+        
+        /* Main Content & Narrative */
+        .content-wrapper {
+            flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;
+            background: rgba(20, 20, 30, 0.75);
+            -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+            position: relative;
+        }
+        
+        #statsDisplay {
+            padding: 8px 15px; display: flex; gap: 16px; font-size: 15px; font-weight: 700;
+            align-items: center; background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(124, 77, 255, 0.3); flex-shrink: 0;
+        }
+        .stat-item { display: flex; align-items: center; gap: 6px; }
+        .stat-item .icon { font-size: 22px; line-height: 1; }
+        .stat-item.health { color: #fff; }
+        .health-bar-outer { width: 85px; height: 10px; background-color: rgba(0,0,0,0.4); border-radius: 5px; overflow: hidden; border: 1px solid rgba(124, 77, 255, 0.3); }
+        .health-bar-inner { height: 100%; background: linear-gradient(90deg, #f44336 0%, #ff5722 100%); border-radius: 4px; transition: width 0.5s ease-out; }
+        .stat-item.mana { color: #64B5F6; }
+        .stat-item.level { color: #ffeb3b; }
+        
+        .narrative-container {
+            flex-grow: 1; padding: 20px; overflow-y: auto;
+            -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+        }
+
+        .gm-message {
+            background: rgba(30, 25, 40, 0.8); border: 1px solid rgba(124, 77, 255, 0.2);
+            border-radius: 16px; padding: 16px; margin-bottom: 20px;
+            position: relative; animation: slideIn 0.5s ease-out; max-width: 95%; color: #ddd;
+        }
+        .gm-message.player-message { background: rgba(40, 30, 60, 0.8); border-color: rgba(156, 39, 176, 0.4); margin-left: auto; }
+        .gm-message.hae-in-message { background: rgba(60, 30, 40, 0.8); border-color: rgba(233, 30, 99, 0.4); }
+        .gm-message.system-message { background: rgba(124, 77, 255, 0.2); border-color: rgba(124, 77, 255, 0.5); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .gm-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; opacity: 0.8; font-weight: 600; }
+        .gm-avatar {
+            width: 24px; height: 24px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 12px;
+        }
+        .gm-avatar.gm { background: linear-gradient(135deg, #7c4dff 0%, #536dfe 100%); }
+        .gm-avatar.player { background: linear-gradient(135deg, #9c27b0 0%, #7c4dff 100%); }
+        .gm-avatar.system { background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%); }
+        .gm-avatar.hae-in { background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); }
+        .gm-text { line-height: 1.6; font-size: 15px; }
+
+        .choices-container { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
+        
+        .choice-button {
+            background: rgba(124, 77, 255, 0.15); border: 1px solid rgba(124, 77, 255, 0.3);
+            border-radius: 12px; padding: 16px; display: flex; align-items: center;
+            gap: 12px; cursor: pointer; transition: all 0.2s ease; position: relative;
+            overflow: hidden; text-align: left; color: #fff;
+        }
+        .choice-button:hover { background: rgba(124, 77, 255, 0.25); border-color: rgba(124, 77, 255, 0.5); transform: translateY(-2px); }
+        .choice-button:active { transform: scale(0.98); }
+        .choice-icon { width: 32px; height: 32px; background: rgba(124, 77, 255, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .choice-text { font-size: 14px; font-weight: 600; }
+        .choice-detail { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+        
+        #combatUI { padding: 0 20px 20px 20px; }
+        .combat-stats { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .health-bar-container { width: 48%; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 8px; }
+        .health-bar-label { font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #fff;}
+        .health-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .health-bar-fill { height: 100%; width: 100%; transition: width 0.5s ease; }
+        #playerHealthBar { background: linear-gradient(90deg, #9c27b0 0%, #7c4dff 100%); }
+        #enemyHealthBar { background: linear-gradient(90deg, #ff6b6b 0%, #ff4757 100%); }
+
+        .bottom-bar {
+            padding: 12px; background: rgba(20, 20, 30, 0.8);
+            -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(124, 77, 255, 0.2);
+            display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+        }
+        .input-container { flex: 1; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(124, 77, 255, 0.2); border-radius: 22px; height: 44px; display: flex; align-items: center; padding: 0 4px 0 16px; transition: all 0.2s ease; }
+        .input-container:focus-within { border-color: rgba(124, 77, 255, 0.8); background: rgba(0, 0, 0, 0.3); }
+        .input-field { flex: 1; background: transparent; border: none; color: #fff; font-size: 15px; outline: none; height: 100%; padding: 0 8px; }
+        .input-field::placeholder { color: rgba(255, 255, 255, 0.5); }
+        .action-button {
+            background: rgba(124, 77, 255, 0.15); border: none; border-radius: 50%;
+            width: 44px; height: 44px; color: #fff; font-size: 18px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: all 0.2s ease; flex-shrink: 0;
+        }
+        .action-button:hover { background: rgba(124, 77, 255, 0.3); }
+        .input-mode-buttons { display: flex; gap: 4px; }
+        .mode-button {
+            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: rgba(124, 77, 255, 0.1);
+            border-radius: 18px; cursor: pointer; transition: all 0.2s ease; font-size: 16px; color: #fff;
+        }
+        .mode-button.active { background: #7c4dff; }
+        
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8);
+            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            display: none; align-items: center; justify-content: center; z-index: 300;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .mini-game-modal {
+            background: #1a1a2e; padding: 24px; border-radius: 20px; width: 90%; max-width: 340px; text-align: center;
+            border: 1px solid rgba(124, 77, 255, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        .mini-game-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #fff; }
+
+        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; }
+        .item-slot { text-align: center; cursor: pointer; }
+        .item-icon { font-size: 32px; width: 60px; height: 60px; background: rgba(124, 77, 255, 0.1); border: 1px solid rgba(124, 77, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px auto; }
+        .item-name { font-size: 12px; font-weight: 600; color: #fff; }
+        .item-quantity, .item-cost { font-size: 11px; opacity: 0.8; color: #fff; margin-top: 4px;}
+        .item-cost span { color: #ffeb3b; font-weight: bold; }
+        .item-slot.disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .game-area { position: relative; width: 100%; height: 200px; background: #1a1a2e; border-radius: 8px; overflow: hidden; }
+        .shadow-soldier {
+            position: absolute;
+            width: 50px; height: 50px;
+            font-size: 35px; line-height: 50px; text-align: center;
+            cursor: pointer; transition: transform 0.1s ease;
+            z-index: 2;
+            filter: drop-shadow(0 0 10px rgba(124, 77, 255, 0.6));
+        }
+        .shadow-soldier:active { transform: scale(0.9); }
+        .enemy-target {
+            position: absolute;
+            width: 40px; height: 40px;
+            font-size: 30px; line-height: 40px; text-align: center;
+            z-index: 1;
+        }
+        .game-info { font-size: 16px; color: #fff; margin-bottom: 10px; }
+
+        .game-bg-image {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out; z-index: 0;
+        }
+
+        #shadowExtractionPuzzle {
+            display: flex; flex-direction: column; align-items: center; gap: 15px;
+        }
+        .extraction-meter { width: 80%; height: 20px; background-color: #111; border: 1px solid #7c4dff; border-radius: 10px; position: relative; overflow: hidden;}
+        .extraction-meter-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: linear-gradient(90deg, #7c4dff, #9c27b0); transition: width 0.1s linear;}
+        .extraction-meter-target { position: absolute; top: 0; height: 100%; width: 8px; background-color: rgba(255, 235, 59, 0.7); border-left: 2px solid #fff; border-right: 2px solid #fff; }
+        .extraction-button {
+            padding: 10px 20px; background: linear-gradient(135deg, #7c4dff, #9c27b0); color: white; border-radius: 8px;
+            font-weight: bold; cursor: pointer; user-select: none; border: none;
+        }
+
+        #gateRaidPuzzle { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .gate-pattern-display { display: flex; gap: 10px; margin-bottom: 20px; }
+        .pattern-symbol { width: 40px; height: 40px; background: rgba(124, 77, 255, 0.2); border: 2px solid #7c4dff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .pattern-symbol.revealed { background: #7c4dff; }
+        .rune-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .rune-button { width: 60px; height: 60px; background: rgba(124, 77, 255, 0.1); border: 1px solid #7c4dff; border-radius: 8px; cursor: pointer; font-size: 24px; }
+        
+        #startOverlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            background-size: cover; background-position: center; transition: opacity 1s ease-out;
+        }
+        #startOverlay.fade-out { opacity: 0; pointer-events: none; }
+        .start-screen-gradient {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 70%;
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 100%);
+        }
+        .start-screen-content {
+            position: relative; z-index: 2; padding: 24px; text-align: center; color: #fff;
+        }
+        .start-title {
+            font-size: 36px; font-weight: 700; margin-bottom: 4px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+            background: linear-gradient(135deg, #7c4dff, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .start-subtitle { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.7); margin-bottom: 24px; }
+        #startStoryBtn {
+            width: 100%; padding: 16px; font-size: 18px; font-weight: 600;
+            background: linear-gradient(135deg, #7c4dff, #9c27b0); color: #fff; border: none;
+            border-radius: 12px; cursor: pointer; margin-bottom: 20px; transition: all 0.2s ease;
+        }
+        #startStoryBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(124, 77, 255, 0.4); }
+        
+        .game-content-wrapper { display: none; height: 100%; flex-direction: column; }
+        .game-content-wrapper.visible { display: flex; }
+
+        /* Affection meter */
+        .affection-meter {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 120px;
+            z-index: 100;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(233, 30, 99, 0.3);
+        }
+        .affection-label {
+            font-size: 12px;
+            color: #e91e63;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .affection-hearts {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+        }
+        .heart {
+            font-size: 16px;
+            filter: grayscale(100%);
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+        .heart.filled {
+            filter: grayscale(0%);
+            opacity: 1;
+            animation: heartBeat 0.5s ease;
+        }
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div id="fullscreen-bg"></div>
+    <div class="ios-device">
+        <div id="screen" class="screen">
+            <div id="startOverlay">
+                <div class="start-screen-gradient"></div>
+                <div class="start-screen-content">
+                    <h1 class="start-title">Solo Leveling</h1>
+                    <p class="start-subtitle">Shadow & Heart</p>
+                    <button id="startStoryBtn">Enter the Gate</button>
+                </div>
+            </div>
+
+            <div class="game-content-wrapper">
+                <div class="status-bar">
+                    <div class="status-time">9:41</div>
+                    <div class="status-icons">
+                        <span>📶</span><span>🔋</span>
+                    </div>
+                </div>
+                <div class="affection-meter">
+                    <div class="affection-label">Cha Hae-In</div>
+                    <div class="affection-hearts" id="affectionHearts">
+                        <span class="heart">❤️</span>
+                        <span class="heart">❤️</span>
+                        <span class="heart">❤️</span>
+                        <span class="heart">❤️</span>
+                        <span class="heart">❤️</span>
+                    </div>
+                </div>
+                <div id="scene-container">
+                    <div id="effects-container"></div>
+                    <div id="scene-background"></div>
+                    <div class="spinner"></div>
+                </div>
+                <div class="content-wrapper">
+                    <div id="statsDisplay"></div>
+                    <div id="combatUI"></div>
+                    <div id="narrativeContainer" class="narrative-container"></div>
+                    <div class="bottom-bar">
+                        <button class="action-button" id="inventoryBtn">🎒</button>
+                        <div class="input-container">
+                            <input type="text" class="input-field" id="userInput" placeholder="What do you do?" />
+                            <div class="input-mode-buttons">
+                                <div class="mode-button active" id="actionBtn">⚔️</div>
+                                <div class="mode-button" id="speakBtn">💬</div>
+                            </div>
+                        </div>
+                        <button class="action-button" id="submitInputBtn"><span>➤</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="itemsOverlay" class="modal-overlay">
+        <div class="mini-game-modal">
+            <div class="mini-game-title">🎒 Inventory</div>
+            <div id="itemGrid" class="item-grid"></div>
+        </div>
+    </div>
+    <div id="shadowBattleOverlay" class="modal-overlay">
+        <div class="mini-game-modal">
+            <div class="mini-game-title">Shadow Army Battle!</div>
+            <div class="game-info">Enemies: <span id="enemies-left"></span> | Mana: <span id="battle-mana"></span></div>
+            <div id="shadow-battle-area" class="game-area">
+                <img id="battle-bg" class="game-bg-image" src="" alt="Battle Background">
+            </div>
+        </div>
+    </div>
+    <div id="shadowExtractionOverlay" class="modal-overlay">
+        <div class="mini-game-modal">
+            <div class="mini-game-title">Shadow Extraction</div>
+            <p id="extraction-instructions" style="color: #ccc; margin-bottom: 20px; font-size: 14px;"></p>
+            <div id="shadowExtractionPuzzle"></div>
+        </div>
+    </div>
+    <div id="gateRaidOverlay" class="modal-overlay">
+         <div class="mini-game-modal">
+            <div class="mini-game-title">Gate Puzzle</div>
+             <p style="color: #ccc; margin-bottom: 15px; font-size: 14px;">Memorize and recreate the pattern to clear the gate!</p>
+            <div id="gateRaidPuzzle">
+                 <div class="gate-pattern-display" id="patternDisplay"></div>
+                 <div class="game-info">Lives: <span id="gate-lives">3</span></div>
+                 <div class="rune-buttons" id="runeButtons"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM Element Cache ---
+        const DOMElements = {
+            screen: document.getElementById('screen'), fullscreenBg: document.getElementById('fullscreen-bg'),
+            sceneContainer: document.getElementById('scene-container'), sceneBackground: document.getElementById('scene-background'),
+            effectsContainer: document.getElementById('effects-container'), narrativeContainer: document.getElementById('narrativeContainer'),
+            combatUI: document.getElementById('combatUI'), statsDisplay: document.getElementById('statsDisplay'),
+            userInput: document.getElementById('userInput'), submitInputBtn: document.getElementById('submitInputBtn'),
+            startOverlay: document.getElementById('startOverlay'), startStoryBtn: document.getElementById('startStoryBtn'),
+            inventoryBtn: document.getElementById('inventoryBtn'), itemsOverlay: document.getElementById('itemsOverlay'),
+            itemGrid: document.getElementById('itemGrid'),
+            actionBtn: document.getElementById('actionBtn'), speakBtn: document.getElementById('speakBtn'),
+            shadowBattleOverlay: document.getElementById('shadowBattleOverlay'), shadowBattleArea: document.getElementById('shadow-battle-area'),
+            battleBg: document.getElementById('battle-bg'), battleMana: document.getElementById('battle-mana'),
+            enemiesLeft: document.getElementById('enemies-left'),
+            shadowExtractionOverlay: document.getElementById('shadowExtractionOverlay'), shadowExtractionPuzzle: document.getElementById('shadowExtractionPuzzle'),
+            extractionInstructions: document.getElementById('extraction-instructions'),
+            gateRaidOverlay: document.getElementById('gateRaidOverlay'),
+            gateRaidPuzzle: document.getElementById('gateRaidPuzzle'),
+            gameContentWrapper: document.querySelector('.game-content-wrapper'),
+            affectionHearts: document.getElementById('affectionHearts'),
+        };
+
+        // --- Game and Audio State ---
+        let gameState = {};
+        let activeMiniGame = {};
+        const synth = window.speechSynthesis;
+        let voices = [];
+        let sounds = {};
+        let audioInitialized = false;
+        let speechQueue = [];
+        let isSpeaking = false;
+        
+        // --- Story and Game Data ---
+        const story = {
+            'START': {
+                prompt: "Sung Jin-Woo standing in a dark dungeon entrance, purple aura emanating from his body, shadows swirling around him. Anime style, dramatic lighting, Solo Leveling manhwa art style.",
+                narration: "You are Sung Jin-Woo, the Shadow Monarch. After countless battles and becoming the world's strongest hunter, you've realized something is missing. Your heart races whenever you see S-Rank Hunter Cha Hae-In. Today, you've decided to pursue something more challenging than any dungeon boss - her heart.",
+                chat: [{ sender: 'system', text: "The System has granted you a new quest: Win Cha Hae-In's heart!" }],
+                choices: [ 
+                    { text: "Accept the quest", detail: "Time to level up in romance!", type: 'accept_quest' }, 
+                    { text: "Check your stats first", detail: "What are my current abilities?", type: 'check_stats' }, 
+                ],
+                leadsTo: { accept_quest: 'FIRST_MEETING', check_stats: 'STATS_CHECK' }
+            },
+            'STATS_CHECK': {
+                prompt: "A glowing blue system window floating in the air showing character stats, RPG interface, Solo Leveling style.",
+                narration: "Your System Window appears before you, displaying your incredible power.",
+                chat: [{ sender: 'system', text: "Player: Sung Jin-Woo | Level: 146 | Class: Shadow Monarch | Strength: 492 | Intelligence: 385 | Sense: 420 | Special Skill: Shadow Extraction | Title: The Strongest Hunter" }],
+                choices: [{ text: "Close window and continue", type: 'continue', leadsTo: 'FIRST_MEETING'}]
+            },
+            'FIRST_MEETING': {
+                prompt: "Cha Hae-In in her red armor, blonde hair flowing, standing in the Korean Hunters Association building. Beautiful anime girl, Solo Leveling art style.",
+                narration: "You arrive at the Korean Hunters Association. There she is - Cha Hae-In, the graceful S-Rank hunter known for her swordsmanship. She notices you approaching, and for the first time in a while, you feel nervous.",
+                chat: [{ sender: 'Cha Hae-In', text: "Jin-Woo? I heard you cleared another S-Rank gate solo yesterday. That's... impressive." }],
+                choices: [ 
+                    { text: "Play it cool", detail: "'Just another day's work.'", type: 'play_cool' }, 
+                    { text: "Compliment her", detail: "'Your swordsmanship is what's truly impressive.'", type: 'compliment' },
+                    { text: "Invite her to train", detail: "'Want to join me for the next gate?'", type: 'invite' } 
+                ],
+                leadsTo: { play_cool: 'COOL_RESPONSE', compliment: 'COMPLIMENT_RESPONSE', invite: 'TRAINING_INVITE' },
+                onLoad: () => { gameState.settings.activeSpeaker = 'hae-in'; setInputMode('speak'); }
+            },
+            'COOL_RESPONSE': {
+                prompt: "Cha Hae-In looking slightly disappointed, turning away. Anime style, Solo Leveling.",
+                narration: "Hae-In's expression falters slightly. Perhaps being too aloof isn't the right approach with her.",
+                chat: [{ sender: 'Cha Hae-In', text: "I see... Well, I should get going. There's a B-Rank gate that needs clearing." }],
+                action: 'lose_affection', amount: 1,
+                choices: [ 
+                    { text: "Stop her", detail: "'Wait, I didn't mean it like that!'", type: 'stop_her' }, 
+                    { text: "Let her go", detail: "Maybe next time...", type: 'let_go' } 
+                ],
+                leadsTo: { stop_her: 'REDEMPTION', let_go: 'MISSED_CHANCE' }
+            },
+            'COMPLIMENT_RESPONSE': {
+                prompt: "Cha Hae-In blushing slightly, a small smile on her face. Anime style romantic scene, Solo Leveling.",
+                narration: "A faint blush crosses Hae-In's cheeks. You notice her unique ability - she can smell mana, and yours doesn't repulse her like others do.",
+                chat: [{ sender: 'Cha Hae-In', text: "Thank you, Jin-Woo. That means a lot coming from you. Your mana... it's different from others. It's actually pleasant." }],
+                action: 'add_affection', amount: 1,
+                leadsTo: 'GATE_ALERT'
+            },
+            'TRAINING_INVITE': {
+                prompt: "Cha Hae-In looking surprised but interested, hand on her sword. Anime style, Solo Leveling.",
+                narration: "Hae-In looks surprised by your invitation. As someone who usually works alone, this is unexpected from you.",
+                chat: [{ sender: 'Cha Hae-In', text: "You want to raid a gate... together? The Shadow Monarch needs help?" }],
+                choices: [ 
+                    { text: "Be honest", detail: "'I don't need help. I want your company.'", type: 'honest' }, 
+                    { text: "Make an excuse", detail: "'It's good to have backup sometimes.'", type: 'excuse' } 
+                ],
+                leadsTo: { honest: 'HONEST_RESPONSE', excuse: 'EXCUSE_RESPONSE' }
+            },
+            'HONEST_RESPONSE': {
+                prompt: "Cha Hae-In's eyes widening in surprise, then softening with a genuine smile. Romantic anime scene, cherry blossoms in background.",
+                narration: "Your honesty catches her off guard. For a moment, the mighty S-Rank hunter looks like a normal girl, touched by your words.",
+                chat: [{ sender: 'Cha Hae-In', text: "Jin-Woo... I... Yes, I'd like that very much." }],
+                action: 'add_affection', amount: 2,
+                leadsTo: 'GATE_ALERT'
+            },
+            'GATE_ALERT': {
+                prompt: "Red warning lights flashing in the Hunters Association, alarm sirens blaring. Emergency atmosphere, anime style.",
+                narration: "Suddenly, alarms blare throughout the building. An emergency notification appears on all screens.",
+                chat: [{ sender: 'system', text: "ALERT: S-Rank Gate has appeared in Seoul! All available S-Rank hunters requested immediately!" }],
+                choices: [ 
+                    { text: "Take charge", detail: "'Let's go together, Hae-In.'", type: 'take_charge' }, 
+                    { text: "Show off", detail: "'Watch me handle this.'", type: 'show_off' } 
+                ],
+                leadsTo: { take_charge: 'GATE_ENTRANCE', show_off: 'SHOW_OFF_FAIL' }
+            },
+            'GATE_ENTRANCE': {
+                prompt: "A massive red gate swirling with dark energy in the middle of Seoul, crowds evacuating. Epic anime scene, Solo Leveling style.",
+                narration: "You and Hae-In arrive at the gate. The ominous red portal swirls with dangerous energy. Other hunters are hesitating to enter.",
+                chat: [{ sender: 'Cha Hae-In', text: "This energy... it's unlike anything I've sensed before. Jin-Woo, we should be careful." }],
+                choices: [ 
+                    { text: "Protect her", detail: "'Stay close to me.'", type: 'protective' }, 
+                    { text: "Trust her strength", detail: "'I know you can handle yourself.'", type: 'trust' },
+                    { text: "Summon shadows", detail: "'My soldiers will scout ahead.'", type: 'summon' }
+                ],
+                leadsTo: { protective: 'PROTECTIVE_ROUTE', trust: 'TRUST_ROUTE', summon: 'SHADOW_SUMMON' }
+            },
+            'SHADOW_SUMMON': {
+                prompt: "Jin-Woo summoning his shadow army, Beru, Igris, and Bellion emerging from dark portals. Epic anime scene with purple aura.",
+                narration: "You raise your hand, and shadows pour forth from the ground. Your three commanders materialize: Bellion the Grand Marshal, Beru the Ant King, and Igris the Blood-Red Knight.",
+                action: 'summon_shadows',
+                chat: [{ sender: 'system', text: "Shadow soldiers summoned! Your army awaits your command, My Liege." }],
+                choices: [ 
+                    { text: "Enter the gate", detail: "Time to see what awaits inside", type: 'enter_gate' } 
+                ],
+                leadsTo: { enter_gate: 'DUNGEON_START' }
+            },
+            'DUNGEON_START': {
+                prompt: "Inside a crystalline ice dungeon with frozen monsters and treacherous paths. Fantasy RPG dungeon, anime style.",
+                narration: "The gate leads to an ice realm. Frozen monsters lurk in the crystalline corridors. Hae-In draws her sword, its blade glowing with mana.",
+                action: 'gate_raid_game',
+                retryCost: 1000,
+                onWin: 'DUNGEON_CLEAR',
+                onLoss: 'DUNGEON_FAIL'
+            },
+            'DUNGEON_CLEAR': {
+                prompt: "Jin-Woo and Cha Hae-In standing victorious in a crystal chamber, magical ice boss defeated. Romantic lighting, anime style.",
+                narration: "You clear the dungeon together. As the boss falls, Hae-In turns to you with admiration in her eyes.",
+                chat: [{ sender: 'Cha Hae-In', text: "That was incredible, Jin-Woo. Fighting alongside you... I've never felt so synchronized with another hunter." }],
+                action: 'add_affection', amount: 1,
+                choices: [ 
+                    { text: "Extract the boss shadow", detail: "Add to your army", type: 'extract' }, 
+                    { text: "Focus on Hae-In", detail: "'You were amazing too.'", type: 'compliment_battle' } 
+                ],
+                leadsTo: { extract: 'SHADOW_EXTRACTION', compliment_battle: 'BATTLE_COMPLIMENT' }
+            },
+            'SHADOW_EXTRACTION': {
+                prompt: "Jin-Woo performing shadow extraction on a fallen ice dragon, purple energy swirling. Dark fantasy scene, Solo Leveling style.",
+                narration: "You place your hand over the fallen ice dragon boss. 'Arise,' you command. Time to add this powerful creature to your shadow army.",
+                action: 'shadow_extraction_game',
+                retryCost: 2000,
+                onWin: 'EXTRACTION_SUCCESS',
+                onLoss: 'EXTRACTION_FAIL'
+            },
+            'EXTRACTION_SUCCESS': {
+                prompt: "A massive shadow ice dragon rising from purple flames, joining Jin-Woo's army. Epic summoning scene, anime style.",
+                narration: "The extraction succeeds! The ice dragon rises as your newest shadow soldier. Hae-In watches in awe.",
+                chat: [{ sender: 'Cha Hae-In', text: "No matter how many times I see it, your power still amazes me. You really are special, Jin-Woo." }],
+                action: 'add_shadow', shadow: 'Ice Dragon',
+                leadsTo: 'ROMANTIC_MOMENT'
+            },
+            'ROMANTIC_MOMENT': {
+                prompt: "Jin-Woo and Cha Hae-In alone in a beautiful crystal cavern, soft light reflecting off ice formations. Romantic anime scene.",
+                narration: "As you exit the dungeon, you find yourselves in a breathtaking crystal cavern. The light creates a magical atmosphere.",
+                chat: [{ sender: 'Cha Hae-In', text: "Jin-Woo... why did you really invite me today? It wasn't just about the gate, was it?" }],
+                choices: [ 
+                    { text: "Confess your feelings", detail: "'I wanted to be with you.'", type: 'confess' }, 
+                    { text: "Tease her", detail: "'Maybe you're imagining things.'", type: 'tease' },
+                    { text: "Show don't tell", detail: "Take her hand", type: 'take_hand' }
+                ],
+                leadsTo: { confess: 'CONFESSION', tease: 'TEASE_RESPONSE', take_hand: 'HAND_HOLDING' }
+            },
+            'CONFESSION': {
+                prompt: "Jin-Woo and Cha Hae-In facing each other, cherry blossom petals floating around them despite being in a dungeon. Romantic confession scene, anime style.",
+                narration: "You take a deep breath. Even facing the Demon King wasn't this nerve-wracking.",
+                chat: [{ sender: 'player', text: "Hae-In, I've faced countless monsters and even death itself. But nothing scares me more than the thought of not telling you how I feel. I... I've fallen for you." }],
+                choices: [ 
+                    { text: "Wait for her response", detail: "Give her time", type: 'wait' } 
+                ],
+                leadsTo: { wait: 'CONFESSION_RESPONSE' }
+            },
+            'CONFESSION_RESPONSE': {
+                prompt: "Cha Hae-In with tears of joy in her eyes, reaching out to Jin-Woo. Beautiful romantic anime scene with sparkles.",
+                narration: "Hae-In's eyes widen, then fill with tears. But she's smiling - the most beautiful smile you've ever seen.",
+                chat: [{ sender: 'Cha Hae-In', text: "Jin-Woo... I've been waiting to hear those words. I've loved you since the day you saved me from the Ant King. Your mana doesn't just smell nice to me - it feels like home." }],
+                action: 'add_affection', amount: 3,
+                leadsTo: 'BOSS_INTERRUPTION'
+            },
+            'BOSS_INTERRUPTION': {
+                prompt: "A massive shadow figure emerging from a dark portal behind them, the Frost Monarch. Epic boss appearance, anime style.",
+                narration: "Your romantic moment is shattered as the dungeon trembles. A hidden boss emerges - the Frost Monarch, one of the ancient rulers!",
+                chat: [{ sender: 'system', text: "WARNING: Monarch-class entity detected! Frost Monarch has appeared!" }],
+                choices: [ 
+                    { text: "Protect Hae-In", detail: "Shield her with shadows", type: 'protect' }, 
+                    { text: "Fight together", detail: "'Let's do this together!'", type: 'together' } 
+                ],
+                leadsTo: { protect: 'PROTECTIVE_FIGHT', together: 'COUPLE_FIGHT' }
+            },
+            'COUPLE_FIGHT': {
+                prompt: "Jin-Woo and Cha Hae-In fighting side by side against the Frost Monarch, perfect synchronization. Epic battle couple scene, anime style.",
+                narration: "You and Hae-In move in perfect harmony. Your shadows and her swordplay create a deadly dance. This is what it means to have a true partner.",
+                action: 'couple_combat',
+                combat: { enemy: 'frost_monarch', onWin: 'VICTORY_TOGETHER', onLoss: 'DEFEAT_RETRY' }
+            },
+            'VICTORY_TOGETHER': {
+                prompt: "Jin-Woo and Cha Hae-In embracing after victory, shadow soldiers cheering in background. Romantic victory scene, anime style.",
+                narration: "The Frost Monarch falls. As the dungeon begins to collapse, you pull Hae-In close. Your shadow soldiers cheer in the background - even Beru seems happy.",
+                chat: [{ sender: 'Cha Hae-In', text: "We make a pretty good team, don't we? Partner?" }],
+                action: 'max_affection',
+                choices: [ 
+                    { text: "Kiss her", detail: "Actions speak louder", type: 'kiss' }, 
+                    { text: "Propose a date", detail: "'How about dinner?'", type: 'date' } 
+                ],
+                leadsTo: { kiss: 'FIRST_KISS', date: 'DATE_PROPOSAL' }
+            },
+            'FIRST_KISS': {
+                prompt: "Jin-Woo and Cha Hae-In sharing their first kiss as the gate closes behind them, Seoul cityscape in background. Ultimate romantic scene, anime style.",
+                narration: "As you exit the collapsing gate, you pull Hae-In close and kiss her. The world seems to stop. For once, the Shadow Monarch has found his light.",
+                chat: [{ sender: 'system', text: "Quest Complete: Win Cha Hae-In's heart! Reward: Lifetime of happiness unlocked!" }],
+                choices: [{ text: "The End... or a new beginning?", type: 'ending', leadsTo: 'ENDING'}]
+            },
+            'ENDING': {
+                prompt: "Jin-Woo and Cha Hae-In walking hand in hand into the sunset, shadow soldiers following behind like a wedding procession. Happy ending scene, anime style.",
+                narration: "You've conquered the most difficult challenge of all - love. As the strongest hunter and with Hae-In by your side, you're ready for any adventure life brings.",
+                choices: [{ text: "Play again", type: 'restart', leadsTo: 'START'}]
+            },
+            'DEFEAT_RETRY': {
+                prompt: "Jin-Woo and Cha Hae-In regrouping after being knocked back by the Frost Monarch. Determination in their eyes, anime style.",
+                narration: "The Frost Monarch's power is overwhelming. But you're not giving up - not with Hae-In by your side.",
+                choices: [{ text: "Try again together", type: 'retry', leadsTo: 'COUPLE_FIGHT'}]
+            }
+        };
+        
+        const combatData = { 
+            frost_monarch: { name: 'Frost Monarch', maxHealth: 200, currentHealth: 200 }, 
+            ice_monsters: { name: 'Ice Monsters', maxHealth: 150, currentHealth: 150 } 
+        };
+        
+        const inventoryItems = [ 
+            { id: 'health_potion', name: 'HP Potion', icon: '🧪', quantity: 3, effect: {type: 'heal', value: 50} }, 
+            { id: 'mana_potion', name: 'MP Potion', icon: '💙', quantity: 2, effect: {type: 'mana', value: 30} },
+            { id: 'demon_dagger', name: "Demon King's Dagger", icon: '🗡️', quantity: 1, effect: {type: 'weapon', damage: 80} },
+            { id: 'rulers_authority', name: "Ruler's Authority", icon: '🌟', quantity: 1, effect: {type: 'special', damage: 120} },
+        ];
+        
+        const shadowAttackNarrations = [
+            "Beru strikes with lightning speed, his claws tearing through space!",
+            "Igris performs a perfect sword dance, his blade singing through the air!",
+            "Bellion crushes down with his massive sword, shaking the entire dungeon!",
+            "Your shadow soldiers attack in perfect formation!",
+            "The Demon King's Daggers flash with deadly precision!"
+        ];
+
+        // --- Initialization ---
+        function init() {
+            resetGameState();
+            addEventListeners();
+            generateStartScreenImage();
+            loadVoices();
+            if (synth.onvoiceschanged !== undefined) {
+                synth.onvoiceschanged = loadVoices;
+            }
+        }
+
+        function loadVoices() { voices = synth.getVoices(); console.log("Available voices:", voices.length); }
+
+        async function initAudio() {
+            if (audioInitialized) return;
+            await Tone.start();
+            sounds.shadowSlash = new Tone.MetalSynth({ frequency: 200, envelope: { attack: 0.001, decay: 0.1, release: 0.01 }, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 }).toDestination();
+            sounds.shadowSlash.volume.value = -20;
+            sounds.magicCast = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.5 } }).toDestination();
+            sounds.powerUp = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 0.8 } }).toDestination();
+            sounds.heartbeat = new Tone.MembraneSynth({ pitchDecay: 0.05, octaves: 10, oscillator: { type: "sine" }, envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 } }).toDestination();
+            sounds.heartbeat.volume.value = -10;
+            sounds.systemPing = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination();
+            sounds.errorBuzz = new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
+            sounds.levelUp = new Tone.PolySynth(Tone.Synth).toDestination();
+
+            if(Tone.Transport.state !== 'started') Tone.Transport.start();
+            audioInitialized = true;
+        }
+
+        function playSound(soundName, note = 'C4') {
+            if (!audioInitialized || !sounds[soundName]) return;
+            const now = Tone.now();
+            if (sounds[soundName] instanceof Tone.MetalSynth || sounds[soundName] instanceof Tone.NoiseSynth) { 
+                sounds[soundName].triggerAttackRelease("8n", now); 
+            }
+            else if (sounds[soundName] instanceof Tone.Synth || sounds[soundName] instanceof Tone.MembraneSynth) { 
+                sounds[soundName].triggerAttackRelease(note, "8n", now); 
+            }
+            else if (sounds[soundName] instanceof Tone.PolySynth) {
+                if (soundName === 'levelUp') {
+                    sounds[soundName].triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], "8n", now);
+                } else {
+                    sounds[soundName].triggerAttackRelease(note, "8n", now);
+                }
+            }
+        }
+        
+        function processSpeechQueue() {
+            if (isSpeaking || speechQueue.length === 0) {
+                if (!isSpeaking && gameState.onDialogueComplete) {
+                    gameState.onDialogueComplete();
+                    gameState.onDialogueComplete = null; 
+                }
+                return;
+            }
+            isSpeaking = true;
+            const { text, sender } = speechQueue.shift();
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            if (voices.length === 0) voices = synth.getVoices();
+            if (voices.length === 0) {
+                console.error("Speech synthesis voices not available.");
+                isSpeaking = false;
+                processSpeechQueue(); 
+                return;
+            }
+            
+            let voicePool = voices.filter(v => v.lang.startsWith('en'));
+            let selectedVoice;
+            
+            if (sender.toLowerCase() === 'gm' || sender.toLowerCase() === 'system') {
+                selectedVoice = voicePool.find(v => v.name.includes('Google UK English Male')) || 
+                                voicePool.find(v => v.name === 'Daniel') ||
+                                voicePool.find(v => v.name.toLowerCase().includes('male'));
+            } else if (sender.toLowerCase() === 'hae-in' || sender.toLowerCase() === 'cha hae-in') {
+                selectedVoice = voicePool.find(v => v.name.includes('Google UK English Female')) || 
+                                voicePool.find(v => v.name === 'Samantha') ||
+                                voicePool.find(v => v.name.toLowerCase().includes('female'));
+            } else { 
+                 selectedVoice = voicePool.find(v => v.name.includes('Google US English'));
+            }
+            
+            utterance.voice = selectedVoice || voicePool[0];
+            utterance.rate = 0.95;
+            utterance.pitch = (sender.toLowerCase() === 'hae-in' || sender.toLowerCase() === 'cha hae-in') ? 1.2 : 0.9; 
+            
+            utterance.onend = () => { isSpeaking = false; setTimeout(processSpeechQueue, 50); };
+            utterance.onerror = (event) => { 
+                console.error('SpeechSynthesisUtterance.onerror:', event.error);
+                isSpeaking = false; 
+                setTimeout(processSpeechQueue, 100);
+            };
+            
+            synth.speak(utterance);
+        }
+
+        function speakText(text, sender) {
+            if (!audioInitialized) return;
+            speechQueue.push({ text, sender });
+            if (!isSpeaking) {
+                processSpeechQueue();
+            }
+        }
+
+        async function generateStartScreenImage() {
+            DOMElements.sceneContainer.classList.add('loading');
+            try {
+                const imageUrl = await generateImageWithAI("Solo Leveling poster featuring Sung Jin-Woo with shadow soldiers, purple aura, anime style, with Cha Hae-In in the background");
+                DOMElements.startOverlay.style.backgroundImage = `url(${imageUrl})`;
+            } catch (e) {
+                console.error("Failed to generate start screen image", e);
+                DOMElements.startOverlay.style.backgroundColor = '#1a1a2e';
+            } finally {
+                DOMElements.sceneContainer.classList.remove('loading');
+            }
+        }
+        
+        function resetGameState() {
+            gameState = {
+                currentNodeKey: 'START',
+                player: { 
+                    health: 100, 
+                    maxHealth: 100, 
+                    mana: 100, 
+                    maxMana: 100, 
+                    level: 146,
+                    inventory: JSON.parse(JSON.stringify(inventoryItems)),
+                    shadows: ['Beru', 'Igris', 'Bellion'],
+                    affection: 0,
+                    maxAffection: 5
+                },
+                combat: null, 
+                haeIn: { affection: 0 }, 
+                settings: { inputMode: 'action', activeSpeaker: 'hae-in' },
+                onDialogueComplete: null,
+            };
+        }
+
+        function addEventListeners() {
+            DOMElements.startStoryBtn.addEventListener('click', async () => {
+                await initAudio();
+                if (synth.getVoices().length === 0) {
+                    synth.onvoiceschanged = () => { voices = synth.getVoices(); };
+                }
+                synth.speak(new SpeechSynthesisUtterance(' '));
+
+                DOMElements.startOverlay.classList.add('fade-out');
+                setTimeout(() => {
+                    DOMElements.startOverlay.style.display = 'none';
+                    DOMElements.gameContentWrapper.classList.add('visible');
+                    updateGameState('START');
+                }, 1000);
+            });
+
+            DOMElements.submitInputBtn.addEventListener('click', handleFreeformInput);
+            DOMElements.userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleFreeformInput(); });
+            DOMElements.inventoryBtn.addEventListener('click', () => toggleInventory(!!gameState.combat));
+            DOMElements.itemsOverlay.addEventListener('click', (e) => { if (e.target === DOMElements.itemsOverlay) toggleInventory(); });
+            DOMElements.actionBtn.addEventListener('click', () => setInputMode('action'));
+            DOMElements.speakBtn.addEventListener('click', () => setInputMode('speak'));
+            DOMElements.shadowBattleArea.addEventListener('click', handleShadowBattleClick);
+        }
+        
+        async function updateGameState(newNodeKey) {
+            if(synth.speaking) synth.cancel();
+            speechQueue = [];
+            isSpeaking = false;
+            gameState.onDialogueComplete = null;
+
+            const node = story[newNodeKey];
+            if (!node) { console.error("Story node not found:", newNodeKey); return; }
+            
+            gameState.currentNodeKey = newNodeKey;
+            DOMElements.combatUI.innerHTML = '';
+            DOMElements.combatUI.style.display = 'none';
+            const oldChoices = DOMElements.narrativeContainer.querySelector('.choices-container');
+            if(oldChoices) oldChoices.remove();
+            
+            if(node.prompt) await generateAndSetScene(node.prompt);
+            
+            if(node.action === 'add_affection') updateAffection(node.amount);
+            if(node.action === 'lose_affection') updateAffection(-node.amount);
+            if(node.action === 'max_affection') updateAffection(gameState.player.maxAffection);
+            if(node.action === 'add_shadow' && node.shadow) gameState.player.shadows.push(node.shadow);
+            if(node.onLoad) node.onLoad();
+
+            renderPlayerStats();
+            
+            if (node.narration) addNarrationMessage(node.narration, 'gm');
+            if (node.chat) {
+                for (const chat of node.chat) {
+                    addNarrationMessage(chat.text, chat.sender);
+                }
+            }
+            
+            if (node.leadsTo && !node.choices) {
+                 gameState.onDialogueComplete = () => {
+                     if (gameState.currentNodeKey === newNodeKey) {
+                        updateGameState(node.leadsTo);
+                     }
+                };
+            }
+            
+            if (node.action) {
+                switch(node.action) {
+                    case 'combat': 
+                    case 'couple_combat': startCombat(node.combat); break;
+                    case 'shadow_battle': startShadowBattle(node); break;
+                    case 'shadow_extraction_game': startShadowExtraction(node); break;
+                    case 'gate_raid_game': startGateRaid(node); break;
+                }
+            } else if (node.choices) {
+                renderChoices(node.choices, (choice) => {
+                    let nextNodeKey = node.leadsTo ? node.leadsTo[choice.type] : null;
+                    if (choice.leadsTo) nextNodeKey = choice.leadsTo;
+                    if (nextNodeKey) updateGameState(nextNodeKey);
+                });
+            }
+        }
+        
+        function updateAffection(amount) {
+            gameState.player.affection = Math.max(0, Math.min(gameState.player.maxAffection, gameState.player.affection + amount));
+            renderAffectionMeter();
+            if (amount > 0) {
+                playSound('heartbeat', 'C2');
+                addNarrationMessage(`Cha Hae-In's affection increased! ❤️`, 'system');
+            } else if (amount < 0) {
+                playSound('errorBuzz', 'C2');
+                addNarrationMessage(`Cha Hae-In's affection decreased...`, 'system');
+            }
+        }
+        
+        function renderAffectionMeter() {
+            const hearts = DOMElements.affectionHearts.querySelectorAll('.heart');
+            hearts.forEach((heart, index) => {
+                if (index < gameState.player.affection) {
+                    heart.classList.add('filled');
+                } else {
+                    heart.classList.remove('filled');
+                }
+            });
+        }
+        
+        function addNarrationMessage(text, sender = 'gm') {
+            const messageEl = document.createElement('div');
+            const senderClass = sender.toLowerCase().replace(/\s/g, '').replace('-', '');
+            messageEl.className = `gm-message ${senderClass}-message`;
+            const avatarIcon = sender === 'player' ? 'JW' : senderClass === 'haein' || senderClass === 'chahaein' ? 'CH' : sender === 'system' ? '⚙️' : 'GM';
+            messageEl.innerHTML = `<div class="gm-header"><div class="gm-avatar ${senderClass === 'haein' || senderClass === 'chahaein' ? 'hae-in' : senderClass}">${avatarIcon}</div><span>${sender.charAt(0).toUpperCase() + sender.slice(1)}</span></div><div class="gm-text">${text || ''}</div>`;
+            DOMElements.narrativeContainer.appendChild(messageEl);
+            
+            speakText(text, sender);
+            
+            DOMElements.narrativeContainer.scrollTop = DOMElements.narrativeContainer.scrollHeight;
+        }
+
+        async function generateAndSetScene(prompt) {
+            DOMElements.sceneContainer.classList.add('loading');
+            try {
+                const imageUrl = await generateImageWithAI(`${prompt}, high quality anime art, detailed, vibrant colors`);
+                const bg = DOMElements.sceneBackground;
+                bg.style.animationName = 'none';
+                bg.style.backgroundImage = `url(${imageUrl})`;
+                DOMElements.fullscreenBg.style.backgroundImage = `url(${imageUrl})`;
+                void bg.offsetWidth;
+                const anims = ['kenBurns-1', 'kenBurns-2', 'kenBurns-3'];
+                bg.style.animationName = anims[Math.floor(Math.random() * anims.length)];
+            } catch (error) {
+                console.error("Image generation failed:", error);
+                DOMElements.sceneBackground.style.backgroundColor = '#1a1a2e';
+            } finally {
+                DOMElements.sceneContainer.classList.remove('loading');
+            }
+        }
+
+        function createShadowSlashEffect() { 
+            playSound('shadowSlash'); 
+            const slash = document.createElement('div'); 
+            slash.className = 'shadow-slash'; 
+            slash.style.left = '50%'; 
+            slash.style.top = '50%';
+            DOMElements.effectsContainer.appendChild(slash); 
+            setTimeout(() => slash.remove(), 300); 
+        }
+        
+        function createDamageNumber(damage, x, y) {
+            const dmg = document.createElement('div');
+            dmg.className = 'damage-number';
+            dmg.textContent = damage;
+            dmg.style.left = x + 'px';
+            dmg.style.top = y + 'px';
+            DOMElements.effectsContainer.appendChild(dmg);
+            setTimeout(() => dmg.remove(), 1000);
+        }
+        
+        function createDamageTakenEffect() { 
+            playSound('errorBuzz', 'C2'); 
+            DOMElements.screen.classList.add('shake'); 
+            setTimeout(() => { DOMElements.screen.classList.remove('shake'); }, 400); 
+        }
+
+        function renderPlayerStats() {
+            const { player } = gameState;
+            const healthPercentage = (player.health / player.maxHealth) * 100;
+            const manaPercentage = (player.mana / player.maxMana) * 100;
+            DOMElements.statsDisplay.innerHTML = `<div class="stat-item health"><span class="icon">❤️</span><div class="health-bar-outer"><div class="health-bar-inner" style="width: ${healthPercentage}%;"></div></div></div><div class="stat-item mana"><span class="icon">💙</span> ${player.mana}/${player.maxMana}</div><div class="stat-item level"><span class="icon">⭐</span> Lv.${player.level}</div>`;
+            renderAffectionMeter();
+        }
+        
+        function renderChoices(choices, callback) {
+            let choicesContainer = DOMElements.narrativeContainer.querySelector('.choices-container');
+            if (choicesContainer) choicesContainer.remove();
+            choicesContainer = document.createElement('div');
+            choicesContainer.className = 'choices-container';
+            if (choices && Array.isArray(choices)) {
+                choices.forEach(choice => {
+                    const button = document.createElement('button');
+                    button.className = 'choice-button';
+                    let icon = '➡️';
+                    if (choice.type.includes('attack') || choice.type.includes('fight') || choice.type.includes('summon')) icon = '⚔️';
+                    if (choice.type.includes('speak') || choice.type.includes('compliment') || choice.type.includes('confess')) icon = '💬';
+                    if (choice.type.includes('protect')) icon = '🛡️';
+                    if (choice.type.includes('date') || choice.type.includes('kiss')) icon = '❤️';
+                    button.innerHTML = `<div class="choice-icon">${icon}</div><div class="choice-text-container"><div class="choice-text">${choice.text}</div><div class="choice-detail">${choice.detail || ''}</div></div>`;
+                    button.onclick = () => callback(choice);
+                    choicesContainer.appendChild(button);
+                });
+            }
+            DOMElements.narrativeContainer.appendChild(choicesContainer);
+            DOMElements.narrativeContainer.scrollTop = DOMElements.narrativeContainer.scrollHeight;
+        }
+        
+        function handleRetry(cost, retryNodeKey, lossNodeKey) {
+            const choices = [];
+            if(gameState.player.mana >= cost) {
+                choices.push({text: `Retry (Cost: ${cost} MP)`, type: 'retry'})
+            }
+            choices.push({text: "Give Up", type: 'give_up'});
+
+            addNarrationMessage(`Challenge failed...`, 'system');
+            renderChoices(choices, (choice) => {
+                if (choice.type === 'retry') {
+                    gameState.player.mana -= cost;
+                    updateGameState(retryNodeKey);
+                } else {
+                    updateGameState(lossNodeKey);
+                }
+            });
+        }
+        
+        // --- Mini-Games ---
+        function startShadowBattle(node) {
+            DOMElements.shadowBattleOverlay.classList.add('active');
+            activeMiniGame = { 
+                type: 'shadow_battle', 
+                enemies: 5, 
+                defeated: 0, 
+                mana: gameState.player.mana, 
+                onWin: node.onWin, 
+                onLoss: node.onLoss, 
+                intervalId: null, 
+                active: true, 
+                node: node,
+                shadowPositions: []
+            };
+            DOMElements.battleMana.textContent = activeMiniGame.mana;
+            DOMElements.enemiesLeft.textContent = activeMiniGame.enemies;
+            
+            // Position shadow soldiers
+            const soldiers = ['🗡️', '🐜', '⚔️']; // Igris, Beru, Bellion
+            soldiers.forEach((soldier, index) => {
+                const el = document.createElement('div');
+                el.className = 'shadow-soldier';
+                el.textContent = soldier;
+                el.dataset.soldierIndex = index;
+                el.style.left = `${20 + index * 30}%`;
+                el.style.bottom = '20px';
+                DOMElements.shadowBattleArea.appendChild(el);
+                activeMiniGame.shadowPositions.push(el);
+            });
+            
+            activeMiniGame.intervalId = setInterval(spawnEnemy, 1500);
+            spawnEnemy();
+        }
+
+        function spawnEnemy() {
+            if (!activeMiniGame.active) return;
+            const enemy = document.createElement('div'); 
+            enemy.className = 'enemy-target'; 
+            enemy.textContent = '👹';
+            const gameArea = DOMElements.shadowBattleArea;
+            enemy.style.left = `${Math.random() * (gameArea.offsetWidth - 40)}px`; 
+            enemy.style.top = `20px`;
+            gameArea.appendChild(enemy);
+            
+            // Enemy moves down
+            let position = 20;
+            const moveInterval = setInterval(() => {
+                if (!enemy.parentNode) {
+                    clearInterval(moveInterval);
+                    return;
+                }
+                position += 2;
+                enemy.style.top = position + 'px';
+                if (position > gameArea.offsetHeight - 60) {
+                    clearInterval(moveInterval);
+                    if(enemy.parentNode) {
+                        gameArea.removeChild(enemy);
+                        if (activeMiniGame.active) {
+                            createDamageTakenEffect();
+                            gameState.player.health -= 10;
+                            renderPlayerStats();
+                            if (gameState.player.health <= 0) endShadowBattle(false);
+                        }
+                    }
+                }
+            }, 50);
+        }
+
+        function handleShadowBattleClick(e) {
+            if (activeMiniGame.type !== 'shadow_battle' || !activeMiniGame.active) return;
+            
+            // Check if clicking on a shadow soldier
+            if (e.target.classList.contains('shadow-soldier')) {
+                const soldierIndex = parseInt(e.target.dataset.soldierIndex);
+                // Find nearest enemy
+                const enemies = DOMElements.shadowBattleArea.querySelectorAll('.enemy-target');
+                if (enemies.length > 0 && activeMiniGame.mana >= 10) {
+                    createShadowSlashEffect();
+                    activeMiniGame.mana -= 10;
+                    gameState.player.mana -= 10;
+                    DOMElements.battleMana.textContent = activeMiniGame.mana;
+                    
+                    // Defeat nearest enemy
+                    const enemy = enemies[0];
+                    const rect = enemy.getBoundingClientRect();
+                    createDamageNumber(100, rect.left, rect.top);
+                    enemy.remove();
+                    
+                    activeMiniGame.defeated++;
+                    DOMElements.enemiesLeft.textContent = activeMiniGame.enemies - activeMiniGame.defeated;
+                    
+                    if (activeMiniGame.defeated >= activeMiniGame.enemies) endShadowBattle(true);
+                }
+            }
+        }
+        
+        function endShadowBattle(success) {
+            if (!activeMiniGame.active) return;
+            const node = activeMiniGame.node;
+            activeMiniGame.active = false; 
+            clearInterval(activeMiniGame.intervalId);
+            DOMElements.shadowBattleOverlay.classList.remove('active');
+            DOMElements.shadowBattleArea.innerHTML = '';
+            if (success) { 
+                playSound('levelUp');
+                updateGameState(node.onWin); 
+            } 
+            else { handleRetry(node.retryCost, gameState.currentNodeKey, node.onLoss); }
+        }
+
+        function startShadowExtraction(node) {
+            DOMElements.shadowExtractionOverlay.classList.add('active');
+            activeMiniGame = {
+                type: 'shadow_extraction', onWin: node.onWin, onLoss: node.onLoss, node: node,
+                progress: 0, required: 3, speed: 1.5, currentFill: 0,
+                direction: 1, targetPos: 0, targetWidth: 30, active: true, timeLeft: 15, timerId: null
+            };
+            const puzzleContainer = DOMElements.shadowExtractionPuzzle;
+            puzzleContainer.innerHTML = `
+                <div class="game-info">Time: <span id="extraction-timer">15</span></div>
+                <div class="extraction-meter"><div class="extraction-meter-fill"></div><div class="extraction-meter-target"></div></div>
+                <button class="extraction-button">ARISE!</button>
+            `;
+            const timerEl = puzzleContainer.querySelector('#extraction-timer');
+             DOMElements.extractionInstructions.textContent = "Command 'Arise!' when the purple energy is in the golden zone!";
+            
+            puzzleContainer.querySelector('.extraction-button').onclick = () => onExtractionClick();
+            
+            activeMiniGame.timerId = setInterval(() => {
+                activeMiniGame.timeLeft--;
+                timerEl.textContent = activeMiniGame.timeLeft;
+                if(activeMiniGame.timeLeft <= 0) {
+                    endShadowExtraction(false);
+                }
+            }, 1000);
+
+            function onExtractionClick() {
+                if (!activeMiniGame.active) return;
+                const fillPercent = activeMiniGame.currentFill;
+                const targetStart = activeMiniGame.targetPos;
+                const targetEnd = activeMiniGame.targetPos + activeMiniGame.targetWidth;
+
+                if (fillPercent >= targetStart && fillPercent <= targetEnd) {
+                    playSound('powerUp', 'C5');
+                    activeMiniGame.progress++;
+                    if (activeMiniGame.progress >= activeMiniGame.required) {
+                        endShadowExtraction(true);
+                    } else {
+                        resetExtractionBar();
+                        activeMiniGame.speed *= 1.2; // Increase difficulty
+                    }
+                } else {
+                    playSound('errorBuzz', 'C2');
+                    endShadowExtraction(false);
+                }
+            }
+
+            function resetExtractionBar() {
+                activeMiniGame.targetPos = 40 + Math.random() * 30;
+                puzzleContainer.querySelector('.extraction-meter-target').style.left = `${activeMiniGame.targetPos}%`;
+                puzzleContainer.querySelector('.extraction-meter-target').style.width = `${activeMiniGame.targetWidth}%`;
+            }
+
+            function animateExtractionBar() {
+                if (!activeMiniGame.active) return;
+                activeMiniGame.currentFill += activeMiniGame.speed * activeMiniGame.direction;
+                if (activeMiniGame.currentFill >= 100 || activeMiniGame.currentFill <= 0) {
+                    activeMiniGame.direction *= -1;
+                }
+                puzzleContainer.querySelector('.extraction-meter-fill').style.width = `${activeMiniGame.currentFill}%`;
+                requestAnimationFrame(animateExtractionBar);
+            }
+            
+            resetExtractionBar();
+            animateExtractionBar();
+        }
+
+        function endShadowExtraction(success) {
+            if (!activeMiniGame.active) return;
+            const node = activeMiniGame.node;
+            clearInterval(activeMiniGame.timerId);
+            activeMiniGame.active = false;
+            DOMElements.shadowExtractionOverlay.classList.remove('active');
+            if (success) { 
+                playSound('levelUp');
+                updateGameState(node.onWin); 
+            } 
+            else { handleRetry(node.retryCost, gameState.currentNodeKey, node.onLoss); }
+        }
+
+        function startGateRaid(node) {
+            DOMElements.gateRaidOverlay.classList.add('active');
+            const puzzleContainer = DOMElements.gateRaidPuzzle;
+            const patternDisplay = puzzleContainer.querySelector('#patternDisplay');
+            const runeButtons = puzzleContainer.querySelector('#runeButtons');
+            const livesEl = puzzleContainer.querySelector('#gate-lives');
+            
+            const runes = ['🔥', '❄️', '⚡', '🌙', '☀️', '💨', '🌊', '🌸', '⭐'];
+            const patternLength = 4;
+            const pattern = [];
+            for (let i = 0; i < patternLength; i++) {
+                pattern.push(runes[Math.floor(Math.random() * runes.length)]);
+            }
+            
+            activeMiniGame = {
+                type: 'gate_raid', onWin: node.onWin, onLoss: node.onLoss, node: node,
+                pattern: pattern, playerPattern: [], lives: 3, active: true,
+                showingPattern: true
+            };
+
+            livesEl.textContent = activeMiniGame.lives;
+            
+            // Display pattern
+            patternDisplay.innerHTML = '';
+            pattern.forEach((rune, index) => {
+                const symbol = document.createElement('div');
+                symbol.className = 'pattern-symbol';
+                symbol.textContent = rune;
+                patternDisplay.appendChild(symbol);
+                
+                setTimeout(() => {
+                    symbol.classList.add('revealed');
+                    playSound('systemPing', `C${4 + index}`);
+                }, index * 500);
+            });
+            
+            // Hide pattern after showing
+            setTimeout(() => {
+                patternDisplay.querySelectorAll('.pattern-symbol').forEach(symbol => {
+                    symbol.classList.remove('revealed');
+                    symbol.textContent = '?';
+                });
+                activeMiniGame.showingPattern = false;
+            }, (patternLength + 1) * 500);
+            
+            // Create rune buttons
+            runeButtons.innerHTML = '';
+            runes.forEach(rune => {
+                const button = document.createElement('button');
+                button.className = 'rune-button';
+                button.textContent = rune;
+                button.onclick = () => handleRuneClick(rune);
+                runeButtons.appendChild(button);
+            });
+        }
+        
+        function handleRuneClick(rune) {
+            if (!activeMiniGame.active || activeMiniGame.showingPattern) return;
+            
+            const correctRune = activeMiniGame.pattern[activeMiniGame.playerPattern.length];
+            
+            if (rune === correctRune) {
+                playSound('systemPing', `C${4 + activeMiniGame.playerPattern.length}`);
+                activeMiniGame.playerPattern.push(rune);
+                
+                const patternDisplay = document.querySelector('#patternDisplay');
+                const symbols = patternDisplay.querySelectorAll('.pattern-symbol');
+                symbols[activeMiniGame.playerPattern.length - 1].textContent = rune;
+                symbols[activeMiniGame.playerPattern.length - 1].classList.add('revealed');
+                
+                if (activeMiniGame.playerPattern.length === activeMiniGame.pattern.length) {
+                    endGateRaid(true);
+                }
+            } else {
+                playSound('errorBuzz', 'C2');
+                activeMiniGame.lives--;
+                document.querySelector('#gate-lives').textContent = activeMiniGame.lives;
+                activeMiniGame.playerPattern = [];
+                
+                // Reset display
+                const patternDisplay = document.querySelector('#patternDisplay');
+                patternDisplay.querySelectorAll('.pattern-symbol').forEach(symbol => {
+                    symbol.classList.remove('revealed');
+                    symbol.textContent = '?';
+                });
+                
+                if (activeMiniGame.lives <= 0) {
+                    endGateRaid(false);
+                }
+            }
+        }
+
+        function endGateRaid(success) {
+            if (!activeMiniGame.active) return;
+            const node = activeMiniGame.node;
+            activeMiniGame.active = false;
+            DOMElements.gateRaidOverlay.classList.remove('active');
+            if (success) { 
+                playSound('levelUp');
+                updateGameState(node.onWin); 
+            } 
+            else { handleRetry(node.retryCost, gameState.currentNodeKey, node.onLoss); }
+        }
+
+        // --- Combat System ---
+        function startCombat(combatSetup) {
+            const enemyData = combatData[combatSetup.enemy];
+            gameState.combat = { ...combatSetup, enemy: JSON.parse(JSON.stringify(enemyData)) };
+            DOMElements.combatUI.style.display = 'block';
+            updateCombatUI();
+            addNarrationMessage(`You face the ${gameState.combat.enemy.name}!`, 'system');
+            renderCombatChoices();
+        }
+        
+        function renderCombatChoices() {
+            const choices = [ 
+                { text: "Shadow Strike", detail: "Command your shadows to attack", type: 'shadow_attack' }, 
+                { text: "Demon King's Daggers", detail: "Swift melee assault", type: 'dagger_attack' }, 
+                { text: "Use Item", detail: "Check your inventory", type: 'use_item' },
+                { text: "Ruler's Authority", detail: "Telekinetic assault (High MP)", type: 'special_attack' }
+            ];
+            renderChoices(choices, handleCombatChoice);
+        }
+
+        function setInputMode(mode) {
+            gameState.settings.inputMode = mode;
+            DOMElements.actionBtn.classList.toggle('active', mode === 'action');
+            DOMElements.speakBtn.classList.toggle('active', mode === 'speak');
+            let placeholder = 'What do you do?';
+            if (mode === 'speak') {
+                const speakerName = gameState.settings.activeSpeaker.charAt(0).toUpperCase() + gameState.settings.activeSpeaker.slice(1);
+                placeholder = `Speak to ${speakerName}...`;
+            }
+            DOMElements.userInput.placeholder = placeholder;
+        }
+
+        async function handleCombatChoice(choice) {
+            if (choice.type === 'use_item') { toggleInventory(true); return; }
+            let playerActionText = ""; let outcome = { damage: 0, narrative: "" };
+            switch(choice.type) {
+                case 'shadow_attack':
+                    if (gameState.player.mana >= 20) { 
+                        createShadowSlashEffect(); 
+                        gameState.player.mana -= 20; 
+                        const shadow = gameState.player.shadows[Math.floor(Math.random() * gameState.player.shadows.length)];
+                        playerActionText = `You command ${shadow} to attack!`; 
+                        outcome.damage = 60 + Math.floor(Math.random() * 20);
+                    } else { 
+                        playerActionText = "Not enough mana!"; 
+                        outcome.damage = 0; 
+                    } break;
+                case 'dagger_attack':
+                    createShadowSlashEffect();
+                    playerActionText = "You strike with the Demon King's Daggers!";
+                    outcome.damage = 40 + Math.floor(Math.random() * 20);
+                    break;
+                case 'special_attack':
+                    if (gameState.player.mana >= 50) {
+                        playSound('powerUp', 'C5');
+                        gameState.player.mana -= 50;
+                        playerActionText = "You unleash Ruler's Authority!";
+                        outcome.damage = 100 + Math.floor(Math.random() * 20);
+                        outcome.narrative = "Massive debris flies at your enemy!";
+                    } else {
+                        playerActionText = "Not enough mana for this skill!";
+                        outcome.damage = 0;
+                    }
+                    break;
+            }
+            if(playerActionText) addNarrationMessage(playerActionText, 'player'); 
+            processCombatTurn(outcome);
+        }
+
+        async function processCombatTurn(playerOutcome) {
+            if (playerOutcome.narrative) addNarrationMessage(playerOutcome.narrative, 'gm');
+            if (playerOutcome.damage > 0) {
+                gameState.combat.enemy.currentHealth -= playerOutcome.damage;
+                const rect = DOMElements.sceneBackground.getBoundingClientRect();
+                createDamageNumber(playerOutcome.damage, rect.width / 2, rect.height / 2);
+            }
+            updateCombatUI();
+            renderPlayerStats();
+            if (gameState.combat.enemy.currentHealth <= 0) { 
+                addNarrationMessage(`${gameState.combat.enemy.name} falls before your power!`); 
+                updateGameState(gameState.combat.onWin); 
+                return; 
+            }
+            await new Promise(res => setTimeout(res, 1000));
+            const enemyDamage = 30 + Math.floor(Math.random() * 20);
+            createDamageTakenEffect(); 
+            gameState.player.health -= enemyDamage;
+            addNarrationMessage(`The ${gameState.combat.enemy.name} counterattacks!`, 'gm');
+            renderPlayerStats(); 
+            updateCombatUI();
+            if (gameState.player.health <= 0) { 
+                updateGameState(gameState.combat.onLoss); 
+                return; 
+            }
+            renderCombatChoices();
+        }
+        
+        function updateCombatUI() {
+            if (!gameState.combat) return;
+            const { player, combat } = gameState;
+            const enemy = combat.enemy;
+            DOMElements.combatUI.style.display = 'block';
+            DOMElements.combatUI.innerHTML = `<div class="combat-stats"><div class="health-bar-container" style="text-align: left;"><div class="health-bar-label">Jin-Woo</div><div class="health-bar"><div id="playerHealthBar" class="health-bar-fill"></div></div></div><div class="health-bar-container" style="text-align: right;"><div class="health-bar-label">${enemy.name}</div><div class="health-bar"><div id="enemyHealthBar" class="health-bar-fill"></div></div></div></div>`;
+            document.getElementById('playerHealthBar').style.width = `${(player.health / player.maxHealth) * 100}%`;
+            document.getElementById('enemyHealthBar').style.width = `${(enemy.currentHealth / enemy.maxHealth) * 100}%`;
+        }
+
+        function toggleInventory(inCombat = false) {
+            const overlay = DOMElements.itemsOverlay;
+            if (overlay.classList.contains('active')) { overlay.classList.remove('active'); return; }
+            DOMElements.itemGrid.innerHTML = '';
+            gameState.player.inventory.forEach(item => {
+                if (item.quantity > 0) {
+                    const itemSlot = document.createElement('div'); itemSlot.className = `item-slot`;
+                    itemSlot.innerHTML = `<div class="item-icon">${item.icon}</div><div class="item-name">${item.name}</div><div class="item-quantity">x${item.quantity}</div>`;
+                    itemSlot.onclick = () => useItem(item.id, inCombat);
+                    DOMElements.itemGrid.appendChild(itemSlot);
+                }
+            });
+            overlay.classList.add('active');
+        }
+
+        function useItem(itemId, inCombat = false) {
+            const item = gameState.player.inventory.find(i => i.id === itemId);
+            if (!item || item.quantity <= 0) return;
+            if (!inCombat && item.effect.type !== 'heal' && item.effect.type !== 'mana') { 
+                addNarrationMessage("Save that for combat.", "system"); 
+                return; 
+            }
+            item.quantity--; 
+            toggleInventory();
+            if (item.effect.type === 'heal') {
+                const healAmount = Math.min(item.effect.value, gameState.player.maxHealth - gameState.player.health);
+                gameState.player.health += healAmount;
+                addNarrationMessage(`You used ${item.name}, restoring ${healAmount} HP.`, 'player');
+                renderPlayerStats();
+                if(inCombat) processCombatTurn({damage:0, narrative:"You take a moment to heal."});
+            }
+            if (item.effect.type === 'mana') {
+                const manaAmount = Math.min(item.effect.value, gameState.player.maxMana - gameState.player.mana);
+                gameState.player.mana += manaAmount;
+                addNarrationMessage(`You used ${item.name}, restoring ${manaAmount} MP.`, 'player');
+                renderPlayerStats();
+                if(inCombat) processCombatTurn({damage:0, narrative:"Your mana surges back!"});
+            }
+            if (item.effect.type === 'weapon' && inCombat) {
+                createShadowSlashEffect();
+                let outcome = {damage: item.effect.damage, narrative: "The legendary daggers strike true!"}
+                addNarrationMessage(`You wield the ${item.name}!`, 'player');
+                processCombatTurn(outcome);
+            }
+            if (item.effect.type === 'special' && inCombat) {
+                playSound('powerUp', 'C6');
+                let outcome = {damage: item.effect.damage, narrative: "Reality bends to your will! Devastating damage!"}
+                addNarrationMessage(`You activate ${item.name}!`, 'player');
+                processCombatTurn(outcome);
+            }
+        }
+        
+        async function handleFreeformInput() {
+            const input = DOMElements.userInput.value.trim();
+            if (input === '') return;
+            DOMElements.userInput.value = '';
+
+            addNarrationMessage(input, 'player');
+
+            if (gameState.settings.inputMode === 'speak') {
+                const response = await generateCharacterResponseWithAI(input, gameState.settings.activeSpeaker);
+                addNarrationMessage(response, gameState.settings.activeSpeaker);
+                const node = story[gameState.currentNodeKey];
+                 if (node && node.choices) {
+                    renderChoices(node.choices, (choice) => {
+                        let nextNodeKey = node.leadsTo ? node.leadsTo[choice.type] : null;
+                        if (choice.leadsTo) nextNodeKey = choice.leadsTo;
+                        if (nextNodeKey) updateGameState(nextNodeKey);
+                    });
+                }
+            } else { // Action Mode
+                const node = story[gameState.currentNodeKey];
+                const availableChoices = node.choices || [];
+                const outcome = await generateActionOutcomeWithAI(input, node.narration, availableChoices);
+                
+                if (outcome.narration) {
+                    addNarrationMessage(outcome.narration, 'gm');
+                }
+
+                if (outcome.shouldGenerateNewImage) {
+                    await generateAndSetScene(outcome.narration);
+                }
+
+                const matchedChoice = availableChoices.find(c => c.type === outcome.choice);
+                if (matchedChoice) {
+                    const nextNodeKey = node.leadsTo[matchedChoice.type];
+                    if (nextNodeKey) {
+                        updateGameState(nextNodeKey);
+                    }
+                } else {
+                    addNarrationMessage("That doesn't seem to work here.", 'system');
+                }
+            }
+        }
+        
+        async function generateActionOutcomeWithAI(playerAction, context, choices) {
+             const prompt = `You are the game master for a 'Solo Leveling' romance adventure game.
+                Context: ${context}
+                The player's available choices are: ${JSON.stringify(choices.map(c => ({type: c.type, text: c.text})))}
+                The player ignores the choices and types their own action: "${playerAction}"
+
+                Your task is to:
+                1. Determine which 'type' from the available choices the player's action most closely matches.
+                2. Write a short, 1-2 sentence narration describing the player's action happening.
+                3. Decide if this action is dramatic enough to warrant a new scene image (true/false).
+                
+                Respond ONLY with a JSON object in this format:
+                {
+                  "choice": "type_of_the_matched_choice",
+                  "narration": "Your descriptive narration here.",
+                  "shouldGenerateNewImage": true_or_false
+                }`;
+
+            try {
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const result = await response.json();
+                
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    const text = result.candidates[0].content.parts[0].text.replace(/```json\n?|```/g, '').trim();
+                    return JSON.parse(text);
+                }
+                 return { choice: null, narration: "Your action doesn't seem to fit this situation.", shouldGenerateNewImage: false };
+            } catch (error) {
+                console.error("AI action generation failed:", error);
+                return { choice: null, narration: "Something unexpected happens...", shouldGenerateNewImage: false };
+            }
+        }
+
+        async function generateCharacterResponseWithAI(playerDialogue, character) {
+            let context = `You are a character in a 'Solo Leveling' romance game. The player, as Sung Jin-Woo, just said this to you: "${playerDialogue}". 
+            You are ${character}. If you are Cha Hae-In, you are an S-rank hunter who can smell mana and finds Jin-Woo's scent pleasant. You have feelings for him but are somewhat shy about expressing them. Be warm but professional.`;
+
+            try {
+                 const payload = { contents: [{ role: "user", parts: [{ text: context }] }] };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const result = await response.json();
+                 if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    return result.candidates[0].content.parts[0].text.replace(/"/g, '');
+                }
+                return "..."
+            } catch (error) {
+                console.error("AI character response generation failed:", error);
+                if (character.toLowerCase().includes('hae-in')) return "Jin-Woo... I'm not sure what to say to that.";
+                return "...";
+            }
+        }
+
+        async function generateImageWithAI(prompt) {
+            const payload = { instances: [{ prompt: `${prompt}, Solo Leveling art style, high quality anime art, detailed, vibrant colors` }], parameters: { "sampleCount": 1 } };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
+                const result = await response.json();
+                if (result.predictions && result.predictions[0] && result.predictions[0].bytesBase64Encoded) {
+                    return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                }
+                throw new Error("AI image generation response is malformed or empty.");
+            } catch(error) {
+                console.error("Error in generateImageWithAI:", error);
+                return "https://placehold.co/600x400/1a1a2e/FFFFFF?text=SOLO+LEVELING"; // Return a fallback placeholder
+            }
+        }
+        
+        init();
+    });
+    </script>
+</body>
+</html>
