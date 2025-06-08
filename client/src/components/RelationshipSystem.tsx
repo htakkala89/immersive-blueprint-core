@@ -33,18 +33,14 @@ interface RelationshipSystemProps {
 export function RelationshipSystem({ relationshipData, onRelationshipUpdate, currentScene }: RelationshipSystemProps) {
   const [showDetails, setShowDetails] = useState(false);
 
-  const getRelationshipTitle = (progression: string): string => {
-    const titles = {
-      stranger: "Unknown Hunter",
-      acquaintance: "Fellow Hunter", 
-      friend: "Trusted Friend",
-      close_friend: "Close Companion",
-      romantic_interest: "Special Someone",
-      dating: "Beloved Partner",
-      committed: "Life Partner",
-      soulmate: "Eternal Bond"
-    };
-    return titles[progression as keyof typeof titles] || "Unknown";
+  const getRelationshipTitle = (affectionLevel: number): string => {
+    if (affectionLevel === 0) return "Cha Hae-In";
+    if (affectionLevel === 1) return "Fellow S-Rank Hunter";
+    if (affectionLevel === 2) return "Trusted Partner";
+    if (affectionLevel === 3) return "Close Friend";
+    if (affectionLevel === 4) return "Romantic Interest";
+    if (affectionLevel >= 5) return "Beloved";
+    return "Cha Hae-In";
   };
 
   const getProgressionIcon = (progression: string) => {
