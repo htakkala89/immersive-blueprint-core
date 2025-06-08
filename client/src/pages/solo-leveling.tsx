@@ -2232,7 +2232,7 @@ export default function SoloLeveling() {
     }
   };
 
-  const handleChatSubmit = () => {
+  const handleChatSubmit = async () => {
     if (!chatInput.trim()) return;
     
     const message = chatInput.trim();
@@ -2241,8 +2241,89 @@ export default function SoloLeveling() {
     // Add user message to chat
     addChatMessage('player', message);
     
-    // Process the chat message
-    handleChatWithHaeIn(message);
+    // Process chat with Cha Hae-In directly
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/chat-with-hae-in', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          gameState: gameState,
+          affectionLevel: gameState.affection || 0
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Add Cha Hae-In's response
+        addChatMessage('Cha Hae-In', data.response);
+        
+        // Generate voice for her response
+        playVoice(data.response, 'Cha Hae-In');
+        
+        // Generate emotion-based image for significant moments
+        const significantEmotions = [
+          /\*.*(?:blushes|smiles|laughs|giggles|tears up|cries).*\*/gi,
+          /\*.*(?:kisses|embraces|holds close|pulls away|touches|caresses).*\*/gi,
+          /(confession|first time|never felt|heart racing|can't breathe)/gi,
+          /(she blushes|her cheeks turn red|her face turns red|eyes light up|smiles warmly)/gi,
+          /(tears in her eyes|starts crying|gets emotional|voice trembles)/gi
+        ];
+        
+        const isSignificantEmotion = significantEmotions.some(pattern => 
+          pattern.test(data.response)
+        );
+        
+        if (isSignificantEmotion) {
+          fetch('/api/generate-chat-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chatResponse: data.response,
+              userMessage: message
+            }),
+          })
+          .then(res => res.json())
+          .then(imageData => {
+            if (imageData.imageUrl) {
+              setCurrentBackground(imageData.imageUrl);
+              setSceneBackground(imageData.imageUrl);
+            }
+          })
+          .catch(err => console.log('Image generation skipped:', err.message));
+        }
+        
+        // Check for affection increase
+        const affectionKeywords = [
+          'blush', 'smile', 'happy', 'glad', 'warm', 'comfort', 'drawn', 
+          'heart', 'feel', 'love', 'care', 'special', 'close', 'trust'
+        ];
+        
+        const responseText = data.response.toLowerCase();
+        const hasAffectionTrigger = affectionKeywords.some(keyword => 
+          responseText.includes(keyword)
+        );
+        
+        if (hasAffectionTrigger && gameState.affection < 5) {
+          setGameState(prev => ({ 
+            ...prev, 
+            affection: Math.min(5, prev.affection + 1) 
+          }));
+          setTimeout(() => createHeartEffect(), 500);
+        }
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      addChatMessage('system', "Cha Hae-In seems distracted and doesn't respond...");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChoiceClick = (choice: any) => {
