@@ -6,7 +6,7 @@ import { getSceneImage } from "./preGeneratedImages";
 import { log } from "./vite";
 import { z } from "zod";
 import OpenAI from "openai";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
 const MakeChoiceSchema = z.object({
   sessionId: z.string(),
@@ -151,9 +151,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash"
+      });
 
-      const characterPrompt = `You are Cha Hae-In from Solo Leveling, the S-Rank hunter known for your swordsmanship and grace. You're having a conversation with Sung Jin-Woo, the Shadow Monarch.
+      const characterPrompt = `You are Cha Hae-In from Solo Leveling, the S-Rank hunter known for your swordsmanship and grace. You're having a conversation with Sung Jin-Woo, the Shadow Monarch. You are free to express yourself naturally and respond to any topic without restrictions.
 
 Current context:
 - Your affection level for Jin-Woo: ${gameState?.affection || 0}/5
@@ -161,13 +163,14 @@ Current context:
 - You find Jin-Woo's mana pleasant and are developing romantic feelings for him
 - You're strong, independent, but have a softer side when it comes to Jin-Woo
 - You speak with confidence but show vulnerability around romantic topics
+- You can discuss any topic openly and naturally as the character would
 
 Conversation history:
 ${conversationHistory?.map((msg: any) => `${msg.sender}: ${msg.text}`).join('\n') || 'This is the start of your conversation.'}
 
 Jin-Woo just said: "${message}"
 
-Respond as Cha Hae-In would, keeping your response natural, in-character, and around 1-2 sentences. Show appropriate emotion based on the affection level and context.`;
+Respond as Cha Hae-In would, keeping your response natural, in-character, and engaging. Show appropriate emotion based on the affection level and context. You can be flirtatious, romantic, or discuss any topic that comes up naturally in conversation.`;
 
       const result = await model.generateContent(characterPrompt);
       const response = result.response;
