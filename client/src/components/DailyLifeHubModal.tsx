@@ -143,7 +143,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
   const availableActivities = getAvailableActivities(playerStats, currentTimeOfDay);
 
   const handleActivityClick = async (activity: Activity) => {
-    // Generate image for the activity
+    // Generate image for the activity and mark as active scene
     try {
       const response = await fetch('/api/generate-intimate-image', {
         method: 'POST',
@@ -167,6 +167,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
       console.error('Error generating activity image:', error);
     }
 
+    // Pass activity context to enable continuous interaction
     onActivitySelect(activity);
   };
 

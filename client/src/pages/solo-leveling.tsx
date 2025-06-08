@@ -135,6 +135,7 @@ export default function SoloLeveling() {
   const [autoMessageVisible, setAutoMessageVisible] = useState(true);
   const [autoHiddenMessages, setAutoHiddenMessages] = useState<Set<number>>(new Set());
   const [showDailyLifeHub, setShowDailyLifeHub] = useState(false);
+  const [activeActivity, setActiveActivity] = useState<any>(null);
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
 
