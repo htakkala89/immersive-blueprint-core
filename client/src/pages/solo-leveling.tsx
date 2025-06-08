@@ -35,6 +35,35 @@ interface StoryScene {
   leadsTo?: Record<string, string>;
 }
 
+// Helper functions for game state management
+const loadGameState = (): GameState | null => {
+  try {
+    const saved = localStorage.getItem('solo-leveling-game-state');
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+};
+
+const saveGameState = (state: GameState) => {
+  try {
+    localStorage.setItem('solo-leveling-game-state', JSON.stringify(state));
+  } catch {
+    // Handle storage errors silently
+  }
+};
+
+const getActivityDialogue = (activity: any): string => {
+  const dialogues = {
+    'morning_jog': "Let's start the day with some exercise! I love how energetic you are in the mornings.",
+    'cafe_visit': "This café has the best coffee. I'm glad we can spend quiet moments like this together.",
+    'training': "Your dedication to training is inspiring. Let me help you with your form.",
+    'shopping': "I rarely go shopping, but with you... it's actually enjoyable.",
+    'cooking': "I've been practicing this recipe. Would you like to try it?",
+  };
+  return dialogues[activity.id as keyof typeof dialogues] || "Thank you for spending time with me.";
+};
+
 export default function SoloLeveling() {
   // Message animation states for iMessage-style behavior
   const [messageStates, setMessageStates] = useState<Record<number, 'entering' | 'staying' | 'exiting' | 'hidden'>>({});
@@ -69,68 +98,69 @@ export default function SoloLeveling() {
         sense: 243
       },
       skills: [
-      {
-        id: "shadow-extraction",
-        name: "Shadow Extraction",
-        description: "Extract shadows from defeated enemies to create loyal soldiers",
-        type: "ultimate",
-        level: 8,
-        maxLevel: 10,
-        unlocked: true,
-        prerequisites: [],
-        effects: { shadowCapacity: 40 }
-      },
-      {
-        id: "dagger-mastery",
-        name: "Dagger Mastery",
-        description: "Increases damage and attack speed with daggers",
-        type: "passive",
-        level: 6,
-        maxLevel: 10,
-        unlocked: true,
-        prerequisites: [],
-        effects: { daggerDamage: 60, attackSpeed: 30 }
-      },
-      {
-        id: "stealth",
-        name: "Stealth",
-        description: "Become invisible to enemies for a short duration",
-        type: "active",
-        level: 4,
-        maxLevel: 10,
-        unlocked: true,
-        prerequisites: [],
-        effects: { stealthDuration: 12 },
-        manaCost: 25,
-        cooldown: 30
-      },
-      {
-        id: "shadow-armor",
-        name: "Shadow Armor",
-        description: "Summon protective shadow armor that absorbs damage",
-        type: "active",
-        level: 5,
-        maxLevel: 10,
-        unlocked: true,
-        prerequisites: ["shadow-extraction"],
-        effects: { damageReduction: 25 },
-        manaCost: 40,
-        cooldown: 45
-      },
-      {
-        id: "monarch-domain",
-        name: "Monarch's Domain",
-        description: "Ultimate ability that enhances all shadow abilities",
-        type: "ultimate",
-        level: 1,
-        maxLevel: 5,
-        unlocked: false,
-        prerequisites: ["shadow-extraction", "shadow-armor"],
-        effects: { domainPower: 100 },
-        manaCost: 100,
-        cooldown: 300
-      }
-    ];
+        {
+          id: "shadow-extraction",
+          name: "Shadow Extraction",
+          description: "Extract shadows from defeated enemies to create loyal soldiers",
+          type: "ultimate",
+          level: 8,
+          maxLevel: 10,
+          unlocked: true,
+          prerequisites: [],
+          effects: { shadowCapacity: 40 }
+        },
+        {
+          id: "dagger-mastery",
+          name: "Dagger Mastery",
+          description: "Increases damage and attack speed with daggers",
+          type: "passive",
+          level: 6,
+          maxLevel: 10,
+          unlocked: true,
+          prerequisites: [],
+          effects: { daggerDamage: 60, attackSpeed: 30 }
+        },
+        {
+          id: "stealth",
+          name: "Stealth",
+          description: "Become invisible to enemies for a short duration",
+          type: "active",
+          level: 4,
+          maxLevel: 10,
+          unlocked: true,
+          prerequisites: [],
+          effects: { stealthDuration: 12 },
+          manaCost: 25,
+          cooldown: 30
+        },
+        {
+          id: "shadow-armor",
+          name: "Shadow Armor",
+          description: "Summon protective shadow armor that absorbs damage",
+          type: "active",
+          level: 5,
+          maxLevel: 10,
+          unlocked: true,
+          prerequisites: ["shadow-extraction"],
+          effects: { damageReduction: 25 },
+          manaCost: 40,
+          cooldown: 45
+        },
+        {
+          id: "monarch-domain",
+          name: "Monarch's Domain",
+          description: "Ultimate ability that enhances all shadow abilities",
+          type: "ultimate",
+          level: 1,
+          maxLevel: 5,
+          unlocked: false,
+          prerequisites: ["shadow-extraction", "shadow-armor"],
+          effects: { domainPower: 100 },
+          manaCost: 100,
+          cooldown: 300
+        }
+      ]
+    };
   };
 
   const [gameState, setGameState] = useState<GameState>(initializeGameState());
