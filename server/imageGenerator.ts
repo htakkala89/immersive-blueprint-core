@@ -384,13 +384,22 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   const includeJinWoo = narration.includes("jin-woo") || narration.includes("sung") || narration.includes("shadow monarch") || narration.includes("you are") || storyPath.includes("jin") || narration.includes("both characters") || narration.includes("together");
   const includeHaeIn = narration.includes("hae-in") || narration.includes("cha") || narration.includes("sword saint") || storyPath.includes("cha") || narration.includes("both characters") || narration.includes("together");
   
+  // Prioritize couple scenes in romantic contexts
+  const isRomanticScene = narration.includes("together") || narration.includes("both") || narration.includes("hae-in") || 
+                         storyPath.includes("romantic") || storyPath.includes("caring") || storyPath.includes("meeting") ||
+                         narration.includes("smile") || narration.includes("talk") || narration.includes("conversation") ||
+                         narration.includes("moment") || narration.includes("feeling");
+  
   // STRICT CHARACTER APPEARANCE RULES - DO NOT DEVIATE
   let characterDescription = "";
-  if (includeJinWoo) {
+  
+  // For romantic/interaction scenes, always show both characters together
+  if (isRomanticScene || (includeJinWoo && includeHaeIn)) {
+    characterDescription = ", Sung Jin-Woo and Cha Hae-In together (Jin-Woo: Korean male, age 24, SHORT BLACK HAIR, sharp features, dark eyes, black hunter outfit; Cha Hae-In: Korean female, age 23, SHOULDER-LENGTH BLONDE HAIR, beautiful features, red armor or elegant clothing), romantic interaction, standing close together, meaningful eye contact, gentle expressions, couple scene";
+  } else if (includeJinWoo) {
     characterDescription = ", Sung Jin-Woo (MUST BE: Korean male, age 24, SHORT BLACK HAIR - NOT blonde/long, sharp angular facial features, dark eyes, athletic build, wearing black hunter outfit or casual dark clothing, confident posture, Solo Leveling manhwa art style - NEVER make him blonde or feminine)";
-  }
-  if (includeHaeIn) {
-    characterDescription += ", Cha Hae-In (MUST BE: Korean female, age 23, SHOULDER-LENGTH BLONDE HAIR, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style - NEVER make her brunette or masculine)";
+  } else if (includeHaeIn) {
+    characterDescription = ", Cha Hae-In (MUST BE: Korean female, age 23, SHOULDER-LENGTH BLONDE HAIR, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style - NEVER make her brunette or masculine)";
   }
 
   // Prioritize environmental and location-based scenes over character portraits
@@ -494,7 +503,18 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
   if (emotions.surprised) emotionDesc += "surprised wide eyes, ";
   if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
 
-  return `Professional portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic lines, detailed character design, powerful and epic feel`;
+  // Determine if this is an interaction between Jin-Woo and Cha Hae-In
+  const isCoupleMoment = userMessage.toLowerCase().includes('hae-in') || 
+                        chatResponse.toLowerCase().includes('you') ||
+                        chatResponse.toLowerCase().includes('your') ||
+                        /\b(we|us|together|both)\b/i.test(chatResponse);
+  
+  // Generate couple scenes for interactions, solo scenes for monologues
+  if (isCoupleMoment) {
+    return `Romantic scene between Sung Jin-Woo and Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} Jin-Woo (Korean male, short black hair, dark eyes, black hunter outfit) and Cha Hae-In (Korean female, blonde hair, red armor or elegant clothing) having intimate conversation, meaningful eye contact, standing close together, romantic tension, beautiful background setting, detailed facial expressions, Solo Leveling manhwa art style, vibrant glowing colors, couple interaction scene`;
+  } else {
+    return `Professional portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic lines, detailed character design, powerful and epic feel`;
+  }
 }
 
 function createCustomIntimatePrompt(specificAction: string, relationshipStatus: string, intimacyLevel: number): string {
