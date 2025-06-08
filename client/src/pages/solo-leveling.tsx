@@ -1550,6 +1550,48 @@ export default function SoloLeveling() {
         { text: "Look into her eyes", detail: "Soul connection", type: 'look_eyes' }
       ],
       leadsTo: { hold_close: 'INTIMATE_EMBRACE', sweet_words: 'ROMANTIC_WHISPERS', look_eyes: 'SOUL_GAZE' }
+    },
+    'TRANSCENDENT_ENDING': {
+      prompt: "Jin-Woo and Cha Hae-In transcending mortal bonds, eternal spiritual connection, cosmic romance, anime style.",
+      narration: "Your love transcends the boundaries of time and space. In every dimension, across every reality, your souls will find each other again and again. This is not just love - it's cosmic destiny.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I can feel it... our connection goes beyond this life, beyond this world." },
+        { sender: 'player', text: "In every lifetime, I'll search for you. In every reality, I'll love you." },
+        { sender: 'Cha Hae-In', text: "And I'll be waiting, always. Our love is written in the stars themselves." }
+      ],
+      choices: [
+        { text: "Begin a new adventure", detail: "Start fresh", type: 'new_game' },
+        { text: "Return to Daily Life Hub", detail: "Continue living", type: 'daily_hub' }
+      ],
+      leadsTo: { new_game: 'START', daily_hub: 'DAILY_LIFE_HUB' }
+    },
+    'INFINITE_ENDING': {
+      prompt: "Jin-Woo and Cha Hae-In in infinite cosmic embrace, love beyond eternity, transcendent anime style.",
+      narration: "Your love becomes infinite, stretching beyond the concept of eternity itself. You are no longer bound by time, space, or mortality. Together, you become a force of pure love that will guide other souls throughout existence.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This feeling... it's bigger than infinity. It's everything that ever was or will be." },
+        { sender: 'player', text: "We've become something beyond words. Pure love, pure connection." },
+        { sender: 'Cha Hae-In', text: "Let's help others find what we've found. Let's be guardians of love itself." }
+      ],
+      choices: [
+        { text: "Begin a new adventure", detail: "Start fresh", type: 'new_game' },
+        { text: "Return to Daily Life Hub", detail: "Continue living", type: 'daily_hub' }
+      ],
+      leadsTo: { new_game: 'START', daily_hub: 'DAILY_LIFE_HUB' }
+    },
+    'ETERNAL_BEGINNING': {
+      prompt: "Jin-Woo and Cha Hae-In starting their eternal journey together, new beginning, anime style.",
+      narration: "This isn't an ending - it's the beginning of forever. Hand in hand, you step into eternity together, ready for whatever adventures await. Your love story has no final chapter because true love never ends.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Ready for forever?" },
+        { sender: 'player', text: "With you? I'm ready for anything." },
+        { sender: 'Cha Hae-In', text: "Then let's write our eternal story together." }
+      ],
+      choices: [
+        { text: "Begin a new adventure", detail: "Start fresh", type: 'new_game' },
+        { text: "Return to Daily Life Hub", detail: "Continue living", type: 'daily_hub' }
+      ],
+      leadsTo: { new_game: 'START', daily_hub: 'DAILY_LIFE_HUB' }
     }
   };
 
