@@ -785,6 +785,66 @@ export default function SoloLeveling() {
         { text: "Seal it with love", detail: "Express your love", type: 'seal_with_love' }
       ],
       leadsTo: { confirm_bond: 'SOUL_BOND', seal_with_love: 'LOVE_SEALED' }
+    },
+    'DATE_ACCEPTED': {
+      prompt: "Cha Hae-In blushing and smiling after being asked on a date. Happy romantic acceptance, anime style.",
+      narration: "Your direct approach catches Hae-In off guard, but her smile tells you everything you need to know.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "A... a real date? Just the two of us?" },
+        { sender: 'player', text: "If you'd like that. Somewhere special, away from gates and monsters." },
+        { sender: 'Cha Hae-In', text: "I'd love that, Jin-Woo. I've been hoping you'd ask." }
+      ],
+      choices: [
+        { text: "Plan the perfect date", detail: "Make it memorable", type: 'plan_perfect_date' },
+        { text: "Start with dinner tonight", detail: "Begin immediately", type: 'dinner_tonight' },
+        { text: "Ask what she'd enjoy", detail: "Let her choose", type: 'ask_preferences' }
+      ],
+      leadsTo: { plan_perfect_date: 'PERFECT_DATE_PLANNING', dinner_tonight: 'DINNER_DATE', ask_preferences: 'HER_PREFERENCES' }
+    },
+    'CASUAL_AGREEMENT': {
+      prompt: "Cha Hae-In agreeing to casual time together. Friendly but warm response, anime style.",
+      narration: "Your gentle approach puts Hae-In at ease.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Casual hanging out sounds nice. It's been a while since I could just... relax with someone." },
+        { sender: 'player', text: "No pressure, just spending time together." },
+        { sender: 'Cha Hae-In', text: "I'd really like that. Maybe we could start with coffee sometime?" }
+      ],
+      choices: [
+        { text: "Coffee sounds perfect", detail: "Accept her suggestion", type: 'coffee_perfect' },
+        { text: "Or maybe a walk?", detail: "Suggest alternatives", type: 'suggest_walk' },
+        { text: "Whatever makes you happy", detail: "Be considerate", type: 'your_happiness' }
+      ],
+      leadsTo: { coffee_perfect: 'COFFEE_AGREEMENT', suggest_walk: 'WALK_SUGGESTION', your_happiness: 'CONSIDERATE_RESPONSE' }
+    },
+    'PERFECT_DATE_PLANNING': {
+      prompt: "Jin-Woo planning an elaborate romantic date for Cha Hae-In. Romantic planning scene, anime style.",
+      narration: "You want this to be perfect for her.",
+      chat: [
+        { sender: 'player', text: "I want to plan something really special for you. You deserve the best." },
+        { sender: 'Cha Hae-In', text: "You don't have to go overboard... though I admit I'm curious what the Shadow Monarch considers romantic." },
+        { sender: 'Cha Hae-In', text: "Just being with you would be perfect enough." }
+      ],
+      choices: [
+        { text: "Rooftop dinner under stars", detail: "Romantic and private", type: 'rooftop_dinner' },
+        { text: "Private beach at sunset", detail: "Beautiful and serene", type: 'beach_sunset' },
+        { text: "Cozy bookstore café", detail: "Intimate and personal", type: 'bookstore_cafe' }
+      ],
+      leadsTo: { rooftop_dinner: 'ROOFTOP_DATE', beach_sunset: 'BEACH_DATE', bookstore_cafe: 'BOOKSTORE_DATE' }
+    },
+    'DINNER_DATE': {
+      prompt: "Jin-Woo and Cha Hae-In having dinner together tonight. Immediate romantic evening, anime style.",
+      narration: "Sometimes the best moments happen spontaneously.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Tonight? That's... wonderfully impulsive of you." },
+        { sender: 'player', text: "Why wait? Life's too short, and I want to spend time with you." },
+        { sender: 'Cha Hae-In', text: "You're right. Let's do it. I know a quiet place that's perfect." }
+      ],
+      choices: [
+        { text: "Follow her lead", detail: "Trust her choice", type: 'follow_lead' },
+        { text: "Suggest somewhere special", detail: "Take initiative", type: 'suggest_special' },
+        { text: "Anywhere with you is perfect", detail: "Focus on her company", type: 'anywhere_perfect' }
+      ],
+      leadsTo: { follow_lead: 'HER_CHOICE_RESTAURANT', suggest_special: 'SPECIAL_RESTAURANT', anywhere_perfect: 'ROMANTIC_DECLARATION' }
     }
   };
 
