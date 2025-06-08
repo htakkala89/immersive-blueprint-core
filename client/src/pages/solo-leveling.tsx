@@ -2774,8 +2774,8 @@ export default function SoloLeveling() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
-      {/* Fullscreen Container */}
-      <div className="w-full h-screen bg-black relative flex flex-col">
+      {/* Responsive Fullscreen Container */}
+      <div className="w-full h-screen min-h-[600px] max-h-screen bg-black relative flex flex-col">
         
         {/* Start Overlay */}
         {!gameStarted && (
@@ -2952,9 +2952,9 @@ export default function SoloLeveling() {
                 </button>
 
                 {/* Combined Messages Container - Full Screen Coverage */}
-                <div className={`absolute top-16 left-0 right-0 bottom-52 z-30 flex flex-col transition-opacity duration-300 ${(chatPinned || autoMessageVisible) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`absolute top-16 left-0 right-0 bottom-52 sm:bottom-56 z-30 flex flex-col transition-opacity duration-300 ${(chatPinned || autoMessageVisible) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   <div className="flex-1 min-h-0 overflow-hidden">
-                    <div ref={chatContainerRef} className="h-full p-3 pb-8 overflow-y-auto chat-container space-y-3">
+                    <div ref={chatContainerRef} className="h-full p-2 sm:p-3 pb-8 overflow-y-auto chat-container space-y-2 sm:space-y-3">
                       
                       {/* Story Narration - Game Master Message */}
                       {currentStory && (
@@ -3255,7 +3255,7 @@ export default function SoloLeveling() {
                     )}
                     <button
                       onClick={() => setInputMode(inputMode === 'speak' ? 'action' : 'speak')}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-all backdrop-blur-xl border border-white/20 shadow-lg ${
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all backdrop-blur-xl border border-white/20 shadow-lg touch-manipulation ${
                         inputMode === 'speak' 
                           ? 'bg-pink-600/90 hover:bg-pink-500/90' 
                           : 'bg-purple-600/90 hover:bg-purple-500/90'
@@ -3268,7 +3268,7 @@ export default function SoloLeveling() {
                   <button 
                     onClick={handleUserInput}
                     disabled={!userInput.trim() || isLoading}
-                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all text-white backdrop-blur-xl border border-white/20 shadow-lg ${
+                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all text-white backdrop-blur-xl border border-white/20 shadow-lg touch-manipulation ${
                       userInput.trim() && !isLoading
                         ? 'bg-gradient-to-r from-purple-600/90 to-pink-600/90 hover:from-purple-700/90 hover:to-pink-700/90'
                         : 'bg-white/10 cursor-not-allowed opacity-50'

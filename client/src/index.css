@@ -520,3 +520,69 @@
     box-shadow: 0 0 20px rgba(147, 51, 234, 0.7), 0 0 30px rgba(147, 51, 234, 0.5);
   }
 }
+
+/* Responsive Design - Mobile First */
+@media (max-width: 640px) {
+  .chat-message {
+    margin-bottom: 8px;
+  }
+  
+  .chat-message .glassmorphism {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .choice-button {
+    padding: 12px 16px;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .game-ui-container {
+    padding: 12px;
+    bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-container {
+    padding: 8px;
+  }
+  
+  .chat-message .glassmorphism {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .choice-button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .game-ui-container {
+    padding: 8px;
+    bottom: 8px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .chat-container {
+    max-width: 60%;
+    margin: 0 auto;
+  }
+  
+  .choice-container {
+    max-width: 50%;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1280px) {
+  .chat-container {
+    max-width: 50%;
+  }
+  
+  .choice-container {
+    max-width: 40%;
+  }
+}
