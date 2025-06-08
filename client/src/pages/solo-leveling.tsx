@@ -1836,14 +1836,31 @@ export default function SoloLeveling() {
     };
   }, [chatMessages]);
 
-  // Smooth scroll to bottom for better UX
-  const scrollToBottom = () => {
+  // Enhanced scroll to bottom with iMessage-like behavior
+  const scrollToBottom = (force = false) => {
     if (chatContainerRef.current) {
       const element = chatContainerRef.current;
-      element.scrollTo({
-        top: element.scrollHeight,
-        behavior: 'smooth'
-      });
+      
+      // For force scrolling (new messages), use instant scroll then smooth
+      if (force) {
+        element.scrollTop = element.scrollHeight;
+        requestAnimationFrame(() => {
+          element.scrollTo({
+            top: element.scrollHeight,
+            behavior: 'smooth'
+          });
+        });
+      } else {
+        // Regular smooth scroll
+        element.scrollTo({
+          top: element.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+      
+      // Ensure chat is visible when scrolling to new messages
+      setAutoMessageVisible(true);
+      setChatPinned(true);
     }
   };
 
@@ -1921,26 +1938,30 @@ export default function SoloLeveling() {
       setTimeout(() => playVoice(text, 'game-master'), 300);
     }
     
-    // Show overlay automatically when new messages appear
+    // Show overlay automatically when new messages appear - iMessage behavior
     setAutoMessageVisible(true);
+    setChatPinned(true); // Keep chat visible for new messages
     
-    // Hide individual message after 10 seconds
+    // Force scroll to bottom for new messages - iMessage behavior
+    setTimeout(() => scrollToBottom(true), 50);   // Immediate force scroll
+    setTimeout(() => scrollToBottom(true), 150);  // Second attempt after render
+    setTimeout(() => scrollToBottom(true), 300);  // Final attempt after animations
+    
+    // Hide individual message after 15 seconds (increased for better UX)
     setTimeout(() => {
       setAutoHiddenMessages((prev: Set<number>) => {
         const newSet = new Set(prev);
         newSet.add(messageId);
         return newSet;
       });
-    }, 10000);
+    }, 15000);
     
-    // Auto-hide overlay after 12 seconds if not pinned
+    // Auto-hide overlay after 20 seconds if not manually pinned
     setTimeout(() => {
       if (!chatPinned) {
         setAutoMessageVisible(false);
       }
-    }, 12000);
-    
-    scrollToBottom();
+    }, 20000);
   };
 
   // State for tracking scroll-based message visibility
@@ -2362,8 +2383,10 @@ export default function SoloLeveling() {
       if (nextStory) {
         setGameState(prev => ({ ...prev, currentScene: 'GATE_ENTRANCE' }));
         addChatMessage('player', choice.text);
-        nextStory.chat.forEach(msg => {
-          addChatMessage(msg.sender, msg.text);
+        nextStory.chat.forEach((msg, index) => {
+          setTimeout(() => {
+            addChatMessage(msg.sender, msg.text);
+          }, index * 150); // 150ms delay between messages for better UX
         });
         generateSceneImage(nextStory.prompt);
         return;
@@ -2379,9 +2402,11 @@ export default function SoloLeveling() {
         setGameState(prev => ({ ...prev, currentScene: nextScene }));
         addChatMessage('player', choice.text);
         
-        // Add story messages
-        nextStory.chat.forEach(msg => {
-          addChatMessage(msg.sender, msg.text);
+        // Add story messages with slight delay for proper scrolling
+        nextStory.chat.forEach((msg, index) => {
+          setTimeout(() => {
+            addChatMessage(msg.sender, msg.text);
+          }, index * 150); // 150ms delay between messages for better UX
         });
         
         // Only generate images for significant scene changes and major actions
