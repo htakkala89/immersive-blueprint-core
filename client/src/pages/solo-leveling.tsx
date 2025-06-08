@@ -1396,6 +1396,21 @@ export default function SoloLeveling() {
       ],
       leadsTo: { share_adventure: 'ADVENTURE_SHARING', focus_on_her: 'HER_FOCUS', coffee_stories: 'COFFEE_INVITATION' }
     },
+    'HER_FOCUS': {
+      prompt: "Jin-Woo redirecting conversation to focus on Cha Hae-In. Attentive listening, anime style.",
+      narration: "You shift the conversation to focus on her, showing genuine interest in her experiences.",
+      chat: [
+        { sender: 'player', text: "Actually, I'd rather hear about you. What's been on your mind lately?" },
+        { sender: 'Cha Hae-In', text: "Oh... that's unexpected. Most people love talking about themselves." },
+        { sender: 'Cha Hae-In', text: "I've been thinking about how much I've grown as a hunter, and as a person." }
+      ],
+      choices: [
+        { text: "Tell me more about your growth", detail: "Show deep interest", type: 'growth_interest' },
+        { text: "You've definitely changed", detail: "Acknowledge her development", type: 'acknowledge_change' },
+        { text: "What's helped you grow?", detail: "Ask about her journey", type: 'growth_journey' }
+      ],
+      leadsTo: { growth_interest: 'GROWTH_DISCUSSION', acknowledge_change: 'CHANGE_RECOGNITION', growth_journey: 'PERSONAL_JOURNEY' }
+    },
     'STORY_SHARING': {
       prompt: "Jin-Woo sharing his adventures with Cha Hae-In. Storytelling moment, anime style.",
       narration: "As you recount your experiences, she listens with genuine interest.",
