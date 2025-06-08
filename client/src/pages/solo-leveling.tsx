@@ -1340,6 +1340,96 @@ export default function SoloLeveling() {
         { text: "Celebrate our partnership", detail: "Mark the occasion", type: 'celebrate_partnership' }
       ],
       leadsTo: { first_mission: 'FIRST_TEAM_MISSION', celebrate_partnership: 'PARTNERSHIP_CELEBRATION' }
+    },
+    'FUTURE_PROMISE': {
+      prompt: "Jin-Woo and Cha Hae-In making promises for their future together. Hopeful romantic scene, anime style.",
+      narration: "You both make a sacred promise to create countless beautiful moments together.",
+      chat: [
+        { sender: 'player', text: "I promise you a future filled with moments like this, and even better ones." },
+        { sender: 'Cha Hae-In', text: "And I promise to treasure every single one. Our story is just beginning." },
+        { sender: 'Cha Hae-In', text: "I love you, Jin-Woo. Forever and always." }
+      ],
+      choices: [
+        { text: "I love you too, always", detail: "Mutual eternal love", type: 'love_always' },
+        { text: "Our adventure continues", detail: "Look to the future", type: 'continue_adventure' },
+        { text: "Kiss her tenderly", detail: "Seal the promise", type: 'tender_kiss' }
+      ],
+      leadsTo: { love_always: 'ETERNAL_LOVE', continue_adventure: 'SHARED_FUTURE', tender_kiss: 'PROMISE_KISS' }
+    },
+    'EVERYTHING_DECLARATION': {
+      prompt: "Jin-Woo declaring Cha Hae-In is everything to him. Ultimate romantic declaration, anime style.",
+      narration: "Your words carry the weight of your entire heart and soul.",
+      chat: [
+        { sender: 'player', text: "You're not just important to me, Hae-In. You're everything. My world, my heart, my future." },
+        { sender: 'Cha Hae-In', text: "Jin-Woo... you're everything to me too. I can't imagine life without you anymore." },
+        { sender: 'Cha Hae-In', text: "You've become the most precious part of my existence." }
+      ],
+      choices: [
+        { text: "Then let's never be apart", detail: "Unity promise", type: 'never_apart' },
+        { text: "You complete me", detail: "Soul completion", type: 'complete_me' },
+        { text: "Be mine forever", detail: "Eternal commitment", type: 'be_mine_forever' }
+      ],
+      leadsTo: { never_apart: 'INSEPARABLE_BOND', complete_me: 'SOUL_COMPLETION', be_mine_forever: 'ETERNAL_COMMITMENT' }
+    },
+    'OFFICIAL_RELATIONSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In making their relationship official. Milestone moment, anime style.",
+      narration: "This moment marks the beginning of your official journey together.",
+      chat: [
+        { sender: 'player', text: "I want the whole world to know that you're mine and I'm yours." },
+        { sender: 'Cha Hae-In', text: "Yes! I want that too. Let's make this official, Jin-Woo." },
+        { sender: 'Cha Hae-In', text: "From this moment on, we're officially together. Partners in everything." }
+      ],
+      choices: [
+        { text: "Announce to the guild", detail: "Public declaration", type: 'announce_guild' },
+        { text: "Celebrate privately first", detail: "Intimate celebration", type: 'celebrate_private' },
+        { text: "Seal it with a promise ring", detail: "Symbol of commitment", type: 'promise_ring' }
+      ],
+      leadsTo: { announce_guild: 'PUBLIC_ANNOUNCEMENT', celebrate_private: 'PRIVATE_CELEBRATION', promise_ring: 'RING_CEREMONY' }
+    },
+    'ETERNAL_LOVE': {
+      prompt: "Jin-Woo and Cha Hae-In in eternal love embrace. Perfect romantic ending, anime style.",
+      narration: "Your love transcends time and space, creating an unbreakable bond.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This love we share... it feels eternal, doesn't it?" },
+        { sender: 'player', text: "It is eternal. Nothing in this world or any other could break what we have." },
+        { sender: 'Cha Hae-In', text: "Then we'll love each other across lifetimes, in every reality." }
+      ],
+      choices: [
+        { text: "In every lifetime", detail: "Transcendent love", type: 'every_lifetime' },
+        { text: "Beyond eternity", detail: "Infinite love", type: 'beyond_eternity' },
+        { text: "Start our forever now", detail: "Begin eternal journey", type: 'start_forever' }
+      ],
+      leadsTo: { every_lifetime: 'TRANSCENDENT_ENDING', beyond_eternity: 'INFINITE_ENDING', start_forever: 'ETERNAL_BEGINNING' }
+    },
+    'SHARED_FUTURE': {
+      prompt: "Jin-Woo and Cha Hae-In planning their shared future. Hopeful and romantic, anime style.",
+      narration: "Together, you envision a future filled with adventure, love, and endless possibilities.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "What kind of future do you see for us?" },
+        { sender: 'player', text: "I see us conquering dungeons together, protecting each other, building something beautiful." },
+        { sender: 'Cha Hae-In', text: "That sounds perfect. Adventure by day, love by night." }
+      ],
+      choices: [
+        { text: "Plan our next adventure", detail: "Continue the journey", type: 'next_adventure' },
+        { text: "Focus on our love", detail: "Relationship priority", type: 'focus_love' },
+        { text: "Build our legacy together", detail: "Create something lasting", type: 'build_legacy' }
+      ],
+      leadsTo: { next_adventure: 'ADVENTURE_PLANNING', focus_love: 'LOVE_FOCUS', build_legacy: 'LEGACY_BUILDING' }
+    },
+    'PROMISE_KISS': {
+      prompt: "Jin-Woo and Cha Hae-In sharing a tender promise-sealing kiss. Perfect romantic moment, anime style.",
+      narration: "Your kiss seals the promise, binding your hearts forever.",
+      chat: [
+        { sender: 'system', text: "Your tender kiss seals the promise between you, creating an unbreakable bond." },
+        { sender: 'Cha Hae-In', text: "That was... perfect. I can feel our connection deepening." },
+        { sender: 'player', text: "Every kiss with you feels like the first and the last I'll ever need." }
+      ],
+      choices: [
+        { text: "Hold her close", detail: "Intimate embrace", type: 'hold_close' },
+        { text: "Whisper sweet words", detail: "Romantic expression", type: 'sweet_words' },
+        { text: "Look into her eyes", detail: "Soul connection", type: 'look_eyes' }
+      ],
+      leadsTo: { hold_close: 'INTIMATE_EMBRACE', sweet_words: 'ROMANTIC_WHISPERS', look_eyes: 'SOUL_GAZE' }
     }
   };
 
@@ -1561,20 +1651,10 @@ export default function SoloLeveling() {
   };
 
   const handleChoice = (choice: any) => {
-    console.log('Choice clicked:', choice);
-    console.log('Current scene:', gameState.currentScene);
-    console.log('Available scenes in story:', Object.keys(story));
-    
     const currentStory = story[gameState.currentScene];
-    console.log('Current story:', currentStory);
-    console.log('Choice type:', choice.type);
-    console.log('LeadsTo mapping:', currentStory?.leadsTo);
-    
     if (currentStory?.leadsTo?.[choice.type]) {
       const nextScene = currentStory.leadsTo[choice.type];
-      console.log('Next scene:', nextScene);
       const nextStory = story[nextScene];
-      console.log('Next story found:', !!nextStory);
       
       if (nextStory) {
         setGameState(prev => ({ ...prev, currentScene: nextScene }));
