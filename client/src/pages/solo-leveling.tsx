@@ -36,6 +36,10 @@ interface StoryScene {
 }
 
 export default function SoloLeveling() {
+  // Message animation states for iMessage-style behavior
+  const [messageStates, setMessageStates] = useState<Record<number, 'entering' | 'staying' | 'exiting' | 'hidden'>>({});
+  const [messageTimers, setMessageTimers] = useState<Record<number, NodeJS.Timeout>>({});
+  
   const [gameState, setGameState] = useState<GameState>({
     level: 146,
     health: 15420,
@@ -1767,6 +1771,47 @@ export default function SoloLeveling() {
     }
   }, [gameState.currentScene, playVoice]);
 
+  // iMessage-style message lifecycle management
+  const startMessageAnimation = (messageId: number) => {
+    // Clear any existing timer for this message
+    if (messageTimers[messageId]) {
+      clearTimeout(messageTimers[messageId]);
+    }
+
+    // Start with entering animation
+    setMessageStates(prev => ({ ...prev, [messageId]: 'entering' }));
+
+    // After entering, transition to staying (longer readable time)
+    const stayingTimer = setTimeout(() => {
+      setMessageStates(prev => ({ ...prev, [messageId]: 'staying' }));
+      
+      // After staying visible for reading, start exit animation
+      const exitTimer = setTimeout(() => {
+        setMessageStates(prev => ({ ...prev, [messageId]: 'exiting' }));
+        
+        // Finally hide the message completely
+        const hideTimer = setTimeout(() => {
+          setMessageStates(prev => ({ ...prev, [messageId]: 'hidden' }));
+        }, 500); // Exit animation duration
+        
+        setMessageTimers(prev => ({ ...prev, [messageId]: hideTimer }));
+      }, 6000); // Stay visible for 6 seconds for comfortable reading
+      
+      setMessageTimers(prev => ({ ...prev, [messageId]: exitTimer }));
+    }, 300); // Entering animation duration
+
+    setMessageTimers(prev => ({ ...prev, [messageId]: stayingTimer }));
+  };
+
+  // Start animation for new messages
+  useEffect(() => {
+    chatMessages.forEach((message, index) => {
+      if (!messageStates[index]) {
+        startMessageAnimation(index);
+      }
+    });
+  }, [chatMessages]);
+
   // Update fade effects every 5 seconds for immersion
   useEffect(() => {
     const interval = setInterval(() => {
@@ -2958,18 +3003,25 @@ export default function SoloLeveling() {
                         </div>
                       ))}
 
-                      {/* Chat Messages - Full Width Design */}
-                      {getDisplayMessages().map((msg: any) => {
+                      {/* Chat Messages - Full Width Design with iMessage-style animations */}
+                      {getDisplayMessages().map((msg: any, index) => {
                         const opacity = getMessageOpacity(msg.timestamp, msg.id);
                         const isPlayer = msg.sender === 'player';
                         const isHaeIn = msg.sender === 'Cha Hae-In';
+                        const messageState = messageStates[index] || 'hidden';
+                        
+                        // Apply iMessage-style animation classes
+                        const animationClass = messageState === 'entering' ? 'message-entering' :
+                                             messageState === 'staying' ? 'message-staying' :
+                                             messageState === 'exiting' ? 'message-exiting' :
+                                             'opacity-0';
                         
                         return (
                           <div 
                             key={msg.id}
                             data-message-id={msg.id}
-                            className="mb-4 transition-opacity duration-1000"
-                            style={{ opacity }}
+                            className={`chat-message message-bubble ${animationClass} mb-4`}
+                            style={{ opacity: messageState === 'hidden' ? 0 : opacity }}
                           >
                             <div className="flex items-start gap-3">
                               <div className={`w-10 h-10 rounded-full glassmorphism flex items-center justify-center flex-shrink-0 ${
