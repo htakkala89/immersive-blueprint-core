@@ -1696,34 +1696,19 @@ export default function SoloLeveling() {
     }
   };
 
-  // Generate Jin-Woo cover using OpenAI through scene generation
+  // Use cached Jin-Woo cover for instant loading
   useEffect(() => {
     const loadJinWooCover = async () => {
-      console.log('Generating Jin-Woo cover with OpenAI DALL-E 3...');
+      console.log('Loading cached Jin-Woo cover for instant display...');
       try {
-        // Force OpenAI generation by using non-mature content detection
-        const response = await fetch('/api/generate-scene-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: "Sung Jin-Woo from Solo Leveling manhwa, tall Korean male with short BLACK HAIR ONLY, sharp angular face, intense dark eyes, wearing black hunter uniform with coat, confident powerful stance, shadow monarch aura, detailed manhwa art style, NEVER blonde hair, NEVER light hair, BLACK HAIR REQUIRED",
-            gameState: {
-              sessionId: "cover-generation", // Different session to avoid mature content routing
-              storyPath: "cover",
-              narration: "cover art generation"
-            }
-          })
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.imageUrl) {
-            console.log('Jin-Woo cover generated with OpenAI');
-            setCurrentBackground(data.imageUrl);
-          }
-        }
+        // Import the cached cover image for immediate loading
+        const cachedCoverModule = await import('@assets/image_1749415701105.png');
+        const cachedCoverUrl = cachedCoverModule.default;
+        setCurrentBackground(cachedCoverUrl);
+        console.log('Cached Jin-Woo cover loaded instantly');
       } catch (error) {
-        console.log('Cover generation failed, using designed background');
+        console.log('Asset import failed, using gradient background fallback');
+        setCurrentBackground('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
       }
     };
     

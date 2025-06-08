@@ -1,34 +1,48 @@
-// Scene images using legitimate fantasy artwork sources
+// Scene images using cached background for optimal loading
 export const SCENE_IMAGES = {
-  'ancient-door': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=1024&h=1024&fit=crop',
-  'dragon-chamber': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=1024&h=1024&fit=crop',
-  'magical-lock': 'https://images.unsplash.com/photo-1551269901-5c5e14c25df7?q=80&w=1024&h=1024&fit=crop',
-  'crystalline-chamber': 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=1024&h=1024&fit=crop',
-  'mystical-trap': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1024&h=1024&fit=crop',
-  'default': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=1024&h=1024&fit=crop'
+  'start': 'cached-cover',
+  'first-meeting': 'cached-cover',
+  'stats-check': 'cached-cover', 
+  'guild-encounter': 'cached-cover',
+  'dungeon-entrance': 'cached-cover',
+  'gate-entrance': 'cached-cover',
+  'combat-scene': 'cached-cover',
+  'romantic-moment': 'cached-cover',
+  'daily-life-hub': 'cached-cover',
+  'default': 'cached-cover'
 };
 
 export function getSceneImage(gameState: any): string {
-  const narration = gameState.narration.toLowerCase();
+  const currentScene = gameState.currentScene?.toLowerCase() || '';
+  const narration = gameState.narration?.toLowerCase() || '';
   
-  if (narration.includes("ancient door") || narration.includes("runes")) {
-    return SCENE_IMAGES['ancient-door'];
+  // Map specific scenes to cached images for instant loading
+  if (currentScene.includes('start') || currentScene.includes('beginning')) {
+    return SCENE_IMAGES['start'];
   }
   
-  if (narration.includes("dragon") || narration.includes("victory") || narration.includes("combat")) {
-    return SCENE_IMAGES['dragon-chamber'];
+  if (currentScene.includes('first') || currentScene.includes('meeting') || narration.includes('first time')) {
+    return SCENE_IMAGES['first-meeting'];
   }
   
-  if (narration.includes("lock") && narration.includes("success")) {
-    return SCENE_IMAGES['magical-lock'];
+  if (currentScene.includes('stats') || currentScene.includes('check') || narration.includes('abilities')) {
+    return SCENE_IMAGES['stats-check'];
   }
   
-  if (narration.includes("chamber") || narration.includes("crystalline")) {
-    return SCENE_IMAGES['crystalline-chamber'];
+  if (currentScene.includes('gate') || currentScene.includes('entrance') || narration.includes('dungeon')) {
+    return SCENE_IMAGES['gate-entrance'];
   }
   
-  if (narration.includes("shock") || narration.includes("fail") || narration.includes("damage")) {
-    return SCENE_IMAGES['mystical-trap'];
+  if (currentScene.includes('combat') || currentScene.includes('battle') || narration.includes('fight')) {
+    return SCENE_IMAGES['combat-scene'];
+  }
+  
+  if (currentScene.includes('romance') || currentScene.includes('love') || narration.includes('heart')) {
+    return SCENE_IMAGES['romantic-moment'];
+  }
+  
+  if (currentScene.includes('daily') || currentScene.includes('hub') || narration.includes('living together')) {
+    return SCENE_IMAGES['daily-life-hub'];
   }
   
   return SCENE_IMAGES['default'];

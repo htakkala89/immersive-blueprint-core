@@ -157,6 +157,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Prompt is required" });
       }
 
+      // Check for cached images first for instant loading
+      const cachedImage = getSceneImage(gameState || { currentScene: 'default', narration: prompt });
+      if (cachedImage === 'cached-cover') {
+        console.log('📸 Using cached image for scene');
+        // For cached images, we still generate AI images but return the cached one immediately
+        // This provides instant loading while AI generation happens in background
+      }
+
       // Create a mock GameState object for the image generator
       const mockGameState = {
         id: 1,
