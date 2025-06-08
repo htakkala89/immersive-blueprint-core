@@ -696,43 +696,45 @@ export default function SoloLeveling() {
                     </div>
                   </div>
 
-                  {/* Choices Section - Horizontal Carousel */}
+                  {/* Choices Section - Apple-style Carousel */}
                   {currentStory?.choices && currentStory.choices.length > 0 && (
-                    <div className="bg-gray-900/95 backdrop-blur-md border-t border-purple-500/60 p-4" style={{ height: '160px' }}>
-                      <div className="text-sm text-white font-semibold mb-3 flex items-center justify-between">
-                        <span>Choose your action:</span>
-                        <span className="text-purple-400 bg-purple-500/20 px-2 py-1 rounded-full text-xs">
-                          {currentChoiceIndex + 1} / {currentStory.choices.length}
-                        </span>
+                    <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4" style={{ height: '160px' }}>
+                      <div className="text-sm text-white font-medium mb-4 flex items-center justify-between">
+                        <span>Choose your action</span>
+                        <div className="bg-black/20 px-3 py-1 rounded-full text-xs font-mono text-white/80">
+                          {currentChoiceIndex + 1} of {currentStory.choices.length}
+                        </div>
                       </div>
                       
-                      <div className="flex items-stretch gap-3" style={{ height: '100px' }}>
+                      <div className="flex items-center gap-4" style={{ height: '96px' }}>
                         {/* Previous Button */}
                         {currentStory.choices.length > 1 && (
                           <button
                             onClick={prevChoice}
-                            className="w-12 bg-purple-600/80 border-2 border-purple-500 rounded-xl flex items-center justify-center text-white hover:bg-purple-600 transition-all flex-shrink-0 text-2xl font-bold shadow-lg"
+                            className="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/25 active:bg-white/20 transition-all duration-200 flex-shrink-0 text-lg shadow-lg border border-white/10"
                           >
-                            ‹
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path d="m15 18-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
                           </button>
                         )}
 
                         {/* Current Choice Display */}
-                        <div className="flex-1">
+                        <div className="flex-1 h-full">
                           <button
                             onClick={() => handleChoice(currentStory.choices[currentChoiceIndex])}
-                            className="w-full h-full bg-purple-600/30 border-2 border-purple-500/60 rounded-xl p-4 hover:bg-purple-600/50 hover:border-purple-400 transition-all text-left backdrop-blur-sm group"
+                            className="w-full h-full bg-white/10 backdrop-blur-xl rounded-2xl p-4 hover:bg-white/15 active:bg-white/8 transition-all duration-200 text-left border border-white/20 shadow-xl group"
                           >
                             <div className="flex items-center gap-4 h-full">
-                              <div className="w-12 h-12 bg-purple-500/80 rounded-xl flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-purple-500 transition-all border border-purple-400">
+                              <div className="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center text-lg flex-shrink-0 shadow-lg border border-white/20">
                                 ⚔️
                               </div>
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                <div className="text-white text-base font-bold mb-2 leading-tight">
+                                <div className="text-white text-base font-semibold mb-1 leading-tight">
                                   {currentStory.choices[currentChoiceIndex].text}
                                 </div>
                                 {currentStory.choices[currentChoiceIndex].detail && (
-                                  <div className="text-gray-200 text-sm leading-relaxed">
+                                  <div className="text-white/80 text-sm leading-relaxed font-light">
                                     {currentStory.choices[currentChoiceIndex].detail}
                                   </div>
                                 )}
@@ -745,9 +747,11 @@ export default function SoloLeveling() {
                         {currentStory.choices.length > 1 && (
                           <button
                             onClick={nextChoice}
-                            className="w-12 bg-purple-600/80 border-2 border-purple-500 rounded-xl flex items-center justify-center text-white hover:bg-purple-600 transition-all flex-shrink-0 text-2xl font-bold shadow-lg"
+                            className="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/25 active:bg-white/20 transition-all duration-200 flex-shrink-0 text-lg shadow-lg border border-white/10"
                           >
-                            ›
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path d="m9 18 6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
                           </button>
                         )}
                       </div>
