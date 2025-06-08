@@ -28,7 +28,13 @@ function isMatureContent(prompt: string, activityId?: string): boolean {
   const explicitMatureKeywords = [
     'strip poker', 'naked', 'nude', 'undressing', 'intimate', 'sensual', 'erotic',
     'making love', 'passionate', 'bedroom scene', 'shower together', 'seductive',
-    'lingerie', 'revealing', 'sexual', 'romantic embrace', 'kissing passionately'
+    'lingerie', 'revealing', 'sexual', 'romantic embrace', 'kissing passionately',
+    'panties', 'underwear', 'bra', 'boobs', 'breasts', 'cleavage', 'butt', 'ass',
+    'thong', 'g-string', 'bikini', 'topless', 'bottomless', 'sex', 'fucking',
+    'pussy', 'vagina', 'nipples', 'tits', 'aroused', 'wet', 'horny', 'orgasm',
+    'masturbating', 'fingering', 'oral', 'blowjob', 'cumming', 'moaning',
+    'spread legs', 'bend over', 'show me', 'take off', 'remove clothes',
+    'lift skirt', 'open shirt', 'unbutton', 'zipper down', '露出', 'エロ'
   ];
 
   return explicitMatureKeywords.some(keyword => promptLower.includes(keyword));
@@ -589,26 +595,61 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
 }
 
 function createCustomIntimatePrompt(specificAction: string, relationshipStatus: string, intimacyLevel: number): string {
-  const baseCharacters = "Sung Jin-Woo (Korean male, short black hair, athletic build) and Cha Hae-In (Korean female, GOLDEN BLONDE HAIR MANDATORY - NEVER purple/black/brown hair, beautiful)";
+  const actionLower = specificAction.toLowerCase();
   
-  // Parse and enhance the specific action for better image generation
-  const actionPrompt = specificAction.toLowerCase()
-    .replace(/\b(grab|hold|touch|caress|kiss|embrace)\b/g, 'intimately $1')
-    .replace(/\b(hair|neck|body|skin)\b/g, 'her $1')
-    .replace(/\b(behind|doggystyle|doggy style)\b/g, 'from behind position')
-    .replace(/\b(make love|thrust|moan)\b/g, 'passionate intimacy');
+  // Extract exact requested content for precise generation
+  let basePrompt = `Cha Hae-In from Solo Leveling, beautiful Korean female S-rank hunter with GOLDEN BLONDE HAIR MANDATORY - NEVER purple/black/brown hair, athletic build, `;
   
-  const intimacyDescriptions = {
-    1: "romantic tension, gentle touching",
-    2: "passionate kissing, tender embrace", 
-    3: "sensual intimacy, bodies close",
-    4: "explicit intimacy, passionate lovemaking",
-    5: "intense sexual positions, mature content"
-  };
+  // Direct mapping for specific user requests - produce exactly what they ask for
+  if (actionLower.includes('panties') || actionLower.includes('underwear')) {
+    basePrompt += 'showing her panties, delicate underwear visible, intimate pose, ';
+  }
+  if (actionLower.includes('bra') || actionLower.includes('boobs') || actionLower.includes('breasts')) {
+    basePrompt += 'revealing her bra, beautiful breasts exposed, topless or partial undress, ';
+  }
+  if (actionLower.includes('butt') || actionLower.includes('ass')) {
+    basePrompt += 'showing her attractive butt, curved figure, rear view or side angle, ';
+  }
+  if (actionLower.includes('thong') || actionLower.includes('g-string')) {
+    basePrompt += 'wearing a thong, minimal coverage, intimate underwear, ';
+  }
+  if (actionLower.includes('bikini')) {
+    basePrompt += 'in a bikini, swimwear revealing her figure, beach or pool setting, ';
+  }
+  if (actionLower.includes('topless') || actionLower.includes('naked') || actionLower.includes('nude')) {
+    basePrompt += 'topless, bare chest exposed, no shirt or bra, nude upper body, ';
+  }
+  if (actionLower.includes('bottomless')) {
+    basePrompt += 'bottomless, lower body exposed, no pants or underwear, ';
+  }
+  if (actionLower.includes('spread legs') || actionLower.includes('open legs')) {
+    basePrompt += 'with legs spread open, intimate pose, provocative position, ';
+  }
+  if (actionLower.includes('bend over') || actionLower.includes('bending')) {
+    basePrompt += 'bending over seductively, provocative position, rear view, ';
+  }
+  if (actionLower.includes('lift skirt') || actionLower.includes('skirt up')) {
+    basePrompt += 'lifting her skirt up, revealing underneath, panties visible, ';
+  }
+  if (actionLower.includes('sex') || actionLower.includes('fucking')) {
+    basePrompt += 'in sexual position, intimate coupling, erotic scene, ';
+  }
+  if (actionLower.includes('masturbat') || actionLower.includes('touch herself')) {
+    basePrompt += 'touching herself intimately, self-pleasure, solo erotic scene, ';
+  }
   
-  const intimacyDesc = intimacyDescriptions[Math.min(Math.max(intimacyLevel, 1), 5) as keyof typeof intimacyDescriptions];
+  // Affection-based willingness and expression
+  if (intimacyLevel >= 4) {
+    basePrompt += 'eager and willing, enjoying the attention, seductive smile, confident expression, ';
+  } else if (intimacyLevel >= 3) {
+    basePrompt += 'blushing but compliant, trusting expression, shy but willing, ';
+  } else {
+    basePrompt += 'hesitant but curious, shy demeanor, uncertain but intrigued, ';
+  }
   
-  return `${baseCharacters}, ${actionPrompt}, ${intimacyDesc}, bedroom setting, anime art style, detailed illustration, romantic lighting, Solo Leveling character design, mature themes. ABSOLUTE REQUIREMENT: Cha Hae-In has bright golden blonde hair only`;
+  basePrompt += 'anime art style, high quality, detailed, intimate lighting, Solo Leveling character design, erotic illustration, NSFW content';
+  
+  return basePrompt;
 }
 
 function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {
