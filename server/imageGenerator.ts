@@ -123,7 +123,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       },
       body: JSON.stringify({
         instances: [{
-          prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: Cha Hae-In with purple hair, Cha Hae-In with black hair, Cha Hae-In with brown hair, Jin-Woo with blonde hair, incorrect hair colors"
+          prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, character design errors"
         }],
         parameters: {
           sampleCount: 1,
@@ -380,9 +380,16 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   const narration = gameState.narration.toLowerCase();
   const storyPath = gameState.storyPath?.toLowerCase() || '';
   
+  // Detect who is speaking in the current scene
+  const chaHaeInSpeaking = narration.includes("cha hae-in says") || narration.includes("cha responds") || 
+                          narration.includes("she says") || narration.includes("cha hae-in speaks") ||
+                          narration.includes("cha hae-in:") || narration.includes("her voice") ||
+                          narration.includes("she responds") || narration.includes("she asks") ||
+                          narration.includes("cha smiles") || narration.includes("she smiles");
+  
   // Solo Leveling specific character designs with strict appearance rules
   const includeJinWoo = narration.includes("jin-woo") || narration.includes("sung") || narration.includes("shadow monarch") || narration.includes("you are") || storyPath.includes("jin") || narration.includes("both characters") || narration.includes("together");
-  const includeHaeIn = narration.includes("hae-in") || narration.includes("cha") || narration.includes("sword saint") || storyPath.includes("cha") || narration.includes("both characters") || narration.includes("together");
+  const includeHaeIn = narration.includes("hae-in") || narration.includes("cha") || narration.includes("sword saint") || storyPath.includes("cha") || narration.includes("both characters") || narration.includes("together") || chaHaeInSpeaking;
   
   // Prioritize couple scenes in romantic contexts
   const isRomanticScene = narration.includes("together") || narration.includes("both") || narration.includes("hae-in") || 
@@ -393,8 +400,12 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   // STRICT CHARACTER APPEARANCE RULES - DO NOT DEVIATE
   let characterDescription = "";
   
-  // For romantic/interaction scenes, always show both characters together
-  if (isRomanticScene || (includeJinWoo && includeHaeIn)) {
+  // Prioritize Cha Hae-In when she's speaking
+  if (chaHaeInSpeaking) {
+    characterDescription = ", focus on Cha Hae-In (MUST BE: Korean female, age 23, BRIGHT GOLDEN BLONDE HAIR ONLY - never purple/black/brown hair, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style - NEVER give her dark hair or purple hair), close-up or medium shot showing her speaking, expressive face, dynamic pose";
+  }
+  // For romantic/interaction scenes, show both characters together
+  else if (isRomanticScene || (includeJinWoo && includeHaeIn)) {
     characterDescription = ", Sung Jin-Woo and Cha Hae-In together (Jin-Woo: Korean male, age 24, SHORT BLACK HAIR ONLY - never blonde or purple, sharp features, dark eyes, black hunter outfit; Cha Hae-In: Korean female, age 23, BRIGHT GOLDEN BLONDE HAIR ONLY - never purple or black or brown, beautiful features, red armor or elegant clothing), romantic interaction, standing close together, meaningful eye contact, gentle expressions, couple scene. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair";
   } else if (includeJinWoo) {
     characterDescription = ", Sung Jin-Woo (MUST BE: Korean male, age 24, SHORT BLACK HAIR ONLY - NOT blonde/long/purple, sharp angular facial features, dark eyes, athletic build, wearing black hunter outfit or casual dark clothing, confident posture, Solo Leveling manhwa art style - NEVER make him blonde or feminine)";
@@ -503,17 +514,23 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
   if (emotions.surprised) emotionDesc += "surprised wide eyes, ";
   if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
 
-  // Determine if this is an interaction between Jin-Woo and Cha Hae-In
-  const isCoupleMoment = userMessage.toLowerCase().includes('hae-in') || 
-                        chatResponse.toLowerCase().includes('you') ||
-                        chatResponse.toLowerCase().includes('your') ||
-                        /\b(we|us|together|both)\b/i.test(chatResponse);
+  // Detect who is speaking - if Cha Hae-In is responding, focus on her
+  const chaHaeInSpeaking = chatResponse.toLowerCase().includes('cha hae-in') ||
+                          /\b(i|my|me)\b/i.test(chatResponse) ||
+                          /\b(she says|she responds|her voice|she smiles|she speaks)\b/i.test(userMessage);
   
-  // Generate couple scenes for interactions, solo scenes for monologues
-  if (isCoupleMoment) {
-    return `Romantic scene between Sung Jin-Woo and Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} Jin-Woo (Korean male, short black hair, dark eyes, black hunter outfit) and Cha Hae-In (Korean female, blonde hair, red armor or elegant clothing) having intimate conversation, meaningful eye contact, standing close together, romantic tension, beautiful background setting, detailed facial expressions, Solo Leveling manhwa art style, vibrant glowing colors, couple interaction scene`;
+  // Determine if this should be a couple scene or solo portrait
+  const isCoupleMoment = userMessage.toLowerCase().includes('both') || 
+                        userMessage.toLowerCase().includes('together') ||
+                        /\b(we|us|couple)\b/i.test(chatResponse);
+  
+  // Prioritize Cha Hae-In focused scenes when she's speaking
+  if (chaHaeInSpeaking && !isCoupleMoment) {
+    return `Close-up portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with BRIGHT GOLDEN BLONDE HAIR (never purple or black hair), striking features, wearing red knight armor or elegant hunter clothing, detailed facial expression showing genuine emotion, soft lighting highlighting her features, speaking or responding, expressive face, Solo Leveling manhwa art style, vibrant glowing colors, sharp dynamic lines, detailed character design. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
+  } else if (isCoupleMoment) {
+    return `Romantic scene between Sung Jin-Woo and Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} Jin-Woo (Korean male, short black hair, dark eyes, black hunter outfit) and Cha Hae-In (Korean female, BRIGHT GOLDEN BLONDE HAIR, red armor or elegant clothing) having intimate conversation, meaningful eye contact, standing close together, romantic tension, beautiful background setting, detailed facial expressions, Solo Leveling manhwa art style, vibrant glowing colors, couple interaction scene. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
   } else {
-    return `Professional portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic lines, detailed character design, powerful and epic feel`;
+    return `Portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with BRIGHT GOLDEN BLONDE HAIR (never purple or black hair), striking features, wearing red knight armor or elegant hunter clothing, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, Solo Leveling manhwa art style, vibrant glowing colors, sharp dynamic lines, detailed character design. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
   }
 }
 
