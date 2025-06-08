@@ -3308,6 +3308,60 @@ export default function SoloLeveling() {
 
                 {/* New Combined Chat and Actions Panel */}
                 <div className="absolute bottom-0 left-0 right-0 z-50">
+                  {/* Mobile Stats Bar - Above Input */}
+                  <div className="bg-black/40 backdrop-blur-xl border-t border-white/10 px-4 py-2">
+                    <div className="flex items-center justify-between">
+                      {/* Left Stats */}
+                      <div className="flex items-center gap-4">
+                        {/* Level */}
+                        <div className="flex items-center gap-1">
+                          <span className="text-yellow-400 text-xs">⭐</span>
+                          <span className="text-white text-xs font-medium">{gameState.level}</span>
+                        </div>
+                        
+                        {/* Health */}
+                        <div className="flex items-center gap-1">
+                          <span className="text-red-400 text-xs">❤️</span>
+                          <div className="w-8 h-1 bg-black/50 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-red-500 transition-all duration-500"
+                              style={{ width: `${(gameState.health / gameState.maxHealth) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Mana */}
+                        <div className="flex items-center gap-1">
+                          <span className="text-blue-400 text-xs">💎</span>
+                          <div className="w-8 h-1 bg-black/50 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-blue-500 transition-all duration-500"
+                              style={{ width: `${(gameState.mana / gameState.maxMana) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Right Stats */}
+                      <div className="flex items-center gap-4">
+                        {/* Gold */}
+                        <div className="flex items-center gap-1">
+                          <span className="text-yellow-400 text-xs">💰</span>
+                          <span className="text-white text-xs font-medium">{gameState.gold || 500}</span>
+                        </div>
+                        
+                        {/* Affection Hearts */}
+                        <div className="flex items-center gap-0.5">
+                          {[...Array(5)].map((_, i) => (
+                            <span key={i} className={`text-xs ${i < gameState.affection ? 'text-pink-400' : 'text-gray-600'}`}>
+                              ❤️
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
                   {/* Action Pills - Above Chat Input */}
                   {currentStory?.choices && currentStory.choices.length > 0 && (
                     <div className="px-4 pb-3">
