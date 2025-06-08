@@ -2443,18 +2443,6 @@ export default function SoloLeveling() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      {/* AI-Generated Background with Ken Burns Effect */}
-      <div 
-        className="fixed inset-0 transition-all duration-700 ken-burns-effect"
-        style={{ 
-          backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          filter: 'blur(8px) brightness(0.5)'
-        }}
-      />
-      
       {/* iOS Device Frame */}
       <div className="relative w-[390px] h-[844px] bg-gray-800 bg-opacity-20 rounded-[40px] p-3 shadow-2xl border border-white border-opacity-10">
         <div className="w-full h-full bg-black rounded-[32px] overflow-hidden relative flex flex-col max-h-full">
@@ -2533,33 +2521,7 @@ export default function SoloLeveling() {
               </div>
 
               {/* Full Screen Game Container with Overlaid UI */}
-              <div className="flex-1 relative overflow-hidden">
-                {/* AI-Generated Scene Background - Force Display */}
-                {(sceneBackground || currentBackground.startsWith('data:')) && (
-                  <img 
-                    key={sceneBackground || currentBackground}
-                    src={sceneBackground || currentBackground}
-                    alt="AI Generated Scene"
-                    className="absolute inset-0 w-full h-full object-cover filter brightness-110 contrast-110"
-                    style={{ zIndex: 1 }}
-                    onLoad={() => console.log('AI scene background loaded and displayed')}
-                    onError={(e) => console.log('AI scene background failed:', e)}
-                  />
-                )}
-                
-                {/* Fallback gradient if no AI image */}
-                {!sceneBackground && !currentBackground.startsWith('data:') && (
-                  <div 
-                    className="absolute inset-0 transition-opacity duration-500 filter brightness-110 contrast-110"
-                    style={{ 
-                      backgroundImage: currentBackground,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center center',
-                      backgroundRepeat: 'no-repeat',
-                      zIndex: 1
-                    }}
-                  />
-                )}
+              <div className="flex-1 relative overflow-hidden bg-gradient-to-b from-gray-900 via-black to-gray-900">
                 
 
                 
