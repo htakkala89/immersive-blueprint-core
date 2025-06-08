@@ -39,7 +39,7 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { speak, isSpeaking, stop } = useSpeechSynthesis();
+  const { speak, speaking, stop } = useSpeechSynthesis();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
