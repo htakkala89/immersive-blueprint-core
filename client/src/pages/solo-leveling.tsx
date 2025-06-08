@@ -2525,13 +2525,12 @@ export default function SoloLeveling() {
   const currentStory = story[gameState.currentScene];
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      {/* iOS Device Frame */}
-      <div className="relative w-[390px] h-[844px] bg-gray-800 bg-opacity-20 rounded-[40px] p-3 shadow-2xl border border-white border-opacity-10">
-        <div className="w-full h-full bg-black rounded-[32px] overflow-hidden relative flex flex-col max-h-full">
-          
-          {/* Start Overlay */}
-          {!gameStarted && (
+    <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
+      {/* Fullscreen Container */}
+      <div className="w-full h-screen bg-black relative flex flex-col">
+        
+        {/* Start Overlay */}
+        {!gameStarted && (
             <div className="absolute inset-0 z-50 flex flex-col justify-end transition-opacity duration-1000">
               {/* AI-Generated Jin-Woo Cover */}
               {(currentBackground.startsWith('data:') || currentBackground.startsWith('http')) ? (
@@ -2956,10 +2955,9 @@ export default function SoloLeveling() {
             </>
           )}
         </div>
-      </div>
 
-      {/* Inventory Modal */}
-      {showInventory && (
+        {/* Inventory Modal */}
+        {showInventory && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
           <div className="bg-gray-900 p-6 rounded-2xl w-80 max-w-[90%] border border-purple-500/30">
             <div className="text-lg font-semibold mb-5 text-white">🎒 Inventory</div>
@@ -2979,10 +2977,10 @@ export default function SoloLeveling() {
             </button>
           </div>
         </div>
-      )}
+        )}
 
-      {/* Skill Tree Modal */}
-      <SkillTree
+        {/* Skill Tree Modal */}
+        <SkillTree
         gameState={gameState as any}
         onUpgradeSkill={(skillId) => {
           characterProgression.upgradeSkill(skillId);
@@ -3125,6 +3123,7 @@ export default function SoloLeveling() {
         }}
         gameState={gameState}
       />
+      </div>
     </div>
   );
 }
