@@ -136,6 +136,8 @@ export default function SoloLeveling() {
   const [autoHiddenMessages, setAutoHiddenMessages] = useState<Set<number>>(new Set());
   const [showDailyLifeHub, setShowDailyLifeHub] = useState(false);
   const [activeActivity, setActiveActivity] = useState<any>(null);
+  const [showMarketplace, setShowMarketplace] = useState(false);
+  const [previousPage, setPreviousPage] = useState<'hub' | 'story'>('story');
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
 
@@ -2900,7 +2902,10 @@ export default function SoloLeveling() {
                   {/* Daily Life Hub Button - Available after romantic relationship */}
                   {gameState.affection >= 3 && (
                     <button 
-                      onClick={() => setShowDailyLifeHub(true)}
+                      onClick={() => {
+                        setPreviousPage('story');
+                        setShowDailyLifeHub(true);
+                      }}
                       className="w-11 h-11 bg-pink-600/90 backdrop-blur-xl border border-pink-400/30 rounded-full flex items-center justify-center text-white hover:bg-pink-500/90 transition-all shadow-lg"
                       title="Daily Life Hub"
                     >
@@ -2910,7 +2915,10 @@ export default function SoloLeveling() {
                   {/* Marketplace Button - Available after meeting Cha Hae-In */}
                   {gameState.affection >= 1 && (
                     <button 
-                      onClick={() => window.location.href = '/marketplace'}
+                      onClick={() => {
+                        setPreviousPage('story');
+                        setShowMarketplace(true);
+                      }}
                       className="w-11 h-11 bg-yellow-600/90 backdrop-blur-xl border border-yellow-400/30 rounded-full flex items-center justify-center text-white hover:bg-yellow-500/90 transition-all shadow-lg"
                       title="Hunter Marketplace"
                     >
