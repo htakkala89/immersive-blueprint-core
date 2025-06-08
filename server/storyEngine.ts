@@ -39,6 +39,77 @@ export const STORY_NODES: Record<string, StoryNode> = {
       { id: "suggest_partnership", icon: "🤝", text: "Suggest working together", detail: "Partnership proposal" }
     ]
   },
+
+  PHILOSOPHY_MOMENT: {
+    id: "PHILOSOPHY_MOMENT",
+    narration: "Your words resonate with Cha Hae-In. 'You're right,' she says thoughtfully. 'I've always believed that actions define us more than words. Your recent achievements certainly speak volumes about who you are.'",
+    choices: [
+      { id: "share_burden", icon: "💭", text: "Share the burden of strength", detail: "Open up about the weight of power" },
+      { id: "ask_her_philosophy", icon: "❓", text: "Ask about her philosophy", detail: "Learn more about her beliefs" },
+      { id: "suggest_coffee", icon: "☕", text: "Suggest discussing over coffee", detail: "Move to a more personal setting" }
+    ]
+  },
+
+  MISSION_DISCUSSION: {
+    id: "MISSION_DISCUSSION",
+    narration: "Cha Hae-In's eyes light up as she describes her recent missions. 'I've been focusing on A-rank gates with complex magical patterns. The challenge keeps me sharp.' She seems pleased by your genuine interest.",
+    choices: [
+      { id: "offer_help", icon: "🤝", text: "Offer to help", detail: "Volunteer for joint missions" },
+      { id: "share_experience", icon: "📖", text: "Share your experience", detail: "Exchange tactical knowledge" },
+      { id: "compliment_skill", icon: "⭐", text: "Compliment her skills", detail: "Acknowledge her abilities" }
+    ]
+  },
+
+  PARTNERSHIP_INTEREST: {
+    id: "PARTNERSHIP_INTEREST",
+    narration: "Cha Hae-In considers your proposal carefully. 'A partnership? That's... unexpected. Most hunters prefer to work alone, especially at our level. But there's something about your approach that intrigues me.'",
+    choices: [
+      { id: "explain_benefits", icon: "💡", text: "Explain mutual benefits", detail: "Strategic partnership reasoning" },
+      { id: "personal_interest", icon: "💝", text: "Admit personal interest", detail: "Be honest about attraction" },
+      { id: "trial_mission", icon: "🎯", text: "Suggest a trial mission", detail: "Prove compatibility" }
+    ]
+  },
+
+  FIRST_DATE: {
+    id: "FIRST_DATE",
+    narration: "You and Cha Hae-In sit across from each other in a quiet café. The afternoon sunlight highlights her blonde hair as she sips her coffee. 'This is nice,' she admits. 'I rarely take time for moments like this.'",
+    choices: [
+      { id: "ask_about_past", icon: "📜", text: "Ask about her past", detail: "Learn her background" },
+      { id: "share_your_story", icon: "📝", text: "Share your story", detail: "Open up about your journey" },
+      { id: "focus_on_present", icon: "🌅", text: "Focus on the present", detail: "Enjoy the moment together" }
+    ]
+  },
+
+  ROMANTIC_DEVELOPMENT: {
+    id: "ROMANTIC_DEVELOPMENT",
+    narration: "The connection between you deepens. Cha Hae-In looks into your eyes with a soft expression you've never seen before. 'Jin-Woo, I need to tell you something. Being with you feels different than anything I've experienced.'",
+    choices: [
+      { id: "confess_feelings", icon: "💖", text: "Confess your feelings", detail: "Tell her how you feel" },
+      { id: "ask_her_feelings", icon: "❤️", text: "Ask about her feelings", detail: "Let her express herself first" },
+      { id: "take_her_hand", icon: "🤝", text: "Take her hand", detail: "Physical gesture of affection" }
+    ]
+  },
+
+  CONFESSION_ACCEPTED: {
+    id: "CONFESSION_ACCEPTED",
+    narration: "Cha Hae-In's eyes shimmer with emotion. 'I feel the same way, Jin-Woo. Your strength isn't just physical - it's in how you make me feel safe and valued. I want to be more than just partners in hunting.'",
+    choices: [
+      { id: "first_kiss", icon: "💋", text: "Kiss her gently", detail: "Seal the moment with a kiss" },
+      { id: "promise_relationship", icon: "💍", text: "Promise to cherish her", detail: "Make a commitment" },
+      { id: "plan_future", icon: "🌟", text: "Talk about the future", detail: "Discuss your relationship goals" }
+    ]
+  },
+
+  RELATIONSHIP_ESTABLISHED: {
+    id: "RELATIONSHIP_ESTABLISHED",
+    narration: "You and Cha Hae-In are now officially together. The world's strongest hunters have found love in each other. As you walk hand in hand, you realize that this conquest of the heart was more challenging and rewarding than any dungeon.",
+    choices: [
+      { id: "new_adventure", icon: "🚀", text: "Start a new adventure together", detail: "Begin your romantic journey" },
+      { id: "return_to_daily_life", icon: "🏠", text: "Return to daily life hub", detail: "Continue your relationship" }
+    ],
+    isEnding: true,
+    endingType: 'victory'
+  },
   
   mystical_path: {
     id: "mystical_path",
@@ -139,54 +210,78 @@ export function getNextStoryNode(
   const newHistory = [...choiceHistory, choiceId];
   let newFlags = { ...storyFlags };
 
-  // Apply choice effects and determine next node
-  if (choiceId === 'examine' || choiceId === 'ask-maya') {
-    newFlags.magicalKnowledge = true;
-  } else if (choiceId === 'pick-lock' || choiceId === 'prepare') {
-    newFlags.combatReady = true;
-  }
-
-  if (choiceId === 'face-dragon-success') {
-    newFlags.dragonDefeated = true;
-  } else if (choiceId === 'negotiate') {
-    newFlags.dragonFriend = true;
-  } else if (choiceId === 'commune-spirits') {
-    newFlags.spiritsAppeased = true;
-  } else if (choiceId === 'study-artifacts') {
-    newFlags.artifactsStudied = true;
-  }
-
-  // Determine next story path
+  // Solo Leveling romance story progression
   let nextNodeId = currentPath;
 
-  if (currentPath === 'entrance') {
-    if (newFlags.magicalKnowledge) {
-      nextNodeId = 'mystical_path';
-    } else if (newFlags.combatReady) {
-      nextNodeId = 'combat_path';
+  // Define story progression mapping
+  const storyProgression: Record<string, Record<string, string>> = {
+    'START': {
+      'accept_quest': 'FIRST_MEETING',
+      'check_stats': 'FIRST_MEETING'
+    },
+    'FIRST_MEETING': {
+      'play_cool': 'COOL_RESPONSE',
+      'be_humble': 'COOL_RESPONSE', 
+      'ask_about_her': 'MISSION_DISCUSSION'
+    },
+    'COOL_RESPONSE': {
+      'actions_speak': 'PHILOSOPHY_MOMENT',
+      'ask_missions': 'MISSION_DISCUSSION',
+      'suggest_partnership': 'PARTNERSHIP_INTEREST'
+    },
+    'PHILOSOPHY_MOMENT': {
+      'share_burden': 'ROMANTIC_DEVELOPMENT',
+      'ask_her_philosophy': 'MISSION_DISCUSSION',
+      'suggest_coffee': 'FIRST_DATE'
+    },
+    'MISSION_DISCUSSION': {
+      'offer_help': 'PARTNERSHIP_INTEREST',
+      'share_experience': 'PHILOSOPHY_MOMENT',
+      'compliment_skill': 'ROMANTIC_DEVELOPMENT'
+    },
+    'PARTNERSHIP_INTEREST': {
+      'explain_benefits': 'MISSION_DISCUSSION',
+      'personal_interest': 'ROMANTIC_DEVELOPMENT',
+      'trial_mission': 'FIRST_DATE'
+    },
+    'FIRST_DATE': {
+      'ask_about_past': 'ROMANTIC_DEVELOPMENT',
+      'share_your_story': 'ROMANTIC_DEVELOPMENT',
+      'focus_on_present': 'CONFESSION_ACCEPTED'
+    },
+    'ROMANTIC_DEVELOPMENT': {
+      'confess_feelings': 'CONFESSION_ACCEPTED',
+      'ask_her_feelings': 'CONFESSION_ACCEPTED',
+      'take_her_hand': 'CONFESSION_ACCEPTED'
+    },
+    'CONFESSION_ACCEPTED': {
+      'first_kiss': 'RELATIONSHIP_ESTABLISHED',
+      'promise_relationship': 'RELATIONSHIP_ESTABLISHED',
+      'plan_future': 'RELATIONSHIP_ESTABLISHED'
+    },
+    'RELATIONSHIP_ESTABLISHED': {
+      'new_adventure': 'START',
+      'return_to_daily_life': 'START'
     }
-  } else if (currentPath === 'mystical_path' || currentPath === 'combat_path') {
-    if (newFlags.dragonDefeated || newFlags.spiritsAppeased || newFlags.artifactsStudied) {
-      nextNodeId = 'inner_sanctum';
-    }
-  } else if (currentPath === 'inner_sanctum') {
-    // Check for ending conditions
-    if (choiceId === 'claim-power') {
-      nextNodeId = 'power_ending';
-    } else if (choiceId === 'preserve-balance') {
-      nextNodeId = 'balance_ending';
-    } else if (choiceId === 'share-knowledge') {
-      nextNodeId = 'knowledge_ending';
-    } else if (choiceId === 'destroy-source') {
-      nextNodeId = 'sacrifice_ending';
-    }
+  };
+
+  // Progress the story based on choice
+  if (storyProgression[currentPath] && storyProgression[currentPath][choiceId]) {
+    nextNodeId = storyProgression[currentPath][choiceId];
   }
 
-  // Check for secret endings
-  if (newFlags.dragonFriend && choiceId === 'negotiate') {
-    nextNodeId = 'dragon_ally_ending';
-  } else if (newFlags.spiritsAppeased && newFlags.artifactsStudied && choiceId === 'commune-spirits') {
-    nextNodeId = 'spiritual_ascension_ending';
+  // Apply relationship flags
+  if (choiceId === 'personal_interest' || choiceId === 'confess_feelings') {
+    newFlags.romanticInterest = true;
+  }
+  if (choiceId === 'first_kiss' || choiceId === 'promise_relationship') {
+    newFlags.relationshipEstablished = true;
+  }
+
+  // Handle special Solo Leveling progression
+  if (choiceId === 'return_to_daily_life') {
+    // Reset to daily life hub instead of story restart
+    newFlags.dailyLifeUnlocked = true;
   }
 
   const node = STORY_NODES[nextNodeId] || STORY_NODES[currentPath];
