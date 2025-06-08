@@ -2014,6 +2014,66 @@ export default function SoloLeveling() {
     // Play voice for character dialogue automatically
     if (sender === 'Cha Hae-In') {
       setTimeout(() => playVoice(text, 'cha-hae-in'), 300);
+      
+      // Check for visual descriptions and generate images automatically
+      const visualDescriptions = [
+        // Facial expressions and emotions
+        /\*.*(?:blush|blushing|cheeks|face.*red|face.*pink|face.*flushed).*\*/gi,
+        /\*.*(?:smirk|grin|smile|smiling|lips.*curve|lips.*tug).*\*/gi,
+        /\*.*(?:eyes.*light|eyes.*sparkle|eyes.*narrow|gaze|stares|looks).*\*/gi,
+        /\*.*(?:eyebrow|brow.*raise|brow.*arch|questioning look).*\*/gi,
+        
+        // Body language and movement
+        /\*.*(?:tilts.*head|head.*tilt|leans|steps|moves|shifts|adjusts).*\*/gi,
+        /\*.*(?:crosses.*arms|hands.*hips|reaches|extends|touches).*\*/gi,
+        /\*.*(?:sits|stands|approaches|closer|away|forward|back).*\*/gi,
+        
+        // Physical appearance descriptions
+        /\*.*(?:blonde hair|hair.*flow|hair.*catch|hair.*gleam|golden hair).*\*/gi,
+        /\*.*(?:red armor|armor.*gleam|armor.*shine|armor.*catch).*\*/gi,
+        /\*.*(?:sword|weapon|blade|equipment).*\*/gi,
+        
+        // Intimate or romantic descriptions
+        /\*.*(?:pulls.*close|embrace|hug|kiss|caress|hold.*hand|take.*hand).*\*/gi,
+        /\*.*(?:melts|breathless|heart.*race|overwhelmed|vulnerable).*\*/gi,
+        
+        // Environmental and lighting
+        /\*.*(?:light.*catch|gleam|glow|shine|sparkle|illuminate).*\*/gi,
+        
+        // Emotional states with visual impact
+        /\*.*(?:tears|crying|emotional|moved|touched|shocked|surprised).*\*/gi,
+        /\*.*(?:confident|playful|shy|nervous|excited|happy|sad).*\*/gi
+      ];
+      
+      const hasVisualDescription = visualDescriptions.some(pattern => pattern.test(text));
+      
+      if (hasVisualDescription) {
+        console.log('Visual description detected in Cha Hae-In response, generating image');
+        
+        // Generate image based on the visual description
+        setTimeout(() => {
+          fetch('/api/generate-chat-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chatResponse: text,
+              userMessage: 'conversation',
+              characterFocus: 'cha_hae_in'
+            }),
+          })
+          .then(res => res.json())
+          .then(imageData => {
+            if (imageData.imageUrl) {
+              console.log('Chat visual update generated, updating background');
+              setCurrentBackground(imageData.imageUrl);
+              setSceneBackground(imageData.imageUrl);
+            }
+          })
+          .catch(err => console.log('Image generation failed:', err.message));
+        }, 800); // Slight delay to let message appear first
+      }
     } else if (sender === 'system' || sender === 'Game Master') {
       setTimeout(() => playVoice(text, 'game-master'), 300);
     }

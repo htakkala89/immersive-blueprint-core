@@ -218,6 +218,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/generate-chat-image", async (req, res) => {
+    try {
+      const { chatResponse, userMessage, characterFocus } = req.body;
+      
+      if (!chatResponse) {
+        return res.status(400).json({ error: "Missing chatResponse parameter" });
+      }
+
+      // Import the chat scene image generator
+      const { generateChatSceneImage } = await import('./imageGenerator.js');
+      
+      const imageUrl = await generateChatSceneImage(chatResponse, userMessage || '');
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: "Failed to generate chat image" });
+      }
+    } catch (error) {
+      console.error(`Failed to generate chat image: ${error}`);
+      res.status(500).json({ error: "Failed to generate chat image" });
+    }
+  });
+
   app.post("/api/generate-intimate-image", async (req, res) => {
     try {
       const { activityId, relationshipStatus, intimacyLevel } = req.body;
