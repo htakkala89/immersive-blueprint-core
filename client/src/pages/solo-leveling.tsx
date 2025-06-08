@@ -586,76 +586,79 @@ export default function SoloLeveling() {
                   </div>
                 </div>
 
-                {/* Chat Container - Reverse order to show new messages first */}
-                <div className="flex-1 flex flex-col overflow-hidden">
-                  <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto flex flex-col-reverse">
-                    <div className="flex flex-col space-y-3">
-                      {/* Choices - appear at bottom when messages are reversed */}
-                      {currentStory?.choices && (
-                        <div className="space-y-3 order-last">
-                          <div className="text-sm text-white/70 font-semibold px-2">Choose your next action:</div>
-                          {currentStory.choices.map((choice, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleChoice(choice)}
-                              className="w-full bg-purple-500/15 border border-purple-500/30 rounded-xl p-4 flex items-center gap-3 hover:bg-purple-500/25 hover:border-purple-500/50 hover:-translate-y-0.5 transition-all duration-200 text-left"
-                            >
-                              <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-sm flex-shrink-0">
-                                ⚔️
-                              </div>
-                              <div className="flex-1">
-                                <div className="text-white text-sm font-semibold">{choice.text}</div>
-                                {choice.detail && (
-                                  <div className="text-white/70 text-xs mt-1">{choice.detail}</div>
-                                )}
-                              </div>
-                            </button>
-                          ))}
+                {/* Chat Container - Simple bottom-anchored layout */}
+                <div className="flex-1 flex flex-col min-h-0">
+                  <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto">
+                    {/* Story Narration */}
+                    {currentStory && (
+                      <div className="mb-3 p-3 rounded-xl bg-gray-800/60 border border-purple-500/20">
+                        <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
+                          <div className="w-5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
+                            🎭
+                          </div>
+                          <span className="text-white">Game Master</span>
                         </div>
-                      )}
+                        <div className="text-gray-200 text-sm leading-relaxed">{currentStory.narration}</div>
+                      </div>
+                    )}
 
-                      {/* Chat Messages - reversed order to show newest first */}
-                      {[...chatMessages].reverse().map(msg => (
-                        <div 
-                          key={msg.id}
-                          className={`p-4 rounded-2xl max-w-[95%] animate-in slide-in-from-bottom-5 duration-500 ${
+                    {/* Chat Messages */}
+                    {chatMessages.map(msg => (
+                      <div 
+                        key={msg.id}
+                        className={`mb-3 p-3 rounded-xl max-w-[90%] ${
+                          msg.sender === 'player' 
+                            ? 'bg-purple-900/60 border border-purple-500/40 ml-auto' 
+                            : msg.sender === 'Cha Hae-In'
+                            ? 'bg-pink-900/60 border border-pink-500/40'
+                            : 'bg-gray-800/60 border border-purple-500/20'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1 text-xs opacity-80 font-semibold">
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
                             msg.sender === 'player' 
-                              ? 'bg-purple-900/60 border border-purple-500/40 ml-auto' 
+                              ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
                               : msg.sender === 'Cha Hae-In'
-                              ? 'bg-pink-900/60 border border-pink-500/40'
-                              : 'bg-gray-800/60 border border-purple-500/20'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                              msg.sender === 'player' 
-                                ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
-                                : msg.sender === 'Cha Hae-In'
-                                ? 'bg-gradient-to-r from-pink-600 to-pink-700'
-                                : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
-                            }`}>
-                              {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
-                            </div>
-                            <span className="text-white">{msg.sender}</span>
+                              ? 'bg-gradient-to-r from-pink-600 to-pink-700'
+                              : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
+                          }`}>
+                            {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
                           </div>
-                          <div className="text-gray-200 leading-relaxed">{msg.text}</div>
+                          <span className="text-white">{msg.sender}</span>
                         </div>
-                      ))}
+                        <div className="text-gray-200 text-sm leading-relaxed">{msg.text}</div>
+                      </div>
+                    ))}
 
-                      {/* Current Story Narration - appears at top when reversed */}
-                      {currentStory && (
-                        <div className="p-4 rounded-2xl bg-gray-800/60 border border-purple-500/20 order-first">
-                          <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
-                              🎭
-                            </div>
-                            <span className="text-white">AI Game Master</span>
-                          </div>
-                          <div className="text-gray-200 leading-relaxed">{currentStory.narration}</div>
-                        </div>
-                      )}
-                    </div>
+                    {/* Spacer to push content up */}
+                    <div style={{ height: '1px' }} />
                   </div>
+
+                  {/* Choices Section - Fixed at bottom */}
+                  {currentStory?.choices && (
+                    <div className="p-3 bg-gray-800/40 border-t border-purple-500/20">
+                      <div className="text-xs text-white/70 font-semibold mb-2">Choose your action:</div>
+                      <div className="space-y-2 max-h-32 overflow-y-auto">
+                        {currentStory.choices.map((choice, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleChoice(choice)}
+                            className="w-full bg-purple-500/15 border border-purple-500/30 rounded-lg p-3 flex items-center gap-2 hover:bg-purple-500/25 transition-all text-left"
+                          >
+                            <div className="w-6 h-6 bg-purple-500/20 rounded-md flex items-center justify-center text-xs flex-shrink-0">
+                              ⚔️
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white text-sm font-semibold truncate">{choice.text}</div>
+                              {choice.detail && (
+                                <div className="text-white/70 text-xs truncate">{choice.detail}</div>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Bottom Bar */}
