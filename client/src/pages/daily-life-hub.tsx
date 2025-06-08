@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useIntimateImageGeneration } from "@/hooks/useIntimateImageGeneration";
+import { EnhancedSkillTree } from "@/components/EnhancedSkillTree";
+import { useGameState } from "@/hooks/useGameState";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface PlayerStats {
   gold: number;

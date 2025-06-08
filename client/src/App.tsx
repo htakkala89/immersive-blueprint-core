@@ -7,18 +7,20 @@ import Game from "@/pages/game";
 import SoloLeveling from "@/pages/solo-leveling";
 import ChapterSelect from "@/pages/chapter-select";
 import DailyLifeHub from "@/pages/daily-life-hub";
+import Home from "@/pages/home";
 import Marketplace from "@/pages/marketplace";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={ChapterSelect} />
+      <Route path="/" component={Home} />
+      <Route path="/home" component={Home} />
       <Route path="/chapter-select" component={ChapterSelect} />
       <Route path="/solo-leveling" component={SoloLeveling} />
       <Route path="/daily-life-hub" component={DailyLifeHub} />
       <Route path="/marketplace" component={Marketplace} />
       <Route path="/rpg" component={Game} />
-      <Route component={ChapterSelect} />
+      <Route component={Home} />
     </Switch>
   );
 }

@@ -340,6 +340,66 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Add experience
+  app.post("/api/add-experience", async (req, res) => {
+    try {
+      const { sessionId, amount, source } = req.body;
+      if (!sessionId || !amount) {
+        return res.status(400).json({ error: "Session ID and amount are required" });
+      }
+
+      const gameState = await storage.addExperience(sessionId, amount, source || "unknown");
+      res.json(gameState);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  });
+
+  // Get skill tree
+  app.get("/api/skill-tree/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      if (!sessionId) {
+        return res.status(400).json({ error: "Session ID is required" });
+      }
+
+      const skillTree = await storage.getSkillTree(sessionId);
+      res.json(skillTree);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  });
+
+  // Unlock skill
+  app.post("/api/unlock-skill", async (req, res) => {
+    try {
+      const { sessionId, skillId } = req.body;
+      if (!sessionId || !skillId) {
+        return res.status(400).json({ error: "Session ID and skill ID are required" });
+      }
+
+      const gameState = await storage.unlockSkill(sessionId, skillId);
+      res.json(gameState);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  });
+
+  // Get character progression
+  app.get("/api/character-progression/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      if (!sessionId) {
+        return res.status(400).json({ error: "Session ID is required" });
+      }
+
+      const progression = await storage.getCharacterProgression(sessionId);
+      res.json(progression);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  });
+
   // Mature content image generation endpoint
   app.post("/api/generate-intimate-image", async (req, res) => {
     try {
