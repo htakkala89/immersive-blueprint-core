@@ -45,19 +45,20 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
         parameters: {
           width: 1024,
           height: 1024,
-          scale: 7,
+          scale: 12,
           sampler: 'k_euler_ancestral',
-          steps: 28,
+          steps: 50,
           seed: Math.floor(Math.random() * 1000000),
           n_samples: 1,
           ucPreset: 0,
-          qualityToggle: true,
+          qualityToggle: false,
           sm: false,
           sm_dyn: false,
           dynamic_thresholding: false,
           controlnet_strength: 1,
           legacy: false,
-          negative_prompt: "black hair, dark hair, brown hair, blue eyes, green eyes, brown eyes, wrong hair color, wrong eye color"
+          add_original_image: false,
+          negative_prompt: "censored, mosaic, bar censor, black hair, dark hair, brown hair, blue eyes, green eyes, brown eyes, wrong hair color, wrong eye color, clothed, clothing"
         }
       })
     });
@@ -503,7 +504,7 @@ function createIntimatePrompt(activityId: string, relationshipStatus: string, in
     
     case 'nude_modeling':
       return intimacyLevel >= 10 
-        ? `1girl, solo, Cha Hae-In, short blonde hair, purple eyes, beautiful Korean female, completely nude, naked, no clothing, standing pose, confident expression, modern bedroom, soft lighting, artistic nude modeling pose, showing breasts and body, anime art style, detailed illustration, Solo Leveling character design, apartment interior, erotic art, artistic nude pose`
+        ? `{Cha Hae-In}, 1girl, solo, short blonde hair, purple eyes, beautiful Korean female, nude, naked, topless, breasts, nipples, completely unclothed, standing confidently, modern apartment bedroom, soft warm lighting, artistic nude pose, erotic art, detailed anime illustration, high quality, masterpiece, nsfw`
         : `${baseStyle}, romantic bedroom scene, intimate clothing, soft lighting, tasteful sensual pose, apartment setting`;
     
     default:

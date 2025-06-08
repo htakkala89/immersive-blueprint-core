@@ -26,7 +26,7 @@ async function testMatureContentGeneration() {
       const base64Data = data.imageUrl.replace(/^data:image\/\w+;base64,/, '');
       const buffer = Buffer.from(base64Data, 'base64');
       
-      fs.writeFileSync('nude_modeling_test.png', buffer);
+      fs.writeFileSync('nude_enhanced_test.png', buffer);
       console.log('✅ Nude modeling image generated and saved');
       console.log('📊 Image size:', buffer.length, 'bytes');
       console.log('🔞 Activity: nude_modeling');
