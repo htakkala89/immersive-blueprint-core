@@ -197,9 +197,9 @@ export default function SoloLeveling() {
       choices: [
         { text: "Enter the gate", detail: "Time to see what awaits inside", type: 'enter_gate' }
       ],
-      leadsTo: { enter_gate: 'DUNGEON_START' }
+      leadsTo: { enter_gate: 'ICE_DUNGEON' }
     },
-    'DUNGEON_START': {
+    'ICE_DUNGEON': {
       prompt: "Inside a crystalline ice dungeon with frozen monsters and treacherous paths. Fantasy RPG dungeon, anime style.",
       narration: "The gate leads to an ice realm. Frozen monsters lurk in the crystalline corridors. Hae-In draws her sword, its blade glowing with mana.",
       chat: [{ sender: 'Cha Hae-In', text: "This place gives me chills... but not from the cold. Something powerful is here." }],
@@ -391,9 +391,9 @@ export default function SoloLeveling() {
         { text: "Enter together", detail: "Step through as a team", type: 'enter_gate' },
         { text: "Return to daily life", detail: "Head back to your apartment", type: 'return_home' }
       ],
-      leadsTo: { enter_gate: 'DUNGEON_START', return_home: 'DAILY_LIFE_HUB' }
+      leadsTo: { enter_gate: 'COMBAT_DUNGEON', return_home: 'DAILY_LIFE_HUB' }
     },
-    'DUNGEON_START': {
+    'COMBAT_DUNGEON': {
       prompt: "Dark stone dungeon corridor with glowing purple crystals, monster shadows lurking ahead.",
       narration: "The dungeon air is thick with malevolent energy. Strange sounds echo from the depths ahead. Several large monsters block your path forward - dire wolves and an orc chieftain guard the passage.",
       chat: [
