@@ -231,21 +231,29 @@ export default function SoloLeveling() {
   // Auto-scroll chat to bottom when new messages arrive
   useEffect(() => {
     if (chatContainerRef.current) {
-      setTimeout(() => {
-        if (chatContainerRef.current) {
-          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-        }
-      }, 100);
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [chatMessages]);
 
-  // Force scroll to bottom when adding new messages
+  // Force scroll to bottom immediately and reliably
   const scrollToBottom = () => {
-    setTimeout(() => {
-      if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-      }
-    }, 50);
+    if (chatContainerRef.current) {
+      const element = chatContainerRef.current;
+      element.scrollTop = element.scrollHeight;
+      
+      // Multiple fallbacks to ensure scroll happens
+      requestAnimationFrame(() => {
+        element.scrollTop = element.scrollHeight;
+      });
+      
+      setTimeout(() => {
+        element.scrollTop = element.scrollHeight;
+      }, 10);
+      
+      setTimeout(() => {
+        element.scrollTop = element.scrollHeight;
+      }, 100);
+    }
   };
 
   const generateSceneImage = async (prompt: string) => {
@@ -578,72 +586,76 @@ export default function SoloLeveling() {
                   </div>
                 </div>
 
-                {/* Chat Container */}
-                <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto" style={{ maxHeight: 'calc(100% - 140px)' }}>
-                  {/* Current Story Narration - appears first */}
-                  {currentStory && (
-                    <div className="mb-5 p-4 rounded-2xl bg-gray-800/60 border border-purple-500/20">
-                      <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
-                          🎭
+                {/* Chat Container - Reverse order to show new messages first */}
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto flex flex-col-reverse">
+                    <div className="flex flex-col space-y-3">
+                      {/* Choices - appear at bottom when messages are reversed */}
+                      {currentStory?.choices && (
+                        <div className="space-y-3 order-last">
+                          <div className="text-sm text-white/70 font-semibold px-2">Choose your next action:</div>
+                          {currentStory.choices.map((choice, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleChoice(choice)}
+                              className="w-full bg-purple-500/15 border border-purple-500/30 rounded-xl p-4 flex items-center gap-3 hover:bg-purple-500/25 hover:border-purple-500/50 hover:-translate-y-0.5 transition-all duration-200 text-left"
+                            >
+                              <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-sm flex-shrink-0">
+                                ⚔️
+                              </div>
+                              <div className="flex-1">
+                                <div className="text-white text-sm font-semibold">{choice.text}</div>
+                                {choice.detail && (
+                                  <div className="text-white/70 text-xs mt-1">{choice.detail}</div>
+                                )}
+                              </div>
+                            </button>
+                          ))}
                         </div>
-                        <span className="text-white">AI Game Master</span>
-                      </div>
-                      <div className="text-gray-200 leading-relaxed">{currentStory.narration}</div>
-                    </div>
-                  )}
+                      )}
 
-                  {/* Chat Messages - main focus */}
-                  {chatMessages.map(msg => (
-                    <div 
-                      key={msg.id}
-                      className={`mb-5 p-4 rounded-2xl max-w-[95%] animate-in slide-in-from-bottom-5 duration-500 ${
-                        msg.sender === 'player' 
-                          ? 'bg-purple-900/60 border border-purple-500/40 ml-auto' 
-                          : msg.sender === 'Cha Hae-In'
-                          ? 'bg-pink-900/60 border border-pink-500/40'
-                          : 'bg-gray-800/60 border border-purple-500/20'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                          msg.sender === 'player' 
-                            ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
-                            : msg.sender === 'Cha Hae-In'
-                            ? 'bg-gradient-to-r from-pink-600 to-pink-700'
-                            : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
-                        }`}>
-                          {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
-                        </div>
-                        <span className="text-white">{msg.sender}</span>
-                      </div>
-                      <div className="text-gray-200 leading-relaxed">{msg.text}</div>
-                    </div>
-                  ))}
-
-                  {/* Choices - appear after chat messages */}
-                  {currentStory?.choices && (
-                    <div className="mt-6 space-y-3">
-                      <div className="text-sm text-white/70 font-semibold px-2">Choose your next action:</div>
-                      {currentStory.choices.map((choice, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleChoice(choice)}
-                          className="w-full bg-purple-500/15 border border-purple-500/30 rounded-xl p-4 flex items-center gap-3 hover:bg-purple-500/25 hover:border-purple-500/50 hover:-translate-y-0.5 transition-all duration-200 text-left"
+                      {/* Chat Messages - reversed order to show newest first */}
+                      {[...chatMessages].reverse().map(msg => (
+                        <div 
+                          key={msg.id}
+                          className={`p-4 rounded-2xl max-w-[95%] animate-in slide-in-from-bottom-5 duration-500 ${
+                            msg.sender === 'player' 
+                              ? 'bg-purple-900/60 border border-purple-500/40 ml-auto' 
+                              : msg.sender === 'Cha Hae-In'
+                              ? 'bg-pink-900/60 border border-pink-500/40'
+                              : 'bg-gray-800/60 border border-purple-500/20'
+                          }`}
                         >
-                          <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-sm flex-shrink-0">
-                            ⚔️
+                          <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                              msg.sender === 'player' 
+                                ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
+                                : msg.sender === 'Cha Hae-In'
+                                ? 'bg-gradient-to-r from-pink-600 to-pink-700'
+                                : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
+                            }`}>
+                              {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
+                            </div>
+                            <span className="text-white">{msg.sender}</span>
                           </div>
-                          <div className="flex-1">
-                            <div className="text-white text-sm font-semibold">{choice.text}</div>
-                            {choice.detail && (
-                              <div className="text-white/70 text-xs mt-1">{choice.detail}</div>
-                            )}
-                          </div>
-                        </button>
+                          <div className="text-gray-200 leading-relaxed">{msg.text}</div>
+                        </div>
                       ))}
+
+                      {/* Current Story Narration - appears at top when reversed */}
+                      {currentStory && (
+                        <div className="p-4 rounded-2xl bg-gray-800/60 border border-purple-500/20 order-first">
+                          <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
+                              🎭
+                            </div>
+                            <span className="text-white">AI Game Master</span>
+                          </div>
+                          <div className="text-gray-200 leading-relaxed">{currentStory.narration}</div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* Bottom Bar */}
