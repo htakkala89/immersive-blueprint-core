@@ -2137,15 +2137,15 @@ export default function SoloLeveling() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      {/* AI-Generated Background */}
+      {/* AI-Generated Background with Ken Burns Effect */}
       <div 
-        className="fixed inset-0 transition-all duration-700 transform scale-110"
+        className="fixed inset-0 transition-all duration-700 ken-burns-effect"
         style={{ 
           backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          filter: 'blur(15px) brightness(0.4)'
+          filter: 'blur(8px) brightness(0.5)'
         }}
       />
       
