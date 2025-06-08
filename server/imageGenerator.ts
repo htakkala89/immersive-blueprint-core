@@ -103,43 +103,8 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    if (!process.env.GOOGLE_API_KEY) {
-      console.log('Google API key not available');
-      return null;
-    }
-
-    const apiKey = process.env.GOOGLE_API_KEY;
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
-    
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style",
-        aspectRatio: "1:1",
-        safetySettings: [
-          {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_ONLY_HIGH"
-          }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      console.error('Google Imagen API error:', response.status, response.statusText);
-      return null;
-    }
-
-    const data = await response.json();
-    const imageData = data.predictions?.[0]?.bytesBase64Encoded || data.candidates?.[0]?.image?.bytesBase64Encoded;
-    
-    if (imageData) {
-      return `data:image/png;base64,${imageData}`;
-    }
-    
+    console.log('Google Imagen API is not currently available through the Gemini API');
+    console.log('Falling back to OpenAI for character/scene generation');
     return null;
   } catch (error) {
     console.error('Google Imagen generation error:', error);
