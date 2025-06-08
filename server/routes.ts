@@ -274,6 +274,29 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Chat emotion-based image generation endpoint
+  app.post('/api/generate-chat-image', async (req: Request, res: Response) => {
+    try {
+      const { chatResponse, userMessage } = req.body;
+      
+      if (!chatResponse || !userMessage) {
+        return res.status(400).json({ error: 'Chat response and user message are required' });
+      }
+
+      const { generateChatSceneImage } = await import('./imageGenerator');
+      const imageUrl = await generateChatSceneImage(chatResponse, userMessage);
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: 'Failed to generate chat scene image' });
+      }
+    } catch (error) {
+      console.error('Error generating chat scene image:', error);
+      res.status(500).json({ error: 'Failed to generate chat scene image' });
+    }
+  });
+
   // Character progression routes
   app.post("/api/level-up", async (req, res) => {
     try {

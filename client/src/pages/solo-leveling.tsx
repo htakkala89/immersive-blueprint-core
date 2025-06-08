@@ -1950,6 +1950,40 @@ export default function SoloLeveling() {
           setCurrentBackground(data.imageUrl);
           setSceneBackground(data.imageUrl);
           console.log('Chat response generated image, updating background');
+        } else {
+          // Check for emotional descriptions in the response and generate appropriate images
+          const emotionPatterns = [
+            /\(([^)]+)\)/g, // Text in parentheses like (cheeks flushed red)
+            /\*([^*]+)\*/g, // Text in asterisks like *smiles softly*
+            /(blush|smile|laugh|giggle|eyes|cheeks|face|expression|flushed|red|pink|shy|bashful|confident|surprised|thoughtful)/gi
+          ];
+          
+          const hasEmotionalDescription = emotionPatterns.some(pattern => 
+            pattern.test(data.response)
+          );
+          
+          if (hasEmotionalDescription) {
+            // Generate emotion-based scene image
+            fetch('/api/generate-chat-image', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                chatResponse: data.response,
+                userMessage: message
+              }),
+            })
+            .then(res => res.json())
+            .then(imageData => {
+              if (imageData.imageUrl) {
+                setCurrentBackground(imageData.imageUrl);
+                setSceneBackground(imageData.imageUrl);
+                console.log('Generated emotion-based image from chat description');
+              }
+            })
+            .catch(err => console.log('Image generation skipped:', err.message));
+          }
         }
         
         // Scroll to show the new AI response

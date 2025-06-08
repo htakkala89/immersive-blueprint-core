@@ -197,6 +197,61 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
   }
 }
 
+// New function to generate images based on chat descriptions
+export async function generateChatSceneImage(chatResponse: string, userMessage: string): Promise<string | null> {
+  try {
+    // Rate limiting check
+    const now = Date.now();
+    if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
+      console.log('Image generation rate limited, skipping');
+      return null;
+    }
+    
+    // Extract emotion and description from chat response
+    const emotionPrompt = createChatEmotionPrompt(chatResponse, userMessage);
+    
+    console.log('🎨 Generating image based on chat reaction...');
+    
+    // Use NovelAI for character emotion scenes
+    const novelAIResult = await generateWithNovelAI(emotionPrompt);
+    if (novelAIResult) {
+      lastImageGeneration = now;
+      console.log('✅ NovelAI generated chat scene successfully');
+      return novelAIResult;
+    }
+    
+    // Fallback to Google Imagen
+    const googleResult = await generateWithGoogleImagen(emotionPrompt);
+    if (googleResult) {
+      lastImageGeneration = now;
+      console.log('✅ Google Imagen generated chat scene successfully');
+      return googleResult;
+    }
+    
+    // Final fallback to OpenAI
+    if (openai) {
+      const openAIResult = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: emotionPrompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
+      });
+      
+      if (openAIResult.data?.[0]?.url) {
+        lastImageGeneration = now;
+        console.log('✅ OpenAI generated chat scene successfully');
+        return openAIResult.data[0].url;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error generating chat scene image:', error);
+    return null;
+  }
+}
+
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
   try {
     // Check rate limit
@@ -315,6 +370,48 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   
   // Default dungeon scene
   return `${baseStyle}, mysterious ancient corridor, stone walls with glowing mystical inscriptions, atmospheric lighting, shadows and mist${characterDescription}, fantasy adventure exploration`;
+}
+
+function createChatEmotionPrompt(chatResponse: string, userMessage: string): string {
+  // Extract emotional descriptions from chat response
+  const emotionPatterns = [
+    /\(([^)]+)\)/g, // Text in parentheses like (cheeks flushed red)
+    /\*([^*]+)\*/g, // Text in asterisks like *smiles softly*
+    /her (\w+) (\w+)/gi, // "her cheeks flushed", "her eyes sparkled"
+    /she (\w+)/gi, // "she smiled", "she blushed"
+    /(blush|smile|laugh|giggle|eyes|cheeks|face|expression)/gi
+  ];
+
+  let emotionalDescriptions = [];
+  
+  // Extract all emotional cues
+  emotionPatterns.forEach(pattern => {
+    const matches = chatResponse.match(pattern);
+    if (matches) {
+      emotionalDescriptions.push(...matches);
+    }
+  });
+
+  // Parse specific emotions and expressions
+  const emotions = {
+    blushing: /blush|flushed|red cheeks|pink/i.test(chatResponse),
+    smiling: /smile|grin|happy|cheerful/i.test(chatResponse),
+    shy: /shy|bashful|timid|nervous/i.test(chatResponse),
+    confident: /confident|strong|determined/i.test(chatResponse),
+    surprised: /surprise|shock|wide eyes|gasp/i.test(chatResponse),
+    thoughtful: /thoughtful|pensive|considering/i.test(chatResponse)
+  };
+
+  // Build emotion description
+  let emotionDesc = "";
+  if (emotions.blushing) emotionDesc += "blushing with rosy cheeks, ";
+  if (emotions.smiling) emotionDesc += "gentle warm smile, ";
+  if (emotions.shy) emotionDesc += "shy and bashful expression, ";
+  if (emotions.confident) emotionDesc += "confident determined look, ";
+  if (emotions.surprised) emotionDesc += "surprised wide eyes, ";
+  if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
+
+  return `Professional anime portrait of Cha Hae-In from Solo Leveling manhwa, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, manhwa art style, high quality anime illustration, emotional close-up portrait, Solo Leveling character design`;
 }
 
 function createMatureSoloLevelingPrompt(gameState: GameState): string {
