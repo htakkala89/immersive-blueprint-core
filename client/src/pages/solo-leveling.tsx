@@ -2286,20 +2286,28 @@ export default function SoloLeveling() {
         // Generate voice for her response
         playVoice(data.response, 'Cha Hae-In');
         
-        // Generate emotion-based image for significant moments
-        const significantEmotions = [
-          /\*.*(?:blushes|smiles|laughs|giggles|tears up|cries).*\*/gi,
-          /\*.*(?:kisses|embraces|holds close|pulls away|touches|caresses).*\*/gi,
-          /(confession|first time|never felt|heart racing|can't breathe)/gi,
-          /(she blushes|her cheeks turn red|her face turns red|eyes light up|smiles warmly)/gi,
-          /(tears in her eyes|starts crying|gets emotional|voice trembles)/gi
+        // Generate new image for emotional reactions and scene changes in chat
+        const emotionalReactions = [
+          // Physical reactions
+          /\*.*(?:blushes|smiles|laughs|giggles|tears up|cries|gasps|shocked|surprised).*\*/gi,
+          /\*.*(?:kisses|embraces|holds close|pulls away|touches|caresses|hugs).*\*/gi,
+          // Emotional states
+          /(confession|first time|never felt|heart racing|can't breathe|overwhelmed|moved|touched)/gi,
+          /(she blushes|her cheeks turn red|her face turns red|eyes light up|smiles warmly|face softens)/gi,
+          /(tears in her eyes|starts crying|gets emotional|voice trembles|voice breaks|choked up)/gi,
+          // Actions and movements
+          /(steps closer|moves away|looks away|looks down|meets your eyes|stares into|gazes at)/gi,
+          /(takes your hand|reaches out|pulls back|leans in|sits closer|stands up)/gi,
+          // Setting changes in conversation
+          /(we should go|let's move to|walks to|heads to|arrives at|enters the|leaves the)/gi
         ];
         
-        const isSignificantEmotion = significantEmotions.some(pattern => 
+        const hasEmotionalReaction = emotionalReactions.some(pattern => 
           pattern.test(data.response)
         );
         
-        if (isSignificantEmotion) {
+        if (hasEmotionalReaction) {
+          console.log('Generating image for emotional reaction or scene change');
           fetch('/api/generate-chat-image', {
             method: 'POST',
             headers: {
@@ -2313,6 +2321,7 @@ export default function SoloLeveling() {
           .then(res => res.json())
           .then(imageData => {
             if (imageData.imageUrl) {
+              console.log('Chat reaction image generated, updating background');
               setCurrentBackground(imageData.imageUrl);
               setSceneBackground(imageData.imageUrl);
             }
@@ -2409,18 +2418,27 @@ export default function SoloLeveling() {
           }, index * 150); // 150ms delay between messages for better UX
         });
         
-        // Only generate images for significant scene changes and major actions
-        const significantActions = [
-          'enter_dungeon', 'boss_fight', 'new_location', 'major_battle', 
-          'confession', 'kiss', 'date', 'travel', 'guild_meeting',
-          'awakening', 'power_up', 'transformation', 'death', 'victory'
-        ];
-        
-        const isSignificantAction = significantActions.some(action => 
-          choice.type.includes(action) || nextScene.toLowerCase().includes(action)
+        // Generate new image whenever scene changes to a different location or context
+        const previousScene = gameState.currentScene;
+        const shouldGenerateImage = (
+          // Always generate for major scene transitions
+          previousScene !== nextScene ||
+          // Location-based scenes
+          ['GATE_ENTRANCE', 'COMBAT_DUNGEON', 'BOSS_CHAMBER', 'GUILD_HQ', 'CAFE', 'RESTAURANT', 'PARK', 'APARTMENT'].includes(nextScene) ||
+          // Action-based scenes  
+          ['enter_gate', 'enter_dungeon', 'boss_fight', 'combat', 'battle', 'fight', 'attack'].some(action => choice.type.includes(action)) ||
+          // Relationship scenes
+          ['confession', 'kiss', 'date', 'intimate', 'romance', 'together'].some(action => choice.type.includes(action)) ||
+          // Story progression scenes
+          nextScene.includes('TRUST') || nextScene.includes('UNIFIED') || nextScene.includes('CONFIDENCE') ||
+          // Any scene with different environmental context
+          nextStory.prompt.toLowerCase().includes('location') || 
+          nextStory.prompt.toLowerCase().includes('setting') ||
+          nextStory.prompt.toLowerCase().includes('environment')
         );
         
-        if (isSignificantAction) {
+        if (shouldGenerateImage) {
+          console.log('Generating new scene image for:', nextScene);
           generateSceneImage(nextStory.prompt);
         }
 
