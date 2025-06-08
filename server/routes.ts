@@ -6,6 +6,7 @@ import { getSceneImage } from "./preGeneratedImages";
 import { log } from "./vite";
 import { z } from "zod";
 import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const MakeChoiceSchema = z.object({
   sessionId: z.string(),
@@ -20,6 +21,8 @@ const MakeChoiceSchema = z.object({
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY 
 });
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -136,6 +139,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error(`Failed to generate scene image: ${error}`);
       res.status(500).json({ error: "Failed to generate scene image" });
+    }
+  });
+
+  // Chat with Cha Hae-In using Gemini
+  app.post("/api/chat-with-hae-in", async (req, res) => {
+    try {
+      const { message, gameState, conversationHistory } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+      const characterPrompt = `You are Cha Hae-In from Solo Leveling, the S-Rank hunter known for your swordsmanship and grace. You're having a conversation with Sung Jin-Woo, the Shadow Monarch.
+
+Current context:
+- Your affection level for Jin-Woo: ${gameState?.affection || 0}/5
+- Current scene: ${gameState?.currentScene || 'casual conversation'}
+- You find Jin-Woo's mana pleasant and are developing romantic feelings for him
+- You're strong, independent, but have a softer side when it comes to Jin-Woo
+- You speak with confidence but show vulnerability around romantic topics
+
+Conversation history:
+${conversationHistory?.map((msg: any) => `${msg.sender}: ${msg.text}`).join('\n') || 'This is the start of your conversation.'}
+
+Jin-Woo just said: "${message}"
+
+Respond as Cha Hae-In would, keeping your response natural, in-character, and around 1-2 sentences. Show appropriate emotion based on the affection level and context.`;
+
+      const result = await model.generateContent(characterPrompt);
+      const response = result.response;
+      const responseText = response.text();
+
+      res.json({ 
+        response: responseText,
+        sender: 'Cha Hae-In'
+      });
+    } catch (error) {
+      console.error(`Failed to generate chat response: ${error}`);
+      res.status(500).json({ error: "Failed to generate response" });
     }
   });
 

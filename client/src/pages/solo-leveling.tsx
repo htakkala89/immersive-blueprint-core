@@ -41,6 +41,7 @@ export default function SoloLeveling() {
   const [inputMode, setInputMode] = useState<'action' | 'speak'>('action');
   const [showInventory, setShowInventory] = useState(false);
   const [activeMiniGame, setActiveMiniGame] = useState<string | null>(null);
+  const [showChatTutorial, setShowChatTutorial] = useState(false);
 
   const timeRef = useRef<HTMLSpanElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -397,17 +398,63 @@ export default function SoloLeveling() {
     return affectionMap[choiceType] || 0;
   };
 
-  const handleUserInput = () => {
+  const handleUserInput = async () => {
     if (!userInput.trim()) return;
     
-    addChatMessage('player', userInput);
-    
-    // Simple response system
-    setTimeout(() => {
-      addChatMessage('system', "Your action resonates through the world...");
-    }, 1000);
-    
+    const message = userInput;
     setUserInput('');
+    addChatMessage('player', message);
+    
+    if (inputMode === 'speak') {
+      // Use Gemini for dynamic conversation with Cha Hae-In
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/chat-with-hae-in', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message,
+            gameState,
+            conversationHistory: chatMessages.slice(-5) // Last 5 messages for context
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        addChatMessage('Cha Hae-In', data.response);
+        
+        // Add affection based on positive conversation
+        if (data.response.toLowerCase().includes('smile') || 
+            data.response.toLowerCase().includes('happy') || 
+            data.response.toLowerCase().includes('glad')) {
+          setGameState(prev => ({ 
+            ...prev, 
+            affection: Math.min(5, prev.affection + 1) 
+          }));
+          setTimeout(() => createHeartEffect(), 500);
+        }
+      } catch (error) {
+        console.error('Chat error:', error);
+        addChatMessage('system', "Cha Hae-In seems distracted and doesn't respond...");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // Action mode - general gameplay response
+      setTimeout(() => {
+        addChatMessage('system', "Your action resonates through the world...");
+        
+        // Random shadow effects for actions
+        if (Math.random() > 0.7) {
+          createShadowSlashEffect();
+        }
+      }, 1000);
+    }
   };
 
   const startGame = () => {
@@ -604,29 +651,44 @@ export default function SoloLeveling() {
                   >
                     🎒
                   </button>
+                  <button 
+                    onClick={() => setShowChatTutorial(true)}
+                    className="w-11 h-11 bg-blue-500/15 rounded-full flex items-center justify-center text-white hover:bg-blue-500/30 transition-all"
+                    title="Chat Help"
+                  >
+                    💡
+                  </button>
                   <div className="flex-1 bg-black/20 border border-purple-500/20 rounded-full h-11 flex items-center px-1">
                     <input
                       type="text"
                       value={userInput}
                       onChange={(e) => setUserInput(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleUserInput()}
-                      placeholder="What do you do?"
-                      className="flex-1 bg-transparent border-none text-white text-sm outline-none px-4"
+                      placeholder={inputMode === 'speak' ? "Talk to Cha Hae-In..." : "What do you do?"}
+                      disabled={isLoading}
+                      className="flex-1 bg-transparent border-none text-white text-sm outline-none px-4 disabled:opacity-50"
                     />
+                    {isLoading && inputMode === 'speak' && (
+                      <div className="px-2">
+                        <div className="w-4 h-4 border-2 border-pink-500/20 border-t-pink-500 rounded-full animate-spin" />
+                      </div>
+                    )}
                     <div className="flex gap-1">
                       <button
                         onClick={() => setInputMode('action')}
                         className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                          inputMode === 'action' ? 'bg-purple-600' : 'bg-purple-500/10'
+                          inputMode === 'action' ? 'bg-purple-600 shadow-lg shadow-purple-500/25' : 'bg-purple-500/10 hover:bg-purple-500/20'
                         }`}
+                        title="Action Mode"
                       >
                         ⚔️
                       </button>
                       <button
                         onClick={() => setInputMode('speak')}
                         className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                          inputMode === 'speak' ? 'bg-purple-600' : 'bg-purple-500/10'
+                          inputMode === 'speak' ? 'bg-pink-600 shadow-lg shadow-pink-500/25' : 'bg-pink-500/10 hover:bg-pink-500/20'
                         }`}
+                        title="Chat with Cha Hae-In"
                       >
                         💬
                       </button>
