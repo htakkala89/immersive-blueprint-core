@@ -267,8 +267,8 @@ function createMatureSoloLevelingPrompt(gameState: GameState): string {
   const narration = gameState.narration.toLowerCase();
   
   // Character descriptions for mature scenes
-  const jinWooDesc = "Jin-Woo (tall handsome male, dark hair, intense eyes, strong jawline, Shadow Monarch)";
-  const chaHaeInDesc = "Cha Hae-In (beautiful blonde female hunter, elegant features, graceful stance, sword saint)";
+  const jinWooDesc = "Sung Jin-Woo (tall Korean male, short black hair, sharp dark eyes, handsome angular face, black hunter outfit, Shadow Monarch)";
+  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female hunter, long blonde hair, elegant features, graceful stance, white hunter outfit, sword saint)";
   
   // Romantic and intimate scene generation
   if (narration.includes("kiss") || narration.includes("embrace")) {

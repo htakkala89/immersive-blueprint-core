@@ -1444,7 +1444,7 @@ export default function SoloLeveling() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            prompt: "Jin-Woo Sung from Solo Leveling manhwa, Korean male hunter with short black hair, sharp facial features, confident expression, wearing dark hunter coat, glowing purple eyes, shadow monarch aura, standing in powerful pose, high quality anime art style, detailed digital illustration",
+            prompt: "Sung Jin-Woo from Solo Leveling manhwa, tall Korean male with short messy black hair, sharp angular face, intense dark eyes, wearing black hunter uniform with coat, confident powerful stance, shadow monarch aura, detailed manhwa art style, NOT blonde hair",
             gameState: {
               sessionId: "cover-generation", // Different session to avoid mature content routing
               storyPath: "cover",
@@ -1878,7 +1878,7 @@ export default function SoloLeveling() {
       }
     } else {
       // Action mode - generate image for every action
-      const actionPrompt = `Sung Jin-Woo from Solo Leveling performing action: ${message}. With Cha Hae-In nearby, romantic scene, anime style, detailed artwork`;
+      const actionPrompt = `Sung Jin-Woo from Solo Leveling (Korean male, short black hair, dark eyes, black hunter outfit) performing action: ${message}. With Cha Hae-In (Korean female, blonde hair, white hunter outfit) nearby, romantic scene, manhwa art style, detailed artwork`;
       generateSceneImage(actionPrompt);
       
       setTimeout(() => {

@@ -243,7 +243,7 @@ RESPONSE GUIDELINES:
       if (shouldGenerateImage) {
         try {
           // Generate image for the visual request
-          const imagePrompt = `Cha Hae-In from Solo Leveling, beautiful Korean S-rank hunter with blonde hair, ${message.includes('bikini') ? 'wearing a blue bikini' : 'in elegant pose'}, anime style, high quality, detailed artwork`;
+          const imagePrompt = `Cha Hae-In from Solo Leveling, beautiful Korean female S-rank hunter with long blonde hair, elegant features, ${message.includes('bikini') ? 'wearing a blue bikini' : 'in elegant pose'}, manhwa art style, high quality, detailed artwork, NOT black hair`;
           
           const imageGenResponse = await fetch(`${req.protocol}://${req.get('host')}/api/generate-scene-image`, {
             method: 'POST',
