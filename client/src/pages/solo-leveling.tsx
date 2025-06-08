@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { SkillTree } from "@/components/SkillTree";
 import { useCharacterProgression } from "@/hooks/useCharacterProgression";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/components/MiniGames";
+import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
@@ -19,6 +20,7 @@ interface GameState {
   skillPoints?: number;
   stats?: any;
   skills?: any[];
+  gold?: number;
 }
 
 interface StoryScene {
@@ -131,11 +133,25 @@ export default function SoloLeveling() {
   const [chatPinned, setChatPinned] = useState(false);
   const [autoMessageVisible, setAutoMessageVisible] = useState(true);
   const [autoHiddenMessages, setAutoHiddenMessages] = useState<Set<number>>(new Set());
+  const [showDailyLifeHub, setShowDailyLifeHub] = useState(false);
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
 
   const timeRef = useRef<HTMLSpanElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  const getActivityDialogue = (activity: any) => {
+    const dialogues: Record<string, string> = {
+      morning_coffee: "Good morning, Jin-Woo! *smiles warmly while sipping coffee* This peaceful moment with you is perfect. Your mana feels so calming in the morning light.",
+      training_together: "*adjusts her sword stance* Ready to practice? I love training with you - we make such a great team. *her eyes sparkle with excitement*",
+      romantic_dinner: "*sits across from you at the candlelit table* You prepared all this for me? *cheeks flush pink* Jin-Woo, you're so thoughtful. This is absolutely perfect.",
+      shopping_date: "*links arms with you while walking through the marketplace* I love spending time like this with you. *leans closer* Just being together makes me so happy.",
+      cuddle_together: "*nestles closer to you on the couch* Mmm, this is my favorite place to be... *traces gentle patterns on your chest* Just you and me, together.",
+      shower_together: "*steam fills the bathroom as warm water cascades over both of you* Jin-Woo... *her voice is soft and intimate* Being this close to you feels so right.",
+      make_love: "*in the privacy of your shared bedroom, candlelight dancing on the walls* My beloved husband... *whispers against your lips* I love you more than words can express."
+    };
+    return dialogues[activity.id] || `*enjoys spending quality time with you* Being together like this makes me so happy, Jin-Woo.`;
+  };
 
   // Complete story data from your original code
   const story: Record<string, StoryScene> = {
@@ -2812,7 +2828,7 @@ export default function SoloLeveling() {
                   {/* Daily Life Hub Button - Available after romantic relationship */}
                   {gameState.affection >= 3 && (
                     <button 
-                      onClick={() => window.location.href = '/daily-life-hub'}
+                      onClick={() => setShowDailyLifeHub(true)}
                       className="w-11 h-11 bg-pink-600/90 backdrop-blur-xl border border-pink-400/30 rounded-full flex items-center justify-center text-white hover:bg-pink-500/90 transition-all shadow-lg"
                       title="Daily Life Hub"
                     >
@@ -3023,6 +3039,32 @@ export default function SoloLeveling() {
           }}
         />
       )}
+
+      {/* Daily Life Hub Modal */}
+      <DailyLifeHubModal
+        isVisible={showDailyLifeHub}
+        onClose={() => setShowDailyLifeHub(false)}
+        onActivitySelect={(activity) => {
+          // Handle activity selection with chat response
+          const activityDialogue = getActivityDialogue(activity);
+          addChatMessage('Cha Hae-In', activityDialogue);
+          
+          // Update stats based on activity
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(5, prev.affection + (activity.affectionReward || 0) / 10),
+            experience: (prev.experience || 0) + (activity.experienceReward || 0),
+            gold: (prev.gold || 500) + (activity.goldReward || 0)
+          }));
+          
+          setShowDailyLifeHub(false);
+        }}
+        onImageGenerated={(imageUrl) => {
+          setCurrentBackground(imageUrl);
+          setSceneBackground(imageUrl);
+        }}
+        gameState={gameState}
+      />
     </div>
   );
 }
