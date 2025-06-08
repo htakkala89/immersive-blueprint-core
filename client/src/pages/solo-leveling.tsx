@@ -1444,7 +1444,7 @@ export default function SoloLeveling() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            prompt: "Sung Jin-Woo from Solo Leveling manhwa, tall Korean male with short messy black hair, sharp angular face, intense dark eyes, wearing black hunter uniform with coat, confident powerful stance, shadow monarch aura, detailed manhwa art style, NOT blonde hair",
+            prompt: "Sung Jin-Woo from Solo Leveling manhwa, tall Korean male with short BLACK HAIR ONLY, sharp angular face, intense dark eyes, wearing black hunter uniform with coat, confident powerful stance, shadow monarch aura, detailed manhwa art style, NEVER blonde hair, NEVER light hair, BLACK HAIR REQUIRED",
             gameState: {
               sessionId: "cover-generation", // Different session to avoid mature content routing
               storyPath: "cover",

@@ -63,7 +63,8 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
           sm_dyn: false,
           dynamic_thresholding: false,
           controlnet_strength: 1,
-          legacy: false
+          legacy: false,
+          negative_prompt: "blonde hair, light hair, yellow hair, golden hair, bright hair, white hair, silver hair, gray hair, wrong hair color"
         }
       })
     });
@@ -179,9 +180,14 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     // Fallback to OpenAI if available
     if (openai) {
       try {
+        // Enhance prompt for accurate character generation
+        const enhancedPrompt = prompt.includes('Jin-Woo') || prompt.includes('Sung') ? 
+          prompt + ". Korean male protagonist with short BLACK hair, dark eyes, NOT blonde, accurate Solo Leveling character design" : 
+          prompt;
+          
         const response = await openai.images.generate({
           model: "dall-e-3",
-          prompt: prompt,
+          prompt: enhancedPrompt,
           n: 1,
           size: "1024x1024",
           quality: "standard",
@@ -266,9 +272,9 @@ function createMatureSoloLevelingPrompt(gameState: GameState): string {
   const baseStyle = "masterpiece, best quality, anime style, manhwa art, Solo Leveling aesthetic, detailed artwork, cinematic composition, dramatic lighting";
   const narration = gameState.narration.toLowerCase();
   
-  // Character descriptions for mature scenes
-  const jinWooDesc = "Sung Jin-Woo (tall Korean male, short black hair, sharp dark eyes, handsome angular face, black hunter outfit, Shadow Monarch)";
-  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female hunter, long blonde hair, elegant features, graceful stance, white hunter outfit, sword saint)";
+  // Character descriptions for mature scenes with explicit hair colors
+  const jinWooDesc = "Sung Jin-Woo (tall Korean male with BLACK HAIR, short messy black hair, sharp dark eyes, handsome angular face, black hunter outfit, Shadow Monarch, NOT blonde, NOT light hair)";
+  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female hunter, long BLONDE hair, elegant features, graceful stance, white hunter outfit, sword saint)";
   
   // Romantic and intimate scene generation
   if (narration.includes("kiss") || narration.includes("embrace")) {
