@@ -1438,32 +1438,32 @@ export default function SoloLeveling() {
                         <div className="w-4 h-4 border-2 border-pink-500/20 border-t-pink-500 rounded-full animate-spin" />
                       </div>
                     )}
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => setInputMode('action')}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                          inputMode === 'action' ? 'bg-purple-600 shadow-lg shadow-purple-500/25' : 'bg-purple-500/10 hover:bg-purple-500/20'
-                        }`}
-                        title="Action Mode"
-                      >
-                        ⚔️
-                      </button>
-                      <button
-                        onClick={() => setInputMode('speak')}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                          inputMode === 'speak' ? 'bg-pink-600 shadow-lg shadow-pink-500/25' : 'bg-pink-500/10 hover:bg-pink-500/20'
-                        }`}
-                        title="Chat with Cha Hae-In"
-                      >
-                        💬
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => setInputMode(inputMode === 'speak' ? 'action' : 'speak')}
+                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+                        inputMode === 'speak' 
+                          ? 'bg-pink-600 shadow-lg shadow-pink-500/25' 
+                          : 'bg-purple-600 shadow-lg shadow-purple-500/25'
+                      }`}
+                      title={inputMode === 'speak' ? 'Switch to Action Mode' : 'Switch to Chat Mode'}
+                    >
+                      {inputMode === 'speak' ? '💬' : '⚔️'}
+                    </button>
                   </div>
                   <button 
                     onClick={handleUserInput}
-                    className="w-11 h-11 bg-purple-500/15 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all"
+                    disabled={!userInput.trim() || isLoading}
+                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all text-white ${
+                      userInput.trim() && !isLoading
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg'
+                        : 'bg-gray-600/30 cursor-not-allowed opacity-50'
+                    }`}
+                    title="Send Message"
                   >
-                    ➤
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="m22 2-7 20-4-9-9-4z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="m22 2-10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </button>
                 </div>
               </div>
