@@ -15,6 +15,12 @@ const MakeChoiceSchema = z.object({
   })
 });
 
+import OpenAI from "openai";
+
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY 
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get or create game state
@@ -99,6 +105,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(500).json({ message: 'Failed to process choice' });
       }
+    }
+  });
+
+  // Generate scene image for Solo Leveling
+  app.post("/api/generate-scene-image", async (req, res) => {
+    try {
+      const { prompt } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      const enhancedPrompt = `${prompt}. High quality digital art, detailed anime/manga style, cinematic lighting, vibrant colors, masterpiece quality`;
+
+      const response = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: enhancedPrompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
+      });
+
+      const imageUrl = response.data[0].url;
+      res.json({ imageUrl });
+    } catch (error) {
+      log(`Failed to generate scene image: ${error}`, "error");
+      res.status(500).json({ error: "Failed to generate scene image" });
     }
   });
 

@@ -237,12 +237,35 @@ export default function SoloLeveling() {
   const generateSceneImage = async (prompt: string) => {
     setIsLoading(true);
     try {
-      // Simulate image generation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const dummyImageUrl = `https://picsum.photos/400/300?random=${Date.now()}`;
-      setCurrentBackground(`url(${dummyImageUrl})`);
+      const response = await fetch('/api/generate-scene-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.imageUrl) {
+        setCurrentBackground(`url(${data.imageUrl})`);
+      } else {
+        // Fallback to a themed background if generation fails
+        const fallbackImages = [
+          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1462332420958-a05d1e002413?w=400&h=300&fit=crop'
+        ];
+        const randomFallback = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
+        setCurrentBackground(`url(${randomFallback})`);
+      }
     } catch (error) {
       console.error('Error generating image:', error);
+      // Use a default dark fantasy background
+      setCurrentBackground('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
     } finally {
       setIsLoading(false);
     }
@@ -255,6 +278,46 @@ export default function SoloLeveling() {
       id: Date.now() + Math.random()
     };
     setChatMessages(prev => [...prev, newMessage]);
+  };
+
+  const createShadowSlashEffect = () => {
+    const effectsContainer = document.querySelector('#effects-container');
+    if (!effectsContainer) return;
+
+    const slash = document.createElement('div');
+    slash.className = 'shadow-slash';
+    slash.style.left = Math.random() * 80 + 10 + '%';
+    slash.style.top = Math.random() * 60 + 20 + '%';
+    effectsContainer.appendChild(slash);
+
+    setTimeout(() => {
+      if (slash.parentNode) {
+        slash.parentNode.removeChild(slash);
+      }
+    }, 300);
+  };
+
+  const createHeartEffect = () => {
+    const hearts = document.querySelectorAll('.heart');
+    const targetHeart = hearts[gameState.affection] as HTMLElement;
+    if (targetHeart) {
+      targetHeart.classList.add('filled');
+      // Heart beat animation
+      targetHeart.style.animation = 'heartBeat 0.5s ease';
+      setTimeout(() => {
+        targetHeart.style.animation = '';
+      }, 500);
+    }
+  };
+
+  const addScreenShake = () => {
+    const screen = document.querySelector('.screen') as HTMLElement;
+    if (screen) {
+      screen.classList.add('shake');
+      setTimeout(() => {
+        screen.classList.remove('shake');
+      }, 400);
+    }
   };
 
   const handleChoice = (choice: any) => {
@@ -273,16 +336,65 @@ export default function SoloLeveling() {
         });
         
         generateSceneImage(nextStory.prompt);
+
+        // Special effects for certain actions
+        if (choice.type === 'summon' || choice.type === 'shadow_attack' || choice.type === 'extract_shadow') {
+          createShadowSlashEffect();
+          addScreenShake();
+        }
+
+        if (choice.type === 'confess' || choice.type === 'kiss') {
+          // Create romantic particle effects
+          setTimeout(() => {
+            const container = document.querySelector('#scene-container');
+            if (container) {
+              for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                  position: absolute;
+                  width: 4px;
+                  height: 4px;
+                  background: #ff69b4;
+                  border-radius: 50%;
+                  left: ${Math.random() * 100}%;
+                  top: ${Math.random() * 100}%;
+                  animation: float-up 2s ease-out forwards;
+                  pointer-events: none;
+                  box-shadow: 0 0 6px #ff69b4;
+                `;
+                container.appendChild(particle);
+                setTimeout(() => particle.remove(), 2000);
+              }
+            }
+          }, 500);
+        }
       }
     }
 
-    // Handle affection changes
-    if (choice.type === 'ask_about_her' || choice.type === 'be_humble') {
-      setGameState(prev => ({ 
-        ...prev, 
-        affection: Math.min(5, prev.affection + 1) 
-      }));
+    // Handle affection changes with visual feedback
+    const affectionGain = getAffectionGain(choice.type);
+    if (affectionGain > 0) {
+      setGameState(prev => {
+        const newAffection = Math.min(5, prev.affection + affectionGain);
+        setTimeout(() => createHeartEffect(), 300);
+        return { ...prev, affection: newAffection };
+      });
     }
+  };
+
+  const getAffectionGain = (choiceType: string): number => {
+    const affectionMap: Record<string, number> = {
+      'ask_about_her': 1,
+      'be_humble': 1,
+      'team_up': 1,
+      'trust': 1,
+      'confess': 2,
+      'kiss': 1,
+      'compliment': 1,
+      'focus_hae_in': 1,
+      'take_hand': 1
+    };
+    return affectionMap[choiceType] || 0;
   };
 
   const handleUserInput = () => {
@@ -382,14 +494,15 @@ export default function SoloLeveling() {
               </div>
 
               {/* Scene Container */}
-              <div className="relative w-full h-2/5 overflow-hidden bg-transparent">
+              <div id="scene-container" className="relative w-full h-2/5 overflow-hidden bg-transparent">
+                <div id="effects-container" className="absolute inset-0 z-20 pointer-events-none" />
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 transform scale-105"
                   style={{ backgroundImage: currentBackground }}
                 />
                 {isLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                    <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-30">
+                    <div className="spinner" />
                   </div>
                 )}
               </div>
