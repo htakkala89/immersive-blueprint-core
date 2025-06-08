@@ -9,9 +9,9 @@ async function testMatureContentGeneration() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        activityId: 'lingerie_modeling',
+        activityId: 'nude_modeling',
         relationshipStatus: 'married',
-        intimacyLevel: 9
+        intimacyLevel: 10
       })
     });
 
@@ -26,12 +26,12 @@ async function testMatureContentGeneration() {
       const base64Data = data.imageUrl.replace(/^data:image\/\w+;base64,/, '');
       const buffer = Buffer.from(base64Data, 'base64');
       
-      fs.writeFileSync('lingerie_final_test.png', buffer);
-      console.log('✅ Lingerie modeling image generated and saved');
+      fs.writeFileSync('nude_modeling_test.png', buffer);
+      console.log('✅ Nude modeling image generated and saved');
       console.log('📊 Image size:', buffer.length, 'bytes');
-      console.log('🔞 Activity: lingerie_modeling');
-      console.log('💑 Relationship: married (intimacy level 9)');
-      console.log('👱‍♀️ Character: Cha Hae-In in bra and panties');
+      console.log('🔞 Activity: nude_modeling');
+      console.log('💑 Relationship: married (intimacy level 10)');
+      console.log('👱‍♀️ Character: Cha Hae-In completely nude');
       
       return {
         success: true,

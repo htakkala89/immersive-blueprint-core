@@ -501,6 +501,11 @@ function createIntimatePrompt(activityId: string, relationshipStatus: string, in
         ? `1girl, solo, Cha Hae-In, short blonde hair, purple eyes, beautiful Korean female, elegant purple lingerie, bra and panties only, standing pose, confident expression, modern bedroom, soft lighting, sensual modeling pose, showing cleavage, anime art style, detailed illustration, Solo Leveling character design, apartment interior, intimate clothing, artistic pose`
         : `${baseStyle}, romantic bedroom scene, intimate clothing, soft lighting, tasteful sensual pose, apartment setting`;
     
+    case 'nude_modeling':
+      return intimacyLevel >= 10 
+        ? `1girl, solo, Cha Hae-In, short blonde hair, purple eyes, beautiful Korean female, completely nude, naked, no clothing, standing pose, confident expression, modern bedroom, soft lighting, artistic nude modeling pose, showing breasts and body, anime art style, detailed illustration, Solo Leveling character design, apartment interior, erotic art, artistic nude pose`
+        : `${baseStyle}, romantic bedroom scene, intimate clothing, soft lighting, tasteful sensual pose, apartment setting`;
+    
     default:
       return `${baseStyle}, romantic scene, beautiful couple, intimate atmosphere, tasteful composition, emotional connection`;
   }
