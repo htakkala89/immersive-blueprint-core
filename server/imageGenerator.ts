@@ -8,21 +8,30 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 let lastImageGeneration = 0;
 const IMAGE_GENERATION_COOLDOWN = 1000; // 1 second between generations
 
-// Content classification
+// Content classification for mature scene detection
 function isMatureContent(gameState: GameState): boolean {
   const narration = gameState.narration.toLowerCase();
+  const storyPath = gameState.storyPath.toLowerCase();
+  
   const matureKeywords = [
     'intimate', 'passionate', 'embrace', 'kiss', 'romantic', 'love', 'tender',
     'close', 'touch', 'caress', 'desire', 'attraction', 'seductive', 'alluring',
-    'beautiful', 'gorgeous', 'stunning', 'enchanting', 'captivating'
+    'beautiful', 'gorgeous', 'stunning', 'enchanting', 'captivating', 'date',
+    'confession', 'feelings', 'heart', 'soul', 'bond', 'connection', 'affection'
+  ];
+
+  const matureScenes = [
+    'romantic', 'love', 'kiss', 'embrace', 'intimate', 'tender', 'confession',
+    'date', 'passion', 'heart', 'soul', 'bond', 'appreciation'
   ];
   
-  return matureKeywords.some(keyword => narration.includes(keyword));
+  return matureKeywords.some(keyword => narration.includes(keyword)) ||
+         matureScenes.some(scene => storyPath.includes(scene));
 }
 
 async function generateWithNovelAI(prompt: string): Promise<string | null> {
   try {
-    const response = await fetch('https://api.novelai.net/ai/generate-image', {
+    const response = await fetch('https://image.novelai.net/ai/generate-image', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
@@ -83,13 +92,15 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     const useMatureGenerator = isMatureContent(gameState);
     
     if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
-      console.log('Using NovelAI for mature content generation');
+      console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
       const prompt = createMatureSoloLevelingPrompt(gameState);
       const image = await generateWithNovelAI(prompt);
-      if (image) return image;
+      if (image) {
+        console.log('✅ NovelAI generated mature content successfully');
+        return image;
+      }
       
-      // Fallback to OpenAI if NovelAI fails
-      console.log('NovelAI failed, falling back to OpenAI');
+      console.log('⚠️ NovelAI failed, falling back to OpenAI with safe prompt');
     }
     
     // Use OpenAI for general content or as fallback
