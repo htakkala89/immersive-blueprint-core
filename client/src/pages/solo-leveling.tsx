@@ -610,10 +610,10 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Chat and Story Overlay - Lower Half */}
-                <div className="absolute bottom-0 left-0 right-0 z-30 h-2/3 flex flex-col">
-                  {/* Chat Container */}
-                  <div className="flex-1 flex flex-col">
-                    <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto">
+                <div className="absolute bottom-0 left-0 right-0 z-30 flex flex-col" style={{ height: '60%' }}>
+                  {/* Chat Container - Takes available space */}
+                  <div className="flex-1 min-h-0 overflow-hidden">
+                    <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto">
                       {/* Story Narration */}
                       {currentStory && (
                         <div className="mb-3 p-3 rounded-xl bg-black/80 border border-purple-500/40 backdrop-blur-md">
@@ -659,37 +659,37 @@ export default function SoloLeveling() {
                         );
                       })}
                     </div>
+                  </div>
 
-                    {/* Choices Section - Bottom Overlay with Fixed Scrolling */}
-                    {currentStory?.choices && (
-                      <div className="bg-black/90 backdrop-blur-md border-t border-purple-500/40 flex-shrink-0 max-h-48 flex flex-col">
-                        <div className="p-3 pb-2">
-                          <div className="text-xs text-white/80 font-semibold">Choose your action:</div>
-                        </div>
-                        <div className="px-3 pb-3 flex-1 overflow-y-auto min-h-0">
-                          <div className="space-y-2">
-                            {currentStory.choices.map((choice, index) => (
-                              <button
-                                key={index}
-                                onClick={() => handleChoice(choice)}
-                                className="w-full bg-purple-500/20 border border-purple-400/50 rounded-lg p-3 flex items-center gap-2 hover:bg-purple-500/30 transition-all text-left backdrop-blur-sm"
-                              >
-                                <div className="w-6 h-6 bg-purple-500/30 rounded-md flex items-center justify-center text-xs flex-shrink-0">
-                                  ⚔️
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-white text-sm font-semibold">{choice.text}</div>
-                                  {choice.detail && (
-                                    <div className="text-white/80 text-xs mt-1">{choice.detail}</div>
-                                  )}
-                                </div>
-                              </button>
-                            ))}
-                          </div>
+                  {/* Choices Section - Fixed Height with Guaranteed Scroll */}
+                  {currentStory?.choices && (
+                    <div className="bg-black/90 backdrop-blur-md border-t border-purple-500/40" style={{ height: '160px' }}>
+                      <div className="p-3 pb-2">
+                        <div className="text-xs text-white/80 font-semibold">Choose your action:</div>
+                      </div>
+                      <div className="px-3 pb-3 overflow-y-scroll" style={{ height: '120px' }}>
+                        <div className="space-y-2">
+                          {currentStory.choices.map((choice, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleChoice(choice)}
+                              className="w-full bg-purple-500/20 border border-purple-400/50 rounded-lg p-3 flex items-center gap-2 hover:bg-purple-500/30 transition-all text-left backdrop-blur-sm"
+                            >
+                              <div className="w-6 h-6 bg-purple-500/30 rounded-md flex items-center justify-center text-xs flex-shrink-0">
+                                ⚔️
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-white text-sm font-semibold">{choice.text}</div>
+                                {choice.detail && (
+                                  <div className="text-white/80 text-xs mt-1">{choice.detail}</div>
+                                )}
+                              </div>
+                            </button>
+                          ))}
                         </div>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Bottom Bar - Overlaid */}
