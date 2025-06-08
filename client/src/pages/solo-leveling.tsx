@@ -3,6 +3,7 @@ import { SkillTree } from "@/components/SkillTree";
 import { useCharacterProgression } from "@/hooks/useCharacterProgression";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/components/MiniGames";
 import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
+import { RaidSystem } from "@/components/RaidSystem";
 import { Marketplace } from "../components/Marketplace";
 import type { GameState as GameStateType } from "@shared/schema";
 
@@ -139,6 +140,7 @@ export default function SoloLeveling() {
   const [activeActivity, setActiveActivity] = useState<any>(null);
   const [showMarketplace, setShowMarketplace] = useState(false);
   const [previousPage, setPreviousPage] = useState<'hub' | 'story'>('story');
+  const [showRaidSystem, setShowRaidSystem] = useState(false);
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
 
@@ -2926,6 +2928,16 @@ export default function SoloLeveling() {
                       🛒
                     </button>
                   )}
+                  {/* Raid System Button - Available after level 5 */}
+                  {gameState.level >= 5 && (
+                    <button 
+                      onClick={() => setShowRaidSystem(true)}
+                      className="w-11 h-11 bg-red-600/90 backdrop-blur-xl border border-red-400/30 rounded-full flex items-center justify-center text-white hover:bg-red-500/90 transition-all shadow-lg"
+                      title="Gate Raids"
+                    >
+                      ⚔️
+                    </button>
+                  )}
                   <button 
                     onClick={() => setShowChatTutorial(true)}
                     className="w-11 h-11 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-lg"
@@ -3160,6 +3172,27 @@ export default function SoloLeveling() {
           affectionLevel={gameState.affection}
         />
       )}
+
+      {/* Raid System Modal */}
+      <RaidSystem
+        isVisible={showRaidSystem}
+        onClose={() => setShowRaidSystem(false)}
+        onVictory={(rewards) => {
+          setGameState(prev => ({
+            ...prev,
+            gold: (prev.gold || 500) + rewards.gold,
+            experience: (prev.experience || 0) + rewards.exp,
+            affection: Math.min(5, prev.affection + rewards.affection / 100),
+            skillPoints: (prev.skillPoints || 0) + rewards.skillPoints,
+            statPoints: (prev.statPoints || 0) + rewards.statPoints
+          }));
+          
+          addChatMessage('System', `Raid complete! Earned ${rewards.gold} gold, ${rewards.exp} EXP, ${rewards.skillPoints} skill points, and ${rewards.statPoints} stat points!`);
+          setShowRaidSystem(false);
+        }}
+        playerLevel={gameState.level}
+        affectionLevel={gameState.affection}
+      />
 
       {/* Daily Life Hub Modal */}
       <DailyLifeHubModal

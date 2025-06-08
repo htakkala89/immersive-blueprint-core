@@ -66,7 +66,7 @@ export function Marketplace({ isVisible, onClose, onPurchase, playerGold, player
     {
       id: 'hunter_healing_elixir',
       name: 'Hunter Healing Elixir',
-      description: 'Restores both Jin-Woo and Cha Hae-In health',
+      description: 'Restores both Jin-Woo and Cha Hae-In health during raids',
       price: 120,
       category: 'consumable',
       rarity: 'rare',
@@ -74,6 +74,42 @@ export function Marketplace({ isVisible, onClose, onPurchase, playerGold, player
       effects: { health: 300 },
       stock: 50,
       unlockLevel: 10
+    },
+    {
+      id: 'dual_mana_potion',
+      name: 'Dual Mana Potion',
+      description: 'Restores mana for both Jin-Woo and Cha Hae-In during combat',
+      price: 150,
+      category: 'consumable',
+      rarity: 'rare',
+      icon: '🔷',
+      effects: { mana: 200 },
+      stock: 50,
+      unlockLevel: 12
+    },
+    {
+      id: 'combat_energy_boost',
+      name: 'Combat Energy Boost',
+      description: 'Instantly restores energy during battle for special attacks',
+      price: 80,
+      category: 'consumable',
+      rarity: 'uncommon',
+      icon: '⚡',
+      effects: { energy: 100 },
+      stock: 75,
+      unlockLevel: 8
+    },
+    {
+      id: 'shadow_enhancement_potion',
+      name: 'Shadow Enhancement Potion',
+      description: 'Temporarily boosts shadow soldier effectiveness in raids',
+      price: 200,
+      category: 'consumable',
+      rarity: 'epic',
+      icon: '🌑',
+      effects: { attack: 50, duration: 600 },
+      stock: 20,
+      unlockLevel: 15
     },
     {
       id: 'energy_drink',

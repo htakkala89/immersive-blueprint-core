@@ -328,6 +328,40 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
           </div>
         </div>
 
+        {/* Quick Actions */}
+        <div className="p-4 border-t border-white/10">
+          <div className="grid grid-cols-2 gap-3">
+            <button 
+              onClick={() => {
+                onClose();
+                // Signal to parent to open marketplace with hub as previous page
+                setTimeout(() => {
+                  const event = new CustomEvent('openMarketplace', { detail: { previousPage: 'hub' } });
+                  window.dispatchEvent(event);
+                }, 100);
+              }}
+              className="flex items-center justify-center gap-2 p-3 bg-yellow-600/80 hover:bg-yellow-500/80 rounded-lg text-white transition-all"
+            >
+              <span>🛒</span>
+              <span className="text-sm font-medium">Shop</span>
+            </button>
+            <button 
+              onClick={() => {
+                onClose();
+                // Signal to parent to open raid system
+                setTimeout(() => {
+                  const event = new CustomEvent('openRaidSystem');
+                  window.dispatchEvent(event);
+                }, 100);
+              }}
+              className="flex items-center justify-center gap-2 p-3 bg-red-600/80 hover:bg-red-500/80 rounded-lg text-white transition-all"
+            >
+              <span>⚔️</span>
+              <span className="text-sm font-medium">Raids</span>
+            </button>
+          </div>
+        </div>
+
         {/* Relationship Status */}
         <div className="p-4 bg-gradient-to-r from-pink-900/50 to-purple-900/50 border-t border-white/10">
           <div className="text-center">
