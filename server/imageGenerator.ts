@@ -355,16 +355,17 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   const narration = gameState.narration.toLowerCase();
   const storyPath = gameState.storyPath?.toLowerCase() || '';
   
-  // Solo Leveling specific character designs
-  const includeJinWoo = narration.includes("jin-woo") || narration.includes("sung") || narration.includes("shadow monarch") || narration.includes("you are") || storyPath.includes("jin");
-  const includeHaeIn = narration.includes("hae-in") || narration.includes("cha") || narration.includes("sword saint") || storyPath.includes("cha");
+  // Solo Leveling specific character designs with strict appearance rules
+  const includeJinWoo = narration.includes("jin-woo") || narration.includes("sung") || narration.includes("shadow monarch") || narration.includes("you are") || storyPath.includes("jin") || narration.includes("both characters") || narration.includes("together");
+  const includeHaeIn = narration.includes("hae-in") || narration.includes("cha") || narration.includes("sword saint") || storyPath.includes("cha") || narration.includes("both characters") || narration.includes("together");
   
+  // STRICT CHARACTER APPEARANCE RULES - DO NOT DEVIATE
   let characterDescription = "";
   if (includeJinWoo) {
-    characterDescription = ", Sung Jin-Woo (tall Korean male, short spiky BLACK hair, sharp angular face, intense dark eyes, black hunter coat, confident stance, shadow aura, Solo Leveling protagonist design)";
+    characterDescription = ", Sung Jin-Woo (MUST BE: Korean male, age 24, SHORT BLACK HAIR - NOT blonde/long, sharp angular facial features, dark eyes, athletic build, wearing black hunter outfit or casual dark clothing, confident posture, Solo Leveling manhwa art style - NEVER make him blonde or feminine)";
   }
   if (includeHaeIn) {
-    characterDescription += ", Cha Hae-In (beautiful Korean female, blonde hair, red armor, elegant sword stance, S-rank hunter, graceful but powerful, Solo Leveling character design)";
+    characterDescription += ", Cha Hae-In (MUST BE: Korean female, age 23, SHOULDER-LENGTH BLONDE HAIR, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style - NEVER make her brunette or masculine)";
   }
 
   // Prioritize environmental and location-based scenes over character portraits

@@ -2432,18 +2432,73 @@ export default function SoloLeveling() {
         setIsLoading(false);
       }
     } else {
-      // Action mode - generate image for every action
-      const actionPrompt = `Sung Jin-Woo from Solo Leveling (Korean male, short black hair, dark eyes, black hunter outfit) performing action: ${message}. With Cha Hae-In (Korean female, blonde hair, white hunter outfit) nearby, romantic scene, manhwa art style, detailed artwork`;
-      generateSceneImage(actionPrompt);
+      // Action mode - detect intimate actions and generate appropriate scenes
+      const intimateKeywords = [
+        'grab her hair', 'from behind', 'doggystyle', 'doggy style', 'position', 'missionary', 
+        'on top', 'underneath', 'legs', 'kiss her neck', 'touch her', 'caress', 'massage',
+        'undress', 'clothes off', 'naked', 'bare', 'skin', 'breast', 'thigh', 'intimate',
+        'make love', 'passionate', 'thrust', 'moan', 'whisper', 'gentle', 'rough',
+        'bedroom', 'bed', 'sheet', 'pillow', 'cuddle', 'embrace', 'hold close'
+      ];
       
-      setTimeout(() => {
-        addChatMessage('system', "Your action resonates through the world...");
+      const isIntimateAction = intimateKeywords.some(keyword => 
+        message.toLowerCase().includes(keyword)
+      );
+      
+      if (isIntimateAction && activeActivity) {
+        // Generate intimate scene with NovelAI for explicit actions
+        console.log('Generating intimate scene for action:', message);
         
-        // Random shadow effects for actions
-        if (Math.random() > 0.7) {
-          createShadowSlashEffect();
-        }
-      }, 1000);
+        fetch('/api/generate-intimate-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            activityId: activeActivity.id,
+            relationshipStatus: gameState.affection >= 5 ? 'married' : gameState.affection >= 4 ? 'engaged' : 'dating',
+            intimacyLevel: gameState.affection || 1,
+            specificAction: message // Pass the specific action for custom scene generation
+          }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.imageUrl) {
+            setCurrentBackground(data.imageUrl);
+            setSceneBackground(data.imageUrl);
+            console.log('Generated intimate scene for action');
+          }
+        })
+        .catch(error => console.error('Error generating intimate scene:', error));
+        
+        // Generate contextual response from Cha Hae-In
+        const intimateResponses = [
+          "*breathes heavily* Jin-Woo... *her voice trembles with desire*",
+          "*gasps softly* You're so... *blushes deeply* I love when you take control...",
+          "*moans quietly* That feels incredible... *pulls you closer*",
+          "*whispers against your ear* I'm all yours... *heart racing*",
+          "*eyes flutter closed* Don't stop... *grips the sheets*"
+        ];
+        
+        setTimeout(() => {
+          const response = intimateResponses[Math.floor(Math.random() * intimateResponses.length)];
+          addChatMessage('Cha Hae-In', response);
+        }, 1500);
+        
+      } else {
+        // Regular action mode - generate scene for general actions
+        const actionPrompt = `Sung Jin-Woo from Solo Leveling (Korean male, short black hair, dark eyes, black hunter outfit) performing action: ${message}. With Cha Hae-In (Korean female, blonde hair, white hunter outfit) nearby, romantic scene, manhwa art style, detailed artwork`;
+        generateSceneImage(actionPrompt);
+        
+        setTimeout(() => {
+          addChatMessage('system', "Your action resonates through the world...");
+          
+          // Random shadow effects for actions
+          if (Math.random() > 0.7) {
+            createShadowSlashEffect();
+          }
+        }, 1000);
+      }
     }
   };
 
@@ -3047,6 +3102,9 @@ export default function SoloLeveling() {
         isVisible={showDailyLifeHub}
         onClose={() => setShowDailyLifeHub(false)}
         onActivitySelect={(activity) => {
+          // Set as active activity for continuous interaction
+          setActiveActivity(activity);
+          
           // Handle activity selection with chat response
           const activityDialogue = getActivityDialogue(activity);
           addChatMessage('Cha Hae-In', activityDialogue);
