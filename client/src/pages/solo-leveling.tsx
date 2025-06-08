@@ -156,18 +156,7 @@ export default function SoloLeveling() {
   const timeRef = useRef<HTMLSpanElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const getActivityDialogue = (activity: any) => {
-    const dialogues: Record<string, string> = {
-      morning_coffee: "Good morning, Jin-Woo! *smiles warmly while sipping coffee* This peaceful moment with you is perfect. Your mana feels so calming in the morning light.",
-      training_together: "*adjusts her sword stance* Ready to practice? I love training with you - we make such a great team. *her eyes sparkle with excitement*",
-      romantic_dinner: "*sits across from you at the candlelit table* You prepared all this for me? *cheeks flush pink* Jin-Woo, you're so thoughtful. This is absolutely perfect.",
-      shopping_date: "*links arms with you while walking through the marketplace* I love spending time like this with you. *leans closer* Just being together makes me so happy.",
-      cuddle_together: "*nestles closer to you on the couch* Mmm, this is my favorite place to be... *traces gentle patterns on your chest* Just you and me, together.",
-      shower_together: "*steam fills the bathroom as warm water cascades over both of you* Jin-Woo... *her voice is soft and intimate* Being this close to you feels so right.",
-      make_love: "*in the privacy of your shared bedroom, candlelight dancing on the walls* My beloved husband... *whispers against your lips* I love you more than words can express."
-    };
-    return dialogues[activity.id] || `*enjoys spending quality time with you* Being together like this makes me so happy, Jin-Woo.`;
-  };
+
 
   // Complete story data from your original code
   const story: Record<string, StoryScene> = {

@@ -235,9 +235,11 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
       return;
     }
 
-    // Generate image for intimate activities only
-    if (activity.id.includes('intimate') || activity.id.includes('cuddle') || activity.id.includes('shower')) {
+    // Generate image for intimate activities
+    const intimateActivities = ['intimate_evening', 'cuddle_together', 'shower_together', 'make_love', 'strip_poker', 'intimate_massage', 'intimate_bath'];
+    if (intimateActivities.includes(activity.id)) {
       try {
+        console.log(`Generating image for activity: ${activity.id}`);
         const response = await fetch('/api/generate-intimate-image', {
           method: 'POST',
           headers: {
@@ -253,20 +255,26 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
         if (response.ok) {
           const data = await response.json();
           if (data.imageUrl) {
+            console.log(`Image generated for ${activity.id}:`, data.imageUrl.substring(0, 50) + '...');
             onImageGenerated(data.imageUrl);
           }
+        } else {
+          console.error('Failed to generate image:', response.status);
         }
       } catch (error) {
         console.error('Error generating activity image:', error);
       }
     }
 
-    // Generate activity-specific dialogue
+    // Generate activity-specific dialogue (only once)
     const activityDialogue = getActivityDialogue(activity);
     
-    // Play voice for activity dialogue
+    // Play voice for activity dialogue with delay to allow image loading
     if (activityDialogue) {
-      setTimeout(() => playVoice(activityDialogue, 'cha-hae-in'), 500);
+      setTimeout(() => {
+        console.log(`Playing dialogue for ${activity.id}:`, activityDialogue);
+        playVoice(activityDialogue, 'cha-hae-in');
+      }, intimateActivities.includes(activity.id) ? 1500 : 500); // Longer delay for image generation
     }
 
     // Pass activity context to enable continuous interaction
