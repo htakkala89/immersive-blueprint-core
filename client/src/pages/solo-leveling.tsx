@@ -2819,7 +2819,7 @@ export default function SoloLeveling() {
                 {/* Minimal Stats Overlay */}
                 <div className="absolute top-3 left-3 right-3 z-30 flex justify-between items-start">
                   {/* Compact Stats */}
-                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-2 border border-white/20 shadow-lg">
+                  <div className="glassmorphism rounded-xl p-2">
                     <div className="flex items-center gap-3">
                       {/* Health */}
                       <div className="flex items-center gap-1">
@@ -2852,7 +2852,7 @@ export default function SoloLeveling() {
                   </div>
 
                   {/* Compact Affection */}
-                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-2 border border-white/20 shadow-lg">
+                  <div className="glassmorphism rounded-xl p-2">
                     <div className="flex items-center gap-2">
                       <span className="text-pink-400 text-xs">💕</span>
                       <div className="flex gap-1">
@@ -2872,7 +2872,7 @@ export default function SoloLeveling() {
                 {/* Chat Toggle Button */}
                 <button
                   onClick={() => setChatPinned(!chatPinned)}
-                  className="absolute top-16 right-3 z-40 w-8 h-8 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 shadow-lg flex items-center justify-center text-white hover:bg-white/20 transition-all"
+                  className="absolute top-16 right-3 z-40 w-8 h-8 glassmorphism rounded-full flex items-center justify-center text-white hover:glassmorphism-dark transition-all"
                 >
                   {chatPinned ? '📌' : '💬'}
                 </button>
@@ -2886,7 +2886,7 @@ export default function SoloLeveling() {
                       {currentStory && (
                         <div className="mb-4">
                           <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 glassmorphism flex items-center justify-center flex-shrink-0">
                               <span className="text-white text-sm">📖</span>
                             </div>
                             <div className="flex-1">
@@ -2984,7 +2984,7 @@ export default function SoloLeveling() {
                             key={index}
                             onClick={() => handleChoice(choice)}
                             disabled={isLoading}
-                            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600/90 to-purple-700/90 backdrop-blur-xl border border-white/30 rounded-full px-4 py-2 text-white text-sm font-medium hover:from-blue-500 hover:to-purple-600 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed max-w-xs"
+                            className="inline-flex items-center gap-2 glassmorphism-choice hover:glassmorphism-choice-hover rounded-full px-4 py-2 text-white text-sm font-medium transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed max-w-xs"
                             title={choice.detail}
                           >
                             <span className="text-base">⚡</span>
