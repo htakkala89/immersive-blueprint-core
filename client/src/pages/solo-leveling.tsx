@@ -245,6 +245,28 @@ export default function SoloLeveling() {
     return () => clearInterval(interval);
   }, []);
 
+  // Handle scrollbar fade effects
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (!chatContainer) return;
+
+    let scrollTimeout: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      chatContainer.classList.add('scrolling');
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        chatContainer.classList.remove('scrolling');
+      }, 1500); // Hide after 1.5 seconds of no scrolling
+    };
+
+    chatContainer.addEventListener('scroll', handleScroll);
+    return () => {
+      chatContainer.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
+
   // Smooth scroll to bottom for better UX
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -641,7 +663,7 @@ export default function SoloLeveling() {
                 <div className="absolute bottom-20 left-0 right-0 z-30 flex flex-col" style={{ height: '50%' }}>
                   {/* Chat Container - Takes available space */}
                   <div className="flex-1 min-h-0 overflow-hidden">
-                    <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto">
+                    <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto chat-container">
                       {/* Story Narration */}
                       {currentStory && (
                         <div className="mb-3 p-3 rounded-xl bg-black/80 border border-purple-500/40 backdrop-blur-md">

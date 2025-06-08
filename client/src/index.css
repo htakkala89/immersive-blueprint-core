@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Auto-fading scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(147, 51, 234, 0.4);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(147, 51, 234, 0.7);
+}
+
+/* Show scrollbar on hover or scroll */
+*:hover::-webkit-scrollbar,
+*:focus::-webkit-scrollbar,
+.scrolling::-webkit-scrollbar {
+  opacity: 1;
+}
+
+/* Chat container specific scrollbar styling */
+.chat-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
 /* Solo Leveling Game Animations */
 .screen.shake {
   animation: screenShake 0.4s ease-in-out;
