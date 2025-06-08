@@ -100,23 +100,28 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Google Imagen via Vertex AI
     if (!process.env.GOOGLE_API_KEY) {
       console.log('Google API key not available');
       return null;
     }
 
-    // Simple Imagen REST API call (requires proper project setup)
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${process.env.GOOGLE_API_KEY}`, {
+    const apiKey = process.env.GOOGLE_API_KEY;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        prompt: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors",
-        outputOptions: {
-          mimeType: "image/png"
-        }
+        prompt: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style",
+        aspectRatio: "1:1",
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_ONLY_HIGH"
+          }
+        ]
       })
     });
 
@@ -126,7 +131,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     }
 
     const data = await response.json();
-    const imageData = data.generatedImages?.[0]?.imageBytes;
+    const imageData = data.predictions?.[0]?.bytesBase64Encoded || data.candidates?.[0]?.image?.bytesBase64Encoded;
     
     if (imageData) {
       return `data:image/png;base64,${imageData}`;
@@ -150,9 +155,37 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     
     lastImageGeneration = now;
     
-    // Determine which generator to use based on content
-    const useMatureGenerator = isMatureContent(gameState);
+    // Prioritize OpenAI for character accuracy (especially Jin-Woo)
+    const isCharacterFocused = gameState.narration.toLowerCase().includes('jin-woo') || 
+                              gameState.narration.toLowerCase().includes('sung') ||
+                              gameState.storyPath === 'cover';
     
+    if (isCharacterFocused && openai) {
+      console.log('🎯 Character-focused content - using OpenAI for accuracy');
+      const prompt = createMatureSoloLevelingPrompt(gameState);
+      const enhancedPrompt = prompt + ". Korean male protagonist with short BLACK hair, dark eyes, NOT blonde, accurate Solo Leveling character design";
+      
+      try {
+        const response = await openai.images.generate({
+          model: "dall-e-3",
+          prompt: enhancedPrompt,
+          n: 1,
+          size: "1024x1024",
+          quality: "standard",
+        });
+        
+        const imageUrl = response.data?.[0]?.url;
+        if (imageUrl) {
+          console.log('✅ OpenAI generated character-accurate image');
+          return imageUrl;
+        }
+      } catch (error) {
+        console.log('⚠️ OpenAI failed, trying NovelAI');
+      }
+    }
+    
+    // Use NovelAI for mature/romantic content
+    const useMatureGenerator = isMatureContent(gameState);
     if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
       console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
       const prompt = createMatureSoloLevelingPrompt(gameState);
