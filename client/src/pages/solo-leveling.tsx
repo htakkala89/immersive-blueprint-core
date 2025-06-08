@@ -126,6 +126,7 @@ export default function SoloLeveling() {
   const [showChatTutorial, setShowChatTutorial] = useState(false);
   const [currentChoiceIndex, setCurrentChoiceIndex] = useState(0);
   const [showSkillTree, setShowSkillTree] = useState(false);
+  const [chatPinned, setChatPinned] = useState(false);
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
 
@@ -2186,24 +2187,44 @@ export default function SoloLeveling() {
                   </div>
                 </div>
 
-                {/* Chat and Story Overlay - Lower Half */}
-                <div className="absolute bottom-20 left-0 right-0 z-30 flex flex-col" style={{ height: '50%' }}>
+                {/* Chat Toggle Button */}
+                <button
+                  onClick={() => setChatPinned(!chatPinned)}
+                  className="absolute top-16 right-3 z-40 w-8 h-8 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all"
+                >
+                  {chatPinned ? '📌' : '💬'}
+                </button>
+
+                {/* Overlay Messages - Always visible compact style */}
+                <div className="absolute top-28 left-3 right-3 z-30">
+                  {/* Story Narration - Compact Overlay */}
+                  {currentStory && (
+                    <div className="mb-2 p-3 rounded-2xl bg-black/70 backdrop-blur-md border border-white/10">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="text-xs text-gray-400 font-medium">GM</div>
+                      </div>
+                      <div className="text-white text-sm leading-snug font-normal">{currentStory.narration}</div>
+                    </div>
+                  )}
+
+                  {/* System Notifications - Compact Style */}
+                  {currentStory?.chat && currentStory.chat.map((msg, index) => (
+                    <div key={index} className="mb-2 p-3 rounded-2xl bg-gray-800/70 backdrop-blur-md border border-gray-600/30">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="text-xs text-gray-400 font-medium">
+                          {msg.sender === 'system' ? '⚙️ System' : msg.sender}
+                        </div>
+                      </div>
+                      <div className="text-white text-sm leading-snug font-normal">{msg.text}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Chat Container - Toggleable overlay */}
+                <div className={`absolute bottom-20 left-0 right-0 z-30 flex flex-col transition-opacity duration-300 ${chatPinned ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} style={{ height: '40%' }}>
                   {/* Chat Container - Takes available space */}
                   <div className="flex-1 min-h-0 overflow-hidden">
                     <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto chat-container">
-                      {/* Story Narration */}
-                      {currentStory && (
-                        <div className="mb-3 p-3 rounded-xl bg-black/80 border border-purple-500/40 backdrop-blur-md">
-                          <div className="flex items-center gap-2 mb-2 text-xs opacity-90 font-semibold">
-                            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
-                              🎭
-                            </div>
-                            <span className="text-white">Game Master</span>
-                          </div>
-                          <div className="text-gray-100 text-sm leading-relaxed">{currentStory.narration}</div>
-                        </div>
-                      )}
-
                       {/* Chat Messages - iMessage style layout */}
                       {getDisplayMessages().map((msg: any) => {
                         const opacity = getMessageOpacity(msg.timestamp, msg.id);
@@ -2282,25 +2303,25 @@ export default function SoloLeveling() {
                           </button>
                         )}
 
-                        {/* Current Choice Display */}
+                        {/* Current Choice Display - Compact Style */}
                         <div className="flex-1 h-full">
                           <button
                             onClick={() => {
                               const choice = currentStory.choices?.[currentChoiceIndex];
                               if (choice) handleChoice(choice);
                             }}
-                            className="w-full h-full bg-white/10 backdrop-blur-xl rounded-2xl p-4 hover:bg-white/15 active:bg-white/8 transition-all duration-200 text-left border border-white/20 shadow-xl group"
+                            className="w-full h-full bg-gray-800/70 backdrop-blur-md rounded-2xl p-3 hover:bg-gray-700/70 active:bg-gray-800/80 transition-all duration-200 text-left border border-gray-600/30 group"
                           >
-                            <div className="flex items-center gap-4 h-full">
-                              <div className="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center text-lg flex-shrink-0 shadow-lg border border-white/20">
-                                ⚔️
+                            <div className="flex items-center gap-3 h-full">
+                              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-sm flex-shrink-0">
+                                📱
                               </div>
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                <div className="text-white text-base font-semibold mb-1 leading-tight">
+                                <div className="text-white text-sm font-medium mb-1 leading-tight">
                                   {currentStory.choices[currentChoiceIndex]?.text || 'Choose an action'}
                                 </div>
                                 {currentStory.choices[currentChoiceIndex]?.detail && (
-                                  <div className="text-white/80 text-sm leading-relaxed font-light">
+                                  <div className="text-gray-400 text-xs leading-snug">
                                     {currentStory.choices[currentChoiceIndex].detail}
                                   </div>
                                 )}
