@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import type { GameState } from "@shared/schema";
+import AdmZip from 'adm-zip';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -72,9 +73,21 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
       return null;
     }
 
-    const data = await response.text();
-    // NovelAI returns base64 encoded image
-    const base64Image = data;
+    const buffer = await response.arrayBuffer();
+    
+    // NovelAI returns a ZIP file containing the image
+    const zip = new AdmZip(Buffer.from(buffer));
+    const zipEntries = zip.getEntries();
+    
+    if (zipEntries.length === 0) {
+      console.error('NovelAI ZIP file is empty');
+      return null;
+    }
+    
+    // Get the first image file from the ZIP
+    const imageEntry = zipEntries[0];
+    const imageBuffer = imageEntry.getData();
+    const base64Image = imageBuffer.toString('base64');
     
     // Convert to data URL for browser display
     return `data:image/png;base64,${base64Image}`;
