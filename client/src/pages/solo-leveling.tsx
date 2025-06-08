@@ -1920,37 +1920,48 @@ export default function SoloLeveling() {
           {/* Start Overlay */}
           {!gameStarted && (
             <div className="absolute inset-0 z-50 flex flex-col justify-end transition-opacity duration-1000">
-              {/* Solo Leveling Cover Background with Jin-Woo */}
-              <div 
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7)), 
-                    radial-gradient(circle at 30% 40%, rgba(138, 43, 226, 0.8) 0%, transparent 50%),
-                    radial-gradient(circle at 70% 30%, rgba(75, 0, 130, 0.6) 0%, transparent 50%),
-                    linear-gradient(135deg, #0f0f23 0%, #1a1a3a 30%, #2d1b69 60%, #0f0f0f 100%)`
-                }}
-              />
-              
-              {/* Jin-Woo Silhouette SVG */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <svg width="200" height="300" viewBox="0 0 200 300" className="opacity-30">
-                  <defs>
-                    <linearGradient id="shadowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.8"/>
-                      <stop offset="100%" stopColor="#3b0764" stopOpacity="0.9"/>
-                    </linearGradient>
-                  </defs>
-                  {/* Jin-Woo Figure */}
-                  <path d="M100 50 L110 60 L105 100 L120 120 L115 200 L125 280 L100 290 L75 280 L85 200 L80 120 L95 100 L90 60 Z" 
-                        fill="url(#shadowGrad)" opacity="0.7"/>
-                  {/* Coat */}
-                  <path d="M85 100 L115 100 L120 180 L110 200 L90 200 L80 180 Z" 
-                        fill="#1a1a1a" opacity="0.8"/>
-                  {/* Glowing Eyes */}
-                  <circle cx="95" cy="65" r="2" fill="#8b5cf6" opacity="0.9"/>
-                  <circle cx="105" cy="65" r="2" fill="#8b5cf6" opacity="0.9"/>
-                </svg>
-              </div>
+              {/* AI-Generated Jin-Woo Cover */}
+              {currentBackground.startsWith('data:') ? (
+                <img 
+                  src={currentBackground}
+                  alt="Jin-Woo Solo Leveling Cover"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <>
+                  {/* Fallback Solo Leveling Background */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{
+                      backgroundImage: `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7)), 
+                        radial-gradient(circle at 30% 40%, rgba(138, 43, 226, 0.8) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 30%, rgba(75, 0, 130, 0.6) 0%, transparent 50%),
+                        linear-gradient(135deg, #0f0f23 0%, #1a1a3a 30%, #2d1b69 60%, #0f0f0f 100%)`
+                    }}
+                  />
+                  
+                  {/* Jin-Woo Silhouette SVG */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg width="200" height="300" viewBox="0 0 200 300" className="opacity-30">
+                      <defs>
+                        <linearGradient id="shadowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.8"/>
+                          <stop offset="100%" stopColor="#3b0764" stopOpacity="0.9"/>
+                        </linearGradient>
+                      </defs>
+                      {/* Jin-Woo Figure */}
+                      <path d="M100 50 L110 60 L105 100 L120 120 L115 200 L125 280 L100 290 L75 280 L85 200 L80 120 L95 100 L90 60 Z" 
+                            fill="url(#shadowGrad)" opacity="0.7"/>
+                      {/* Coat */}
+                      <path d="M85 100 L115 100 L120 180 L110 200 L90 200 L80 180 Z" 
+                            fill="#1a1a1a" opacity="0.8"/>
+                      {/* Glowing Eyes */}
+                      <circle cx="95" cy="65" r="2" fill="#8b5cf6" opacity="0.9"/>
+                      <circle cx="105" cy="65" r="2" fill="#8b5cf6" opacity="0.9"/>
+                    </svg>
+                  </div>
+                </>
+              )}
               <div className="absolute bottom-0 left-0 right-0 h-3/4 bg-gradient-to-t from-black via-black/80 to-transparent" />
               <div className="relative z-10 p-6 text-center text-white">
                 <h1 className="text-4xl font-bold mb-1 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
