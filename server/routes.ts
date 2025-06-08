@@ -3,7 +3,9 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateSceneImage } from "./imageGenerator";
 import { getSceneImage } from "./preGeneratedImages";
+import { log } from "./vite";
 import { z } from "zod";
+import OpenAI from "openai";
 
 const MakeChoiceSchema = z.object({
   sessionId: z.string(),
@@ -14,8 +16,6 @@ const MakeChoiceSchema = z.object({
     detail: z.string().optional(),
   })
 });
-
-import OpenAI from "openai";
 
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY 
@@ -128,10 +128,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         quality: "standard",
       });
 
-      const imageUrl = response.data[0].url;
+      const imageUrl = response.data?.[0]?.url;
+      if (!imageUrl) {
+        throw new Error("No image URL received from OpenAI");
+      }
       res.json({ imageUrl });
     } catch (error) {
-      log(`Failed to generate scene image: ${error}`, "error");
+      console.error(`Failed to generate scene image: ${error}`);
       res.status(500).json({ error: "Failed to generate scene image" });
     }
   });
