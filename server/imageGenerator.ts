@@ -15,7 +15,12 @@ function isMatureContent(gameState: GameState): boolean {
   const storyPath = gameState.storyPath.toLowerCase();
   const sessionId = gameState.sessionId?.toLowerCase() || '';
   
-  // Always use NovelAI for Solo Leveling content (high-quality anime art)
+  // Use OpenAI for cover generation and character-focused content for accuracy
+  if (storyPath === 'cover' || narration.includes('cover art') || sessionId.includes('cover')) {
+    return false;
+  }
+  
+  // Use NovelAI for romantic/mature Solo Leveling content
   if (sessionId.includes('solo-leveling') || sessionId.includes('solo_leveling')) {
     return true;
   }
