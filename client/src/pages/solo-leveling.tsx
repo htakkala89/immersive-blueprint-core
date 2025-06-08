@@ -2343,7 +2343,7 @@ export default function SoloLeveling() {
                             className="w-full h-full bg-white/10 backdrop-blur-xl rounded-2xl p-2 hover:bg-white/15 active:bg-white/20 transition-all duration-200 text-left border border-white/20 shadow-lg group"
                           >
                             <div className="flex items-center gap-2 h-full">
-                              <div className="w-6 h-6 bg-orange-500 rounded-lg flex items-center justify-center text-xs flex-shrink-0">
+                              <div className="w-6 h-6 flex items-center justify-center text-xs flex-shrink-0">
                                 📱
                               </div>
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
