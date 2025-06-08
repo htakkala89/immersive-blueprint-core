@@ -2217,6 +2217,42 @@ export default function SoloLeveling() {
     }
   };
 
+  const getUserBehaviorType = (message: string): 'positive' | 'neutral' | 'rude' | 'mean' => {
+    const messageLower = message.toLowerCase();
+    
+    // Check for mean/very negative behavior
+    const meanKeywords = [
+      'hate you', 'stupid', 'idiot', 'worthless', 'pathetic', 'loser', 
+      'ugly', 'useless', 'waste of time', 'boring as hell', 'annoying bitch'
+    ];
+    
+    // Check for rude behavior
+    const rudeKeywords = [
+      'shut up', 'whatever', 'don\'t care', 'leave me alone', 'go away',
+      'boring', 'annoying', 'dumb', 'weak', 'lame'
+    ];
+    
+    // Check for positive behavior
+    const positiveKeywords = [
+      'love', 'beautiful', 'amazing', 'wonderful', 'thank you', 'appreciate',
+      'care about', 'special', 'incredible', 'gorgeous', 'perfect', 'sweet'
+    ];
+    
+    if (meanKeywords.some(keyword => messageLower.includes(keyword))) {
+      return 'mean';
+    }
+    
+    if (rudeKeywords.some(keyword => messageLower.includes(keyword))) {
+      return 'rude';
+    }
+    
+    if (positiveKeywords.some(keyword => messageLower.includes(keyword))) {
+      return 'positive';
+    }
+    
+    return 'neutral';
+  };
+
   const createHeartEffect = () => {
     const hearts = document.querySelectorAll('.heart');
     const targetHeart = hearts[gameState.affection - 1] as HTMLElement; // -1 because we just incremented affection
@@ -2480,7 +2516,8 @@ export default function SoloLeveling() {
         body: JSON.stringify({
           message: message,
           gameState: gameState,
-          affectionLevel: gameState.affection || 0
+          affectionLevel: gameState.affection || 0,
+          userBehavior: getUserBehaviorType(message)
         }),
       });
 
@@ -3985,6 +4022,23 @@ export default function SoloLeveling() {
           <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-6 py-3 rounded-full shadow-lg animate-bounce flex items-center gap-2">
             <span className="text-2xl">💖</span>
             <span className="font-bold">Affection +{affectionIncreaseAmount}</span>
+            <div className="flex gap-1">
+              {Array.from({ length: 5 }, (_, i) => (
+                <span key={i} className="text-lg">
+                  {i < gameState.affection ? '❤️' : '🤍'}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Affection Decrease Indicator */}
+      {showAffectionDecrease && (
+        <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
+          <div className="bg-gradient-to-r from-gray-600 to-gray-800 text-white px-6 py-3 rounded-full shadow-lg animate-pulse flex items-center gap-2">
+            <span className="text-2xl">💔</span>
+            <span className="font-bold">Affection -{affectionDecreaseAmount}</span>
             <div className="flex gap-1">
               {Array.from({ length: 5 }, (_, i) => (
                 <span key={i} className="text-lg">

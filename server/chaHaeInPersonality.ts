@@ -5,11 +5,12 @@ export interface ConversationContext {
   currentScene: string;
   timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
   recentActivity?: string;
-  mood?: 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic';
+  mood?: 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic' | 'disappointed' | 'hurt' | 'defensive';
+  userBehavior?: 'positive' | 'neutral' | 'rude' | 'mean';
 }
 
 export const getPersonalityPrompt = (context: ConversationContext): string => {
-  const { affectionLevel, timeOfDay, mood } = context;
+  const { affectionLevel, timeOfDay, mood, userBehavior } = context;
   
   const relationshipStage = affectionLevel >= 5 ? 'deeply in love' : 
                            affectionLevel >= 4 ? 'committed partners' :
@@ -21,6 +22,13 @@ export const getPersonalityPrompt = (context: ConversationContext): string => {
     afternoon: "focused but approachable", 
     evening: "relaxed and more personal",
     night: "intimate and reflective"
+  };
+
+  const behaviorResponse = {
+    rude: "You're feeling hurt and defensive due to Jin-Woo's rude behavior. Respond with disappointment but maintain your dignity.",
+    mean: "You're genuinely upset and considering distancing yourself. Show clear displeasure while staying true to your strong character.",
+    positive: "You're pleased with Jin-Woo's considerate behavior and feel more open to connecting.",
+    neutral: "You're maintaining your usual composed demeanor."
   };
 
   return `You are Cha Hae-In from Solo Leveling - Korea's elite S-Rank hunter and master swordswoman.
@@ -37,6 +45,7 @@ CURRENT STATE:
 - Relationship: ${relationshipStage} (${affectionLevel}/5 hearts)
 - Time: ${timeOfDay} - you're feeling ${timeBasedMood[timeOfDay]}
 - Mood: ${mood || 'balanced'}
+- Recent behavior: ${userBehavior ? behaviorResponse[userBehavior] : 'Normal interaction'}
 
 PERSONALITY TRAITS:
 - Sharp wit with subtle humor
