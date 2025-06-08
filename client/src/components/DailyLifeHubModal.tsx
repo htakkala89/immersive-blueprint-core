@@ -198,28 +198,43 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
   const availableActivities = getAvailableActivities(playerStats, currentTimeOfDay);
 
   const handleActivityClick = async (activity: Activity) => {
-    // Generate image for the activity and mark as active scene
-    try {
-      const response = await fetch('/api/generate-intimate-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          activityId: activity.id,
-          relationshipStatus: playerStats.relationshipStatus,
-          intimacyLevel: playerStats.intimacyLevel
-        }),
-      });
+    // Handle special activities that open modals
+    if (activity.id === 'solo_raid' || activity.id === 'joint_raid') {
+      // Trigger raid system modal
+      onActivitySelect(activity);
+      return;
+    }
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.imageUrl) {
-          onImageGenerated(data.imageUrl);
+    if (activity.id === 'marketplace_visit') {
+      // Trigger marketplace modal
+      onActivitySelect(activity);
+      return;
+    }
+
+    // Generate image for intimate activities only
+    if (activity.id.includes('intimate') || activity.id.includes('cuddle') || activity.id.includes('shower')) {
+      try {
+        const response = await fetch('/api/generate-intimate-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            activityId: activity.id,
+            relationshipStatus: playerStats.relationshipStatus,
+            intimacyLevel: playerStats.intimacyLevel
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.imageUrl) {
+            onImageGenerated(data.imageUrl);
+          }
         }
+      } catch (error) {
+        console.error('Error generating activity image:', error);
       }
-    } catch (error) {
-      console.error('Error generating activity image:', error);
     }
 
     // Pass activity context to enable continuous interaction

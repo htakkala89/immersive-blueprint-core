@@ -62,10 +62,11 @@ export default function Game() {
     }
   };
 
-  // Handle special activity selections
-  const handleSpecialChoice = (activityId: string) => {
+  // Handle activity selections from Daily Life Hub
+  const handleActivitySelect = (activity: any) => {
     if (!gameState) return;
-    switch (activityId) {
+    
+    switch (activity.id) {
       case 'solo_raid':
       case 'joint_raid':
         setShowRaidSystem(true);
@@ -81,11 +82,11 @@ export default function Game() {
         }
         break;
       default:
-        // Handle other activities normally
+        // Handle other activities normally through choice system
         handleChoice({ 
-          id: activityId, 
-          text: 'Continue activity',
-          icon: '✨'
+          id: activity.id, 
+          text: activity.title || 'Continue activity',
+          icon: activity.icon || '✨'
         });
     }
   };
