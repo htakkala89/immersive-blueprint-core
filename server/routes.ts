@@ -83,34 +83,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let imageUrl = null;
         try {
           imageUrl = await generateSceneImage(gameState);
-        } catch (aiError) {
-          console.log('AI generation failed, using pre-generated image');
+        } catch (error) {
+          console.error("AI image generation failed, using fallback:", error);
           imageUrl = getSceneImage(gameState);
         }
         
-        if (imageUrl && gameState.sceneData) {
-          gameState.sceneData.imageUrl = imageUrl;
-          await storage.updateGameState(sessionId, { 
-            sceneData: gameState.sceneData 
+        if (imageUrl) {
+          await storage.updateGameState(sessionId, {
+            sceneData: { ...gameState.sceneData, imageUrl }
           });
         }
-      } catch (imageError) {
-        console.error('Image generation error:', imageError);
-        // Continue without image if generation fails
+      } catch (error) {
+        console.error("Scene image generation error:", error);
       }
       
       res.json(gameState);
     } catch (error) {
-      console.error('Error processing choice:', error);
       if (error instanceof z.ZodError) {
-        res.status(400).json({ message: 'Invalid request data', errors: error.errors });
-      } else {
-        res.status(500).json({ message: 'Failed to process choice' });
+        return res.status(400).json({ 
+          error: "Invalid request format", 
+          details: error.errors 
+        });
       }
+      
+      log(`Error processing choice: ${error}`);
+      res.status(500).json({ error: "Failed to process choice" });
     }
   });
 
-  // Generate scene image for Solo Leveling using dual-generator system
+  // Character progression endpoints
+  app.post("/api/level-up/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      const gameState = await storage.levelUp(sessionId);
+      res.json(gameState);
+    } catch (error) {
+      log(`Error leveling up: ${error}`);
+      res.status(500).json({ error: "Failed to level up" });
+    }
+  });
+
+  app.post("/api/upgrade-skill/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      const { skillId } = req.body;
+      const gameState = await storage.upgradeSkill(sessionId, skillId);
+      res.json(gameState);
+    } catch (error) {
+      log(`Error upgrading skill: ${error}`);
+      res.status(500).json({ error: "Failed to upgrade skill" });
+    }
+  });
+
+  app.post("/api/allocate-stat/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      const { stat } = req.body;
+      const gameState = await storage.allocateStatPoint(sessionId, stat);
+      res.json(gameState);
+    } catch (error) {
+      log(`Error allocating stat: ${error}`);
+      res.status(500).json({ error: "Failed to allocate stat point" });
+    }
+  });
+
+  // Image generation endpoints
   app.post("/api/generate-scene-image", async (req, res) => {
     try {
       const { prompt, gameState } = req.body;
@@ -172,202 +209,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate cover image specifically with OpenAI for character accuracy
-  app.post("/api/generate-cover-image", async (req, res) => {
-    try {
-      const { prompt } = req.body;
-      
-      if (!prompt) {
-        return res.status(400).json({ error: "Prompt is required" });
-      }
-
-      if (!openai) {
-        return res.status(500).json({ error: "OpenAI not available" });
-      }
-
-      const enhancedPrompt = `${prompt}. High quality digital art, detailed anime/manga style, cinematic lighting, vibrant colors, masterpiece quality, Korean manhwa art style`;
-
-      const response = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: enhancedPrompt,
-        n: 1,
-        size: "1024x1024",
-        quality: "hd",
-      });
-
-      const imageUrl = response.data?.[0]?.url;
-      if (imageUrl) {
-        console.log('✅ OpenAI generated Jin-Woo cover successfully');
-        res.json({ imageUrl });
-      } else {
-        res.status(500).json({ error: "No image generated" });
-      }
-    } catch (error) {
-      console.error(`Failed to generate cover image: ${error}`);
-      res.status(500).json({ error: "Failed to generate cover image" });
-    }
-  });
-
-  // Chat with Cha Hae-In using Gemini
-  app.post("/api/chat-with-hae-in", async (req, res) => {
-    try {
-      const { message, gameState, conversationHistory } = req.body;
-      
-      if (!message) {
-        return res.status(400).json({ error: "Message is required" });
-      }
-
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash"
-      });
-
-      const characterPrompt = `You are Cha Hae-In from Solo Leveling - the beautiful, deadly S-Rank hunter with exceptional swordsmanship. You're talking to Sung Jin-Woo, the Shadow Monarch who you're falling for.
-
-PERSONALITY CORE:
-- Graceful but fierce warrior who can be lethal in combat
-- Usually composed and professional, but Jin-Woo makes you feel different
-- You find most hunters' mana disgusting, but Jin-Woo's feels pleasant and comforting
-- Proud of your strength but secretly vulnerable about relationships
-- Can be teasing, playful, and subtly flirtatious when comfortable
-- Speaks directly but with underlying warmth for Jin-Woo
-
-CURRENT STATUS:
-- Affection for Jin-Woo: ${gameState?.affection || 0}/5 hearts
-- Scene: ${gameState?.currentScene || 'casual conversation'}
-- You're developing deep romantic feelings despite trying to stay professional
-
-CONVERSATION HISTORY:
-${conversationHistory?.map((msg: any) => `${msg.sender}: ${msg.text}`).join('\n') || 'This is the beginning of your conversation.'}
-
-Jin-Woo just said: "${message}"
-
-RESPONSE GUIDELINES:
-- Be authentic to Cha Hae-In's character - strong, graceful, but showing growing affection
-- Express emotions naturally - blushes, nervousness, confidence, desire
-- Reference your hunter abilities, past missions, or feelings about mana when relevant
-- Show personality progression based on affection level (shy → confident → passionate)
-- Keep responses engaging and emotionally rich, 1-3 sentences
-- You can be romantic, flirty, or discuss any topic that interests you both`;
-
-      const result = await model.generateContent(characterPrompt);
-      const response = result.response;
-      const responseText = response.text();
-
-      // Check if the message requests visual content
-      const visualRequests = ['show me', 'let me see', 'bikini', 'outfit', 'dress', 'clothing', 'what you look like', 'how you look'];
-      const shouldGenerateImage = visualRequests.some(keyword => message.toLowerCase().includes(keyword));
-
-      let imageUrl = null;
-      if (shouldGenerateImage) {
-        try {
-          // Generate image for the visual request
-          const imagePrompt = `Cha Hae-In from Solo Leveling, beautiful Korean female S-rank hunter with long blonde hair, elegant features, ${message.includes('bikini') ? 'wearing a blue bikini' : 'in elegant pose'}, manhwa art style, high quality, detailed artwork, NOT black hair`;
-          
-          const imageGenResponse = await fetch(`${req.protocol}://${req.get('host')}/api/generate-scene-image`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              prompt: imagePrompt,
-              gameState: { ...gameState, storyPath: 'romantic' }
-            })
-          });
-
-          if (imageGenResponse.ok) {
-            const imageData = await imageGenResponse.json();
-            imageUrl = imageData.imageUrl;
-          }
-        } catch (error) {
-          console.error('Failed to generate visual response:', error);
-        }
-      }
-
-      res.json({ 
-        response: responseText,
-        sender: 'Cha Hae-In',
-        imageUrl: imageUrl
-      });
-    } catch (error) {
-      console.error(`Failed to generate chat response: ${error}`);
-      res.status(500).json({ error: "Failed to generate response" });
-    }
-  });
-
-  // Chat emotion-based image generation endpoint
-  app.post('/api/generate-chat-image', async (req, res) => {
-    try {
-      const { chatResponse, userMessage } = req.body;
-      
-      if (!chatResponse || !userMessage) {
-        return res.status(400).json({ error: 'Chat response and user message are required' });
-      }
-
-      const { generateChatSceneImage } = await import('./imageGenerator');
-      const imageUrl = await generateChatSceneImage(chatResponse, userMessage);
-      
-      if (imageUrl) {
-        res.json({ imageUrl });
-      } else {
-        res.status(500).json({ error: 'Failed to generate chat scene image' });
-      }
-    } catch (error) {
-      console.error('Error generating chat scene image:', error);
-      res.status(500).json({ error: 'Failed to generate chat scene image' });
-    }
-  });
-
-  // Character progression routes
-  app.post("/api/level-up", async (req, res) => {
-    try {
-      const { sessionId } = req.body;
-      if (!sessionId) {
-        return res.status(400).json({ error: "Session ID is required" });
-      }
-
-      const gameState = await storage.levelUp(sessionId);
-      res.json(gameState);
-    } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
-    }
-  });
-
-  app.post("/api/upgrade-skill", async (req, res) => {
-    try {
-      const { sessionId, skillId } = req.body;
-      if (!sessionId || !skillId) {
-        return res.status(400).json({ error: "Session ID and skill ID are required" });
-      }
-
-      const gameState = await storage.upgradeSkill(sessionId, skillId);
-      res.json(gameState);
-    } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
-    }
-  });
-
-  app.post("/api/allocate-stat", async (req, res) => {
-    try {
-      const { sessionId, stat } = req.body;
-      if (!sessionId || !stat) {
-        return res.status(400).json({ error: "Session ID and stat are required" });
-      }
-
-      const gameState = await storage.allocateStatPoint(sessionId, stat);
-      res.json(gameState);
-    } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
-    }
-  });
-
-  // Mature content image generation endpoint
   app.post("/api/generate-intimate-image", async (req, res) => {
     try {
-      const { activityId, relationshipStatus, intimacyLevel, specificAction } = req.body;
+      const { activityId, relationshipStatus, intimacyLevel } = req.body;
       
       if (!activityId || !relationshipStatus || intimacyLevel === undefined) {
-        return res.status(400).json({ error: "Activity ID, relationship status, and intimacy level are required" });
+        return res.status(400).json({ error: "Missing required parameters" });
       }
-
-      const imageUrl = await generateIntimateActivityImage(activityId, relationshipStatus, intimacyLevel, specificAction);
+      
+      const imageUrl = await generateIntimateActivityImage(activityId, relationshipStatus, intimacyLevel);
       
       if (imageUrl) {
         res.json({ imageUrl });
@@ -375,11 +225,11 @@ RESPONSE GUIDELINES:
         res.status(500).json({ error: "Failed to generate intimate image" });
       }
     } catch (error) {
-      console.error('Error generating intimate image:', error);
-      res.status(500).json({ error: (error as Error).message });
+      console.error(`Failed to generate intimate image: ${error}`);
+      res.status(500).json({ error: "Failed to generate intimate image" });
     }
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
+  const server = createServer(app);
+  return server;
 }

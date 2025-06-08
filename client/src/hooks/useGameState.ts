@@ -31,14 +31,34 @@ export function useGameState() {
     }
   });
 
+  // Add automatic progress saving
+  const saveProgressMutation = useMutation({
+    mutationFn: async (updates: Partial<GameState>) => {
+      const response = await apiRequest('POST', '/api/save-progress', {
+        sessionId,
+        updates
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/game-state/${sessionId}`] });
+    }
+  });
+
   const handleChoice = (choice: Choice) => {
     choiceMutation.mutate(choice);
+  };
+
+  const saveProgress = (updates: Partial<GameState>) => {
+    saveProgressMutation.mutate(updates);
   };
 
   return {
     gameState,
     isLoading,
     handleChoice,
-    isProcessing: choiceMutation.isPending
+    saveProgress,
+    isProcessing: choiceMutation.isPending,
+    sessionId
   };
 }
