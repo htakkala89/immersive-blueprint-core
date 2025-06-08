@@ -2898,6 +2898,37 @@ export default function SoloLeveling() {
           </div>
         </div>
       )}
+
+      {/* Combat Mini-Games */}
+      {activeMiniGame === 'lockpicking' && (
+        <LockPickingGame
+          onComplete={handleMiniGameComplete}
+          onCancel={() => {
+            setActiveMiniGame(null);
+            setPendingChoice(null);
+          }}
+        />
+      )}
+
+      {activeMiniGame === 'runes' && (
+        <RuneSequenceGame
+          onComplete={handleMiniGameComplete}
+          onCancel={() => {
+            setActiveMiniGame(null);
+            setPendingChoice(null);
+          }}
+        />
+      )}
+
+      {activeMiniGame === 'dragon' && (
+        <DragonEncounterGame
+          onComplete={handleMiniGameComplete}
+          onCancel={() => {
+            setActiveMiniGame(null);
+            setPendingChoice(null);
+          }}
+        />
+      )}
     </div>
   );
 }
