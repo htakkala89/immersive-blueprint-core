@@ -241,8 +241,8 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
   }
 }
 
-export async function generateIntimateActivityImage(activityId: string, relationshipStatus: string, intimacyLevel: number): Promise<string | null> {
-  console.log(`🔞 Generating mature content for activity: ${activityId}`);
+export async function generateIntimateActivityImage(activityId: string, relationshipStatus: string, intimacyLevel: number, specificAction?: string): Promise<string | null> {
+  console.log(`🔞 Generating mature content for activity: ${activityId}${specificAction ? ` with action: ${specificAction}` : ''}`);
 
   // Rate limiting
   const now = Date.now();
@@ -251,7 +251,15 @@ export async function generateIntimateActivityImage(activityId: string, relation
   }
   lastImageGeneration = now;
 
-  const prompt = createIntimatePrompt(activityId, relationshipStatus, intimacyLevel);
+  let prompt: string;
+  
+  if (specificAction) {
+    // Create custom prompt based on specific user action
+    prompt = createCustomIntimatePrompt(specificAction, relationshipStatus, intimacyLevel);
+  } else {
+    // Use standard activity-based prompt
+    prompt = createIntimatePrompt(activityId, relationshipStatus, intimacyLevel);
+  }
   
   // Use NovelAI for mature content
   if (isMatureContent(prompt, activityId)) {
@@ -470,6 +478,29 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
   if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
 
   return `Professional anime portrait of Cha Hae-In from Solo Leveling manhwa, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, manhwa art style, high quality anime illustration, emotional close-up portrait, Solo Leveling character design`;
+}
+
+function createCustomIntimatePrompt(specificAction: string, relationshipStatus: string, intimacyLevel: number): string {
+  const baseCharacters = "Sung Jin-Woo (Korean male, short black hair, athletic build) and Cha Hae-In (Korean female, blonde hair, beautiful)";
+  
+  // Parse and enhance the specific action for better image generation
+  const actionPrompt = specificAction.toLowerCase()
+    .replace(/\b(grab|hold|touch|caress|kiss|embrace)\b/g, 'intimately $1')
+    .replace(/\b(hair|neck|body|skin)\b/g, 'her $1')
+    .replace(/\b(behind|doggystyle|doggy style)\b/g, 'from behind position')
+    .replace(/\b(make love|thrust|moan)\b/g, 'passionate intimacy');
+  
+  const intimacyDescriptions = {
+    1: "romantic tension, gentle touching",
+    2: "passionate kissing, tender embrace", 
+    3: "sensual intimacy, bodies close",
+    4: "explicit intimacy, passionate lovemaking",
+    5: "intense sexual positions, mature content"
+  };
+  
+  const intimacyDesc = intimacyDescriptions[Math.min(Math.max(intimacyLevel, 1), 5) as keyof typeof intimacyDescriptions];
+  
+  return `${baseCharacters}, ${actionPrompt}, ${intimacyDesc}, bedroom setting, anime art style, detailed illustration, romantic lighting, Solo Leveling character design, mature themes`;
 }
 
 function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {

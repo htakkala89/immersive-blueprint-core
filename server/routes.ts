@@ -343,13 +343,13 @@ RESPONSE GUIDELINES:
   // Mature content image generation endpoint
   app.post("/api/generate-intimate-image", async (req, res) => {
     try {
-      const { activityId, relationshipStatus, intimacyLevel } = req.body;
+      const { activityId, relationshipStatus, intimacyLevel, specificAction } = req.body;
       
       if (!activityId || !relationshipStatus || intimacyLevel === undefined) {
         return res.status(400).json({ error: "Activity ID, relationship status, and intimacy level are required" });
       }
 
-      const imageUrl = await generateIntimateActivityImage(activityId, relationshipStatus, intimacyLevel);
+      const imageUrl = await generateIntimateActivityImage(activityId, relationshipStatus, intimacyLevel, specificAction);
       
       if (imageUrl) {
         res.json({ imageUrl });
