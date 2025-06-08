@@ -1433,15 +1433,38 @@ export default function SoloLeveling() {
     }
   };
 
-  // Generate initial cover image and update time display
+  // Generate Jin-Woo cover using OpenAI through scene generation
   useEffect(() => {
-    // Generate Solo Leveling cover image with Jin-Woo on component mount
-    const loadCoverImage = async () => {
-      console.log('Loading Solo Leveling cover image...');
-      await generateSceneImage("Jin-Woo Sung from Solo Leveling, powerful shadow monarch hunter, glowing purple eyes, black coat, dark shadows, standing confidently, Korean manhwa art style, epic cover artwork");
+    const loadJinWooCover = async () => {
+      console.log('Generating Jin-Woo cover with OpenAI DALL-E 3...');
+      try {
+        // Force OpenAI generation by using non-mature content detection
+        const response = await fetch('/api/generate-scene-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: "Jin-Woo Sung from Solo Leveling manhwa, Korean male hunter with short black hair, sharp facial features, confident expression, wearing dark hunter coat, glowing purple eyes, shadow monarch aura, standing in powerful pose, high quality anime art style, detailed digital illustration",
+            gameState: {
+              sessionId: "cover-generation", // Different session to avoid mature content routing
+              storyPath: "cover",
+              narration: "cover art generation"
+            }
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.imageUrl) {
+            console.log('Jin-Woo cover generated with OpenAI');
+            setCurrentBackground(data.imageUrl);
+          }
+        }
+      } catch (error) {
+        console.log('Cover generation failed, using designed background');
+      }
     };
     
-    loadCoverImage();
+    loadJinWooCover();
     
     const updateTime = () => {
       if (timeRef.current) {

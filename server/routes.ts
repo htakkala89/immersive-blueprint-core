@@ -8,6 +8,9 @@ import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
+// Initialize OpenAI for cover generation
+const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+
 const MakeChoiceSchema = z.object({
   sessionId: z.string(),
   choice: z.object({
@@ -148,6 +151,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error(`Failed to generate scene image: ${error}`);
       res.status(500).json({ error: "Failed to generate scene image" });
+    }
+  });
+
+  // Generate cover image specifically with OpenAI for character accuracy
+  app.post("/api/generate-cover-image", async (req, res) => {
+    try {
+      const { prompt } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      if (!openai) {
+        return res.status(500).json({ error: "OpenAI not available" });
+      }
+
+      const enhancedPrompt = `${prompt}. High quality digital art, detailed anime/manga style, cinematic lighting, vibrant colors, masterpiece quality, Korean manhwa art style`;
+
+      const response = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: enhancedPrompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "hd",
+      });
+
+      const imageUrl = response.data?.[0]?.url;
+      if (imageUrl) {
+        console.log('✅ OpenAI generated Jin-Woo cover successfully');
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: "No image generated" });
+      }
+    } catch (error) {
+      console.error(`Failed to generate cover image: ${error}`);
+      res.status(500).json({ error: "Failed to generate cover image" });
     }
   });
 
