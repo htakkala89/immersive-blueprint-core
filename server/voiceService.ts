@@ -24,7 +24,7 @@ class VoiceService {
   constructor() {
     this.config = {
       apiKey: process.env.ELEVENLABS_API_KEY || '',
-      chaHaeInVoice: 'tQ4MEZFJOzsahSEEZtHK',
+      chaHaeInVoice: 'kdmDKE6EkgrWrrykO9Qt',
       gameMasterVoice: process.env.ELEVENLABS_VOICE_GAME_MASTER || '',
       systemVoice: process.env.ELEVENLABS_VOICE_SYSTEM || '',
       narratorVoice: process.env.ELEVENLABS_VOICE_GAME_MASTER || '' // Use Game Master voice for story narration

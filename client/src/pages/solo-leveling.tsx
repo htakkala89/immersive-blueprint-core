@@ -2618,6 +2618,15 @@ export default function SoloLeveling() {
           generateSceneImage(nextStory.prompt);
         }
 
+        // Handle combat victories and reward distribution
+        if (nextScene === 'COMBAT_VICTORY' || choice.type.includes('attack') || choice.type.includes('fight') || 
+            choice.type === 'shadow_attack' || choice.type === 'dragon_fight' || choice.type === 'ultimate_strike' ||
+            choice.type === 'celebrate_victory' || nextScene.includes('VICTORY')) {
+          const monsterType = choice.type.includes('dragon') || nextScene.includes('DRAGON') ? 'ice_dragon' : 
+                             choice.type.includes('orc') || nextScene.includes('ORC') ? 'orc_berserker' : 'goblin_warrior';
+          handleCombatVictory(monsterType);
+        }
+
         // Special effects for certain actions
         if (choice.type === 'summon' || choice.type === 'shadow_attack' || choice.type === 'extract_shadow') {
           createShadowSlashEffect();
@@ -3908,28 +3917,42 @@ export default function SoloLeveling() {
           )}
         </div>
 
-        {/* Inventory Modal */}
-        {showInventory && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-6 rounded-2xl w-80 max-w-[90%] border border-purple-500/30">
-            <div className="text-lg font-semibold mb-5 text-white">🎒 Inventory</div>
-            <div className="grid grid-cols-4 gap-3">
-              {/* Empty inventory slots */}
-              {Array.from({ length: 12 }, (_, i) => (
-                <div key={i} className="w-16 h-16 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center">
-                  <span className="text-gray-500 text-xs">Empty</span>
-                </div>
-              ))}
-            </div>
-            <button 
-              onClick={() => setShowInventory(false)}
-              className="w-full mt-4 py-2 bg-purple-600 rounded-lg text-white hover:bg-purple-700 transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-        )}
+        {/* Enhanced Inventory System */}
+        <InventorySystem
+          isVisible={showInventory}
+          onClose={() => setShowInventory(false)}
+          inventory={playerInventory}
+          onUseItem={(item) => {
+            if (item.usableInCombat && gameState.inCombat) {
+              // Handle combat item usage
+              if (item.id === 'health_potion') {
+                setGameState(prev => ({
+                  ...prev,
+                  health: Math.min(prev.maxHealth, prev.health + 50)
+                }));
+              } else if (item.id === 'mana_potion') {
+                setGameState(prev => ({
+                  ...prev,
+                  mana: Math.min(prev.maxMana, prev.mana + 30)
+                }));
+              } else if (item.id === 'strength_potion') {
+                addChatMessage('System', 'You feel a surge of power! Attack increased for this battle.');
+              }
+              
+              // Remove item from inventory
+              setPlayerInventory(prev => 
+                prev.map(invItem => 
+                  invItem.id === item.id 
+                    ? { ...invItem, quantity: invItem.quantity - 1 }
+                    : invItem
+                ).filter(invItem => invItem.quantity > 0)
+              );
+              
+              addChatMessage('System', `Used ${item.name}!`);
+            }
+          }}
+          playerGold={playerGold}
+        />
 
         {/* Skill Tree Modal */}
         <SkillTree
