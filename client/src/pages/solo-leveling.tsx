@@ -533,16 +533,20 @@ export default function SoloLeveling() {
                 </div>
               </div>
 
-              {/* Scene Container with Affection Meter */}
-              <div id="scene-container" className="relative w-full h-40 flex-shrink-0 overflow-hidden bg-transparent">
+              {/* Scene Container with Affection Meter - Full Immersion */}
+              <div id="scene-container" className="relative w-full h-80 flex-shrink-0 overflow-hidden bg-transparent">
                 <div id="effects-container" className="absolute inset-0 z-20 pointer-events-none" />
                 <div 
-                  className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 transform scale-105"
-                  style={{ backgroundImage: currentBackground }}
+                  className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 filter brightness-110 contrast-110"
+                  style={{ 
+                    backgroundImage: currentBackground,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center center'
+                  }}
                 />
                 {/* Affection Meter */}
-                <div className="absolute top-2 right-2 z-40 w-28 bg-black/60 p-2 rounded-lg border border-pink-500/30">
-                  <div className="text-xs text-pink-500 mb-1 text-center">Cha Hae-In</div>
+                <div className="absolute top-3 right-3 z-40 w-32 bg-black/70 p-2 rounded-xl border border-pink-500/40 backdrop-blur-sm">
+                  <div className="text-xs text-pink-500 mb-1 text-center font-semibold">Cha Hae-In</div>
                   <div className="flex justify-center gap-1">
                     {renderAffectionHearts()}
                   </div>
