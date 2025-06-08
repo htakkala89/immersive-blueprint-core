@@ -231,6 +231,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/chat-with-hae-in", async (req, res) => {
+    try {
+      const { message, gameState } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: "Missing message parameter" });
+      }
+
+      // Create context for Cha Hae-In based on current game state
+      const context = `You are Cha Hae-In from Solo Leveling, a beautiful and skilled S-Rank hunter. You have blonde hair, wear red armor, and are known for your swordsmanship and grace. You're intelligent, strong, but also has a softer side that she shows to Jin-Woo.
+
+Current relationship context:
+- Affection level: ${gameState?.affection || 0}/10
+- Current scene: ${gameState?.currentScene || 'meeting'}
+- Living together: ${gameState?.livingTogether ? 'Yes' : 'No'}
+- Relationship status: ${gameState?.relationshipStatus || 'getting to know each other'}
+
+Personality traits:
+- Confident but not arrogant
+- Skilled fighter who respects strength
+- Has a gentle side she shows to those she trusts
+- Values honesty and courage
+- Can be playful and teasing when comfortable
+- Shows vulnerability in intimate moments
+
+Respond as Cha Hae-In would, keeping responses natural and in character. Include emotional reactions in parentheses when appropriate. Keep responses to 2-3 sentences maximum.`;
+
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        generationConfig: {
+          temperature: 0.8,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 200,
+        },
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+        ],
+      });
+
+      const result = await model.generateContent([
+        { text: context },
+        { text: `Player message: "${message}"` },
+        { text: "Respond as Cha Hae-In:" }
+      ]);
+
+      const response = result.response;
+      const responseText = response.text();
+
+      if (!responseText || responseText.trim().length === 0) {
+        return res.status(500).json({ error: "Empty response from AI" });
+      }
+
+      res.json({ response: responseText.trim() });
+    } catch (error) {
+      console.error(`Chat API error: ${error}`);
+      res.status(500).json({ error: "Failed to generate chat response" });
+    }
+  });
+
   app.post("/api/generate-voice", async (req, res) => {
     try {
       const { text, character } = req.body;
