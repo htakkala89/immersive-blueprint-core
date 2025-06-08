@@ -176,24 +176,24 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
 
 const getActivityDialogue = (activity: Activity): string => {
   const dialogues: Record<string, string> = {
-    morning_coffee: "Good morning, Jin-Woo! Want to start the day with some coffee together?",
-    lunch_date: "Let's have lunch together! I found this nice place we could try.",
-    evening_walk: "The evening is perfect for a walk. Care to join me?",
-    training_together: "Want to train together? I could use a sparring partner.",
-    shopping_trip: "I need to pick up some things. Want to come shopping with me?",
-    movie_night: "There's a good movie playing tonight. Interested in watching it together?",
-    solo_raid: "I'm heading to clear a dungeon. This should be quick work.",
-    joint_raid: "Let's take on this dangerous gate together as a team!",
-    marketplace_visit: "The marketplace has some interesting items today.",
-    propose_living_together: "Jin-Woo, I've been thinking... maybe we could live together?",
-    cuddle_together: "Come here, let's just relax together for a while.",
-    shower_together: "Want to join me? The water's nice and warm.",
-    make_love: "I love you so much, Jin-Woo. Let me show you how much.",
-    intimate_massage: "You look tense. Let me help you relax with a massage.",
-    intimate_bath: "I've prepared a nice warm bath for us both."
+    morning_coffee: "*stretches elegantly* Morning, Jin-Woo! I was thinking we could grab some coffee before today's missions. What do you say?",
+    lunch_date: "*checks her sword briefly, then smiles* How about lunch? I know this place that serves amazing bulgogi. My treat?",
+    evening_walk: "*looks out at the sunset* Perfect evening for a walk, don't you think? I could use some fresh air after today's training.",
+    training_together: "*adjusts her stance with a competitive glint* Ready for some sparring? Fair warning - I won't go easy on you just because you're the Shadow Monarch.",
+    shopping_trip: "*sighs slightly* I need to pick up some new gear. Want to come? Your opinion on equipment choices might actually be useful.",
+    movie_night: "*leans against the wall casually* There's this action movie everyone's talking about. Interested? Though I doubt it's as intense as our real adventures.",
+    solo_raid: "*confident expression* I've got a C-rank gate to clear solo. Quick work, but it keeps my skills sharp.",
+    joint_raid: "*serious but excited* There's a dangerous A-rank gate that just opened. Want to tackle it together? I could use someone I trust watching my back.",
+    marketplace_visit: "*thoughtful look* The hunters' marketplace has some rare items today. Might find something that catches your eye.",
+    propose_living_together: "*takes a deep breath, looking slightly vulnerable* Jin-Woo... I've been thinking about us. Maybe it's time we... shared a place? What do you think?",
+    cuddle_together: "*softer expression* Come here... *reaches out gently* Sometimes even hunters need to just... be close to someone they care about.",
+    shower_together: "*blushes slightly but maintains eye contact* The water's perfect temperature... care to join me? I promise I'll behave... mostly.",
+    make_love: "*moves closer with loving eyes* Jin-Woo... *touches your face gently* I want to show you just how much you mean to me. Every part of me is yours.",
+    intimate_massage: "*notices your tension* You're carrying too much stress, my love. *gentle smile* Let me take care of you... I know exactly how to help you relax.",
+    intimate_bath: "*lighting candles around the tub* I prepared something special for us... *extends her hand* Just you, me, and warm water... perfect for forgetting the world exists."
   };
   
-  return dialogues[activity.id] || "Let's spend some quality time together!";
+  return dialogues[activity.id] || "*smiles warmly* What do you have in mind? I'm always up for spending quality time with you.";
 };
 
 export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImageGenerated, gameState }: DailyLifeHubModalProps) {

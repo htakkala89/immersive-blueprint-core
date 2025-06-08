@@ -247,24 +247,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Missing message parameter" });
       }
 
-      // Create context for Cha Hae-In based on current game state
-      const context = `You are Cha Hae-In from Solo Leveling, a beautiful and skilled S-Rank hunter. You have blonde hair, wear red armor, and are known for your swordsmanship and grace. You're intelligent, strong, but also has a softer side that she shows to Jin-Woo.
+      // Import enhanced personality system
+      const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
+      
+      // Create enhanced context for Cha Hae-In's personality
+      const affectionLevel = gameState?.affection || 0;
+      const currentHour = new Date().getHours();
+      const timeOfDay = currentHour < 6 ? 'night' : 
+                       currentHour < 12 ? 'morning' :
+                       currentHour < 18 ? 'afternoon' : 
+                       currentHour < 22 ? 'evening' : 'night';
+      
+      // Determine mood based on message content
+      let mood = 'balanced';
+      if (message.toLowerCase().includes('fight') || message.toLowerCase().includes('battle')) mood = 'confident';
+      else if (message.toLowerCase().includes('love') || message.toLowerCase().includes('feel')) mood = 'romantic';
+      else if (message.includes('?')) mood = 'playful';
+      else if (message.toLowerCase().includes('sorry') || message.toLowerCase().includes('sad')) mood = 'vulnerable';
+      
+      const conversationContext = {
+        affectionLevel,
+        currentScene: gameState?.currentScene || 'general',
+        timeOfDay: timeOfDay as 'morning' | 'afternoon' | 'evening' | 'night',
+        mood: mood as 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic'
+      };
 
-Current relationship context:
-- Affection level: ${gameState?.affection || 0}/10
-- Current scene: ${gameState?.currentScene || 'meeting'}
-- Living together: ${gameState?.livingTogether ? 'Yes' : 'No'}
-- Relationship status: ${gameState?.relationshipStatus || 'getting to know each other'}
-
-Personality traits:
-- Confident but not arrogant
-- Skilled fighter who respects strength
-- Has a gentle side she shows to those she trusts
-- Values honesty and courage
-- Can be playful and teasing when comfortable
-- Shows vulnerability in intimate moments
-
-Respond as Cha Hae-In would, keeping responses natural and in character. Include emotional reactions in parentheses when appropriate. Keep responses to 2-3 sentences maximum.`;
+      const context = getPersonalityPrompt(conversationContext);
 
       const model = genAI.getGenerativeModel({ 
         model: "gemini-1.5-flash",
@@ -294,10 +302,27 @@ Respond as Cha Hae-In would, keeping responses natural and in character. Include
         ],
       });
 
+      // Add conversation context and examples for better responses
+      const conversationExamples = `
+EXAMPLE RESPONSES (adapt these styles, don't copy exactly):
+
+When greeted: "Oh, Jin-Woo! *turns with a genuine smile* I was just thinking about our last raid. How are you feeling today?"
+
+When complimented: "*raises an eyebrow with a slight smirk* Flattery, Jin-Woo? Though I appreciate the sentiment. You're not bad yourself."
+
+When asked about training: "Always ready to improve. *adjusts sword grip* Want to spar? I promise I'll go easy on you... maybe."
+
+When discussing feelings: "*looks away briefly, then meets your eyes* You know, Jin-Woo, you have this way of making everything feel... different. In a good way."
+
+When teased playfully: "*laughs softly* Is that so? *steps closer with a challenging look* Care to test that theory?"
+
+Remember: Be dynamic, show personality, ask engaging questions back, reference your shared hunter experiences.`;
+
       const result = await model.generateContent([
         { text: context },
+        { text: conversationExamples },
         { text: `Player message: "${message}"` },
-        { text: "Respond as Cha Hae-In:" }
+        { text: "Respond as Cha Hae-In with personality and depth:" }
       ]);
 
       const response = result.response;
