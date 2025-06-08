@@ -274,6 +274,49 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Character progression routes
+  app.post("/api/level-up", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      if (!sessionId) {
+        return res.status(400).json({ error: "Session ID is required" });
+      }
+
+      const gameState = await storage.levelUp(sessionId);
+      res.json(gameState);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  });
+
+  app.post("/api/upgrade-skill", async (req, res) => {
+    try {
+      const { sessionId, skillId } = req.body;
+      if (!sessionId || !skillId) {
+        return res.status(400).json({ error: "Session ID and skill ID are required" });
+      }
+
+      const gameState = await storage.upgradeSkill(sessionId, skillId);
+      res.json(gameState);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  });
+
+  app.post("/api/allocate-stat", async (req, res) => {
+    try {
+      const { sessionId, stat } = req.body;
+      if (!sessionId || !stat) {
+        return res.status(400).json({ error: "Session ID and stat are required" });
+      }
+
+      const gameState = await storage.allocateStatPoint(sessionId, stat);
+      res.json(gameState);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import { SkillTree } from "@/components/SkillTree";
+import { useCharacterProgression } from "@/hooks/useCharacterProgression";
+import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
   level: number;
@@ -10,6 +13,11 @@ interface GameState {
   currentScene: string;
   inventory: any[];
   inCombat: boolean;
+  experience?: number;
+  statPoints?: number;
+  skillPoints?: number;
+  stats?: any;
+  skills?: any[];
 }
 
 interface StoryScene {
@@ -30,7 +38,80 @@ export default function SoloLeveling() {
     affection: 0,
     currentScene: 'START',
     inventory: [],
-    inCombat: false
+    inCombat: false,
+    experience: 750,
+    statPoints: 5,
+    skillPoints: 2,
+    stats: {
+      strength: 342,
+      agility: 298,
+      intelligence: 176,
+      vitality: 285,
+      sense: 243
+    },
+    skills: [
+      {
+        id: "shadow-extraction",
+        name: "Shadow Extraction",
+        description: "Extract shadows from defeated enemies to create loyal soldiers",
+        type: "ultimate",
+        level: 8,
+        maxLevel: 10,
+        unlocked: true,
+        prerequisites: [],
+        effects: { shadowCapacity: 40 }
+      },
+      {
+        id: "dagger-mastery",
+        name: "Dagger Mastery",
+        description: "Increases damage and attack speed with daggers",
+        type: "passive",
+        level: 6,
+        maxLevel: 10,
+        unlocked: true,
+        prerequisites: [],
+        effects: { daggerDamage: 60, attackSpeed: 30 }
+      },
+      {
+        id: "stealth",
+        name: "Stealth",
+        description: "Become invisible to enemies for a short duration",
+        type: "active",
+        level: 4,
+        maxLevel: 10,
+        unlocked: true,
+        prerequisites: [],
+        effects: { stealthDuration: 12 },
+        manaCost: 25,
+        cooldown: 30
+      },
+      {
+        id: "shadow-armor",
+        name: "Shadow Armor",
+        description: "Summon protective shadow armor that absorbs damage",
+        type: "active",
+        level: 5,
+        maxLevel: 10,
+        unlocked: true,
+        prerequisites: ["shadow-extraction"],
+        effects: { damageReduction: 25 },
+        manaCost: 40,
+        cooldown: 45
+      },
+      {
+        id: "monarch-domain",
+        name: "Monarch's Domain",
+        description: "Ultimate ability that enhances all shadow abilities",
+        type: "ultimate",
+        level: 1,
+        maxLevel: 5,
+        unlocked: false,
+        prerequisites: ["shadow-extraction", "shadow-armor"],
+        effects: { domainPower: 100 },
+        manaCost: 100,
+        cooldown: 300
+      }
+    ]
   });
 
   const [gameStarted, setGameStarted] = useState(false);
@@ -44,6 +125,9 @@ export default function SoloLeveling() {
   const [activeMiniGame, setActiveMiniGame] = useState<string | null>(null);
   const [showChatTutorial, setShowChatTutorial] = useState(false);
   const [currentChoiceIndex, setCurrentChoiceIndex] = useState(0);
+  const [showSkillTree, setShowSkillTree] = useState(false);
+
+  const characterProgression = useCharacterProgression('solo-leveling-session');
 
   const timeRef = useRef<HTMLSpanElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
