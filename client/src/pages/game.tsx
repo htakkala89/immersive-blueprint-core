@@ -79,13 +79,13 @@ export default function Game() {
           {/* AI-Generated Scene Background with Ken Burns Effect */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="w-full h-full transform scale-110 animate-ken-burns">
-              <GameCanvas sceneData={gameState.sceneData} />
+              <GameCanvas sceneData={gameState?.sceneData || null} />
             </div>
           </div>
             
           {/* Story Progress - Glassmorphism */}
           <div className="absolute top-20 left-4 right-4">
-            <StoryProgress gameState={gameState} />
+            <StoryProgress gameState={gameState!} />
           </div>
           
           {/* AI Generated Badge - Glassmorphism */}
@@ -99,12 +99,12 @@ export default function Game() {
             <div className="rounded-lg px-3 py-2 min-w-20 bg-red-500/20 backdrop-blur-md border border-red-400/30">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-red-400 text-xs drop-shadow-lg">❤️</span>
-                <span className="text-white text-xs drop-shadow-lg font-medium">{gameState.health}</span>
+                <span className="text-white text-xs drop-shadow-lg font-medium">{gameState?.health}</span>
               </div>
               <div className="w-14 h-1 bg-black/30 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-red-500 rounded-full transition-all duration-300" 
-                  style={{ width: `${(gameState.health / gameState.maxHealth) * 100}%` }}
+                  style={{ width: `${((gameState?.health || 0) / (gameState?.maxHealth || 1)) * 100}%` }}
                 />
               </div>
             </div>
@@ -113,12 +113,12 @@ export default function Game() {
             <div className="rounded-lg px-3 py-2 min-w-20 bg-blue-500/20 backdrop-blur-md border border-blue-400/30">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-blue-400 text-xs drop-shadow-lg">💧</span>
-                <span className="text-white text-xs drop-shadow-lg font-medium">{gameState.mana}</span>
+                <span className="text-white text-xs drop-shadow-lg font-medium">{gameState?.mana}</span>
               </div>
               <div className="w-14 h-1 bg-black/30 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-blue-500 rounded-full transition-all duration-300" 
-                  style={{ width: `${(gameState.mana / gameState.maxMana) * 100}%` }}
+                  style={{ width: `${((gameState?.mana || 0) / (gameState?.maxMana || 1)) * 100}%` }}
                 />
               </div>
             </div>
@@ -155,23 +155,27 @@ export default function Game() {
           </div>
 
           {/* Game UI - Glassmorphism */}
-          <div className="absolute bottom-0 left-0 right-0">
-            <GameUI 
-              gameState={gameState} 
-              onChoice={handleChoice}
-              isProcessing={isProcessing}
-              onInventoryToggle={() => setShowInventory(!showInventory)}
-            />
-          </div>
+          {gameState && (
+            <div className="absolute bottom-0 left-0 right-0">
+              <GameUI 
+                gameState={gameState} 
+                onChoice={handleChoice}
+                isProcessing={isProcessing}
+                onInventoryToggle={() => setShowInventory(!showInventory)}
+              />
+            </div>
+          )}
         </div>
       </div>
 
       {/* Inventory Modal */}
-      <Inventory 
-        items={gameState.inventory} 
-        isVisible={showInventory}
-        onClose={() => setShowInventory(false)}
-      />
+      {gameState && (
+        <Inventory 
+          items={gameState.inventory} 
+          isVisible={showInventory}
+          onClose={() => setShowInventory(false)}
+        />
+      )}
 
       {/* Skill Tree Modal */}
       {showSkillTree && gameState && (
@@ -183,14 +187,16 @@ export default function Game() {
       )}
 
       {/* Realtime Chat Modal */}
-      <RealtimeChat
-        gameState={gameState}
-        isVisible={showRealtimeChat}
-        onClose={() => setShowRealtimeChat(false)}
-        onAffectionChange={(change) => {
-          console.log(`Affection changed by: ${change}`);
-        }}
-      />
+      {gameState && (
+        <RealtimeChat
+          gameState={gameState}
+          isVisible={showRealtimeChat}
+          onClose={() => setShowRealtimeChat(false)}
+          onAffectionChange={(change) => {
+            console.log(`Affection changed by: ${change}`);
+          }}
+        />
+      )}
 
       {/* Loading Overlay */}
       <LoadingOverlay isVisible={isProcessing} />
