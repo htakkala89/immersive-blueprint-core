@@ -505,14 +505,32 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
     thoughtful: /thoughtful|pensive|considering/i.test(chatResponse)
   };
 
-  // Build emotion description
+  // Detect specific detailed expressions for immersive visuals
+  const specificExpressions = {
+    lipBite: /bites her lip|biting her lip|lip bite|nervously bites/i.test(chatResponse),
+    smallSmile: /small smile|gentle smile|shy smile|soft smile/i.test(chatResponse),
+    touchesLips: /touches her lips|runs her finger|traces her lip/i.test(chatResponse),
+    looksAway: /looks away shyly|glances away|averts her gaze|looks down bashfully/i.test(chatResponse),
+    deepBlush: /cheeks flush|face turns red|blushes deeply|rosy cheeks|pink cheeks/i.test(chatResponse)
+  };
+  
+  // Build detailed emotion description for immersive visuals
   let emotionDesc = "";
-  if (emotions.blushing) emotionDesc += "blushing with rosy cheeks, ";
-  if (emotions.smiling) emotionDesc += "gentle warm smile, ";
-  if (emotions.shy) emotionDesc += "shy and bashful expression, ";
-  if (emotions.confident) emotionDesc += "confident determined look, ";
-  if (emotions.surprised) emotionDesc += "surprised wide eyes, ";
-  if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
+  if (specificExpressions.lipBite) emotionDesc += "biting her lower lip nervously, intimate close-up of her mouth and lips, detailed facial expression, ";
+  if (specificExpressions.smallSmile) emotionDesc += "small genuine smile playing on her lips, gentle expression, close-up portrait showing delicate features, ";
+  if (specificExpressions.touchesLips) emotionDesc += "delicately touching her lips with her finger, intimate gesture, close-up facial shot, ";
+  if (specificExpressions.looksAway) emotionDesc += "shyly looking away with bashful expression, side profile view, elegant neck and jawline visible, ";
+  if (specificExpressions.deepBlush) emotionDesc += "deep blush coloring her cheeks, rosy pink complexion, soft romantic lighting, ";
+  
+  // Fallback to general emotions if no specific expressions detected
+  if (!emotionDesc) {
+    if (emotions.blushing) emotionDesc += "blushing with rosy cheeks, ";
+    if (emotions.smiling) emotionDesc += "gentle warm smile, ";
+    if (emotions.shy) emotionDesc += "shy and bashful expression, ";
+    if (emotions.confident) emotionDesc += "confident determined look, ";
+    if (emotions.surprised) emotionDesc += "surprised wide eyes, ";
+    if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
+  }
 
   // Detect who is speaking - if Cha Hae-In is responding, focus on her
   const chaHaeInSpeaking = chatResponse.toLowerCase().includes('cha hae-in') ||
@@ -524,13 +542,20 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
                         userMessage.toLowerCase().includes('together') ||
                         /\b(we|us|couple)\b/i.test(chatResponse);
   
-  // Prioritize Cha Hae-In focused scenes when she's speaking
+  // Prioritize ultra-detailed intimate expressions for maximum immersion
   if (chaHaeInSpeaking && !isCoupleMoment) {
-    return `Close-up portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with BRIGHT GOLDEN BLONDE HAIR (never purple or black hair), striking features, wearing red knight armor or elegant hunter clothing, detailed facial expression showing genuine emotion, soft lighting highlighting her features, speaking or responding, expressive face, Solo Leveling manhwa art style, vibrant glowing colors, sharp dynamic lines, detailed character design. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
+    // Create highly detailed intimate portraits for specific expressions
+    if (specificExpressions.lipBite || specificExpressions.touchesLips) {
+      return `Ultra close-up intimate portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} extreme close-up focusing on her mouth and lips area, beautiful Korean S-rank hunter with BRIGHT GOLDEN BLONDE HAIR, detailed lip texture and expression, soft romantic lighting, high detail facial features, cinematic depth of field, Solo Leveling manhwa art style, vibrant glowing colors, intimate immersive composition. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
+    } else if (specificExpressions.smallSmile || specificExpressions.deepBlush) {
+      return `Intimate close-up portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} detailed facial expression with focus on her smile and blushing cheeks, beautiful Korean S-rank hunter with BRIGHT GOLDEN BLONDE HAIR, soft romantic lighting highlighting facial contours, expressive eyes and delicate features, Solo Leveling manhwa art style, vibrant glowing colors, emotional intimate composition. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
+    } else {
+      return `Close-up portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with BRIGHT GOLDEN BLONDE HAIR, striking features, wearing red knight armor or elegant hunter clothing, detailed facial expression showing genuine emotion, soft lighting highlighting her features, speaking or responding, expressive face, Solo Leveling manhwa art style, vibrant glowing colors, sharp dynamic lines, detailed character design. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
+    }
   } else if (isCoupleMoment) {
     return `Romantic scene between Sung Jin-Woo and Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} Jin-Woo (Korean male, short black hair, dark eyes, black hunter outfit) and Cha Hae-In (Korean female, BRIGHT GOLDEN BLONDE HAIR, red armor or elegant clothing) having intimate conversation, meaningful eye contact, standing close together, romantic tension, beautiful background setting, detailed facial expressions, Solo Leveling manhwa art style, vibrant glowing colors, couple interaction scene. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
   } else {
-    return `Portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with BRIGHT GOLDEN BLONDE HAIR (never purple or black hair), striking features, wearing red knight armor or elegant hunter clothing, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, Solo Leveling manhwa art style, vibrant glowing colors, sharp dynamic lines, detailed character design. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
+    return `Portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with BRIGHT GOLDEN BLONDE HAIR, striking features, wearing red knight armor or elegant hunter clothing, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, Solo Leveling manhwa art style, vibrant glowing colors, sharp dynamic lines, detailed character design. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
   }
 }
 

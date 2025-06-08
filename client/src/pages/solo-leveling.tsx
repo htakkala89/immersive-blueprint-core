@@ -2293,7 +2293,13 @@ export default function SoloLeveling() {
         
         // Generate new image for emotional reactions and scene changes in chat
         const emotionalReactions = [
-          // Physical reactions
+          // Detailed facial expressions for immersion
+          /\*.*(?:small smile|gentle smile|shy smile|warm smile|soft smile).*\*/gi,
+          /\*.*(?:bites her lip|biting her lip|lip bite|nervously bites).*\*/gi,
+          /\*.*(?:touches her lips|runs her finger|traces her lip).*\*/gi,
+          /\*.*(?:looks away shyly|glances away|averts her gaze|looks down bashfully).*\*/gi,
+          /\*.*(?:cheeks flush|face turns red|blushes deeply|rosy cheeks|pink cheeks).*\*/gi,
+          // Physical reactions  
           /\*.*(?:blushes|smiles|laughs|giggles|tears up|cries|gasps|shocked|surprised).*\*/gi,
           /\*.*(?:kisses|embraces|holds close|pulls away|touches|caresses|hugs).*\*/gi,
           // Emotional states
