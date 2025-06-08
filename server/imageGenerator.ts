@@ -57,7 +57,7 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
           dynamic_thresholding: false,
           controlnet_strength: 1,
           legacy: false,
-          negative_prompt: "blonde hair, light hair, yellow hair, golden hair, bright hair, white hair, silver hair, gray hair, wrong hair color"
+          negative_prompt: "black hair, dark hair, brown hair, blue eyes, green eyes, brown eyes, wrong hair color, wrong eye color"
         }
       })
     });
@@ -354,7 +354,7 @@ function createSoloLevelingPrompt(gameState: GameState): string {
     characterDescription = ", Sung Jin-Woo (tall Korean male, short spiky BLACK hair, sharp angular face, intense dark eyes, black hunter coat, confident stance, shadow aura, Solo Leveling protagonist design)";
   }
   if (includeHaeIn) {
-    characterDescription += ", Cha Hae-In (beautiful Korean female, blonde hair, red armor, elegant sword stance, S-rank hunter, graceful but powerful, Solo Leveling character design)";
+    characterDescription += ", Cha Hae-In (beautiful Korean female, short blonde hair, striking purple eyes, red armor, elegant sword stance, S-rank hunter, graceful but powerful, Solo Leveling character design)";
   }
 
   // Prioritize environmental and location-based scenes over character portraits
@@ -458,11 +458,13 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
   if (emotions.surprised) emotionDesc += "surprised wide eyes, ";
   if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
 
-  return `Professional anime portrait of Cha Hae-In from Solo Leveling manhwa, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, manhwa art style, high quality anime illustration, emotional close-up portrait, Solo Leveling character design`;
+  return `Professional anime portrait of Cha Hae-In from Solo Leveling manhwa, ${emotionDesc} beautiful Korean S-rank hunter with short blonde hair and striking purple eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, manhwa art style, high quality anime illustration, emotional close-up portrait, Solo Leveling character design`;
 }
 
 function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {
-  const baseStyle = "anime style, detailed, beautiful, romantic lighting, intimate atmosphere, Cha Hae-In and Jin-Woo from Solo Leveling";
+  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female S-rank hunter with short blonde hair and striking purple eyes)";
+  const jinWooDesc = "Sung Jin-Woo (tall Korean male with short black hair and dark eyes)";
+  const baseStyle = `anime style, detailed, beautiful, romantic lighting, intimate atmosphere, ${chaHaeInDesc} and ${jinWooDesc} from Solo Leveling`;
   
   switch (activityId) {
     case 'strip_poker':
@@ -505,7 +507,7 @@ function createMatureSoloLevelingPrompt(gameState: GameState): string {
   
   // Accurate Solo Leveling character descriptions
   const jinWooDesc = "Sung Jin-Woo (tall Korean male, short spiky BLACK hair, sharp angular facial features, intense dark eyes, black hunter coat with silver details, confident powerful stance, shadow aura, Shadow Monarch design from Solo Leveling manhwa)";
-  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female S-rank hunter, blonde hair in elegant style, red armor with golden accents, graceful sword stance, determined expression, Sword Saint from Solo Leveling manhwa)";
+  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female S-rank hunter, short blonde hair, striking purple eyes, red armor with golden accents, graceful sword stance, determined expression, Sword Saint from Solo Leveling manhwa)";
   
   // Romantic and intimate scene generation
   if (narration.includes("kiss") || narration.includes("embrace")) {

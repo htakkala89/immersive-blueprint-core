@@ -9,9 +9,9 @@ async function testMatureContentGeneration() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        activityId: 'strip_poker',
+        activityId: 'intimate_evening',
         relationshipStatus: 'married',
-        intimacyLevel: 9
+        intimacyLevel: 8
       })
     });
 
@@ -26,18 +26,19 @@ async function testMatureContentGeneration() {
       const base64Data = data.imageUrl.replace(/^data:image\/\w+;base64,/, '');
       const buffer = Buffer.from(base64Data, 'base64');
       
-      fs.writeFileSync('generated_mature_content.png', buffer);
-      console.log('✅ Mature content image generated and saved as generated_mature_content.png');
+      fs.writeFileSync('corrected_cha_haein_image.png', buffer);
+      console.log('✅ Corrected Cha Hae-In image generated and saved');
       console.log('📊 Image size:', buffer.length, 'bytes');
-      console.log('🔞 Activity: strip_poker');
-      console.log('💑 Relationship: married (intimacy level 9)');
+      console.log('🔞 Activity: intimate_evening');
+      console.log('💑 Relationship: married (intimacy level 8)');
+      console.log('👱‍♀️ Character: Short blonde hair, purple eyes');
       
       return {
         success: true,
         imageSize: buffer.length,
-        activity: 'strip_poker',
-        intimacyLevel: 9,
-        filePath: 'generated_mature_content.png'
+        activity: 'intimate_evening',
+        intimacyLevel: 8,
+        filePath: 'corrected_cha_haein_image.png'
       };
     } else {
       console.log('❌ No image URL returned');
