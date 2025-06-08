@@ -4000,7 +4000,18 @@ export default function SoloLeveling() {
           // Set as active activity for continuous interaction
           setActiveActivity(activity);
           
-          // Handle activity selection with chat response
+          // Handle special combat activities
+          if (activity.id === 'dungeon_raid') {
+            setShowDungeonRaid(true);
+            setShowDailyLifeHub(false);
+            return;
+          } else if (activity.id === 'shadow_training') {
+            setShowShadowArmy(true);
+            setShowDailyLifeHub(false);
+            return;
+          }
+          
+          // Handle regular activity selection with chat response
           const activityDialogue = getActivityDialogue(activity);
           addChatMessage('Cha Hae-In', activityDialogue);
           
@@ -4162,6 +4173,39 @@ export default function SoloLeveling() {
           </div>
         </div>
       )}
+
+      {/* Dungeon Raid System */}
+      <DungeonRaidSystem
+        isVisible={showDungeonRaid}
+        onClose={() => setShowDungeonRaid(false)}
+        playerLevel={gameState.level}
+        shadowArmy={shadowArmy}
+        onShadowGain={(shadow) => {
+          setShadowArmy(prev => [...prev, shadow]);
+          addChatMessage('System', `New shadow extracted: ${shadow.name}!`);
+        }}
+        onExperienceGain={(exp) => {
+          setPlayerExperience(prev => prev + exp);
+          setGameState(prev => ({
+            ...prev,
+            experience: (prev.experience || 0) + exp
+          }));
+        }}
+      />
+
+      {/* Shadow Army Manager */}
+      <ShadowArmyManager
+        isVisible={showShadowArmy}
+        onClose={() => setShowShadowArmy(false)}
+        shadowArmy={shadowArmy}
+        onShadowUpdate={setShadowArmy}
+        playerLevel={gameState.level}
+        availableMaterials={[
+          { name: 'Shadow Essence', quantity: 15 },
+          { name: 'Dark Crystal', quantity: 8 },
+          { name: 'Soul Fragment', quantity: 22 }
+        ]}
+      />
     </div>
   );
 }

@@ -40,6 +40,25 @@ interface DailyLifeHubModalProps {
 const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity[] => {
   const baseActivities: Activity[] = [
     {
+      id: 'dungeon_raid',
+      title: 'Dungeon Raids',
+      description: 'Lead your shadow army into dangerous dungeons',
+      icon: '⚔️',
+      energyCost: 25,
+      experienceReward: 200,
+      goldReward: 500,
+      available: true
+    },
+    {
+      id: 'shadow_training',
+      title: 'Shadow Army Management',
+      description: 'Train and evolve your shadow soldiers',
+      icon: '👥',
+      energyCost: 15,
+      experienceReward: 100,
+      available: true
+    },
+    {
       id: 'morning_coffee',
       title: 'Morning Coffee',
       description: 'Start the day with Cha Hae-In over coffee',
