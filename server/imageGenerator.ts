@@ -8,6 +8,66 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 let lastImageGeneration = 0;
 const IMAGE_GENERATION_COOLDOWN = 1000; // 1 second between generations
 
+// Content classification
+function isMatureContent(gameState: GameState): boolean {
+  const narration = gameState.narration.toLowerCase();
+  const matureKeywords = [
+    'intimate', 'passionate', 'embrace', 'kiss', 'romantic', 'love', 'tender',
+    'close', 'touch', 'caress', 'desire', 'attraction', 'seductive', 'alluring',
+    'beautiful', 'gorgeous', 'stunning', 'enchanting', 'captivating'
+  ];
+  
+  return matureKeywords.some(keyword => narration.includes(keyword));
+}
+
+async function generateWithNovelAI(prompt: string): Promise<string | null> {
+  try {
+    const response = await fetch('https://api.novelai.net/ai/generate-image', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input: prompt,
+        model: 'nai-diffusion-3',
+        action: 'generate',
+        parameters: {
+          width: 1024,
+          height: 1024,
+          scale: 7,
+          sampler: 'k_euler_ancestral',
+          steps: 28,
+          seed: Math.floor(Math.random() * 1000000),
+          n_samples: 1,
+          ucPreset: 0,
+          qualityToggle: true,
+          sm: false,
+          sm_dyn: false,
+          dynamic_thresholding: false,
+          controlnet_strength: 1,
+          legacy: false
+        }
+      })
+    });
+
+    if (!response.ok) {
+      console.error('NovelAI API error:', response.status, response.statusText);
+      return null;
+    }
+
+    const data = await response.text();
+    // NovelAI returns base64 encoded image
+    const base64Image = data;
+    
+    // Convert to data URL for browser display
+    return `data:image/png;base64,${base64Image}`;
+  } catch (error) {
+    console.error('Error generating NovelAI image:', error);
+    return null;
+  }
+}
+
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
   try {
     // Check rate limit
@@ -18,8 +78,22 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     }
     
     lastImageGeneration = now;
-    const prompt = createSoloLevelingPrompt(gameState);
     
+    // Determine which generator to use based on content
+    const useMatureGenerator = isMatureContent(gameState);
+    
+    if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
+      console.log('Using NovelAI for mature content generation');
+      const prompt = createMatureSoloLevelingPrompt(gameState);
+      const image = await generateWithNovelAI(prompt);
+      if (image) return image;
+      
+      // Fallback to OpenAI if NovelAI fails
+      console.log('NovelAI failed, falling back to OpenAI');
+    }
+    
+    // Use OpenAI for general content or as fallback
+    const prompt = createSoloLevelingPrompt(gameState);
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: prompt,
@@ -91,4 +165,54 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   
   // Default dungeon scene
   return `${baseStyle}, mysterious ancient corridor, stone walls with glowing mystical inscriptions, atmospheric lighting, shadows and mist${characterDescription}, fantasy adventure exploration`;
+}
+
+function createMatureSoloLevelingPrompt(gameState: GameState): string {
+  const baseStyle = "masterpiece, best quality, anime style, manhwa art, Solo Leveling aesthetic, detailed artwork, cinematic composition, dramatic lighting";
+  const narration = gameState.narration.toLowerCase();
+  
+  // Character descriptions for mature scenes
+  const jinWooDesc = "Jin-Woo (tall handsome male, dark hair, intense eyes, strong jawline, Shadow Monarch)";
+  const chaHaeInDesc = "Cha Hae-In (beautiful blonde female hunter, elegant features, graceful stance, sword saint)";
+  
+  // Romantic and intimate scene generation
+  if (narration.includes("kiss") || narration.includes("embrace")) {
+    return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} in romantic embrace, passionate kiss, intimate moment, soft lighting, romantic atmosphere, detailed facial expressions, emotional connection, fantasy setting background, tender scene`;
+  }
+  
+  if (narration.includes("romantic") || narration.includes("love") || narration.includes("confession")) {
+    return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} romantic scene, love confession moment, emotional intimacy, beautiful lighting, romantic atmosphere, detailed character interaction, fantasy romance, tender expressions`;
+  }
+  
+  if (narration.includes("intimate") || narration.includes("close") || narration.includes("tender")) {
+    return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} intimate moment, close together, tender interaction, soft romantic lighting, emotional scene, detailed artwork, fantasy romance setting`;
+  }
+  
+  if (narration.includes("beautiful") || narration.includes("stunning") || narration.includes("gorgeous")) {
+    return `${baseStyle}, ${chaHaeInDesc} beauty focus, elegant pose, detailed character design, beautiful lighting, graceful appearance, fantasy hunter outfit, sword saint aesthetic, romantic scene`;
+  }
+  
+  if (narration.includes("passion") || narration.includes("desire") || narration.includes("attraction")) {
+    return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} passionate scene, intense emotional connection, romantic tension, dramatic lighting, detailed character interaction, fantasy romance`;
+  }
+  
+  if (narration.includes("touch") || narration.includes("caress") || narration.includes("gentle")) {
+    return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} gentle touching, tender caress, intimate physical contact, soft lighting, romantic scene, detailed hand placement, emotional connection`;
+  }
+  
+  // Date and romantic outing scenes
+  if (narration.includes("date") || narration.includes("dinner") || narration.includes("restaurant")) {
+    return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} on romantic date, elegant restaurant setting, intimate dinner scene, romantic atmosphere, soft lighting, detailed character interaction`;
+  }
+  
+  if (narration.includes("beach") || narration.includes("sunset")) {
+    return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} romantic beach scene, sunset background, intimate moment by ocean, romantic atmosphere, beautiful lighting, detailed scenery`;
+  }
+  
+  if (narration.includes("rooftop") || narration.includes("stars")) {
+    return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} rooftop romantic scene, starry night sky, intimate setting, city lights background, romantic atmosphere, detailed urban fantasy`;
+  }
+  
+  // Default romantic scene
+  return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} romantic scene, intimate moment, beautiful lighting, detailed character interaction, fantasy romance setting, emotional connection`;
 }
