@@ -231,6 +231,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/generate-voice", async (req, res) => {
+    try {
+      const { text, character } = req.body;
+      
+      if (!text || !character) {
+        return res.status(400).json({ error: "Missing text or character parameter" });
+      }
+      
+      const audioBuffer = await voiceService.generateVoiceByCharacter(character, text);
+      
+      if (audioBuffer) {
+        res.set({
+          'Content-Type': 'audio/mpeg',
+          'Content-Length': audioBuffer.length.toString()
+        });
+        res.send(audioBuffer);
+      } else {
+        res.status(500).json({ error: "Failed to generate voice" });
+      }
+    } catch (error) {
+      console.error(`Failed to generate voice: ${error}`);
+      res.status(500).json({ error: "Failed to generate voice" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }

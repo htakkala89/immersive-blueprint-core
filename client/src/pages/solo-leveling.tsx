@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { SkillTree } from "@/components/SkillTree";
 import { useCharacterProgression } from "@/hooks/useCharacterProgression";
+import { useVoice } from "@/hooks/useVoice";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/components/MiniGames";
 import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import { RaidSystem } from "@/components/RaidSystem";
@@ -143,6 +144,7 @@ export default function SoloLeveling() {
   const [showRaidSystem, setShowRaidSystem] = useState(false);
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
+  const { playVoice, stopVoice, isPlaying } = useVoice();
 
   const timeRef = useRef<HTMLSpanElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
