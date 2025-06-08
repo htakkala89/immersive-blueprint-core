@@ -386,6 +386,10 @@ export default function SoloLeveling() {
   };
 
   const handleChoice = (choice: any) => {
+    console.log('Choice clicked:', choice);
+    console.log('Current scene:', gameState.currentScene);
+    console.log('Current story:', story[gameState.currentScene]);
+    
     const currentStory = story[gameState.currentScene];
     if (currentStory?.leadsTo?.[choice.type]) {
       const nextScene = currentStory.leadsTo[choice.type];
