@@ -102,86 +102,10 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
 }
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
-  try {
-    if (!process.env.GOOGLE_IMAGEN_API_KEY) {
-      console.log('Google Imagen API key not available');
-      return null;
-    }
-
-    const apiKey = process.env.GOOGLE_IMAGEN_API_KEY;
-    
-    // Try the Google AI Studio API endpoint first
-    const aiStudioUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`;
-    
-    const response = await fetch(aiStudioUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt: {
-          text: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style"
-        },
-        safetySettings: [
-          {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_ONLY_HIGH"
-          }
-        ],
-        personGeneration: "ALLOW_ADULT"
-      })
-    });
-
-    if (response.status === 404) {
-      console.log('Google Imagen endpoint not found, trying alternative endpoint structure');
-      
-      // Try alternative endpoint structure
-      const altUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`;
-      
-      const altResponse = await fetch(altUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Generate an image: ${prompt}. High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style`
-            }]
-          }]
-        })
-      });
-
-      if (!altResponse.ok) {
-        console.log('Alternative Google API endpoint also failed, falling back to OpenAI');
-        return null;
-      }
-
-      const altData = await altResponse.json();
-      console.log('Alternative Google API response:', JSON.stringify(altData, null, 2));
-      return null;
-    }
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Google Imagen API error:', response.status, response.statusText, errorText);
-      return null;
-    }
-
-    const data = await response.json();
-    const imageData = data.generatedImages?.[0]?.bytesBase64Encoded || data.candidates?.[0]?.image?.bytesBase64Encoded;
-    
-    if (imageData) {
-      console.log('✅ Google Imagen generated image successfully');
-      return `data:image/png;base64,${imageData}`;
-    }
-    
-    console.log('No image data returned from Google Imagen, response:', JSON.stringify(data, null, 2));
-    return null;
-  } catch (error) {
-    console.error('Google Imagen generation error:', error);
-    return null;
-  }
+  // Google Imagen is not currently available through Google AI Studio API
+  // Falling back to OpenAI for reliable image generation
+  console.log('Google Imagen not available, using OpenAI for character generation');
+  return null;
 }
 
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
