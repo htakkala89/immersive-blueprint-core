@@ -2320,7 +2320,7 @@ export default function SoloLeveling() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-4" style={{ height: '96px' }}>
+                      <div className="flex items-center gap-4" style={{ height: '80px' }}>
                         {/* Previous Button */}
                         {currentStory.choices.length > 1 && (
                           <button
@@ -2340,18 +2340,18 @@ export default function SoloLeveling() {
                               const choice = currentStory.choices?.[currentChoiceIndex];
                               if (choice) handleChoice(choice);
                             }}
-                            className="w-full h-full bg-white/10 backdrop-blur-xl rounded-2xl p-3 hover:bg-white/15 active:bg-white/20 transition-all duration-200 text-left border border-white/20 shadow-lg group"
+                            className="w-full h-full bg-white/10 backdrop-blur-xl rounded-2xl p-2 hover:bg-white/15 active:bg-white/20 transition-all duration-200 text-left border border-white/20 shadow-lg group"
                           >
-                            <div className="flex items-center gap-3 h-full">
-                              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-sm flex-shrink-0">
+                            <div className="flex items-center gap-2 h-full">
+                              <div className="w-6 h-6 bg-orange-500 rounded-lg flex items-center justify-center text-xs flex-shrink-0">
                                 📱
                               </div>
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                <div className="text-white text-sm font-medium mb-1 leading-tight">
+                                <div className="text-white text-xs font-medium mb-1 leading-tight">
                                   {currentStory.choices[currentChoiceIndex]?.text || 'Choose an action'}
                                 </div>
                                 {currentStory.choices[currentChoiceIndex]?.detail && (
-                                  <div className="text-gray-400 text-xs leading-snug">
+                                  <div className="text-gray-400 text-[10px] leading-snug">
                                     {currentStory.choices[currentChoiceIndex].detail}
                                   </div>
                                 )}
