@@ -18,11 +18,8 @@ export function useCharacterProgression(sessionId: string) {
 
   const upgradeSkillMutation = useMutation({
     mutationFn: async (skillId: string) => {
-      return apiRequest("/api/upgrade-skill", {
-        method: "POST",
-        body: JSON.stringify({ sessionId, skillId }),
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await apiRequest("POST", "/api/upgrade-skill", { sessionId, skillId });
+      return response.json();
     },
     onSuccess: (gameState) => {
       queryClient.setQueryData(["/api/game-state", sessionId], gameState);
@@ -32,11 +29,8 @@ export function useCharacterProgression(sessionId: string) {
 
   const allocateStatMutation = useMutation({
     mutationFn: async (stat: keyof CharacterStats) => {
-      return apiRequest<GameState>("/api/allocate-stat", {
-        method: "POST",
-        body: JSON.stringify({ sessionId, stat }),
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await apiRequest("POST", "/api/allocate-stat", { sessionId, stat });
+      return response.json();
     },
     onSuccess: (gameState) => {
       queryClient.setQueryData(["/api/game-state", sessionId], gameState);
