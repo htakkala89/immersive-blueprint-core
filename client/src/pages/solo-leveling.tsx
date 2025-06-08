@@ -127,6 +127,7 @@ export default function SoloLeveling() {
   const [currentChoiceIndex, setCurrentChoiceIndex] = useState(0);
   const [showSkillTree, setShowSkillTree] = useState(false);
   const [chatPinned, setChatPinned] = useState(false);
+  const [autoMessageVisible, setAutoMessageVisible] = useState(true);
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
 
@@ -1713,13 +1714,30 @@ export default function SoloLeveling() {
   };
 
   const addChatMessage = (sender: string, text: string) => {
+    const messageId = Date.now() + Math.random();
     const newMessage = {
       sender,
       text,
-      id: Date.now() + Math.random(),
+      id: messageId,
       timestamp: Date.now()
     };
     setChatMessages(prev => [...prev, newMessage]);
+    
+    // Show overlay automatically when new messages appear
+    setAutoMessageVisible(true);
+    
+    // Hide individual message after 10 seconds
+    setTimeout(() => {
+      setAutoHiddenMessages(prev => new Set([...prev, messageId]));
+    }, 10000);
+    
+    // Auto-hide overlay after 12 seconds if not pinned
+    setTimeout(() => {
+      if (!chatPinned) {
+        setAutoMessageVisible(false);
+      }
+    }, 12000);
+    
     scrollToBottom();
   };
 
@@ -2221,7 +2239,7 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Chat Container - Toggleable overlay */}
-                <div className={`absolute bottom-20 left-0 right-0 z-30 flex flex-col transition-opacity duration-300 ${chatPinned ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} style={{ height: '40%' }}>
+                <div className={`absolute bottom-20 left-0 right-0 z-30 flex flex-col transition-opacity duration-300 ${(chatPinned || autoMessageVisible) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} style={{ height: '40%' }}>
                   {/* Chat Container - Takes available space */}
                   <div className="flex-1 min-h-0 overflow-hidden">
                     <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto chat-container">
@@ -2283,7 +2301,7 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Actions Panel - Always Visible */}
-                <div className="absolute bottom-20 left-0 right-0 z-35">
+                <div className="absolute bottom-20 left-0 right-0 z-40">
                   {/* Choices Section - Apple-style Carousel */}
                   {currentStory?.choices && currentStory.choices.length > 0 && (
                     <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4 mx-3 rounded-t-2xl" style={{ height: '160px' }}>
@@ -2351,7 +2369,7 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Bottom Bar - Overlaid */}
-                <div className="absolute bottom-0 left-0 right-0 z-40 p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40 flex items-center gap-3">
+                <div className="absolute bottom-0 left-0 right-0 z-50 p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40 flex items-center gap-3">
                   <button 
                     onClick={() => setShowSkillTree(true)}
                     className="w-11 h-11 bg-purple-500/15 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all relative"
