@@ -267,57 +267,50 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
 }
 
 function createSoloLevelingPrompt(gameState: GameState): string {
-  const baseStyle = "Korean manhwa art style, fantasy adventure, dramatic lighting, detailed artwork, webtoon aesthetic, cinematic composition";
+  const baseStyle = "Solo Leveling manhwa art style, CHUGONG webtoon aesthetic, Korean manhwa illustration, detailed digital art, dramatic shadows, sharp angular character designs, purple and blue color scheme, cinematic lighting, high contrast, professional manhwa quality";
   
   // Determine scene type based on current narration
   const narration = gameState.narration.toLowerCase();
   
-  // Check if characters should be included in the scene
-  const includeCharacters = narration.includes("maya") || narration.includes("alex") || 
-                           narration.includes("companion") || narration.includes("team") ||
-                           narration.includes("responds") || narration.includes("says") ||
-                           narration.includes("turns to") || narration.includes("speaking") ||
-                           narration.includes("beside you") || narration.includes("together");
+  // Solo Leveling specific character designs
+  const includeJinWoo = narration.includes("jin-woo") || narration.includes("sung") || narration.includes("shadow monarch") || narration.includes("you are");
+  const includeHaeIn = narration.includes("hae-in") || narration.includes("cha") || narration.includes("sword saint");
   
   let characterDescription = "";
-  if (includeCharacters) {
-    if (narration.includes("maya")) {
-      characterDescription = ", Maya (elegant female mage with flowing dark robes and mystical staff, wise expression, magical aura, standing beside the protagonist)";
-    }
-    if (narration.includes("alex")) {
-      characterDescription += ", Alex (confident male warrior with polished armor and sword, protective stance, determined expression)";
-    }
-    if (includeCharacters && !characterDescription) {
-      characterDescription = ", adventuring party with diverse fantasy characters including a wise mage and brave warrior";
-    }
+  if (includeJinWoo) {
+    characterDescription = ", Sung Jin-Woo (tall Korean male, short spiky BLACK hair, sharp angular face, intense dark eyes, black hunter coat, confident stance, shadow aura, Solo Leveling protagonist design)";
+  }
+  if (includeHaeIn) {
+    characterDescription += ", Cha Hae-In (beautiful Korean female, blonde hair, red armor, elegant sword stance, S-rank hunter, graceful but powerful, Solo Leveling character design)";
   }
   
-  if (narration.includes("ancient door") || narration.includes("runes")) {
-    return `${baseStyle}, ancient stone doorway with glowing mystical symbols, fantasy dungeon entrance, blue and purple magical light from carved runes, stone corridor, atmospheric mist${characterDescription}, adventure game scene`;
+  // Gate and dungeon scenes
+  if (narration.includes("gate") || narration.includes("dungeon") || narration.includes("portal")) {
+    return `${baseStyle}, mysterious dungeon gate portal with purple energy, Solo Leveling gate entrance, dimensional rift with swirling dark energy, ominous atmosphere${characterDescription}, hunter preparing to enter`;
   }
   
-  if (narration.includes("dragon") || narration.includes("victory") || narration.includes("combat")) {
-    return `${baseStyle}, majestic dragon in ancient chamber, treasure room with golden light, magical artifacts, heroic adventure scene${characterDescription}, fantasy quest completion`;
+  if (narration.includes("shadow") || narration.includes("army") || narration.includes("soldiers")) {
+    return `${baseStyle}, shadow soldiers emerging from darkness, purple shadowy figures with glowing eyes, Solo Leveling shadow army, dark magic summoning${characterDescription}, monarch's power`;
   }
   
-  if (narration.includes("lock") && narration.includes("success")) {
-    return `${baseStyle}, ancient mechanical lock opening, intricate gears and mystical components, ethereal light through doorway, detailed metalwork with glowing symbols${characterDescription}, door revealing hidden chamber`;
+  if (narration.includes("boss") || narration.includes("monster") || narration.includes("combat")) {
+    return `${baseStyle}, intense boss battle scene, powerful dungeon monster, dramatic combat lighting, hunter vs monster, action-packed fight scene${characterDescription}, Solo Leveling battle aesthetic`;
   }
   
-  if (narration.includes("enhanced vision") || narration.includes("magical")) {
-    return `${baseStyle}, mystical vision enhancement, glowing energy pathways, hidden magical circuits in ancient architecture${characterDescription}, magical energy connecting symbols`;
+  if (narration.includes("level up") || narration.includes("system") || narration.includes("status")) {
+    return `${baseStyle}, blue system window interface floating in air, RPG status screen, glowing stats display, Solo Leveling system notifications${characterDescription}, game-like UI elements`;
   }
   
-  if (narration.includes("chamber") || narration.includes("crystalline")) {
-    return `${baseStyle}, vast underground chamber, towering crystal formations with ethereal glow, ancient carved symbols on stone walls${characterDescription}, atmospheric crystal lighting, dungeon interior`;
+  if (narration.includes("hunter") || narration.includes("association") || narration.includes("guild")) {
+    return `${baseStyle}, Korean Hunter Association building interior, modern hunter facility, professional meeting room, S-rank hunters gathered${characterDescription}, official hunter setting`;
   }
   
-  if (narration.includes("shock") || narration.includes("fail") || narration.includes("damage")) {
-    return `${baseStyle}, mystical trap activation, crackling magical energy, ancient protective magic system, glowing warning runes${characterDescription}, dramatic lighting`;
+  if (narration.includes("romantic") || narration.includes("date") || narration.includes("together")) {
+    return `${baseStyle}, romantic scene between hunters, soft lighting, emotional moment, beautiful Korean setting${characterDescription}, intimate atmosphere with manhwa romance style`;
   }
   
-  if (narration.includes("speak") || narration.includes("conversation") || narration.includes("dialogue")) {
-    return `${baseStyle}, characters in conversation in ancient dungeon setting${characterDescription}, fantasy party discussing strategy, atmospheric dungeon lighting`;
+  if (narration.includes("power") || narration.includes("monarch") || narration.includes("awakening")) {
+    return `${baseStyle}, massive power surge, purple energy explosion, shadow monarch transformation, overwhelming magical aura${characterDescription}, ultimate power display`;
   }
   
   // Default dungeon scene
@@ -325,12 +318,12 @@ function createSoloLevelingPrompt(gameState: GameState): string {
 }
 
 function createMatureSoloLevelingPrompt(gameState: GameState): string {
-  const baseStyle = "masterpiece, best quality, anime style, manhwa art, Solo Leveling aesthetic, detailed artwork, cinematic composition, dramatic lighting";
+  const baseStyle = "Solo Leveling manhwa art style, CHUGONG official artwork, Korean webtoon illustration, professional manhwa quality, detailed digital art, sharp character designs, dramatic shadows, purple and blue color palette, high contrast lighting";
   const narration = gameState.narration.toLowerCase();
   
-  // Character descriptions for mature scenes with explicit hair colors
-  const jinWooDesc = "Sung Jin-Woo (tall Korean male with BLACK HAIR, short messy black hair, sharp dark eyes, handsome angular face, black hunter outfit, Shadow Monarch, NOT blonde, NOT light hair)";
-  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female hunter, long BLONDE hair, elegant features, graceful stance, white hunter outfit, sword saint)";
+  // Accurate Solo Leveling character descriptions
+  const jinWooDesc = "Sung Jin-Woo (tall Korean male, short spiky BLACK hair, sharp angular facial features, intense dark eyes, black hunter coat with silver details, confident powerful stance, shadow aura, Shadow Monarch design from Solo Leveling manhwa)";
+  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female S-rank hunter, blonde hair in elegant style, red armor with golden accents, graceful sword stance, determined expression, Sword Saint from Solo Leveling manhwa)";
   
   // Romantic and intimate scene generation
   if (narration.includes("kiss") || narration.includes("embrace")) {
