@@ -638,7 +638,7 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Chat and Story Overlay - Lower Half */}
-                <div className="absolute bottom-0 left-0 right-0 z-30 flex flex-col" style={{ height: '60%' }}>
+                <div className="absolute bottom-20 left-0 right-0 z-30 flex flex-col" style={{ height: '50%' }}>
                   {/* Chat Container - Takes available space */}
                   <div className="flex-1 min-h-0 overflow-hidden">
                     <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto">
