@@ -12,18 +12,10 @@ interface Chapter {
 
 const CHAPTERS: Chapter[] = [
   {
-    id: 'new_game',
-    title: 'New Game',
-    description: 'Start from the very beginning. Meet Cha Hae-In for the first time.',
-    icon: '🆕',
-    unlocked: true,
-    startScene: 'MEETING_CHA_HAE_IN'
-  },
-  {
-    id: 'first_meeting',
-    title: 'First Meeting',
-    description: 'The moment you first encounter the legendary Sword Saint.',
-    icon: '⚔️',
+    id: 'arise',
+    title: 'Arise',
+    description: 'Begin your journey as the Shadow Monarch and meet Cha Hae-In.',
+    icon: '👤',
     unlocked: true,
     startScene: 'MEETING_CHA_HAE_IN'
   },
@@ -36,10 +28,10 @@ const CHAPTERS: Chapter[] = [
     startScene: 'COFFEE_DATE'
   },
   {
-    id: 'dungeon_partnership',
-    title: 'Dungeon Partnership',
-    description: 'Team up with Hae-In for dangerous dungeon raids.',
-    icon: '🏰',
+    id: 'gate_raids',
+    title: 'Gate Raids',
+    description: 'Team up with Cha Hae-In for dangerous gate clearing missions.',
+    icon: '🚪',
     unlocked: true,
     startScene: 'GATE_ENTRANCE'
   },
