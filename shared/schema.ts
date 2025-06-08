@@ -62,6 +62,43 @@ export const CharacterStats = z.object({
   sense: z.number().default(10),
 });
 
+export const SkillNode = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  type: z.enum(['passive', 'active', 'ultimate', 'job']),
+  tier: z.number().default(1),
+  level: z.number().default(0),
+  maxLevel: z.number().default(10),
+  cooldown: z.number().optional(),
+  manaCost: z.number().optional(),
+  unlocked: z.boolean().default(false),
+  prerequisites: z.array(z.string()).default([]),
+  effects: z.record(z.number()).default({}),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  icon: z.string(),
+  category: z.enum(['combat', 'shadow', 'physical', 'mental', 'leadership']),
+});
+
+export const ExperienceGain = z.object({
+  amount: z.number(),
+  source: z.string(),
+  timestamp: z.number(),
+});
+
+export const CharacterProgression = z.object({
+  level: z.number().default(1),
+  experience: z.number().default(0),
+  experienceToNext: z.number().default(100),
+  statPoints: z.number().default(0),
+  skillPoints: z.number().default(0),
+  totalExperience: z.number().default(0),
+  recentGains: z.array(ExperienceGain).default([]),
+});
+
 export const SceneData = z.object({
   runes: z.array(z.object({
     x: z.number(),
@@ -85,6 +122,9 @@ export type Choice = z.infer<typeof Choice>;
 export type InventoryItem = z.infer<typeof InventoryItem>;
 export type Skill = z.infer<typeof Skill>;
 export type CharacterStats = z.infer<typeof CharacterStats>;
+export type SkillNode = z.infer<typeof SkillNode>;
+export type ExperienceGain = z.infer<typeof ExperienceGain>;
+export type CharacterProgression = z.infer<typeof CharacterProgression>;
 export type SceneData = z.infer<typeof SceneData>;
 export type InsertGameState = z.infer<typeof insertGameStateSchema>;
 export type GameState = typeof gameStates.$inferSelect;
