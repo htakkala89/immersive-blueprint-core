@@ -8,6 +8,7 @@ import {
   Sword, Shield, Zap, Eye, Heart, Skull, Crown, Star, 
   Flame, Snowflake, Bolt, Wind, Target, Users 
 } from "lucide-react";
+import { BattleNarrator, BattleNarrationHelpers } from './BattleNarrator';
 
 interface DungeonFloor {
   level: number;
@@ -138,6 +139,8 @@ export function DungeonRaidSystem({
   const [currentWave, setCurrentWave] = useState(0);
   const [combatLog, setCombatLog] = useState<string[]>([]);
   const [raidResults, setRaidResults] = useState<any>(null);
+  const [battleEvents, setBattleEvents] = useState<any[]>([]);
+  const [currentMonsterImage, setCurrentMonsterImage] = useState<string>('');
 
   const availableFloors = DUNGEON_FLOORS.filter(floor => 
     playerLevel >= floor.requirements.minLevel
@@ -190,13 +193,81 @@ export function DungeonRaidSystem({
     results.shadowsExtracted.forEach(shadow => onShadowGain(shadow));
   };
 
+  const generateMonsterImage = async (monsterType: string) => {
+    try {
+      const response = await fetch('/api/generate-scene-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          narration: `terrifying ${monsterType} monster in dungeon battle scene with glowing eyes and menacing presence`,
+          currentScene: 'BATTLE_SCENE'
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.imageUrl) {
+          setCurrentMonsterImage(data.imageUrl);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to generate monster image:', error);
+    }
+  };
+
+  const addBattleEvent = (type: string, actor: string, description: string, target?: string, damage?: number) => {
+    const event = {
+      id: Math.random().toString(36).substr(2, 9),
+      type,
+      actor,
+      target,
+      damage,
+      description,
+      timestamp: Date.now()
+    };
+    setBattleEvents(prev => [...prev, event]);
+  };
+
   const simulateWave = async (wave: number, floor: DungeonFloor) => {
     const enemiesInWave = Math.min(3, floor.enemyCount - (wave - 1) * 3);
     
-    setCombatLog(prev => [...prev, `Wave ${wave}: Engaging ${enemiesInWave} enemies`]);
+    // Generate monster image for this wave
+    const monsterTypes = ['orc', 'goblin', 'spider', 'golem'];
+    const currentMonster = monsterTypes[Math.floor(Math.random() * monsterTypes.length)];
+    await generateMonsterImage(currentMonster);
+    
+    const monsterDescription = BattleNarrationHelpers.generateMonsterEncounterNarration(currentMonster, `${currentMonster} pack`);
+    addBattleEvent('monster_encounter', 'Dungeon', monsterDescription);
+    setCombatLog(prev => [...prev, `Wave ${wave}: ${monsterDescription}`]);
+    
+    // Deploy shadow soldiers with detailed descriptions
+    for (const shadowId of selectedShadows) {
+      const shadow = shadowArmy.find(s => s.id === shadowId);
+      if (shadow) {
+        const summonDescription = BattleNarrationHelpers.generateShadowSummonNarration(shadow.type, shadow.name);
+        addBattleEvent('shadow_summon', shadow.name, summonDescription);
+        setCombatLog(prev => [...prev, summonDescription]);
+        await new Promise(resolve => setTimeout(resolve, 800));
+      }
+    }
     
     for (let i = 0; i < enemiesInWave; i++) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Shadow attacks with detailed descriptions
+      for (const shadowId of selectedShadows) {
+        const shadow = shadowArmy.find(s => s.id === shadowId);
+        if (shadow) {
+          const attackDescription = BattleNarrationHelpers.generateShadowActionNarration(shadow.type, shadow.name, 'attack');
+          const damage = Math.floor(shadow.attack * (0.8 + Math.random() * 0.4));
+          const combatResult = BattleNarrationHelpers.generateCombatResultNarration(shadow.name, `${currentMonster} enemy`, damage, Math.random() < 0.2);
+          
+          addBattleEvent('shadow_attack', shadow.name, attackDescription, `${currentMonster} enemy`, damage);
+          setCombatLog(prev => [...prev, attackDescription]);
+          setCombatLog(prev => [...prev, combatResult]);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
       
       const shadowUsed = selectedShadows[i % selectedShadows.length];
       const shadow = shadowArmy.find(s => s.id === shadowUsed);
@@ -416,28 +487,47 @@ export function DungeonRaidSystem({
             </TabsContent>
 
             <TabsContent value="combat" className="space-y-4">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Sword className="text-red-400" />
-                    Combat Log
-                    {raidInProgress && (
-                      <Badge variant="outline" className="text-yellow-400 border-yellow-400">
-                        Phase: {raidPhase} | Wave: {currentWave}
-                      </Badge>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-black rounded p-4 h-64 overflow-y-auto font-mono text-sm">
-                    {combatLog.map((log, index) => (
-                      <div key={index} className="text-green-400 mb-1">
-                        {log}
+              <div className="grid grid-cols-2 gap-4 h-96">
+                {/* Monster Display & Basic Combat Log */}
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <Sword className="text-red-400" />
+                      Battle Scene
+                      {raidInProgress && (
+                        <Badge variant="outline" className="text-yellow-400 border-yellow-400">
+                          {raidPhase} | Wave {currentWave}
+                        </Badge>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    {currentMonsterImage && (
+                      <div className="mb-4">
+                        <img 
+                          src={currentMonsterImage} 
+                          alt="Battle Monster" 
+                          className="w-full h-32 object-cover rounded-lg border border-red-500"
+                        />
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                    )}
+                    <div className="bg-black rounded p-3 h-24 overflow-y-auto font-mono text-xs">
+                      {combatLog.slice(-4).map((log, index) => (
+                        <div key={index} className="text-green-400 mb-1">
+                          {log}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Battle Narrator */}
+                <BattleNarrator
+                  isVisible={true}
+                  events={battleEvents}
+                  onEventAdd={(event) => setBattleEvents(prev => [...prev, event])}
+                />
+              </div>
 
               {raidResults && (
                 <Card className="bg-gray-800 border-gray-700">
