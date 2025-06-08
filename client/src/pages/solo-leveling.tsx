@@ -2032,6 +2032,38 @@ export default function SoloLeveling() {
     }
   };
 
+  const resetGame = () => {
+    setGameState({
+      level: 146,
+      health: 15420,
+      maxHealth: 15420,
+      mana: 8750,
+      maxMana: 8750,
+      affection: 0,
+      currentScene: 'START',
+      inventory: [],
+      inCombat: false,
+      experience: 750,
+      statPoints: 5,
+      skillPoints: 2,
+      gold: 500,
+      stats: {
+        strength: 342,
+        agility: 298,
+        intelligence: 176,
+        vitality: 285,
+        sense: 243
+      },
+      skills: [
+        { id: 'shadow_extraction', name: 'Shadow Extraction', level: 10, description: 'Extract shadows from defeated enemies' },
+        { id: 'shadow_exchange', name: 'Shadow Exchange', level: 8, description: 'Instantly swap positions with shadows' },
+        { id: 'monarch_domain', name: 'Monarch\'s Domain', level: 5, description: 'Create a domain of absolute shadow control' }
+      ]
+    });
+    setChatMessages([]);
+    setCurrentChoiceIndex(0);
+  };
+
 
 
   const createShadowSlashEffect = () => {
@@ -3317,6 +3349,12 @@ export default function SoloLeveling() {
                               ❤️
                             </span>
                           ))}
+                          <button
+                            onClick={resetGame}
+                            className="ml-2 px-2 py-1 text-xs bg-red-500/20 text-red-300 rounded border border-red-500/30 hover:bg-red-500/30 transition-colors"
+                          >
+                            Reset
+                          </button>
                         </div>
                       </div>
                     </div>
