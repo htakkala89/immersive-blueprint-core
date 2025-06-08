@@ -11,14 +11,32 @@ export interface StoryNode {
 }
 
 export const STORY_NODES: Record<string, StoryNode> = {
-  entrance: {
-    id: "entrance",
-    narration: "You stand before an ancient door, its surface covered in mysterious runes that pulse with ethereal light. Maya studies the magical inscriptions while Alex checks his equipment. The air hums with ancient power, and you sense that your choices here will determine your destiny.",
+  START: {
+    id: "START",
+    narration: "You are Sung Jin-Woo, the Shadow Monarch. After countless battles and becoming the world's strongest hunter, you've realized something is missing. Your heart races whenever you see S-Rank Hunter Cha Hae-In. Today, you've decided to pursue something more challenging than any dungeon boss - her heart.",
     choices: [
-      { id: "examine", icon: "🔍", text: "Examine the runes carefully", detail: "Study the magical inscriptions" },
-      { id: "pick-lock", icon: "🔓", text: "Attempt to pick the lock", detail: "Use your skills to bypass the mechanism" },
-      { id: "ask-maya", icon: "🧙‍♀️", text: "Ask Maya about the magic", detail: "Consult your magical companion" },
-      { id: "prepare", icon: "⚔️", text: "Prepare for danger", detail: "Ready weapons and defenses" }
+      { id: "accept_quest", icon: "💝", text: "Accept the quest", detail: "Time to level up in romance!" },
+      { id: "check_stats", icon: "📊", text: "Check your stats first", detail: "What are my current abilities?" }
+    ]
+  },
+
+  FIRST_MEETING: {
+    id: "FIRST_MEETING",
+    narration: "You find Cha Hae-In at the Hunter Association, reviewing mission reports. Her short blonde hair catches the light as she looks up with those striking purple eyes. She's surprised to see you approaching her directly.",
+    choices: [
+      { id: "play_cool", icon: "😎", text: "Play it cool", detail: "'Just another day's work.'" },
+      { id: "be_humble", icon: "🙏", text: "Be humble", detail: "'I could learn from you.'" },
+      { id: "ask_about_her", icon: "💬", text: "Ask about her missions", detail: "Show genuine interest" }
+    ]
+  },
+
+  COOL_RESPONSE: {
+    id: "COOL_RESPONSE", 
+    narration: "Cha Hae-In raises an eyebrow at your casual demeanor. 'Just another day's work? That's quite confident coming from someone who just cleared an S-rank gate solo.' There's a hint of amusement in her voice.",
+    choices: [
+      { id: "actions_speak", icon: "⚔️", text: "Actions speak louder", detail: "Philosophy on strength" },
+      { id: "ask_missions", icon: "🗺️", text: "Ask about her missions", detail: "Show interest in her" },
+      { id: "suggest_partnership", icon: "🤝", text: "Suggest working together", detail: "Partnership proposal" }
     ]
   },
   
