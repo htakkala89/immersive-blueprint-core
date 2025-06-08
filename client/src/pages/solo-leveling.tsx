@@ -281,7 +281,9 @@ export default function SoloLeveling() {
   };
 
   // Calculate message opacity for fade effect
-  const getMessageOpacity = (timestamp: number) => {
+  const getMessageOpacity = (timestamp: number | undefined) => {
+    if (!timestamp) return 1; // Show full opacity for messages without timestamp
+    
     const age = Date.now() - timestamp;
     const fadeStart = 30000; // Start fading after 30 seconds
     const fadeComplete = 60000; // Completely faded after 60 seconds
@@ -662,7 +664,7 @@ export default function SoloLeveling() {
                     {currentStory?.choices && (
                       <div className="p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40 flex-shrink-0">
                         <div className="text-xs text-white/80 font-semibold mb-2">Choose your action:</div>
-                        <div className="space-y-2 max-h-40 overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-purple-500/30">
+                        <div className="space-y-2 max-h-40 overflow-y-auto">
                           {currentStory.choices.map((choice, index) => (
                             <button
                               key={index}
