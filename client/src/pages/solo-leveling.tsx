@@ -42,6 +42,7 @@ export default function SoloLeveling() {
   const [showInventory, setShowInventory] = useState(false);
   const [activeMiniGame, setActiveMiniGame] = useState<string | null>(null);
   const [showChatTutorial, setShowChatTutorial] = useState(false);
+  const [currentChoiceIndex, setCurrentChoiceIndex] = useState(0);
 
   const timeRef = useRef<HTMLSpanElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -285,15 +286,42 @@ export default function SoloLeveling() {
     if (!timestamp) return 1; // Show full opacity for messages without timestamp
     
     const age = Date.now() - timestamp;
-    const fadeStart = 30000; // Start fading after 30 seconds
-    const fadeComplete = 60000; // Completely faded after 60 seconds
+    const fadeStart = 15000; // Start fading after 15 seconds
+    const fadeComplete = 30000; // Completely faded after 30 seconds
     
     if (age < fadeStart) return 1;
-    if (age > fadeComplete) return 0.15;
+    if (age > fadeComplete) return 0.1;
     
     const fadeProgress = (age - fadeStart) / (fadeComplete - fadeStart);
-    return Math.max(0.15, 1 - (fadeProgress * 0.85));
+    return Math.max(0.1, 1 - (fadeProgress * 0.9));
   };
+
+  // Get only recent messages for display (last 3 messages)
+  const getRecentMessages = () => {
+    return chatMessages.slice(-3);
+  };
+
+  // Navigation functions for choice carousel
+  const nextChoice = () => {
+    if (currentStory?.choices) {
+      setCurrentChoiceIndex((prev) => 
+        prev < currentStory.choices.length - 1 ? prev + 1 : 0
+      );
+    }
+  };
+
+  const prevChoice = () => {
+    if (currentStory?.choices) {
+      setCurrentChoiceIndex((prev) => 
+        prev > 0 ? prev - 1 : currentStory.choices.length - 1
+      );
+    }
+  };
+
+  // Reset choice index when story changes
+  useEffect(() => {
+    setCurrentChoiceIndex(0);
+  }, [gameState.currentScene]);
 
   const createShadowSlashEffect = () => {
     const effectsContainer = document.querySelector('#effects-container');
@@ -627,8 +655,8 @@ export default function SoloLeveling() {
                         </div>
                       )}
 
-                      {/* Chat Messages with Fade Effect */}
-                      {chatMessages.map(msg => {
+                      {/* Chat Messages - Recent Only with Fade Effect */}
+                      {getRecentMessages().map(msg => {
                         const opacity = getMessageOpacity(msg.timestamp);
                         return (
                           <div 
@@ -658,35 +686,68 @@ export default function SoloLeveling() {
                           </div>
                         );
                       })}
+
+                      {/* Chat History Access Hint */}
+                      {chatMessages.length > 3 && (
+                        <div className="text-center py-2">
+                          <div className="text-xs text-white/40">Scroll up to see chat history</div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  {/* Choices Section - Fixed Height with Guaranteed Scroll */}
-                  {currentStory?.choices && (
-                    <div className="bg-black/90 backdrop-blur-md border-t border-purple-500/40" style={{ height: '160px' }}>
-                      <div className="p-3 pb-2">
-                        <div className="text-xs text-white/80 font-semibold">Choose your action:</div>
+                  {/* Choices Section - Horizontal Carousel */}
+                  {currentStory?.choices && currentStory.choices.length > 0 && (
+                    <div className="bg-black/90 backdrop-blur-md border-t border-purple-500/40 p-3" style={{ height: '140px' }}>
+                      <div className="text-xs text-white/80 font-semibold mb-3 flex items-center justify-between">
+                        <span>Choose your action:</span>
+                        <span className="text-white/60">{currentChoiceIndex + 1} / {currentStory.choices.length}</span>
                       </div>
-                      <div className="px-3 pb-3 overflow-y-scroll" style={{ height: '120px' }}>
-                        <div className="space-y-2">
-                          {currentStory.choices.map((choice, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleChoice(choice)}
-                              className="w-full bg-purple-500/20 border border-purple-400/50 rounded-lg p-3 flex items-center gap-2 hover:bg-purple-500/30 transition-all text-left backdrop-blur-sm"
-                            >
-                              <div className="w-6 h-6 bg-purple-500/30 rounded-md flex items-center justify-center text-xs flex-shrink-0">
+                      
+                      <div className="flex items-center gap-3 h-full">
+                        {/* Previous Button */}
+                        {currentStory.choices.length > 1 && (
+                          <button
+                            onClick={prevChoice}
+                            className="w-8 h-8 bg-purple-500/20 border border-purple-400/50 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all flex-shrink-0"
+                          >
+                            ←
+                          </button>
+                        )}
+
+                        {/* Current Choice Display */}
+                        <div className="flex-1">
+                          <button
+                            onClick={() => handleChoice(currentStory.choices[currentChoiceIndex])}
+                            className="w-full bg-purple-500/20 border border-purple-400/50 rounded-lg p-4 hover:bg-purple-500/30 transition-all text-left backdrop-blur-sm h-full"
+                          >
+                            <div className="flex items-start gap-3 h-full">
+                              <div className="w-8 h-8 bg-purple-500/30 rounded-md flex items-center justify-center text-sm flex-shrink-0 mt-1">
                                 ⚔️
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="text-white text-sm font-semibold">{choice.text}</div>
-                                {choice.detail && (
-                                  <div className="text-white/80 text-xs mt-1">{choice.detail}</div>
+                              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                <div className="text-white text-sm font-semibold mb-1">
+                                  {currentStory.choices[currentChoiceIndex].text}
+                                </div>
+                                {currentStory.choices[currentChoiceIndex].detail && (
+                                  <div className="text-white/80 text-xs leading-relaxed">
+                                    {currentStory.choices[currentChoiceIndex].detail}
+                                  </div>
                                 )}
                               </div>
-                            </button>
-                          ))}
+                            </div>
+                          </button>
                         </div>
+
+                        {/* Next Button */}
+                        {currentStory.choices.length > 1 && (
+                          <button
+                            onClick={nextChoice}
+                            className="w-8 h-8 bg-purple-500/20 border border-purple-400/50 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all flex-shrink-0"
+                          >
+                            →
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
