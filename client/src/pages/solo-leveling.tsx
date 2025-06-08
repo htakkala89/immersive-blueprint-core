@@ -2628,6 +2628,41 @@ export default function SoloLeveling() {
           responseText.includes(keyword)
         ) || hasRudeBehavior;
         
+        // Auto-generate negative emotion images for visual feedback
+        const negativeEmotionPatterns = [
+          /\*.*(?:looks away|averts her gaze|turns away|steps back|crosses arms).*\*/gi,
+          /\*.*(?:frowns|scowls|disappointed look|hurt expression|sad eyes).*\*/gi,
+          /\*.*(?:sighs|shakes her head|looks disappointed|seems upset|appears hurt).*\*/gi,
+          /(disappointed|upset|hurt|bothered|uncomfortable|concerned)/gi
+        ];
+
+        const hasNegativeVisual = negativeEmotionPatterns.some(pattern => 
+          data.response.match(pattern)
+        ) || hasRudeBehavior;
+
+        if (hasNegativeVisual) {
+          fetch('/api/generate-chat-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chatResponse: data.response,
+              userMessage: message,
+              emotionalState: 'negative'
+            }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.imageUrl) {
+              setCurrentBackground(data.imageUrl);
+              setSceneBackground(data.imageUrl);
+              console.log('Generated negative emotion scene image');
+            }
+          })
+          .catch(err => console.log('Negative emotion image generation skipped:', err.message));
+        }
+
         // Apply affection changes with balanced difficulty
         if (hasAffectionDecrease && gameState.affection > 0) {
           const previousAffection = gameState.affection;

@@ -265,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/chat-with-hae-in", async (req, res) => {
     try {
-      const { message, gameState } = req.body;
+      const { message, gameState, affectionLevel, userBehavior } = req.body;
       
       if (!message) {
         return res.status(400).json({ error: "Missing message parameter" });
@@ -275,7 +275,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
       
       // Create enhanced context for Cha Hae-In's personality
-      const affectionLevel = gameState?.affection || 0;
+      const currentAffectionLevel = affectionLevel || gameState?.affection || 0;
       const currentHour = new Date().getHours();
       const timeOfDay = currentHour < 6 ? 'night' : 
                        currentHour < 12 ? 'morning' :
@@ -289,11 +289,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       else if (message.includes('?')) mood = 'playful';
       else if (message.toLowerCase().includes('sorry') || message.toLowerCase().includes('sad')) mood = 'vulnerable';
       
+      // Enhanced mood detection including negative emotions
+      if (userBehavior === 'mean') mood = 'hurt';
+      else if (userBehavior === 'rude') mood = 'disappointed';
+      
       const conversationContext = {
-        affectionLevel,
+        affectionLevel: currentAffectionLevel,
         currentScene: gameState?.currentScene || 'general',
         timeOfDay: timeOfDay as 'morning' | 'afternoon' | 'evening' | 'night',
-        mood: mood as 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic'
+        mood: mood as 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic' | 'disappointed' | 'hurt' | 'defensive',
+        userBehavior: userBehavior as 'positive' | 'neutral' | 'rude' | 'mean'
       };
 
       const context = getPersonalityPrompt(conversationContext);
