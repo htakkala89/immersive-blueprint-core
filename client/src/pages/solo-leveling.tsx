@@ -2989,15 +2989,6 @@ export default function SoloLeveling() {
           {/* Game Content */}
           {gameStarted && (
             <>
-              {/* Status Bar */}
-              <div className="h-11 flex items-center justify-between px-5 text-white text-sm font-semibold bg-black/30 backdrop-blur-md flex-shrink-0">
-                <span ref={timeRef}>9:41</span>
-                <div className="flex gap-2">
-                  <span>📶</span>
-                  <span>🔋</span>
-                </div>
-              </div>
-
               {/* Full Screen Game Container with Overlaid UI */}
               <div className="flex-1 relative overflow-hidden">
                 {/* AI-Generated Scene Background - Full Screen iPhone Display */}
@@ -3257,7 +3248,27 @@ export default function SoloLeveling() {
 
                 {/* New Combined Chat and Actions Panel */}
                 <div className="absolute bottom-0 left-0 right-0 z-50">
-                  {/* Mobile Stats Bar - Above Input */}
+                  {/* Action Pills - Above Stats */}
+                  {currentStory?.choices && currentStory.choices.length > 0 && (
+                    <div className="px-4 pb-3">
+                      <div className="flex flex-wrap gap-2 justify-center max-w-full">
+                        {currentStory.choices.map((choice, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleChoice(choice)}
+                            disabled={isLoading}
+                            className="inline-flex items-center gap-2 glassmorphism-choice hover:glassmorphism-choice-hover rounded-full px-4 py-2 text-white text-sm font-medium transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed max-w-xs"
+                            title={choice.detail}
+                          >
+                            <span className="text-base">⚡</span>
+                            <span className="truncate">{choice.text}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile Stats Bar - Below Action Pills */}
                   <div className="glassmorphism px-4 py-2">
                     <div className="flex items-center justify-between">
                       {/* Left Stats */}
@@ -3310,26 +3321,6 @@ export default function SoloLeveling() {
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Action Pills - Above Chat Input */}
-                  {currentStory?.choices && currentStory.choices.length > 0 && (
-                    <div className="px-4 pb-3">
-                      <div className="flex flex-wrap gap-2 justify-center max-w-full">
-                        {currentStory.choices.map((choice, index) => (
-                          <button
-                            key={index}
-                            onClick={() => handleChoice(choice)}
-                            disabled={isLoading}
-                            className="inline-flex items-center gap-2 glassmorphism-choice hover:glassmorphism-choice-hover rounded-full px-4 py-2 text-white text-sm font-medium transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed max-w-xs"
-                            title={choice.detail}
-                          >
-                            <span className="text-base">⚡</span>
-                            <span className="truncate">{choice.text}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   {/* Chat Input Bar */}
                   <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4">
