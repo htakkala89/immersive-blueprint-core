@@ -65,37 +65,19 @@ export default function Game() {
         </div>
 
         {/* Main Game Content */}
-        <div className="relative bg-gradient-to-b from-slate-800 via-slate-900 to-black overflow-hidden" style={{ height: '900px' }}>
+        <div className="relative bg-[hsl(var(--space-darker))] overflow-hidden" style={{ height: '900px' }}>
           
-          {/* Character Art Background */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/20 to-black/80">
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/30 via-purple-800/20 to-transparent"></div>
-            <div className="absolute inset-0 opacity-10" style={{ 
-              backgroundImage: 'radial-gradient(circle at 25% 25%, #3b82f6 0%, transparent 50%), radial-gradient(circle at 75% 75%, #8b5cf6 0%, transparent 50%)',
-              backgroundSize: '60px 60px'
-            }}></div>
-          </div>
-          
-          {/* Character Portrait Area */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute right-0 top-0 w-3/4 h-full bg-gradient-to-l from-blue-900/40 via-purple-800/20 to-transparent">
-              <div className="absolute right-4 top-16 w-48 h-64 bg-gradient-to-b from-slate-700/40 to-slate-900/60 rounded-lg border border-blue-400/20 shadow-2xl backdrop-blur-sm">
-                <div className="absolute inset-2 bg-gradient-to-b from-blue-900/30 to-purple-900/30 rounded border border-blue-300/10">
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-400/5 to-purple-400/10 rounded"></div>
-                  <div className="absolute bottom-2 left-2 right-2 h-8 bg-black/50 rounded flex items-center justify-center">
-                    <span className="text-blue-300 text-xs font-medium">Shadow Monarch</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Animated Game Scene Canvas */}
-          <div className="relative h-full">
+          {/* Animated Game Scene */}
+          <div className="relative h-64 scene-gradient overflow-hidden">
             <GameCanvas sceneData={gameState.sceneData} />
             
             {/* Story Progress */}
             <StoryProgress gameState={gameState} />
+            
+            {/* AI Generated Badge */}
+            <div className="absolute top-4 right-4 px-3 py-1.5 border border-white border-opacity-20 rounded-full">
+              <span className="text-white text-xs drop-shadow-lg">✨ AI-Generated Scene</span>
+            </div>
 
             {/* Status Overlay - Top Right */}
             <div className="absolute top-16 right-4 space-y-2">
