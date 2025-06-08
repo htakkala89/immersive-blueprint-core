@@ -211,29 +211,27 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     // Check if this is mature/romantic content
     const useMatureGenerator = isMatureContent(gameState);
     
-    if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
-      // Use NovelAI specifically for mature/romantic themes
-      console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
-      const maturePrompt = createMatureSoloLevelingPrompt(gameState);
-      const novelaiImage = await generateWithNovelAI(maturePrompt);
-      if (novelaiImage) {
-        console.log('✅ NovelAI generated mature content successfully');
-        return novelaiImage;
-      }
-      console.log('⚠️ NovelAI failed, trying Google Imagen fallback');
-    }
+    // Temporarily disable NovelAI routing to test Google Imagen
+    // if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
+    //   console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
+    //   const maturePrompt = createMatureSoloLevelingPrompt(gameState);
+    //   const novelaiImage = await generateWithNovelAI(maturePrompt);
+    //   if (novelaiImage) {
+    //     console.log('✅ NovelAI generated mature content successfully');
+    //     return novelaiImage;
+    //   }
+    //   console.log('⚠️ NovelAI failed, trying Google Imagen fallback');
+    // }
     
     // Use Google Imagen for characters and general scenes (better anime style)
     const generalPrompt = createSoloLevelingPrompt(gameState);
-    if (process.env.GOOGLE_API_KEY) {
-      console.log('🎯 Using Google Imagen for Solo Leveling content');
-      const googleImage = await generateWithGoogleImagen(generalPrompt);
-      if (googleImage) {
-        console.log('✅ Google Imagen generated image successfully');
-        return googleImage;
-      }
-      console.log('⚠️ Google Imagen failed, trying OpenAI fallback');
+    console.log('🎯 Attempting Google Imagen for Solo Leveling content');
+    const googleImage = await generateWithGoogleImagen(generalPrompt);
+    if (googleImage) {
+      console.log('✅ Google Imagen generated image successfully');
+      return googleImage;
     }
+    console.log('⚠️ Google Imagen failed, trying OpenAI fallback');
     
     // Fallback to OpenAI if available
     if (openai) {
