@@ -4,14 +4,19 @@ import { GameUI } from "@/components/GameUI";
 import { StoryProgress } from "@/components/StoryProgress";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Inventory } from "@/components/Inventory";
+import { EnhancedSkillTree } from "@/components/EnhancedSkillTree";
+import Home from "@/pages/home";
 import { useGameState } from "@/hooks/useGameState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Home as HomeIcon, Crown } from "lucide-react";
 
 export default function Game() {
   const { gameState, handleChoice, isLoading, isProcessing } = useGameState();
   const timeRef = useRef<HTMLSpanElement>(null);
   const [showInventory, setShowInventory] = useState(false);
+  const [showLifeHub, setShowLifeHub] = useState(false);
+  const [showSkillTree, setShowSkillTree] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
 
   // Update clock
@@ -104,6 +109,27 @@ export default function Game() {
                 </div>
               </div>
             </div>
+
+            {/* Quick Action Buttons - Top Left */}
+            <div className="absolute top-16 left-4 space-y-2">
+              {/* Life Hub Button */}
+              <Button
+                onClick={() => setShowLifeHub(true)}
+                className="rounded-full w-12 h-12 p-0 bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border border-purple-400 border-opacity-50 shadow-lg backdrop-blur-sm"
+                title="Daily Life Hub"
+              >
+                <HomeIcon className="h-5 w-5 text-white drop-shadow-lg" />
+              </Button>
+              
+              {/* Skills Button */}
+              <Button
+                onClick={() => setShowSkillTree(true)}
+                className="rounded-full w-12 h-12 p-0 bg-gradient-to-br from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 border border-yellow-400 border-opacity-50 shadow-lg backdrop-blur-sm"
+                title="Shadow Monarch Skills"
+              >
+                <Crown className="h-5 w-5 text-white drop-shadow-lg" />
+              </Button>
+            </div>
           </div>
 
           {/* Game UI */}
@@ -122,6 +148,32 @@ export default function Game() {
         isVisible={showInventory}
         onClose={() => setShowInventory(false)}
       />
+
+      {/* Life Hub Fullscreen Modal */}
+      {showLifeHub && (
+        <div className="fixed inset-0 z-50 bg-black">
+          <Home />
+          <Button
+            onClick={() => setShowLifeHub(false)}
+            className="fixed top-4 right-4 z-60 rounded-full w-12 h-12 p-0 bg-red-600 hover:bg-red-700"
+            title="Close Life Hub"
+          >
+            ✕
+          </Button>
+        </div>
+      )}
+
+      {/* Skill Tree Modal */}
+      {showSkillTree && gameState && (
+        <EnhancedSkillTree
+          gameState={gameState}
+          onClose={() => setShowSkillTree(false)}
+          sessionId={gameState.sessionId}
+        />
+      )}
+
+      {/* Loading Overlay */}
+      <LoadingOverlay isVisible={isProcessing} />
     </div>
   );
 }
