@@ -352,6 +352,33 @@ export default function SoloLeveling() {
       ],
       leadsTo: { confess: 'CAFE_CONFESSION', silent_moment: 'UNDERSTANDING_MOMENT' }
     },
+    'DAILY_LIFE_HUB': {
+      prompt: "Jin-Woo's modern apartment with city view, cozy and lived-in. Daily life setting, anime style.",
+      narration: "You're in your apartment, the central hub of your daily life. From here, you can plan your activities, spend time with Hae-In, or venture out into the hunter world.",
+      chat: [
+        { sender: 'system', text: "Welcome to your daily life. What would you like to do today?" }
+      ],
+      choices: [
+        { text: "Go to Hunter Marketplace", detail: "Buy gifts for Hae-In", type: 'visit_marketplace' },
+        { text: "Call Hae-In for a date", detail: "Spend romantic time together", type: 'call_date' },
+        { text: "Take on a dungeon mission", detail: "Earn gold and experience", type: 'solo_mission' },
+        { text: "Rest and recover", detail: "Restore energy", type: 'rest_recovery' }
+      ],
+      leadsTo: { visit_marketplace: 'HUNTER_MARKETPLACE', call_date: 'COFFEE_DATE', solo_mission: 'GATE_ENTRANCE', rest_recovery: 'DAILY_LIFE_HUB' }
+    },
+    'HUNTER_MARKETPLACE': {
+      prompt: "Bustling hunter marketplace with magical items and gifts. Shopping district, anime style.",
+      narration: "The Hunter Marketplace buzzes with activity. Vendors sell everything from magical weapons to beautiful gifts perfect for someone special.",
+      chat: [
+        { sender: 'system', text: "The marketplace has many gifts available for purchase. What catches your eye?" }
+      ],
+      choices: [
+        { text: "Browse romantic gifts", detail: "Find something special for Hae-In", type: 'browse_gifts' },
+        { text: "Check weapon upgrades", detail: "Improve your equipment", type: 'weapon_shop' },
+        { text: "Return to apartment", detail: "Head back home", type: 'return_home' }
+      ],
+      leadsTo: { browse_gifts: 'GIFT_SELECTION', weapon_shop: 'WEAPON_SHOP', return_home: 'DAILY_LIFE_HUB' }
+    },
     'GATE_ENTRANCE': {
       prompt: "Jin-Woo and Cha Hae-In standing before a B-rank dungeon portal, ready for adventure. Epic gate entrance scene, anime style.",
       narration: "The gate pulses with magical energy. You and Hae-In stand ready, your partnership already feeling natural.",
@@ -359,9 +386,10 @@ export default function SoloLeveling() {
         { sender: 'Cha Hae-In', text: "Ready, partner? Let's show this dungeon what we can do together." }
       ],
       choices: [
-        { text: "Enter together", detail: "Step through as a team", type: 'enter_gate' }
+        { text: "Enter together", detail: "Step through as a team", type: 'enter_gate' },
+        { text: "Return to daily life", detail: "Head back to your apartment", type: 'return_home' }
       ],
-      leadsTo: { enter_gate: 'DUNGEON_START' }
+      leadsTo: { enter_gate: 'DUNGEON_START', return_home: 'DAILY_LIFE_HUB' }
     },
     'PROTECTIVE_ROUTE': {
       prompt: "Jin-Woo showing concern for Cha Hae-In's safety. Protective gesture, anime style.",
