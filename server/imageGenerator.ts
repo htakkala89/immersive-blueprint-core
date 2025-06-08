@@ -119,7 +119,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       },
       body: JSON.stringify({
         instances: [{
-          prompt: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style"
+          prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel"
         }],
         parameters: {
           sampleCount: 1,
@@ -154,7 +154,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
         },
         body: JSON.stringify({
           instances: [{
-            prompt: prompt + ". High quality anime art style, detailed digital illustration, cinematic lighting, vibrant colors, Solo Leveling manhwa style"
+            prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel"
           }],
           parameters: {
             sampleCount: 1,
@@ -477,7 +477,7 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
   if (emotions.surprised) emotionDesc += "surprised wide eyes, ";
   if (emotions.thoughtful) emotionDesc += "thoughtful contemplative expression, ";
 
-  return `Professional anime portrait of Cha Hae-In from Solo Leveling manhwa, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, manhwa art style, high quality anime illustration, emotional close-up portrait, Solo Leveling character design`;
+  return `Professional portrait of Cha Hae-In from Solo Leveling manhwa by DUBU, ${emotionDesc} beautiful Korean S-rank hunter with long blonde hair and striking blue eyes, wearing white and gold Hunter Association uniform, detailed facial expression showing genuine emotion, soft lighting on face highlighting her features, Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic lines, detailed character design, powerful and epic feel`;
 }
 
 function createCustomIntimatePrompt(specificAction: string, relationshipStatus: string, intimacyLevel: number): string {

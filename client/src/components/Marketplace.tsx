@@ -93,7 +93,7 @@ export function Marketplace({ isVisible, onClose, onPurchase, playerGold, player
       description: 'Instantly restores energy during battle for special attacks',
       price: 80,
       category: 'consumable',
-      rarity: 'uncommon',
+      rarity: 'rare',
       icon: '⚡',
       effects: { energy: 100 },
       stock: 75,
