@@ -2603,6 +2603,45 @@ export default function SoloLeveling() {
           setSceneBackground(data.imageUrl);
           console.log('Chat response generated image, updating background');
         } else {
+          // Check for mature content requests in chat messages first
+          const matureContentKeywords = [
+            'nude', 'naked', 'strip', 'undress', 'sexy', 'hot', 'sensual', 'erotic',
+            'intimate', 'make love', 'passionate', 'bedroom', 'show me', 'picture of',
+            'image of', 'generate', 'create image', 'breast', 'thigh', 'revealing',
+            'aroused', 'desire', 'pleasure', 'seduce', 'tease', 'foreplay'
+          ];
+          
+          const isMatureRequest = matureContentKeywords.some(keyword =>
+            message.toLowerCase().includes(keyword)
+          );
+          
+          if (isMatureRequest) {
+            // Generate mature content image using NovelAI
+            console.log('Generating mature content for chat request:', message);
+            
+            fetch('/api/generate-intimate-image', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                activityId: 'custom_intimate',
+                relationshipStatus: gameState.affection >= 5 ? 'married' : gameState.affection >= 4 ? 'engaged' : 'dating',
+                intimacyLevel: gameState.affection || 1,
+                specificAction: message
+              }),
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.imageUrl) {
+                setCurrentBackground(data.imageUrl);
+                setSceneBackground(data.imageUrl);
+                console.log('Generated mature content image from chat');
+              }
+            })
+            .catch(error => console.error('Error generating mature content:', error));
+          }
+          
           // Enhanced emotional detection for automatic image generation
           const significantEmotions = [
             /\(.*(?:blush|blushing|flushed|cheeks.*red|face.*red|tears|crying|shocked|gasped|eyes wide).*\)/gi,
@@ -2683,20 +2722,29 @@ export default function SoloLeveling() {
         setIsLoading(false);
       }
     } else {
-      // Action mode - detect intimate actions and generate appropriate scenes
+      // Action mode - detect intimate actions and explicit image requests
       const intimateKeywords = [
+        // Explicit requests for mature images
+        'show me', 'generate', 'create image', 'make image', 'picture of', 'scene of',
+        // Physical intimate actions
         'grab her hair', 'from behind', 'doggystyle', 'doggy style', 'position', 'missionary', 
         'on top', 'underneath', 'legs', 'kiss her neck', 'touch her', 'caress', 'massage',
         'undress', 'clothes off', 'naked', 'bare', 'skin', 'breast', 'thigh', 'intimate',
         'make love', 'passionate', 'thrust', 'moan', 'whisper', 'gentle', 'rough',
-        'bedroom', 'bed', 'sheet', 'pillow', 'cuddle', 'embrace', 'hold close'
+        'bedroom', 'bed', 'sheet', 'pillow', 'cuddle', 'embrace', 'hold close',
+        // Explicit content requests
+        'nude', 'strip', 'sexy', 'hot', 'sensual', 'erotic', 'aroused', 'desire',
+        'pleasure', 'orgasm', 'climax', 'seduce', 'tease', 'foreplay', 'afterglow',
+        // Romantic/intimate scenarios
+        'alone together', 'private moment', 'secret place', 'just us', 'no one around',
+        'take off', 'remove clothes', 'undressing', 'revealing', 'exposed'
       ];
       
       const isIntimateAction = intimateKeywords.some(keyword => 
         message.toLowerCase().includes(keyword)
       );
       
-      if (isIntimateAction && activeActivity) {
+      if (isIntimateAction) {
         // Generate intimate scene with NovelAI for explicit actions
         console.log('Generating intimate scene for action:', message);
         
@@ -2706,7 +2754,7 @@ export default function SoloLeveling() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            activityId: activeActivity.id,
+            activityId: activeActivity?.id || 'custom_intimate',
             relationshipStatus: gameState.affection >= 5 ? 'married' : gameState.affection >= 4 ? 'engaged' : 'dating',
             intimacyLevel: gameState.affection || 1,
             specificAction: message // Pass the specific action for custom scene generation
