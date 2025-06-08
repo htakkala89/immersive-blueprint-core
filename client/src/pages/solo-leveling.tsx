@@ -208,6 +208,72 @@ export default function SoloLeveling() {
         { text: "Start a new adventure", detail: "Begin again", type: 'restart' }
       ],
       leadsTo: { restart: 'START' }
+    },
+    'EAGER_ACCEPTANCE': {
+      prompt: "Jin-Woo and Cha Hae-In walking side by side toward a glowing dungeon portal. Excited partnership energy, anime style.",
+      narration: "Your enthusiasm brings a genuine smile to Hae-In's face. She seems pleased by your immediate acceptance.",
+      chat: [
+        { sender: 'player', text: "I'd love to. Let's head out right away!" },
+        { sender: 'Cha Hae-In', text: "Perfect! Your eagerness is... refreshing. Most hunters are more cautious with me." },
+        { sender: 'Cha Hae-In', text: "Shall we grab some coffee first? The gate won't disappear for a few hours." }
+      ],
+      choices: [
+        { text: "Suggest a café", detail: "'I know a perfect place.'", type: 'cafe_suggestion' },
+        { text: "Head straight to gate", detail: "'Let's get this done first.'", type: 'gate_priority' },
+        { text: "Ask about her preferences", detail: "'What do you prefer?'", type: 'ask_preference' }
+      ],
+      leadsTo: { cafe_suggestion: 'COFFEE_DATE', gate_priority: 'GATE_ENTRANCE', ask_preference: 'PREFERENCE_RESPONSE' }
+    },
+    'COFFEE_DATE': {
+      prompt: "Jin-Woo and Cha Hae-In sitting together at a cozy café, sharing coffee and conversation. Intimate dating scene, anime style.",
+      narration: "The café is quiet and warm. Hae-In relaxes visibly, her usual hunter alertness softening into something more personal.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This is nice. It's been a while since I could just... talk with someone who understands this life." },
+        { sender: 'Cha Hae-In', text: "Your mana feels so calm here. It's comforting." }
+      ],
+      choices: [
+        { text: "Ask about her past", detail: "'Tell me about your journey.'", type: 'ask_past' },
+        { text: "Share your own story", detail: "Open up about your experiences", type: 'share_past' },
+        { text: "Focus on the present", detail: "'I'm just glad we're here now.'", type: 'present_focus' }
+      ],
+      leadsTo: { ask_past: 'PAST_SHARING', share_past: 'MUTUAL_OPENING', present_focus: 'PRESENT_MOMENT' }
+    },
+    'PRESENT_MOMENT': {
+      prompt: "Jin-Woo and Cha Hae-In enjoying a peaceful moment together, hands almost touching across the café table. Tender anime scene.",
+      narration: "The moment feels perfect. No monsters, no danger - just two people finding connection in an extraordinary world.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "You're right. This moment is all that matters." },
+        { sender: 'Cha Hae-In', text: "Should we head to that gate now? I'm ready for anything with you by my side." }
+      ],
+      choices: [
+        { text: "Take her hand", detail: "Show your feelings", type: 'take_hand' },
+        { text: "Head to the gate", detail: "Continue the mission", type: 'mission_continue' }
+      ],
+      leadsTo: { take_hand: 'HAND_HOLDING', mission_continue: 'GATE_ENTRANCE' }
+    },
+    'HAND_HOLDING': {
+      prompt: "Jin-Woo and Cha Hae-In holding hands across the café table, both blushing softly. Sweet romantic moment, anime style.",
+      narration: "Your hand finds hers naturally. She doesn't pull away - instead, her fingers intertwine with yours.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Jin-Woo... I've been hoping you'd do that." },
+        { sender: 'player', text: "I've wanted to for a long time." }
+      ],
+      choices: [
+        { text: "Confess your feelings", detail: "'I care about you deeply.'", type: 'confess' },
+        { text: "Let the moment speak", detail: "Enjoy the connection", type: 'silent_moment' }
+      ],
+      leadsTo: { confess: 'CAFE_CONFESSION', silent_moment: 'UNDERSTANDING_MOMENT' }
+    },
+    'GATE_ENTRANCE': {
+      prompt: "Jin-Woo and Cha Hae-In standing before a B-rank dungeon portal, ready for adventure. Epic gate entrance scene, anime style.",
+      narration: "The gate pulses with magical energy. You and Hae-In stand ready, your partnership already feeling natural.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Ready, partner? Let's show this dungeon what we can do together." }
+      ],
+      choices: [
+        { text: "Enter together", detail: "Step through as a team", type: 'enter_gate' }
+      ],
+      leadsTo: { enter_gate: 'DUNGEON_START' }
     }
   };
 
@@ -386,10 +452,6 @@ export default function SoloLeveling() {
   };
 
   const handleChoice = (choice: any) => {
-    console.log('Choice clicked:', choice);
-    console.log('Current scene:', gameState.currentScene);
-    console.log('Current story:', story[gameState.currentScene]);
-    
     const currentStory = story[gameState.currentScene];
     if (currentStory?.leadsTo?.[choice.type]) {
       const nextScene = currentStory.leadsTo[choice.type];
