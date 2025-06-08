@@ -3038,58 +3038,7 @@ export default function SoloLeveling() {
                   </div>
                 )}
 
-                {/* Minimal Stats Overlay */}
-                <div className="absolute top-3 left-3 right-3 z-30 flex justify-between items-start">
-                  {/* Compact Stats */}
-                  <div className="glassmorphism rounded-xl p-2">
-                    <div className="flex items-center gap-3">
-                      {/* Health */}
-                      <div className="flex items-center gap-1">
-                        <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[10px]">❤️</div>
-                        <div className="w-12 h-1 bg-black/50 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-red-500 transition-all duration-500"
-                            style={{ width: `${(gameState.health / gameState.maxHealth) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                      
-                      {/* Mana */}
-                      <div className="flex items-center gap-1">
-                        <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center text-[10px]">💎</div>
-                        <div className="w-12 h-1 bg-black/50 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-blue-500 transition-all duration-500"
-                            style={{ width: `${Math.min(100, (gameState.mana / 100) * 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                      
-                      {/* Level */}
-                      <div className="flex items-center gap-1">
-                        <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center text-[10px]">⭐</div>
-                        <span className="text-white text-xs">{gameState.level}</span>
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Compact Affection */}
-                  <div className="glassmorphism rounded-xl p-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-pink-400 text-xs">💕</span>
-                      <div className="flex gap-1">
-                        {Array.from({ length: 5 }, (_, i) => (
-                          <div
-                            key={i}
-                            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                              i < gameState.affection ? 'bg-pink-500' : 'bg-white/20'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Vertical Toolbar */}
                 <div className="absolute top-16 right-3 z-40 flex flex-col gap-2">
@@ -3309,7 +3258,7 @@ export default function SoloLeveling() {
                 {/* New Combined Chat and Actions Panel */}
                 <div className="absolute bottom-0 left-0 right-0 z-50">
                   {/* Mobile Stats Bar - Above Input */}
-                  <div className="bg-black/40 backdrop-blur-xl border-t border-white/10 px-4 py-2">
+                  <div className="glassmorphism px-4 py-2">
                     <div className="flex items-center justify-between">
                       {/* Left Stats */}
                       <div className="flex items-center gap-4">
