@@ -2079,18 +2079,7 @@ export default function SoloLeveling() {
     }
   };
 
-  // Load game state from localStorage
-  const loadGameState = (): GameState | null => {
-    try {
-      const saved = localStorage.getItem('solo-leveling-game-state');
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (error) {
-      console.warn('Failed to load game state:', error);
-    }
-    return null;
-  };
+
 
 
 
