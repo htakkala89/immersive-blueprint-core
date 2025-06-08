@@ -1290,35 +1290,48 @@ export default function SoloLeveling() {
                         </div>
                       )}
 
-                      {/* Chat Messages - All messages with scroll-based visibility */}
+                      {/* Chat Messages - iMessage style layout */}
                       {getDisplayMessages().map((msg: any) => {
                         const opacity = getMessageOpacity(msg.timestamp, msg.id);
+                        const isPlayer = msg.sender === 'player';
+                        const isHaeIn = msg.sender === 'Cha Hae-In';
+                        
                         return (
                           <div 
                             key={msg.id}
                             data-message-id={msg.id}
-                            className={`mb-3 p-3 rounded-xl max-w-[90%] backdrop-blur-md transition-opacity duration-1000 ${
-                              msg.sender === 'player' 
-                                ? 'bg-purple-900/80 border border-purple-400/60 ml-auto' 
-                                : msg.sender === 'Cha Hae-In'
-                                ? 'bg-pink-900/80 border border-pink-400/60'
-                                : 'bg-gray-800/80 border border-purple-400/40'
+                            className={`mb-4 flex items-end gap-2 transition-opacity duration-1000 ${
+                              isPlayer ? 'flex-row-reverse' : 'flex-row'
                             }`}
                             style={{ opacity }}
                           >
-                            <div className="flex items-center gap-2 mb-1 text-xs opacity-90 font-semibold">
-                              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
-                                msg.sender === 'player' 
-                                  ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
-                                  : msg.sender === 'Cha Hae-In'
-                                  ? 'bg-gradient-to-r from-pink-600 to-pink-700'
-                                  : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
-                              }`}>
-                                {msg.sender === 'player' ? '👤' : msg.sender === 'Cha Hae-In' ? '👩' : '⚡'}
-                              </div>
-                              <span className="text-white">{msg.sender}</span>
+                            {/* Avatar */}
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 ${
+                              isPlayer 
+                                ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
+                                : isHaeIn
+                                ? 'bg-gradient-to-r from-pink-600 to-pink-700'
+                                : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
+                            }`}>
+                              {isPlayer ? '👤' : isHaeIn ? '👩' : '⚡'}
                             </div>
-                            <div className="text-gray-100 text-sm leading-relaxed">{msg.text}</div>
+                            
+                            {/* Message bubble */}
+                            <div className={`max-w-[75%] p-3 rounded-2xl backdrop-blur-md ${
+                              isPlayer 
+                                ? 'bg-purple-900/80 border border-purple-400/60 rounded-br-md' 
+                                : isHaeIn
+                                ? 'bg-pink-900/80 border border-pink-400/60 rounded-bl-md'
+                                : 'bg-gray-800/80 border border-purple-400/40 rounded-bl-md'
+                            }`}>
+                              {/* Sender name only for non-player messages */}
+                              {!isPlayer && (
+                                <div className="text-xs font-semibold mb-1 opacity-90">
+                                  <span className="text-white">{msg.sender}</span>
+                                </div>
+                              )}
+                              <div className="text-gray-100 text-sm leading-relaxed">{msg.text}</div>
+                            </div>
                           </div>
                         );
                       })}
