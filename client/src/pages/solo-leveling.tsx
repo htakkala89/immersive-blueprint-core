@@ -1837,6 +1837,13 @@ export default function SoloLeveling() {
         // Add AI response and ensure it's visible
         addChatMessage('Cha Hae-In', data.response);
         
+        // If chat response includes an image, update background
+        if (data.imageUrl) {
+          setCurrentBackground(data.imageUrl);
+          setSceneBackground(data.imageUrl);
+          console.log('Chat response generated image, updating background');
+        }
+        
         // Scroll to show the new AI response
         setTimeout(() => scrollToBottom(), 200);
         
@@ -1870,7 +1877,10 @@ export default function SoloLeveling() {
         setIsLoading(false);
       }
     } else {
-      // Action mode - general gameplay response
+      // Action mode - generate image for every action
+      const actionPrompt = `Sung Jin-Woo from Solo Leveling performing action: ${message}. With Cha Hae-In nearby, romantic scene, anime style, detailed artwork`;
+      generateSceneImage(actionPrompt);
+      
       setTimeout(() => {
         addChatMessage('system', "Your action resonates through the world...");
         
@@ -1997,26 +2007,21 @@ export default function SoloLeveling() {
 
               {/* Full Screen Game Container with Overlaid UI */}
               <div className="flex-1 relative overflow-hidden">
-                {/* AI-Generated Scene Background */}
-                {sceneBackground ? (
+                {/* AI-Generated Scene Background - Force Display */}
+                {(sceneBackground || currentBackground.startsWith('data:')) && (
                   <img 
-                    src={sceneBackground}
+                    key={sceneBackground || currentBackground}
+                    src={sceneBackground || currentBackground}
                     alt="AI Generated Scene"
                     className="absolute inset-0 w-full h-full object-cover filter brightness-110 contrast-110"
                     style={{ zIndex: 1 }}
-                    onLoad={() => console.log('AI background image loaded successfully')}
-                    onError={(e) => console.log('AI background image failed to load:', e)}
+                    onLoad={() => console.log('AI scene background loaded and displayed')}
+                    onError={(e) => console.log('AI scene background failed:', e)}
                   />
-                ) : currentBackground.startsWith('data:') ? (
-                  <img 
-                    src={currentBackground}
-                    alt="Background Scene"
-                    className="absolute inset-0 w-full h-full object-cover filter brightness-110 contrast-110"
-                    style={{ zIndex: 1 }}
-                    onLoad={() => console.log('Current background image loaded successfully')}
-                    onError={(e) => console.log('Current background image failed to load:', e)}
-                  />
-                ) : (
+                )}
+                
+                {/* Fallback gradient if no AI image */}
+                {!sceneBackground && !currentBackground.startsWith('data:') && (
                   <div 
                     className="absolute inset-0 transition-opacity duration-500 filter brightness-110 contrast-110"
                     style={{ 
@@ -2027,13 +2032,6 @@ export default function SoloLeveling() {
                       zIndex: 1
                     }}
                   />
-                )}
-                
-                {/* Debug info */}
-                {(sceneBackground || currentBackground.startsWith('data:')) && (
-                  <div className="absolute top-4 left-4 bg-green-500 text-white px-2 py-1 rounded text-xs z-50">
-                    AI Image Active
-                  </div>
                 )}
                 
 
