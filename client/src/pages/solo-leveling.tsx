@@ -236,40 +236,17 @@ export default function SoloLeveling() {
   }, [chatMessages]);
 
   const generateSceneImage = async (prompt: string) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/generate-scene-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.imageUrl) {
-        setCurrentBackground(`url(${data.imageUrl})`);
-      } else {
-        // Fallback to a themed background if generation fails
-        const fallbackImages = [
-          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
-          'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
-          'https://images.unsplash.com/photo-1462332420958-a05d1e002413?w=400&h=300&fit=crop'
-        ];
-        const randomFallback = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
-        setCurrentBackground(`url(${randomFallback})`);
-      }
-    } catch (error) {
-      console.error('Error generating image:', error);
-      // Use a default dark fantasy background
-      setCurrentBackground('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
-    } finally {
-      setIsLoading(false);
-    }
+    // Use themed backgrounds instead of API generation for now
+    const themeBackgrounds = [
+      'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)',
+      'linear-gradient(135deg, #2d1b69 0%, #11998e 50%, #0f0f0f 100%)',
+      'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #0f0f0f 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #0f0f0f 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #0f0f0f 100%)'
+    ];
+    
+    const randomBackground = themeBackgrounds[Math.floor(Math.random() * themeBackgrounds.length)];
+    setCurrentBackground(randomBackground);
   };
 
   const addChatMessage = (sender: string, text: string) => {
@@ -492,7 +469,7 @@ export default function SoloLeveling() {
       
       {/* iOS Device Frame */}
       <div className="relative w-[390px] h-[844px] bg-gray-800 bg-opacity-20 rounded-[40px] p-3 shadow-2xl border border-white border-opacity-10">
-        <div className="w-full h-full bg-black rounded-[32px] overflow-hidden relative flex flex-col">
+        <div className="w-full h-full bg-black rounded-[32px] overflow-hidden relative flex flex-col max-h-full">
           
           {/* Start Overlay */}
           {!gameStarted && (
@@ -524,7 +501,7 @@ export default function SoloLeveling() {
           {gameStarted && (
             <>
               {/* Status Bar */}
-              <div className="absolute top-0 left-0 right-0 z-50 h-11 flex items-center justify-between px-5 text-white text-sm font-semibold bg-black/30 backdrop-blur-md">
+              <div className="h-11 flex items-center justify-between px-5 text-white text-sm font-semibold bg-black/30 backdrop-blur-md flex-shrink-0">
                 <span ref={timeRef}>9:41</span>
                 <div className="flex gap-2">
                   <span>📶</span>
@@ -532,21 +509,20 @@ export default function SoloLeveling() {
                 </div>
               </div>
 
-              {/* Affection Meter */}
-              <div className="absolute top-14 right-5 z-40 w-30 bg-black/50 p-2.5 rounded-lg border border-pink-500/30">
-                <div className="text-xs text-pink-500 mb-1 text-center">Cha Hae-In</div>
-                <div className="flex justify-center gap-1">
-                  {renderAffectionHearts()}
-                </div>
-              </div>
-
-              {/* Scene Container */}
-              <div id="scene-container" className="relative w-full h-2/5 overflow-hidden bg-transparent">
+              {/* Scene Container with Affection Meter */}
+              <div id="scene-container" className="relative w-full h-40 flex-shrink-0 overflow-hidden bg-transparent">
                 <div id="effects-container" className="absolute inset-0 z-20 pointer-events-none" />
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 transform scale-105"
                   style={{ backgroundImage: currentBackground }}
                 />
+                {/* Affection Meter */}
+                <div className="absolute top-2 right-2 z-40 w-28 bg-black/60 p-2 rounded-lg border border-pink-500/30">
+                  <div className="text-xs text-pink-500 mb-1 text-center">Cha Hae-In</div>
+                  <div className="flex justify-center gap-1">
+                    {renderAffectionHearts()}
+                  </div>
+                </div>
                 {isLoading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-30">
                     <div className="spinner" />
@@ -555,9 +531,9 @@ export default function SoloLeveling() {
               </div>
 
               {/* Content Wrapper */}
-              <div className="flex-1 flex flex-col bg-gray-900/75 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-gray-900/75 backdrop-blur-sm min-h-0 overflow-hidden">
                 {/* Stats Display */}
-                <div className="p-3 flex gap-4 text-sm font-bold items-center bg-black/30 border-b border-purple-500/30">
+                <div className="p-3 flex gap-4 text-sm font-bold items-center bg-black/30 border-b border-purple-500/30 flex-shrink-0">
                   <div className="flex items-center gap-2 text-white">
                     <span className="text-lg">❤️</span>
                     <div className="w-20 h-2.5 bg-black/40 rounded-full border border-purple-500/30">
@@ -578,7 +554,7 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Chat Container */}
-                <div ref={chatContainerRef} className="flex-1 p-5 overflow-y-auto">
+                <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto" style={{ maxHeight: 'calc(100% - 140px)' }}>
                   {chatMessages.map(msg => (
                     <div 
                       key={msg.id}
@@ -644,7 +620,7 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="p-3 bg-gray-900/80 backdrop-blur-md border-t border-purple-500/20 flex items-center gap-3">
+                <div className="p-3 bg-gray-900/80 backdrop-blur-md border-t border-purple-500/20 flex items-center gap-3 flex-shrink-0">
                   <button 
                     onClick={() => setShowInventory(true)}
                     className="w-11 h-11 bg-purple-500/15 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all"
