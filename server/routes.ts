@@ -111,31 +111,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate scene image for Solo Leveling
+  // Generate scene image for Solo Leveling using dual-generator system
   app.post("/api/generate-scene-image", async (req, res) => {
     try {
-      const { prompt } = req.body;
+      const { prompt, gameState } = req.body;
       
       if (!prompt) {
         return res.status(400).json({ error: "Prompt is required" });
       }
 
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const enhancedPrompt = `${prompt}. High quality digital art, detailed anime/manga style, cinematic lighting, vibrant colors, masterpiece quality`;
+      // Create a mock GameState object for the image generator
+      const mockGameState = {
+        id: 1,
+        sessionId: "solo-leveling",
+        narration: prompt,
+        health: 100,
+        maxHealth: 100,
+        mana: 50,
+        maxMana: 50,
+        choices: [],
+        sceneData: null,
+        storyPath: gameState?.storyPath || "romantic",
+        choiceHistory: [],
+        storyFlags: {},
+        inventory: []
+      };
 
-      const response = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: enhancedPrompt,
-        n: 1,
-        size: "1024x1024",
-        quality: "standard",
-      });
-
-      const imageUrl = response.data?.[0]?.url;
-      if (!imageUrl) {
-        throw new Error("No image URL received from OpenAI");
+      // Use the existing dual-generator system
+      const imageUrl = await generateSceneImage(mockGameState);
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: "Failed to generate scene image" });
       }
-      res.json({ imageUrl });
     } catch (error) {
       console.error(`Failed to generate scene image: ${error}`);
       res.status(500).json({ error: "Failed to generate scene image" });

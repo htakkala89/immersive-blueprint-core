@@ -1539,17 +1539,51 @@ export default function SoloLeveling() {
   };
 
   const generateSceneImage = async (prompt: string) => {
-    // Use themed backgrounds instead of API generation for now
-    const themeBackgrounds = [
-      'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)',
-      'linear-gradient(135deg, #2d1b69 0%, #11998e 50%, #0f0f0f 100%)',
-      'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #0f0f0f 100%)',
-      'linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #0f0f0f 100%)',
-      'linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #0f0f0f 100%)'
-    ];
-    
-    const randomBackground = themeBackgrounds[Math.floor(Math.random() * themeBackgrounds.length)];
-    setCurrentBackground(randomBackground);
+    try {
+      setIsLoading(true);
+      
+      // Call backend image generation API
+      const response = await fetch('/api/generate-scene-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          prompt: prompt,
+          gameState: {
+            narration: prompt,
+            storyPath: gameState.currentScene
+          }
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.imageUrl) {
+          // Set the generated image as background
+          setCurrentBackground(`url("${data.imageUrl}")`);
+        } else {
+          // Fallback to gradient if no image generated
+          const fallbackGradients = [
+            'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)',
+            'linear-gradient(135deg, #2d1b69 0%, #11998e 50%, #0f0f0f 100%)',
+            'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #0f0f0f 100%)'
+          ];
+          const randomGradient = fallbackGradients[Math.floor(Math.random() * fallbackGradients.length)];
+          setCurrentBackground(randomGradient);
+        }
+      } else {
+        console.error('Image generation failed:', response.status);
+        // Use fallback gradient
+        setCurrentBackground('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
+      }
+    } catch (error) {
+      console.error('Error generating scene image:', error);
+      // Use fallback gradient
+      setCurrentBackground('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const addChatMessage = (sender: string, text: string) => {
@@ -1835,7 +1869,9 @@ export default function SoloLeveling() {
       <div 
         className="fixed inset-0 bg-cover bg-center transition-all duration-700 transform scale-110"
         style={{ 
-          backgroundImage: currentBackground,
+          background: currentBackground,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           filter: 'blur(15px) brightness(0.4)'
         }}
       />
