@@ -2890,7 +2890,7 @@ export default function SoloLeveling() {
                               <span className="text-white text-sm">📖</span>
                             </div>
                             <div className="flex-1">
-                              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg">
+                              <div className="glassmorphism rounded-2xl p-4">
                                 <div className="flex items-center gap-2 mb-2">
                                   <span className="text-white font-semibold text-sm">Game Master</span>
                                 </div>
