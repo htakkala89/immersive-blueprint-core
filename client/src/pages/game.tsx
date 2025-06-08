@@ -4,14 +4,18 @@ import { GameUI } from "@/components/GameUI";
 import { StoryProgress } from "@/components/StoryProgress";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Inventory } from "@/components/Inventory";
+import { RaidSystem } from "@/components/RaidSystem";
+import { Marketplace } from "@/components/Marketplace";
 import { useGameState } from "@/hooks/useGameState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Game() {
-  const { gameState, handleChoice, isLoading, isProcessing } = useGameState();
+  const { gameState, handleChoice, isLoading, isProcessing, saveProgress } = useGameState();
   const timeRef = useRef<HTMLSpanElement>(null);
   const [showInventory, setShowInventory] = useState(false);
+  const [showRaidSystem, setShowRaidSystem] = useState(false);
+  const [showMarketplace, setShowMarketplace] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
 
   // Update clock
@@ -32,6 +36,57 @@ export default function Game() {
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Handle raid victory rewards
+  const handleRaidVictory = (rewards: { gold: number; exp: number; affection: number }) => {
+    const updatedState = {
+      gold: gameState.gold + rewards.gold,
+      experience: gameState.experience + rewards.exp,
+      affectionLevel: gameState.affectionLevel + rewards.affection
+    };
+    saveProgress(updatedState);
+    setShowRaidSystem(false);
+  };
+
+  // Handle marketplace purchases
+  const handleMarketplacePurchase = (item: any, quantity: number) => {
+    const totalCost = item.price * quantity;
+    if (gameState.gold >= totalCost) {
+      const updatedState = {
+        gold: gameState.gold - totalCost,
+        affectionLevel: gameState.affectionLevel + (item.effects?.affection || 0) * quantity
+      };
+      saveProgress(updatedState);
+    }
+  };
+
+  // Handle special activity selections
+  const handleSpecialChoice = (activityId: string) => {
+    switch (activityId) {
+      case 'solo_raid':
+      case 'joint_raid':
+        setShowRaidSystem(true);
+        break;
+      case 'marketplace_visit':
+        setShowMarketplace(true);
+        break;
+      case 'propose_living_together':
+        if (gameState.affectionLevel >= 80) {
+          saveProgress({ 
+            livingTogether: true,
+            affectionLevel: gameState.affectionLevel + 20 
+          });
+        }
+        break;
+      default:
+        // Handle other activities normally
+        handleChoice({ 
+          id: activityId, 
+          text: 'Continue activity',
+          icon: '✨'
+        });
+    }
+  };
 
   if (isLoading || !gameState) {
     return (

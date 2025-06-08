@@ -76,8 +76,63 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       goldReward: -50,
       affectionReward: 8,
       available: stats.energy >= 25
+    },
+    {
+      id: 'marketplace_visit',
+      title: 'Visit Marketplace',
+      description: 'Buy supplies, weapons, and gifts',
+      icon: '🏪',
+      energyCost: 5,
+      goldReward: 0,
+      experienceReward: 0,
+      affectionReward: 0,
+      available: true
     }
   ];
+
+  // Add raid activities based on level and affection
+  if (stats.level >= 10) {
+    baseActivities.push({
+      id: 'solo_raid',
+      title: 'Solo Gate Raid',
+      description: 'Clear gates alone to earn gold and experience',
+      icon: '🚪',
+      energyCost: 40,
+      goldReward: 100,
+      experienceReward: 50,
+      affectionReward: 0,
+      available: stats.energy >= 40
+    });
+  }
+
+  if (stats.affectionLevel >= 70 && stats.relationshipStatus !== 'dating') {
+    baseActivities.push({
+      id: 'joint_raid',
+      title: 'Joint Raid with Cha Hae-In',
+      description: 'Take on dangerous gates together as a team',
+      icon: '⚔️',
+      energyCost: 50,
+      goldReward: 200,
+      experienceReward: 80,
+      affectionReward: 10,
+      available: stats.energy >= 50
+    });
+  }
+
+  // Living together activities (unlocked at high affection)
+  if (stats.affectionLevel >= 80 && !stats.livingTogether) {
+    baseActivities.push({
+      id: 'propose_living_together',
+      title: 'Ask to Live Together',
+      description: 'Take your relationship to the next level',
+      icon: '🏠',
+      energyCost: 30,
+      goldReward: 0,
+      experienceReward: 0,
+      affectionReward: 20,
+      available: true
+    });
+  }
 
   // Add intimate activities for higher relationship levels
   if (stats.relationshipStatus === 'married' || stats.intimacyLevel >= 3) {
