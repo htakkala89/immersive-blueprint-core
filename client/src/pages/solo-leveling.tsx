@@ -1768,6 +1768,16 @@ export default function SoloLeveling() {
     }
   }, [currentChoiceIndex, gameState.currentScene]);
 
+  // Play Game Master narration when scene changes
+  useEffect(() => {
+    const currentStory = story[gameState.currentScene];
+    if (currentStory?.narration) {
+      setTimeout(() => {
+        playVoice(currentStory.narration, 'game-master');
+      }, 1000); // Delay to allow scene transition
+    }
+  }, [gameState.currentScene]);
+
   // Update fade effects every 5 seconds for immersion
   useEffect(() => {
     const interval = setInterval(() => {
@@ -2120,6 +2130,13 @@ export default function SoloLeveling() {
       if (nextStory) {
         setGameState(prev => ({ ...prev, currentScene: nextScene }));
         addChatMessage('player', choice.text);
+        
+        // Add Game Master narration with voice
+        if (nextStory.narration) {
+          setTimeout(() => {
+            playVoice(nextStory.narration, 'game-master');
+          }, 500);
+        }
         
         // Add story messages
         nextStory.chat.forEach(msg => {
