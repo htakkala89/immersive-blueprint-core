@@ -280,6 +280,121 @@ export default function SoloLeveling() {
   const [playerGold, setPlayerGold] = useState(1200);
   const [storyFlags, setStoryFlags] = useState<string[]>([]);
   const [unlockedPaths, setUnlockedPaths] = useState<string[]>(['main_story']);
+  const [playerInventory, setPlayerInventory] = useState<any[]>([
+    {
+      id: 'health_potion',
+      name: 'Health Potion',
+      type: 'consumable',
+      rarity: 'common',
+      quantity: 5,
+      description: 'Restores 50 HP instantly',
+      effects: { healing: 50 },
+      usableInCombat: true,
+      value: 100
+    },
+    {
+      id: 'mana_potion',
+      name: 'Mana Potion',
+      type: 'consumable',
+      rarity: 'common',
+      quantity: 3,
+      description: 'Restores 30 MP instantly',
+      effects: { mana: 30 },
+      usableInCombat: true,
+      value: 150
+    }
+  ]);
+  const [showCombatTactics, setShowCombatTactics] = useState(false);
+  const [playerEnergy, setPlayerEnergy] = useState(100);
+
+  // Combat reward system
+  const MONSTER_REWARDS = {
+    'goblin_warrior': {
+      experience: 120,
+      gold: 180,
+      items: [
+        { id: 'goblin_tooth', name: 'Goblin Tooth', rarity: 'common', value: 25, chance: 0.8 },
+        { id: 'rusty_blade', name: 'Rusty Goblin Blade', rarity: 'common', value: 150, chance: 0.3 },
+        { id: 'healing_herbs', name: 'Wild Healing Herbs', rarity: 'common', value: 40, chance: 0.6 }
+      ]
+    },
+    'orc_berserker': {
+      experience: 200,
+      gold: 320,
+      items: [
+        { id: 'orc_tusk', name: 'Orc Tusk', rarity: 'rare', value: 80, chance: 0.7 },
+        { id: 'berserker_axe', name: 'Berserker\'s Axe', rarity: 'rare', value: 600, chance: 0.15 },
+        { id: 'strength_potion', name: 'Potion of Strength', rarity: 'rare', value: 200, chance: 0.4 }
+      ]
+    },
+    'ice_dragon': {
+      experience: 800,
+      gold: 1500,
+      items: [
+        { id: 'dragon_scale', name: 'Frost Dragon Scale', rarity: 'legendary', value: 500, chance: 0.9 },
+        { id: 'ice_shard', name: 'Eternal Ice Shard', rarity: 'epic', value: 300, chance: 0.6 },
+        { id: 'frost_blade', name: 'Frostbite Blade', rarity: 'legendary', value: 5000, chance: 0.05 }
+      ]
+    }
+  };
+
+  const handleCombatVictory = (monsterType: string = 'goblin_warrior') => {
+    const rewards = MONSTER_REWARDS[monsterType as keyof typeof MONSTER_REWARDS] || MONSTER_REWARDS.goblin_warrior;
+    
+    // Add experience and gold
+    const experienceGained = rewards.experience;
+    const goldGained = rewards.gold;
+    
+    setPlayerExperience(prev => prev + experienceGained);
+    setPlayerGold(prev => prev + goldGained);
+    
+    // Roll for item drops
+    const obtainedItems: any[] = [];
+    rewards.items.forEach(item => {
+      if (Math.random() < item.chance) {
+        obtainedItems.push({
+          id: item.id,
+          name: item.name,
+          type: 'material',
+          rarity: item.rarity,
+          quantity: 1,
+          description: `Obtained from defeating ${monsterType.replace('_', ' ')}`,
+          value: item.value,
+          usableInCombat: false
+        });
+      }
+    });
+    
+    // Add items to inventory
+    setPlayerInventory(prev => {
+      const updated = [...prev];
+      obtainedItems.forEach(newItem => {
+        const existingIndex = updated.findIndex(item => item.id === newItem.id);
+        if (existingIndex >= 0) {
+          updated[existingIndex].quantity += newItem.quantity;
+        } else {
+          updated.push(newItem);
+        }
+      });
+      return updated;
+    });
+    
+    // Generate victory message
+    let victoryMessage = `Victory! You gained ${experienceGained} experience and ${goldGained} gold!`;
+    if (obtainedItems.length > 0) {
+      victoryMessage += '\n\nRare items obtained:';
+      obtainedItems.forEach(item => {
+        victoryMessage += `\n• ${item.name} (${item.rarity})`;
+      });
+    }
+    
+    addChatMessage('System', victoryMessage);
+    
+    // Track combat win for achievements
+    trackCombatWin();
+    
+    return { experienceGained, goldGained, obtainedItems };
+  };
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
   const { playVoice, stopVoice, isPlaying, currentSpeaker } = useVoice();
