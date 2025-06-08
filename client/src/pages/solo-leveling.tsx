@@ -3,6 +3,7 @@ import { SkillTree } from "@/components/SkillTree";
 import { useCharacterProgression } from "@/hooks/useCharacterProgression";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/components/MiniGames";
 import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
+import { Marketplace } from "../components/Marketplace";
 import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
@@ -3116,6 +3117,47 @@ export default function SoloLeveling() {
             setActiveMiniGame(null);
             setPendingChoice(null);
           }}
+        />
+      )}
+
+      {/* Marketplace Modal */}
+      {showMarketplace && (
+        <Marketplace
+          isVisible={showMarketplace}
+          onClose={() => {
+            setShowMarketplace(false);
+            // Return to previous page logic
+            if (previousPage === 'hub') {
+              setShowDailyLifeHub(true);
+            }
+          }}
+          onPurchase={(item, quantity) => {
+            const totalCost = item.price * quantity;
+            if ((gameState.gold || 500) >= totalCost) {
+              setGameState(prev => ({
+                ...prev,
+                gold: (prev.gold || 500) - totalCost,
+                inventory: [
+                  ...(prev.inventory || []),
+                  {
+                    id: item.id,
+                    name: item.name,
+                    description: item.description,
+                    type: item.category as any,
+                    icon: item.icon,
+                    quantity: quantity
+                  }
+                ]
+              }));
+              
+              addChatMessage('System', `Successfully purchased ${quantity}x ${item.name} for ${totalCost} gold!`);
+            } else {
+              addChatMessage('System', 'Not enough gold for this purchase.');
+            }
+          }}
+          playerGold={gameState.gold || 500}
+          playerLevel={gameState.level}
+          affectionLevel={gameState.affection}
         />
       )}
 

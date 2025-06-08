@@ -46,7 +46,7 @@ interface RaidState {
 interface RaidSystemProps {
   isVisible: boolean;
   onClose: () => void;
-  onVictory: (rewards: { gold: number; exp: number; affection: number }) => void;
+  onVictory: (rewards: { gold: number; exp: number; affection: number; skillPoints: number; statPoints: number }) => void;
   playerLevel: number;
   affectionLevel: number;
 }
@@ -256,10 +256,14 @@ export function RaidSystem({ isVisible, onClose, onVictory, playerLevel, affecti
       updatedState.phase = 'victory';
       newBattleLog.push('Victory! The gate has been cleared!');
       setTimeout(() => {
+        const baseSkillPoints = Math.floor(updatedState.goldEarned / 200) + 1;
+        const baseStatPoints = Math.floor(updatedState.goldEarned / 150) + 1;
         onVictory({
           gold: updatedState.goldEarned,
           exp: updatedState.expEarned,
-          affection: Math.floor(updatedState.goldEarned / 100)
+          affection: Math.floor(updatedState.goldEarned / 100),
+          skillPoints: baseSkillPoints,
+          statPoints: baseStatPoints
         });
       }, 2000);
     } else if (updatedState.playerHealth <= 0) {
