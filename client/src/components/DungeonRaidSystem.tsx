@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Sword, Shield, Zap, Eye, Heart, Skull, Crown, Star, 
-  Flame, Snowflake, Lightning, Wind, Target, Users 
+  Flame, Snowflake, Bolt, Wind, Target, Users 
 } from "lucide-react";
 
 interface DungeonFloor {

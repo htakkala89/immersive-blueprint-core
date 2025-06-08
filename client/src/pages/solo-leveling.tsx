@@ -12,6 +12,8 @@ import { MemoryLaneAnimation } from "@/components/MemoryLaneAnimation";
 import { CombatSystem } from "@/components/CombatSystem";
 import { AchievementSystem, useAchievementSystem } from "@/components/AchievementSystem";
 import { StoryBranching, EnhancedChoiceButton } from "@/components/StoryBranching";
+import { DungeonRaidSystem } from "@/components/DungeonRaidSystem";
+import { ShadowArmyManager } from "@/components/ShadowArmyManager";
 import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
@@ -200,6 +202,82 @@ export default function SoloLeveling() {
   const [showCombatSystem, setShowCombatSystem] = useState(false);
   const [showAchievementSystem, setShowAchievementSystem] = useState(false);
   const [currentCombatEnemy, setCurrentCombatEnemy] = useState(null);
+  const [showDungeonRaid, setShowDungeonRaid] = useState(false);
+  const [showShadowArmy, setShowShadowArmy] = useState(false);
+  const [shadowArmy, setShadowArmy] = useState<any[]>([
+    {
+      id: 'shadow_1',
+      name: 'Shadow Knight',
+      level: 15,
+      health: 120,
+      maxHealth: 120,
+      attack: 45,
+      defense: 35,
+      speed: 25,
+      intelligence: 20,
+      type: 'knight',
+      rarity: 'rare',
+      abilities: [
+        {
+          id: 'ability_1',
+          name: 'Shadow Strike',
+          damage: 60,
+          manaCost: 15,
+          cooldown: 3,
+          description: 'A powerful shadow-enhanced attack',
+          type: 'attack'
+        }
+      ],
+      experience: 75,
+      maxExperience: 100,
+      skillPoints: 3,
+      loyalty: 85,
+      combatStats: {
+        battlesWon: 12,
+        damageDealt: 2400,
+        damageReceived: 800,
+        killCount: 18
+      },
+      evolutionPossible: false
+    },
+    {
+      id: 'shadow_2',
+      name: 'Shadow Archer',
+      level: 12,
+      health: 85,
+      maxHealth: 85,
+      attack: 55,
+      defense: 20,
+      speed: 40,
+      intelligence: 30,
+      type: 'archer',
+      rarity: 'common',
+      abilities: [
+        {
+          id: 'ability_2',
+          name: 'Piercing Shot',
+          damage: 70,
+          manaCost: 20,
+          cooldown: 4,
+          description: 'A precise shot that ignores armor',
+          type: 'attack'
+        }
+      ],
+      experience: 95,
+      maxExperience: 100,
+      skillPoints: 1,
+      loyalty: 78,
+      combatStats: {
+        battlesWon: 8,
+        damageDealt: 1800,
+        damageReceived: 450,
+        killCount: 22
+      },
+      evolutionPossible: true
+    }
+  ]);
+  const [playerExperience, setPlayerExperience] = useState(2500);
+  const [playerGold, setPlayerGold] = useState(1200);
   const [storyFlags, setStoryFlags] = useState<string[]>([]);
   const [unlockedPaths, setUnlockedPaths] = useState<string[]>(['main_story']);
 
