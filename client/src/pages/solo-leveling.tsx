@@ -35,6 +35,7 @@ export default function SoloLeveling() {
 
   const [gameStarted, setGameStarted] = useState(false);
   const [currentBackground, setCurrentBackground] = useState('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
+  const [sceneBackground, setSceneBackground] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{ sender: string; text: string; id: number; timestamp: number }>>([]);
   const [userInput, setUserInput] = useState('');
@@ -1598,6 +1599,9 @@ export default function SoloLeveling() {
           });
           console.log('Setting background to:', data.imageUrl.substring(0, 50) + '...');
           setCurrentBackground(data.imageUrl);
+          setSceneBackground(data.imageUrl);
+          
+          console.log('Background updated for scene display');
         } else {
           // Fallback to gradient if no image generated
           const fallbackGradients = [
@@ -1996,14 +2000,34 @@ export default function SoloLeveling() {
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 filter brightness-110 contrast-110"
                   style={{ 
-                    backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
+                    backgroundImage: sceneBackground ? `url("${sceneBackground}")` : 
+                                   currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
                     backgroundSize: 'cover',
-                    backgroundPosition: 'center center'
+                    backgroundPosition: 'center center',
+                    zIndex: 1
                   }}
                 />
                 
+                {/* Debug overlay to show background status */}
+                {sceneBackground && (
+                  <div className="absolute top-4 right-4 bg-green-500 text-white px-2 py-1 rounded text-xs z-50">
+                    AI Background Active ({sceneBackground.length} chars)
+                  </div>
+                )}
+                
+                {/* Test image element to verify base64 works */}
+                {sceneBackground && (
+                  <img 
+                    src={sceneBackground} 
+                    alt="AI Generated Scene" 
+                    className="absolute top-16 right-4 w-24 h-24 object-cover border-2 border-white z-50"
+                    onLoad={() => console.log('Test image loaded successfully')}
+                    onError={() => console.log('Test image failed to load')}
+                  />
+                )}
+                
                 {/* Dark overlay for better text readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" style={{ zIndex: 2 }} />
                 
                 {/* Effects Layer */}
                 <div id="effects-container" className="absolute inset-0 z-20 pointer-events-none" />
