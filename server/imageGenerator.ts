@@ -164,7 +164,7 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     }
     
     // Fallback to OpenAI if available
-    if (openai && process.env.OPENAI_API_KEY) {
+    if (openai) {
       try {
         const response = await openai.images.generate({
           model: "dall-e-3",
@@ -179,8 +179,8 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
           console.log('✅ OpenAI generated fallback image successfully');
           return imageUrl;
         }
-      } catch (openaiError: any) {
-        console.log('⚠️ OpenAI generation failed:', openaiError?.message || 'Unknown error');
+      } catch (openaiError) {
+        console.log('⚠️ OpenAI generation failed:', (openaiError as Error)?.message || 'Unknown error');
       }
     }
 
