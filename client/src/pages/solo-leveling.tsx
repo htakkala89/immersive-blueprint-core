@@ -2218,8 +2218,8 @@ export default function SoloLeveling() {
                   {chatPinned ? '📌' : '💬'}
                 </button>
 
-                {/* Overlay Messages - Toggleable compact style */}
-                <div className={`absolute top-28 left-3 right-3 z-30 transition-opacity duration-300 ${chatPinned ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                {/* Overlay Messages - Full Screen Coverage */}
+                <div className={`absolute top-16 left-3 right-3 bottom-48 z-30 transition-opacity duration-300 ${chatPinned ? 'opacity-100' : 'opacity-0 pointer-events-none'} overflow-y-auto`}>
                   {/* Story Narration - Compact Overlay */}
                   {currentStory && (
                     <div className="mb-2 p-3 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
@@ -2243,8 +2243,8 @@ export default function SoloLeveling() {
                   ))}
                 </div>
 
-                {/* Chat Container - Toggleable overlay */}
-                <div className={`absolute bottom-20 left-0 right-0 z-30 flex flex-col transition-opacity duration-300 ${(chatPinned || autoMessageVisible) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} style={{ height: '40%' }}>
+                {/* Chat Container - Full Screen Coverage */}
+                <div className={`absolute top-16 left-0 right-0 bottom-48 z-30 flex flex-col transition-opacity duration-300 ${(chatPinned || autoMessageVisible) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   {/* Chat Container - Takes available space */}
                   <div className="flex-1 min-h-0 overflow-hidden">
                     <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto chat-container">
