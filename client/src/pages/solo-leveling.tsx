@@ -704,29 +704,29 @@ export default function SoloLeveling() {
                         <span className="text-white/60">{currentChoiceIndex + 1} / {currentStory.choices.length}</span>
                       </div>
                       
-                      <div className="flex items-center gap-3 h-full">
+                      <div className="flex items-center gap-2 h-full">
                         {/* Previous Button */}
                         {currentStory.choices.length > 1 && (
                           <button
                             onClick={prevChoice}
-                            className="w-8 h-8 bg-purple-500/20 border border-purple-400/50 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all flex-shrink-0"
+                            className="w-10 h-10 bg-purple-600/30 border border-purple-400/60 rounded-full flex items-center justify-center text-white hover:bg-purple-600/50 transition-all flex-shrink-0 text-lg font-bold shadow-lg"
                           >
-                            ←
+                            ‹
                           </button>
                         )}
 
                         {/* Current Choice Display */}
-                        <div className="flex-1">
+                        <div className="flex-1 h-full">
                           <button
                             onClick={() => handleChoice(currentStory.choices[currentChoiceIndex])}
-                            className="w-full bg-purple-500/20 border border-purple-400/50 rounded-lg p-4 hover:bg-purple-500/30 transition-all text-left backdrop-blur-sm h-full"
+                            className="w-full bg-purple-500/20 border border-purple-400/50 rounded-lg p-3 hover:bg-purple-500/30 hover:border-purple-400/70 transition-all text-left backdrop-blur-sm h-full group"
                           >
-                            <div className="flex items-start gap-3 h-full">
-                              <div className="w-8 h-8 bg-purple-500/30 rounded-md flex items-center justify-center text-sm flex-shrink-0 mt-1">
+                            <div className="flex items-center gap-3 h-full">
+                              <div className="w-10 h-10 bg-purple-500/40 rounded-lg flex items-center justify-center text-lg flex-shrink-0 group-hover:bg-purple-500/60 transition-all">
                                 ⚔️
                               </div>
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                <div className="text-white text-sm font-semibold mb-1">
+                                <div className="text-white text-sm font-semibold mb-1 leading-tight">
                                   {currentStory.choices[currentChoiceIndex].text}
                                 </div>
                                 {currentStory.choices[currentChoiceIndex].detail && (
@@ -743,9 +743,9 @@ export default function SoloLeveling() {
                         {currentStory.choices.length > 1 && (
                           <button
                             onClick={nextChoice}
-                            className="w-8 h-8 bg-purple-500/20 border border-purple-400/50 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all flex-shrink-0"
+                            className="w-10 h-10 bg-purple-600/30 border border-purple-400/60 rounded-full flex items-center justify-center text-white hover:bg-purple-600/50 transition-all flex-shrink-0 text-lg font-bold shadow-lg"
                           >
-                            →
+                            ›
                           </button>
                         )}
                       </div>
