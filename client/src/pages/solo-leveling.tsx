@@ -1777,10 +1777,17 @@ export default function SoloLeveling() {
     let scrollTimeout: NodeJS.Timeout;
 
     const handleScroll = () => {
+      setIsScrolling(true);
+      
+      // Show chat when user scrolls
+      setAutoMessageVisible(true);
+      setChatPinned(true);
+      
       chatContainer.classList.add('scrolling');
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         chatContainer.classList.remove('scrolling');
+        setIsScrolling(false);
       }, 1500); // Hide after 1.5 seconds of no scrolling
 
       // Check message visibility during scroll
@@ -1913,6 +1920,7 @@ export default function SoloLeveling() {
 
   // State for tracking scroll-based message visibility
   const [scrollBasedVisibility, setScrollBasedVisibility] = useState<Record<number, boolean>>({});
+  const [isScrolling, setIsScrolling] = useState(false);
 
   // Calculate message opacity for fade effect with scroll visibility
   const getMessageOpacity = (timestamp: number | undefined, messageId: number) => {
@@ -2712,8 +2720,8 @@ export default function SoloLeveling() {
                       {currentStory && (
                         <div className="mb-4">
                           <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0">
-                              <span className="text-white text-lg">🎮</span>
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0 shadow-lg">
+                              <span className="text-white text-sm">📖</span>
                             </div>
                             <div className="flex-1">
                               <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg">
@@ -2731,9 +2739,9 @@ export default function SoloLeveling() {
                       {currentStory?.chat && currentStory.chat.map((msg, index) => (
                         <div key={`story-${index}`} className="mb-4">
                           <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0">
-                              <span className="text-white text-lg">
-                                {msg.sender === 'system' ? '⚙️' : '💝'}
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0 shadow-lg">
+                              <span className="text-white text-sm">
+                                {msg.sender === 'system' ? '⚙️' : '⚔️'}
                               </span>
                             </div>
                             <div className="flex-1">
@@ -2764,9 +2772,15 @@ export default function SoloLeveling() {
                             style={{ opacity }}
                           >
                             <div className="flex items-start gap-3">
-                              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0">
-                                <span className="text-white text-lg">
-                                  {isPlayer ? '👤' : isHaeIn ? '👩' : '⚡'}
+                              <div className={`w-10 h-10 rounded-full backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0 shadow-lg ${
+                                isPlayer 
+                                  ? 'bg-gradient-to-br from-blue-600 to-purple-700' 
+                                  : isHaeIn 
+                                    ? 'bg-gradient-to-br from-pink-500 to-rose-600' 
+                                    : 'bg-gradient-to-br from-gray-500 to-gray-700'
+                              }`}>
+                                <span className="text-white text-sm font-bold">
+                                  {isPlayer ? '🦸' : isHaeIn ? '👸' : '⚡'}
                                 </span>
                               </div>
                               <div className="flex-1">
