@@ -4315,6 +4315,10 @@ export default function SoloLeveling() {
             <RelationshipSystem
               isVisible={true}
               onClose={() => setShowRelationshipSystem(false)}
+              onMemoryLaneOpen={() => {
+                setShowMemoryLane(true);
+                setShowRelationshipSystem(false);
+              }}
               gameState={{
                 affection: gameState.affection,
                 level: gameState.level,

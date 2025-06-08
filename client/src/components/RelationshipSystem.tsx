@@ -4,6 +4,7 @@ import { Heart, X, Star, Flame, Shield } from "lucide-react";
 interface RelationshipSystemProps {
   isVisible: boolean;
   onClose: () => void;
+  onMemoryLaneOpen?: () => void;
   gameState: {
     affection: number;
     level: number;
@@ -11,7 +12,7 @@ interface RelationshipSystemProps {
   };
 }
 
-export function RelationshipSystem({ isVisible, onClose, gameState }: RelationshipSystemProps) {
+export function RelationshipSystem({ isVisible, onClose, onMemoryLaneOpen, gameState }: RelationshipSystemProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   if (!isVisible) return null;
@@ -179,8 +180,9 @@ export function RelationshipSystem({ isVisible, onClose, gameState }: Relationsh
           {affectionLevel >= 1 && (
             <button
               onClick={() => {
-                // Open Memory Lane - we'll need to pass this up to parent
-                window.dispatchEvent(new CustomEvent('openMemoryLane'));
+                if (onMemoryLaneOpen) {
+                  onMemoryLaneOpen();
+                }
               }}
               className="w-full py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center gap-2"
             >
