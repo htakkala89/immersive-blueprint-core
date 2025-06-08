@@ -2223,29 +2223,49 @@ export default function SoloLeveling() {
                   <div className="flex-1 min-h-0 overflow-hidden">
                     <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto chat-container space-y-3">
                       
-                      {/* Story Narration - Only show when available */}
+                      {/* Story Narration - Game Master Message */}
                       {currentStory && (
-                        <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="text-xs text-gray-300 font-medium">📖 GM</div>
+                        <div className="mb-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0">
+                              <span className="text-white text-lg">🎮</span>
+                            </div>
+                            <div className="flex-1">
+                              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="text-white font-semibold text-sm">Game Master</span>
+                                </div>
+                                <div className="text-white text-sm leading-relaxed">{currentStory.narration}</div>
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-white text-sm leading-relaxed">{currentStory.narration}</div>
                         </div>
                       )}
 
                       {/* System/Story Messages */}
                       {currentStory?.chat && currentStory.chat.map((msg, index) => (
-                        <div key={`story-${index}`} className="p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="text-xs text-gray-300 font-medium">
-                              {msg.sender === 'system' ? '⚙️ System' : `💕 ${msg.sender}`}
+                        <div key={`story-${index}`} className="mb-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0">
+                              <span className="text-white text-lg">
+                                {msg.sender === 'system' ? '⚙️' : '💝'}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="text-white font-semibold text-sm">
+                                    {msg.sender === 'system' ? 'System' : msg.sender}
+                                  </span>
+                                </div>
+                                <div className="text-white text-sm leading-relaxed">{msg.text}</div>
+                              </div>
                             </div>
                           </div>
-                          <div className="text-white text-sm leading-relaxed">{msg.text}</div>
                         </div>
                       ))}
 
-                      {/* Chat Messages - iMessage style layout */}
+                      {/* Chat Messages - Full Width Design */}
                       {getDisplayMessages().map((msg: any) => {
                         const opacity = getMessageOpacity(msg.timestamp, msg.id);
                         const isPlayer = msg.sender === 'player';
@@ -2255,85 +2275,23 @@ export default function SoloLeveling() {
                           <div 
                             key={msg.id}
                             data-message-id={msg.id}
-                            className={`flex items-end gap-3 transition-opacity duration-1000 ${
-                              isPlayer ? 'flex-row-reverse' : 'flex-row'
-                            }`}
+                            className="mb-4 transition-opacity duration-1000"
                             style={{ opacity }}
                           >
-                            {/* Avatar */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 ${
-                              isPlayer 
-                                ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
-                                : isHaeIn
-                                ? 'bg-gradient-to-r from-pink-600 to-pink-700'
-                                : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
-                            }`}>
-                              {isPlayer ? '👤' : isHaeIn ? '👩' : '⚡'}
-                            </div>
-                            
-                            {/* Message bubble */}
-                            <div className={`max-w-[75%] p-3 rounded-2xl backdrop-blur-xl shadow-lg ${
-                              isPlayer 
-                                ? 'bg-purple-600/90 border border-white/20 rounded-br-md' 
-                                : isHaeIn
-                                ? 'bg-pink-500/90 border border-white/20 rounded-bl-md'
-                                : 'bg-white/10 border border-white/20 rounded-bl-md'
-                            }`}>
-                              {/* Sender name only for non-player messages */}
-                              {!isPlayer && (
-                                <div className="text-xs font-semibold mb-1 opacity-90">
-                                  <span className="text-white">{msg.sender}</span>
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center flex-shrink-0">
+                                <span className="text-white text-lg">
+                                  {isPlayer ? '👤' : isHaeIn ? '👩' : '⚡'}
+                                </span>
+                              </div>
+                              <div className="flex-1">
+                                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-white font-semibold text-sm">{msg.sender}</span>
+                                  </div>
+                                  <div className="text-white text-sm leading-relaxed">{msg.text}</div>
                                 </div>
-                              )}
-                              <div className="text-white text-sm leading-relaxed">{msg.text}</div>
-                            </div>
-                          </div>
-                        );
-                      })}
-
-                      {/* Chat History Access Hint */}
-                      {chatMessages.length > 3 && (
-                        <div className="text-center py-2">
-                          <div className="text-xs text-white/40">Scroll up to see chat history</div>
-                        </div>
-                      )}
-                        const isHaeIn = msg.sender === 'Cha Hae-In';
-                        
-                        return (
-                          <div 
-                            key={msg.id}
-                            data-message-id={msg.id}
-                            className={`mb-4 flex items-end gap-2 transition-opacity duration-1000 ${
-                              isPlayer ? 'flex-row-reverse' : 'flex-row'
-                            }`}
-                            style={{ opacity }}
-                          >
-                            {/* Avatar */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 ${
-                              isPlayer 
-                                ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
-                                : isHaeIn
-                                ? 'bg-gradient-to-r from-pink-600 to-pink-700'
-                                : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
-                            }`}>
-                              {isPlayer ? '👤' : isHaeIn ? '👩' : '⚡'}
-                            </div>
-                            
-                            {/* Message bubble */}
-                            <div className={`max-w-[75%] p-3 rounded-2xl backdrop-blur-md ${
-                              isPlayer 
-                                ? 'bg-purple-900/80 border border-purple-400/60 rounded-br-md' 
-                                : isHaeIn
-                                ? 'bg-pink-900/80 border border-pink-400/60 rounded-bl-md'
-                                : 'bg-gray-800/80 border border-purple-400/40 rounded-bl-md'
-                            }`}>
-                              {/* Sender name only for non-player messages */}
-                              {!isPlayer && (
-                                <div className="text-xs font-semibold mb-1 opacity-90">
-                                  <span className="text-white">{msg.sender}</span>
-                                </div>
-                              )}
-                              <div className="text-gray-100 text-sm leading-relaxed">{msg.text}</div>
+                              </div>
                             </div>
                           </div>
                         );
@@ -2382,7 +2340,7 @@ export default function SoloLeveling() {
                               const choice = currentStory.choices?.[currentChoiceIndex];
                               if (choice) handleChoice(choice);
                             }}
-                            className="w-full h-full bg-gray-800/70 backdrop-blur-md rounded-2xl p-3 hover:bg-gray-700/70 active:bg-gray-800/80 transition-all duration-200 text-left border border-gray-600/30 group"
+                            className="w-full h-full bg-white/10 backdrop-blur-xl rounded-2xl p-3 hover:bg-white/15 active:bg-white/20 transition-all duration-200 text-left border border-white/20 shadow-lg group"
                           >
                             <div className="flex items-center gap-3 h-full">
                               <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-sm flex-shrink-0">
@@ -2419,10 +2377,10 @@ export default function SoloLeveling() {
                 </div>
 
                 {/* Bottom Bar - Overlaid */}
-                <div className="absolute bottom-0 left-0 right-0 z-50 p-3 bg-black/90 backdrop-blur-md border-t border-purple-500/40 flex items-center gap-3">
+                <div className="absolute bottom-0 left-0 right-0 z-50 p-3 bg-white/10 backdrop-blur-xl border-t border-white/20 shadow-lg flex items-center gap-3">
                   <button 
                     onClick={() => setShowSkillTree(true)}
-                    className="w-11 h-11 bg-purple-500/15 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all relative"
+                    className="w-11 h-11 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all relative shadow-lg"
                     title="Skills & Stats"
                   >
                     👑
@@ -2434,18 +2392,18 @@ export default function SoloLeveling() {
                   </button>
                   <button 
                     onClick={() => setShowInventory(true)}
-                    className="w-11 h-11 bg-purple-500/15 rounded-full flex items-center justify-center text-white hover:bg-purple-500/30 transition-all"
+                    className="w-11 h-11 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-lg"
                   >
                     🎒
                   </button>
                   <button 
                     onClick={() => setShowChatTutorial(true)}
-                    className="w-11 h-11 bg-blue-500/15 rounded-full flex items-center justify-center text-white hover:bg-blue-500/30 transition-all"
+                    className="w-11 h-11 bg-white/15 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-lg"
                     title="Chat Help"
                   >
                     💡
                   </button>
-                  <div className="flex-1 bg-black/20 border border-purple-500/20 rounded-full h-11 flex items-center px-1">
+                  <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full h-11 flex items-center px-1 shadow-lg">
                     <input
                       type="text"
                       value={userInput}
@@ -2453,7 +2411,7 @@ export default function SoloLeveling() {
                       onKeyPress={(e) => e.key === 'Enter' && handleUserInput()}
                       placeholder={inputMode === 'speak' ? "Talk to Cha Hae-In..." : "What do you do?"}
                       disabled={isLoading}
-                      className="flex-1 bg-transparent border-none text-white text-sm outline-none px-4 disabled:opacity-50"
+                      className="flex-1 bg-transparent border-none text-white text-sm outline-none px-4 disabled:opacity-50 placeholder-white/50"
                     />
                     {isLoading && inputMode === 'speak' && (
                       <div className="px-2">
@@ -2462,10 +2420,10 @@ export default function SoloLeveling() {
                     )}
                     <button
                       onClick={() => setInputMode(inputMode === 'speak' ? 'action' : 'speak')}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-all backdrop-blur-xl border border-white/20 shadow-lg ${
                         inputMode === 'speak' 
-                          ? 'bg-pink-600 shadow-lg shadow-pink-500/25' 
-                          : 'bg-purple-600 shadow-lg shadow-purple-500/25'
+                          ? 'bg-pink-600/90 hover:bg-pink-500/90' 
+                          : 'bg-purple-600/90 hover:bg-purple-500/90'
                       }`}
                       title={inputMode === 'speak' ? 'Switch to Action Mode' : 'Switch to Chat Mode'}
                     >
@@ -2475,10 +2433,10 @@ export default function SoloLeveling() {
                   <button 
                     onClick={handleUserInput}
                     disabled={!userInput.trim() || isLoading}
-                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all text-white ${
+                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all text-white backdrop-blur-xl border border-white/20 shadow-lg ${
                       userInput.trim() && !isLoading
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg'
-                        : 'bg-gray-600/30 cursor-not-allowed opacity-50'
+                        ? 'bg-gradient-to-r from-purple-600/90 to-pink-600/90 hover:from-purple-700/90 hover:to-pink-700/90'
+                        : 'bg-white/10 cursor-not-allowed opacity-50'
                     }`}
                     title="Send Message"
                   >
