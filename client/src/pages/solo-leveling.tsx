@@ -1602,6 +1602,7 @@ export default function SoloLeveling() {
           setSceneBackground(data.imageUrl);
           
           console.log('Background updated for scene display');
+          console.log('Current states - sceneBackground length:', data.imageUrl.length, 'currentBackground length:', data.imageUrl.length);
         } else {
           // Fallback to gradient if no image generated
           const fallbackGradients = [
@@ -1997,16 +1998,25 @@ export default function SoloLeveling() {
               {/* Full Screen Game Container with Overlaid UI */}
               <div className="flex-1 relative overflow-hidden">
                 {/* AI-Generated Scene Background */}
-                <div 
-                  className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 filter brightness-110 contrast-110"
-                  style={{ 
-                    backgroundImage: sceneBackground ? `url("${sceneBackground}")` : 
-                                   currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center center',
-                    zIndex: 1
-                  }}
-                />
+                {sceneBackground ? (
+                  <img 
+                    src={sceneBackground}
+                    alt="AI Generated Scene"
+                    className="absolute inset-0 w-full h-full object-cover filter brightness-110 contrast-110"
+                    style={{ zIndex: 1 }}
+                  />
+                ) : (
+                  <div 
+                    className="absolute inset-0 transition-opacity duration-500 filter brightness-110 contrast-110"
+                    style={{ 
+                      backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center center',
+                      backgroundRepeat: 'no-repeat',
+                      zIndex: 1
+                    }}
+                  />
+                )}
                 
 
                 
