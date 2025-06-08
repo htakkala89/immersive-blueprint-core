@@ -1992,11 +1992,11 @@ export default function SoloLeveling() {
 
               {/* Full Screen Game Container with Overlaid UI */}
               <div className="flex-1 relative overflow-hidden">
-                {/* Background Image - Full Screen */}
+                {/* AI-Generated Scene Background */}
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 filter brightness-110 contrast-110"
                   style={{ 
-                    backgroundImage: currentBackground,
+                    backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center center'
                   }}
