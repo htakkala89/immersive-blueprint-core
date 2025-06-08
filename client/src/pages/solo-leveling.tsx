@@ -7,6 +7,10 @@ import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/compon
 import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import { RaidSystem } from "@/components/RaidSystem";
 import { Marketplace } from "../components/Marketplace";
+import { RelationshipSystem, useRelationshipSystem } from "@/components/RelationshipSystem";
+import { CombatSystem } from "@/components/CombatSystem";
+import { AchievementSystem, useAchievementSystem } from "@/components/AchievementSystem";
+import { StoryBranching, EnhancedChoiceButton } from "@/components/StoryBranching";
 import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
@@ -186,10 +190,26 @@ export default function SoloLeveling() {
   const [showMarketplace, setShowMarketplace] = useState(false);
   const [previousPage, setPreviousPage] = useState<'hub' | 'story'>('story');
   const [showRaidSystem, setShowRaidSystem] = useState(false);
+  const [showRelationshipSystem, setShowRelationshipSystem] = useState(false);
+  const [showCombatSystem, setShowCombatSystem] = useState(false);
+  const [showAchievementSystem, setShowAchievementSystem] = useState(false);
+  const [currentCombatEnemy, setCurrentCombatEnemy] = useState(null);
+  const [storyFlags, setStoryFlags] = useState<string[]>([]);
+  const [unlockedPaths, setUnlockedPaths] = useState<string[]>(['main_story']);
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
   const { playVoice, stopVoice, isPlaying, currentSpeaker } = useVoice();
   const { generateStoryNarration, isPlaying: isNarrationPlaying, stopNarration } = useStoryNarration();
+  const { relationshipData, updateRelationship, processChoice: processRelationshipChoice } = useRelationshipSystem();
+  const { 
+    playerStats: achievementStats, 
+    trackChoice, 
+    trackCombatWin, 
+    trackShadowExtraction, 
+    trackSceneUnlock, 
+    trackStoryProgress, 
+    trackAffectionChange 
+  } = useAchievementSystem();
 
   const timeRef = useRef<HTMLSpanElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -3362,7 +3382,7 @@ export default function SoloLeveling() {
                         {/* Affection Hearts */}
                         <div className="flex items-center gap-0.5">
                           {[...Array(5)].map((_, i) => (
-                            <span key={i} className={`text-xs ${i < gameState.affection ? 'text-pink-400' : 'text-gray-600'}`}>
+                            <span key={i} className={`text-xs ${i < Math.floor(gameState.affection) ? 'text-pink-400' : 'text-gray-600'}`}>
                               ❤️
                             </span>
                           ))}
