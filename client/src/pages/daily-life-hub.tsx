@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useIntimateImageGeneration } from "@/hooks/useIntimateImageGeneration";
 
 interface PlayerStats {
   gold: number;

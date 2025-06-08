@@ -279,8 +279,9 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     
     lastImageGeneration = now;
     
-    // Check if this is mature/romantic content
-    const useMatureGenerator = isMatureContent(gameState);
+    // Check if this is mature/romantic content based on narration
+    const narration = gameState.narration || '';
+    const useMatureGenerator = isMatureContent(narration);
     
     if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
       console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);

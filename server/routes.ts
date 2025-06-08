@@ -340,6 +340,28 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Mature content image generation endpoint
+  app.post("/api/generate-intimate-image", async (req, res) => {
+    try {
+      const { activityId, relationshipStatus, intimacyLevel } = req.body;
+      
+      if (!activityId || !relationshipStatus || intimacyLevel === undefined) {
+        return res.status(400).json({ error: "Activity ID, relationship status, and intimacy level are required" });
+      }
+
+      const imageUrl = await generateIntimateActivityImage(activityId, relationshipStatus, intimacyLevel);
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: "Failed to generate intimate image" });
+      }
+    } catch (error) {
+      console.error('Error generating intimate image:', error);
+      res.status(500).json({ error: (error as Error).message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
