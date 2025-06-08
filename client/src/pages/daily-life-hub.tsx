@@ -158,6 +158,119 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
   return baseActivities.filter(activity => activity.available);
 };
 
+const getActivityResultTitle = (activity: Activity, stats: PlayerStats): string => {
+  if (activity.id === 'propose_marriage') return '💍 Marriage Proposal';
+  if (activity.id === 'marriage_ceremony') return '💒 Wedding Day';
+  if (activity.id === 'wake_up_together') return '🌅 Good Morning Together';
+  if (activity.id === 'intimate_evening') return '🌙 Intimate Evening';
+  if (activity.id === 'cook_together') return '🍳 Cooking Together';
+  if (activity.id === 'honeymoon') return '✈️ Honeymoon Bliss';
+  if (activity.id === 'apartment_hunting') return '🏠 Finding Your Home';
+  return activity.title;
+};
+
+const getIntimateDialogue = (activity: Activity, stats: PlayerStats): string => {
+  const relationshipLevel = stats.relationshipStatus;
+  const intimacy = stats.intimacyLevel;
+  const affection = stats.affectionLevel;
+
+  // Marriage proposal dialogue
+  if (activity.id === 'propose_marriage') {
+    return "Jin-Woo... yes! A thousand times yes! I've been waiting for this moment since the day you saved me from the Ant King. I love you more than words can express.";
+  }
+
+  // Wedding ceremony dialogue
+  if (activity.id === 'marriage_ceremony') {
+    return "Today I become Mrs. Sung Jin-Woo... I promise to stand by your side through every gate, every battle, and every quiet moment. You are my everything, my Shadow Monarch.";
+  }
+
+  // Honeymoon dialogue
+  if (activity.id === 'honeymoon') {
+    return "This is perfect, Jin-Woo. Just you and me, no gates, no guilds... just us. I've never been happier. Thank you for giving me a normal life filled with extraordinary love.";
+  }
+
+  // Wake up together dialogue
+  if (activity.id === 'wake_up_together') {
+    if (relationshipLevel === 'married') {
+      return intimacy >= 8 
+        ? "Good morning, my husband... I love waking up in your arms. Last night was incredible. Should we stay in bed a little longer?" 
+        : "Good morning, honey. I made coffee already. I love our lazy mornings together.";
+    } else {
+      return "Mmm... good morning, Jin-Woo. I love staying over at your place. Your bed is so much more comfortable than mine.";
+    }
+  }
+
+  // Intimate evening dialogue
+  if (activity.id === 'intimate_evening') {
+    if (relationshipLevel === 'married') {
+      return intimacy >= 9 
+        ? "Come here, my love... I've been thinking about you all day. Let me show you how much I missed you." 
+        : "Tonight is just for us. No phones, no guild business... just you and me, Jin-Woo.";
+    } else {
+      return "I love these quiet evenings together. Being close to you like this... it feels so right, Jin-Woo.";
+    }
+  }
+
+  // Cooking together dialogue
+  if (activity.id === 'cook_together') {
+    return relationshipLevel === 'married' 
+      ? "I love cooking with my husband. We make such a good team, don't we? In the kitchen and everywhere else." 
+      : "This feels so domestic and sweet. I could get used to cooking breakfast with you every morning, Jin-Woo.";
+  }
+
+  // Apartment hunting dialogue
+  if (activity.id === 'apartment_hunting') {
+    return "Our first home together... I'm so excited! I want us to find the perfect place where we can build our life together. Somewhere with a big kitchen for cooking and a cozy bedroom for... well, you know.";
+  }
+
+  // Wedding planning dialogue
+  if (activity.id === 'wedding_planning') {
+    return "Planning our wedding with you is like a dream come true. I want everything to be perfect for our special day. Do you think your shadow soldiers could help with the decorations?";
+  }
+
+  // Team dungeon dialogue
+  if (activity.id === 'team_dungeon') {
+    return affection >= 8 
+      ? "Fighting alongside you never gets old. We're unstoppable together, Jin-Woo. In battle and in love." 
+      : "I love how we work together. You protect me, I protect you. That's what real partners do.";
+  }
+
+  // Romantic dinner dialogue
+  if (activity.id === 'romantic_dinner') {
+    return relationshipLevel === 'married' 
+      ? "Date nights are so important, even for married couples. You still make my heart flutter like we just started dating." 
+      : "You always know how to make me feel special, Jin-Woo. This is exactly what I needed after that tough raid.";
+  }
+
+  // Morning coffee dialogue
+  if (activity.id === 'morning_coffee') {
+    return "These quiet moments before the day starts are my favorite. Just you, me, and coffee. Simple but perfect.";
+  }
+
+  // Lazy day dialogue
+  if (activity.id === 'lazy_sunday') {
+    return relationshipLevel === 'married' 
+      ? "I love lazy Sundays with my husband. No guild responsibilities, no gates to clear... just us being a normal couple." 
+      : "Days like this remind me why I fell for you. You're not just the Shadow Monarch... you're the man I want to spend forever with.";
+  }
+
+  // Shopping dialogue
+  if (activity.id === 'marketplace') {
+    return stats.livingTogether 
+      ? "Shopping for our home together feels so natural. We really are building a life together, aren't we?" 
+      : "I love that you want to buy me gifts, but just spending time with you is the best present I could ask for.";
+  }
+
+  // Default affectionate responses
+  if (affection >= 8) {
+    return "Every moment with you feels like a blessing, Jin-Woo. I love you so much.";
+  } else if (affection >= 5) {
+    return "I really enjoy spending time with you like this. You make me so happy.";
+  } else {
+    return "This was nice, Jin-Woo. Thank you for thinking of me.";
+  }
+};
+
 export default function DailyLifeHub() {
   const [, setLocation] = useLocation();
   const [playerStats, setPlayerStats] = useState<PlayerStats>({
