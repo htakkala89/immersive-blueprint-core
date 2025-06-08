@@ -2218,40 +2218,85 @@ export default function SoloLeveling() {
                   {chatPinned ? '📌' : '💬'}
                 </button>
 
-                {/* Overlay Messages - Full Screen Coverage */}
-                <div className={`absolute top-16 left-3 right-3 bottom-48 z-30 transition-opacity duration-300 ${chatPinned ? 'opacity-100' : 'opacity-0 pointer-events-none'} overflow-y-auto`}>
-                  {/* Story Narration - Compact Overlay */}
-                  {currentStory && (
-                    <div className="mb-2 p-3 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="text-xs text-gray-400 font-medium">GM</div>
-                      </div>
-                      <div className="text-white text-sm leading-snug font-normal">{currentStory.narration}</div>
-                    </div>
-                  )}
-
-                  {/* System Notifications - Compact Style */}
-                  {currentStory?.chat && currentStory.chat.map((msg, index) => (
-                    <div key={index} className="mb-2 p-3 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="text-xs text-gray-400 font-medium">
-                          {msg.sender === 'system' ? '⚙️ System' : msg.sender}
-                        </div>
-                      </div>
-                      <div className="text-white text-sm leading-snug font-normal">{msg.text}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Chat Container - Full Screen Coverage */}
+                {/* Combined Messages Container - Full Screen Coverage */}
                 <div className={`absolute top-16 left-0 right-0 bottom-48 z-30 flex flex-col transition-opacity duration-300 ${(chatPinned || autoMessageVisible) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                  {/* Chat Container - Takes available space */}
                   <div className="flex-1 min-h-0 overflow-hidden">
-                    <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto chat-container">
+                    <div ref={chatContainerRef} className="h-full p-3 overflow-y-auto chat-container space-y-3">
+                      
+                      {/* Story Narration - Only show when available */}
+                      {currentStory && (
+                        <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="text-xs text-gray-300 font-medium">📖 GM</div>
+                          </div>
+                          <div className="text-white text-sm leading-relaxed">{currentStory.narration}</div>
+                        </div>
+                      )}
+
+                      {/* System/Story Messages */}
+                      {currentStory?.chat && currentStory.chat.map((msg, index) => (
+                        <div key={`story-${index}`} className="p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="text-xs text-gray-300 font-medium">
+                              {msg.sender === 'system' ? '⚙️ System' : `💕 ${msg.sender}`}
+                            </div>
+                          </div>
+                          <div className="text-white text-sm leading-relaxed">{msg.text}</div>
+                        </div>
+                      ))}
+
                       {/* Chat Messages - iMessage style layout */}
                       {getDisplayMessages().map((msg: any) => {
                         const opacity = getMessageOpacity(msg.timestamp, msg.id);
                         const isPlayer = msg.sender === 'player';
+                        const isHaeIn = msg.sender === 'Cha Hae-In';
+                        
+                        return (
+                          <div 
+                            key={msg.id}
+                            data-message-id={msg.id}
+                            className={`flex items-end gap-3 transition-opacity duration-1000 ${
+                              isPlayer ? 'flex-row-reverse' : 'flex-row'
+                            }`}
+                            style={{ opacity }}
+                          >
+                            {/* Avatar */}
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 ${
+                              isPlayer 
+                                ? 'bg-gradient-to-r from-purple-600 to-purple-700' 
+                                : isHaeIn
+                                ? 'bg-gradient-to-r from-pink-600 to-pink-700'
+                                : 'bg-gradient-to-r from-yellow-600 to-yellow-700'
+                            }`}>
+                              {isPlayer ? '👤' : isHaeIn ? '👩' : '⚡'}
+                            </div>
+                            
+                            {/* Message bubble */}
+                            <div className={`max-w-[75%] p-3 rounded-2xl backdrop-blur-xl shadow-lg ${
+                              isPlayer 
+                                ? 'bg-purple-600/90 border border-white/20 rounded-br-md' 
+                                : isHaeIn
+                                ? 'bg-pink-500/90 border border-white/20 rounded-bl-md'
+                                : 'bg-white/10 border border-white/20 rounded-bl-md'
+                            }`}>
+                              {/* Sender name only for non-player messages */}
+                              {!isPlayer && (
+                                <div className="text-xs font-semibold mb-1 opacity-90">
+                                  <span className="text-white">{msg.sender}</span>
+                                </div>
+                              )}
+                              <div className="text-white text-sm leading-relaxed">{msg.text}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Chat History Access Hint */}
+                      {chatMessages.length > 3 && (
+                        <div className="text-center py-2">
+                          <div className="text-xs text-white/40">Scroll up to see chat history</div>
+                        </div>
+                      )}
                         const isHaeIn = msg.sender === 'Cha Hae-In';
                         
                         return (
