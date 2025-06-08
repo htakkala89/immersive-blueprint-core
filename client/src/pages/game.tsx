@@ -5,11 +5,12 @@ import { StoryProgress } from "@/components/StoryProgress";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Inventory } from "@/components/Inventory";
 import { EnhancedSkillTree } from "@/components/EnhancedSkillTree";
+import { RealtimeChat } from "@/components/RealtimeChat";
 import Home from "@/pages/home";
 import { useGameState } from "@/hooks/useGameState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Home as HomeIcon, Crown } from "lucide-react";
+import { Home as HomeIcon, Crown, MessageCircle } from "lucide-react";
 
 export default function Game() {
   const { gameState, handleChoice, isLoading, isProcessing } = useGameState();
@@ -17,6 +18,7 @@ export default function Game() {
   const [showInventory, setShowInventory] = useState(false);
   const [showLifeHub, setShowLifeHub] = useState(false);
   const [showSkillTree, setShowSkillTree] = useState(false);
+  const [showRealtimeChat, setShowRealtimeChat] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
 
   // Update clock
@@ -129,6 +131,15 @@ export default function Game() {
               >
                 <Crown className="h-5 w-5 text-white drop-shadow-lg" />
               </Button>
+              
+              {/* Chat Button */}
+              <Button
+                onClick={() => setShowRealtimeChat(true)}
+                className="rounded-full w-12 h-12 p-0 bg-gradient-to-br from-pink-600 to-red-600 hover:from-pink-700 hover:to-red-700 border border-pink-400 border-opacity-50 shadow-lg backdrop-blur-sm"
+                title="Chat with Cha Hae-In"
+              >
+                <MessageCircle className="h-5 w-5 text-white drop-shadow-lg" />
+              </Button>
             </div>
           </div>
 
@@ -171,6 +182,17 @@ export default function Game() {
           sessionId={gameState.sessionId}
         />
       )}
+
+      {/* Realtime Chat Modal */}
+      <RealtimeChat
+        gameState={gameState}
+        isVisible={showRealtimeChat}
+        onClose={() => setShowRealtimeChat(false)}
+        onAffectionChange={(change) => {
+          // Handle affection changes in game state
+          console.log(`Affection changed by: ${change}`);
+        }}
+      />
 
       {/* Loading Overlay */}
       <LoadingOverlay isVisible={isProcessing} />

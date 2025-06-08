@@ -236,12 +236,12 @@ export class MemStorage implements IStorage {
 
     const updated: GameState = {
       ...existing,
-      narration: nextNode.narration,
+      narration: nextNode?.narration || existing.narration,
       health: newHealth,
       mana: newMana,
       choices: availableChoices,
       sceneData: newSceneData,
-      storyPath: nextNode.id,
+      storyPath: nextNode?.id || existing.storyPath,
       choiceHistory: newChoiceHistory,
       storyFlags: newFlags
     };
