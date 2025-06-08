@@ -470,6 +470,17 @@
   transform-origin: center bottom;
 }
 
+/* Chat bubble frosted effect for text readability */
+.chat-message .glassmorphism {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.message-bubble {
+  backdrop-filter: blur(8px);
+}
+
 /* Speaking glow effects */
 .message-speaking {
   animation: speaking-glow 2s ease-in-out infinite;

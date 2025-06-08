@@ -62,8 +62,12 @@ class VoiceService {
       const audioBuffer = await response.buffer();
       console.log('✅ Voice generated successfully');
       return audioBuffer;
-    } catch (error) {
-      console.error('🔊 Voice generation failed:', error.message);
+    } catch (error: any) {
+      if (error.message && error.message.includes('quota_exceeded')) {
+        console.log('🚫 ElevenLabs quota exceeded - voice disabled until new API key provided');
+      } else {
+        console.error('🔊 Voice generation failed:', error.message);
+      }
       return null;
     }
   }
