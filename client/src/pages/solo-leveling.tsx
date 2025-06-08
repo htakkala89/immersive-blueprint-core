@@ -2850,7 +2850,7 @@ export default function SoloLeveling() {
                                   {currentStory.choices[currentChoiceIndex]?.text || 'Choose an action'}
                                 </div>
                                 {currentStory.choices[currentChoiceIndex]?.detail && (
-                                  <div className="text-gray-400 text-[10px] leading-snug">
+                                  <div className="text-white/70 text-[10px] leading-snug">
                                     {currentStory.choices[currentChoiceIndex].detail}
                                   </div>
                                 )}
