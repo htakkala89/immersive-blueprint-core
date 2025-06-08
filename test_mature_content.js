@@ -9,9 +9,9 @@ async function testMatureContentGeneration() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        activityId: 'intimate_evening',
+        activityId: 'wake_up_together',
         relationshipStatus: 'married',
-        intimacyLevel: 8
+        intimacyLevel: 6
       })
     });
 
@@ -26,11 +26,11 @@ async function testMatureContentGeneration() {
       const base64Data = data.imageUrl.replace(/^data:image\/\w+;base64,/, '');
       const buffer = Buffer.from(base64Data, 'base64');
       
-      fs.writeFileSync('corrected_cha_haein_image.png', buffer);
-      console.log('✅ Corrected Cha Hae-In image generated and saved');
+      fs.writeFileSync('wake_up_together_test.png', buffer);
+      console.log('✅ Wake up together image generated and saved');
       console.log('📊 Image size:', buffer.length, 'bytes');
-      console.log('🔞 Activity: intimate_evening');
-      console.log('💑 Relationship: married (intimacy level 8)');
+      console.log('🔞 Activity: wake_up_together');
+      console.log('💑 Relationship: married (intimacy level 6)');
       console.log('👱‍♀️ Character: Short blonde hair, purple eyes');
       
       return {

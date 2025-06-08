@@ -462,9 +462,9 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
 }
 
 function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {
-  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female S-rank hunter with short blonde hair and striking purple eyes)";
+  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female S-rank hunter with bright SHORT BLONDE HAIR and vibrant PURPLE EYES, NOT black hair, NOT blue eyes)";
   const jinWooDesc = "Sung Jin-Woo (tall Korean male with short black hair and dark eyes)";
-  const baseStyle = `anime style, detailed, beautiful, romantic lighting, intimate atmosphere, ${chaHaeInDesc} and ${jinWooDesc} from Solo Leveling`;
+  const baseStyle = `anime style, detailed, beautiful, warm lighting, intimate atmosphere, ${chaHaeInDesc} and ${jinWooDesc} from Solo Leveling`;
   
   switch (activityId) {
     case 'strip_poker':
