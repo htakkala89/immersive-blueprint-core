@@ -12,6 +12,7 @@ interface MarketplaceItem {
   icon: string;
   effects?: {
     health?: number;
+    mana?: number;
     energy?: number;
     affection?: number;
     attack?: number;
@@ -51,6 +52,30 @@ export function Marketplace({ isVisible, onClose, onPurchase, playerGold, player
       unlockLevel: 1
     },
     {
+      id: 'mana_potion',
+      name: 'Mana Potion',
+      description: 'Restores 100 MP instantly during battle',
+      price: 60,
+      category: 'consumable',
+      rarity: 'common',
+      icon: '🔵',
+      effects: { mana: 100 },
+      stock: 99,
+      unlockLevel: 1
+    },
+    {
+      id: 'hunter_healing_elixir',
+      name: 'Hunter Healing Elixir',
+      description: 'Restores both Jin-Woo and Cha Hae-In health',
+      price: 120,
+      category: 'consumable',
+      rarity: 'rare',
+      icon: '🍶',
+      effects: { health: 300 },
+      stock: 50,
+      unlockLevel: 10
+    },
+    {
       id: 'energy_drink',
       name: 'Energy Drink',
       description: 'Restores 50 energy points',
@@ -63,14 +88,62 @@ export function Marketplace({ isVisible, onClose, onPurchase, playerGold, player
       unlockLevel: 1
     },
     {
+      id: 'korean_ginseng_tea',
+      name: 'Korean Ginseng Tea',
+      description: 'Rejuvenating tea that restores energy after intimate activities',
+      price: 40,
+      category: 'consumable',
+      rarity: 'common',
+      icon: '🍵',
+      effects: { energy: 80 },
+      stock: 99,
+      unlockLevel: 1
+    },
+    {
+      id: 'royal_honey',
+      name: 'Royal Honey',
+      description: 'Premium honey that boosts stamina and energy',
+      price: 75,
+      category: 'consumable',
+      rarity: 'rare',
+      icon: '🍯',
+      effects: { energy: 120, duration: 180 },
+      stock: 30,
+      unlockLevel: 5
+    },
+    {
+      id: 'protein_smoothie',
+      name: 'Hunter Protein Smoothie',
+      description: 'Nutritious drink that restores energy for both hunters',
+      price: 50,
+      category: 'consumable',
+      rarity: 'common',
+      icon: '🥤',
+      effects: { energy: 90 },
+      stock: 99,
+      unlockLevel: 1
+    },
+    {
+      id: 'energy_bars',
+      name: 'High-Energy Bars',
+      description: 'Quick snacks for post-activity energy recovery',
+      price: 25,
+      category: 'consumable',
+      rarity: 'common',
+      icon: '🍫',
+      effects: { energy: 60 },
+      stock: 99,
+      unlockLevel: 1
+    },
+    {
       id: 'mana_crystal',
       name: 'Mana Crystal',
-      description: 'Restores mana and boosts magical abilities',
+      description: 'Restores both mana and energy simultaneously',
       price: 100,
       category: 'consumable',
       rarity: 'rare',
       icon: '💎',
-      effects: { energy: 100, duration: 300 },
+      effects: { mana: 100, energy: 50, duration: 300 },
       stock: 50,
       unlockLevel: 10
     },

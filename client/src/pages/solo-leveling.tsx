@@ -2362,11 +2362,13 @@ export default function SoloLeveling() {
           setSceneBackground(data.imageUrl);
           console.log('Chat response generated image, updating background');
         } else {
-          // Only generate images for significant emotional moments
+          // Enhanced emotional detection for automatic image generation
           const significantEmotions = [
-            /\(.*(?:blush|flushed|tears|crying|shocked|gasped|eyes wide).*\)/gi,
-            /\*.*(?:kisses|embraces|holds close|pulls away).*\*/gi,
-            /(confession|first time|never felt|heart racing|can't breathe)/gi
+            /\(.*(?:blush|blushing|flushed|cheeks.*red|face.*red|tears|crying|shocked|gasped|eyes wide).*\)/gi,
+            /\*.*(?:kisses|embraces|holds close|pulls away|touches|caresses).*\*/gi,
+            /(confession|first time|never felt|heart racing|can't breathe)/gi,
+            /(she blushes|her cheeks turn red|her face turns red|eyes light up|smiles warmly)/gi,
+            /(tears in her eyes|starts crying|gets emotional|voice trembles)/gi
           ];
           
           const isSignificantEmotion = significantEmotions.some(pattern => 
