@@ -560,7 +560,7 @@ function createChatEmotionPrompt(chatResponse: string, userMessage: string): str
 }
 
 function createCustomIntimatePrompt(specificAction: string, relationshipStatus: string, intimacyLevel: number): string {
-  const baseCharacters = "Sung Jin-Woo (Korean male, short black hair, athletic build) and Cha Hae-In (Korean female, blonde hair, beautiful)";
+  const baseCharacters = "Sung Jin-Woo (Korean male, short black hair, athletic build) and Cha Hae-In (Korean female, GOLDEN BLONDE HAIR MANDATORY - NEVER purple/black/brown hair, beautiful)";
   
   // Parse and enhance the specific action for better image generation
   const actionPrompt = specificAction.toLowerCase()
@@ -579,7 +579,7 @@ function createCustomIntimatePrompt(specificAction: string, relationshipStatus: 
   
   const intimacyDesc = intimacyDescriptions[Math.min(Math.max(intimacyLevel, 1), 5) as keyof typeof intimacyDescriptions];
   
-  return `${baseCharacters}, ${actionPrompt}, ${intimacyDesc}, bedroom setting, anime art style, detailed illustration, romantic lighting, Solo Leveling character design, mature themes`;
+  return `${baseCharacters}, ${actionPrompt}, ${intimacyDesc}, bedroom setting, anime art style, detailed illustration, romantic lighting, Solo Leveling character design, mature themes. ABSOLUTE REQUIREMENT: Cha Hae-In has bright golden blonde hair only`;
 }
 
 function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {
