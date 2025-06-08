@@ -12,17 +12,24 @@ const IMAGE_GENERATION_COOLDOWN = 1000; // 1 second between generations
 function isMatureContent(gameState: GameState): boolean {
   const narration = gameState.narration.toLowerCase();
   const storyPath = gameState.storyPath.toLowerCase();
+  const sessionId = gameState.sessionId?.toLowerCase() || '';
+  
+  // Always use NovelAI for Solo Leveling content (high-quality anime art)
+  if (sessionId.includes('solo-leveling') || sessionId.includes('solo_leveling')) {
+    return true;
+  }
   
   const matureKeywords = [
     'intimate', 'passionate', 'embrace', 'kiss', 'romantic', 'love', 'tender',
     'close', 'touch', 'caress', 'desire', 'attraction', 'seductive', 'alluring',
     'beautiful', 'gorgeous', 'stunning', 'enchanting', 'captivating', 'date',
-    'confession', 'feelings', 'heart', 'soul', 'bond', 'connection', 'affection'
+    'confession', 'feelings', 'heart', 'soul', 'bond', 'connection', 'affection',
+    'hae-in', 'cha', 'jin-woo', 'hunter', 'guild'
   ];
 
   const matureScenes = [
     'romantic', 'love', 'kiss', 'embrace', 'intimate', 'tender', 'confession',
-    'date', 'passion', 'heart', 'soul', 'bond', 'appreciation'
+    'date', 'passion', 'heart', 'soul', 'bond', 'appreciation', 'start'
   ];
   
   return matureKeywords.some(keyword => narration.includes(keyword)) ||
