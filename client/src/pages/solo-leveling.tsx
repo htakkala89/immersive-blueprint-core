@@ -2723,18 +2723,114 @@ export default function SoloLeveling() {
         }, 1500);
         
       } else {
-        // Regular action mode - generate scene for general actions
-        const actionPrompt = `Sung Jin-Woo from Solo Leveling (Korean male, short black hair, dark eyes, black hunter outfit) performing action: ${message}. With Cha Hae-In (Korean female, blonde hair, white hunter outfit) nearby, romantic scene, manhwa art style, detailed artwork`;
-        generateSceneImage(actionPrompt);
+        // Enhanced action processing for contextual responses
+        const actionLower = message.toLowerCase();
         
-        setTimeout(() => {
-          addChatMessage('system', "Your action resonates through the world...");
+        // Movement/location actions
+        if (actionLower.includes('go to') || actionLower.includes('move to') || actionLower.includes('head to')) {
+          const location = actionLower.replace(/.*(?:go to|move to|head to)\s+(?:the\s+)?/, '');
           
-          // Random shadow effects for actions
-          if (Math.random() > 0.7) {
-            createShadowSlashEffect();
+          let locationPrompt = '';
+          let responseText = '';
+          
+          if (location.includes('car')) {
+            locationPrompt = `Sung Jin-Woo and Cha Hae-In walking to a sleek black car in a Korean city street, modern urban setting, manhwa art style`;
+            responseText = `*Cha Hae-In walks beside you toward the car* "Where are we heading, Jin-Woo?"`;
+          } else if (location.includes('café') || location.includes('coffee')) {
+            locationPrompt = `Sung Jin-Woo and Cha Hae-In approaching a cozy Korean café, warm lighting visible through windows, manhwa art style`;
+            responseText = `*Cha Hae-In's eyes light up* "A café sounds perfect! I could use some coffee."`;
+          } else if (location.includes('restaurant')) {
+            locationPrompt = `Sung Jin-Woo and Cha Hae-In entering an elegant Korean restaurant, traditional interior design, manhwa art style`;
+            responseText = `*Cha Hae-In smiles warmly* "This place looks wonderful. Good choice, Jin-Woo."`;
+          } else if (location.includes('park')) {
+            locationPrompt = `Sung Jin-Woo and Cha Hae-In walking into a beautiful Korean park with cherry blossoms, romantic setting, manhwa art style`;
+            responseText = `*Cha Hae-In takes a deep breath* "The fresh air feels amazing. Walking with you makes it even better."`;
+          } else if (location.includes('home') || location.includes('apartment')) {
+            locationPrompt = `Sung Jin-Woo and Cha Hae-In arriving at a modern Korean apartment building, evening lighting, manhwa art style`;
+            responseText = `*Cha Hae-In looks at the building* "Your place? I'd love to see how you live, Jin-Woo."`;
+          } else {
+            locationPrompt = `Sung Jin-Woo and Cha Hae-In moving to ${location}, Korean urban environment, manhwa art style`;
+            responseText = `*Cha Hae-In follows your lead* "Lead the way, Jin-Woo. I trust your judgment."`;
           }
-        }, 1000);
+          
+          generateSceneImage(locationPrompt);
+          setTimeout(() => {
+            addChatMessage('Cha Hae-In', responseText);
+          }, 1500);
+          
+        // Physical actions  
+        } else if (actionLower.includes('take her hand') || actionLower.includes('hold her hand')) {
+          const handPrompt = `Close-up of Sung Jin-Woo gently taking Cha Hae-In's hand, romantic moment, soft lighting, manhwa art style`;
+          generateSceneImage(handPrompt);
+          setTimeout(() => {
+            addChatMessage('Cha Hae-In', `*blushes as you take her hand* "Your hand feels so warm... I feel safe with you, Jin-Woo."`);
+          }, 1500);
+          
+        } else if (actionLower.includes('hug') || actionLower.includes('embrace')) {
+          const hugPrompt = `Sung Jin-Woo and Cha Hae-In in a warm embrace, romantic scene, soft lighting, manhwa art style`;
+          generateSceneImage(hugPrompt);
+          setTimeout(() => {
+            addChatMessage('Cha Hae-In', `*melts into your embrace* "I love how you hold me... it feels like home."`);
+          }, 1500);
+          
+        } else if (actionLower.includes('sit down') || actionLower.includes('sit together')) {
+          const sitPrompt = `Sung Jin-Woo and Cha Hae-In sitting together on a comfortable couch or bench, intimate setting, manhwa art style`;
+          generateSceneImage(sitPrompt);
+          setTimeout(() => {
+            addChatMessage('Cha Hae-In', `*sits close to you* "This is nice... just being here with you."`);
+          }, 1500);
+          
+        // Conversation starters
+        } else if (actionLower.includes('tell her') || actionLower.includes('say to her')) {
+          const what = actionLower.replace(/.*(?:tell her|say to her)\s+/, '');
+          setTimeout(() => {
+            addChatMessage('Cha Hae-In', `*listens intently* "Thank you for sharing that with me, Jin-Woo. What you say means a lot to me."`);
+          }, 1000);
+          
+        // Look actions
+        } else if (actionLower.includes('look at her') || actionLower.includes('gaze at her')) {
+          const gazePrompt = `Close-up portrait of Cha Hae-In with beautiful golden blonde hair, gentle expression as she notices your gaze, manhwa art style`;
+          generateSceneImage(gazePrompt);
+          setTimeout(() => {
+            addChatMessage('Cha Hae-In', `*notices you looking and smiles shyly* "What is it? Do I have something on my face?" *touches her cheek self-consciously*`);
+          }, 1500);
+          
+        // Generic fallback with context
+        } else {
+          const contextualPrompt = `Sung Jin-Woo performing action: ${message}, with Cha Hae-In nearby, Korean setting, manhwa art style, detailed scene`;
+          generateSceneImage(contextualPrompt);
+          
+          // Generate contextual response through AI
+          setTimeout(async () => {
+            try {
+              const response = await fetch('/api/chat-with-hae-in', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  message: `*${message}*`,
+                  gameState: gameState,
+                  context: 'action_response'
+                }),
+              });
+              
+              if (response.ok) {
+                const data = await response.json();
+                addChatMessage('Cha Hae-In', data.response);
+              } else {
+                addChatMessage('Cha Hae-In', `*reacts to your action* "That's interesting, Jin-Woo. What are you thinking?"`);
+              }
+            } catch (error) {
+              addChatMessage('Cha Hae-In', `*watches you thoughtfully* "You always surprise me with your actions, Jin-Woo."`);
+            }
+          }, 1000);
+        }
+        
+        // Add some visual effects for actions
+        if (Math.random() > 0.6) {
+          createShadowSlashEffect();
+        }
       }
     }
   };
