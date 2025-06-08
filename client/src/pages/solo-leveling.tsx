@@ -1433,8 +1433,11 @@ export default function SoloLeveling() {
     }
   };
 
-  // Update time display
+  // Generate initial cover image and update time display
   useEffect(() => {
+    // Generate Solo Leveling cover image with Jin-Woo
+    generateSceneImage("Jin-Woo Sung from Solo Leveling, powerful shadow monarch, glowing purple eyes, black hunter coat, dark aura, standing confidently in dramatic pose, Korean manhwa art style, epic cover artwork");
+    
     const updateTime = () => {
       if (timeRef.current) {
         const now = new Date();
@@ -1888,11 +1891,9 @@ export default function SoloLeveling() {
           {/* Start Overlay */}
           {!gameStarted && (
             <div 
-              className="absolute inset-0 z-50 flex flex-col justify-end transition-opacity duration-1000"
+              className="absolute inset-0 z-50 flex flex-col justify-end transition-opacity duration-1000 bg-cover bg-center bg-no-repeat"
               style={{
-                backgroundImage: "url('https://picsum.photos/400/600?random=1')",
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
+                backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f0f0f 70%, #2d1b69 100%)'
               }}
             >
               <div className="absolute bottom-0 left-0 right-0 h-3/4 bg-gradient-to-t from-black via-black/80 to-transparent" />
