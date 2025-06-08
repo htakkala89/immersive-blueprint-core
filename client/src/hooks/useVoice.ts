@@ -30,7 +30,8 @@ export function useVoice(): VoiceHookReturn {
   }, []);
 
   const getPriority = (character: string): number => {
-    if (character === 'game-master' || character === 'system') return 1; // Highest priority
+    if (character === 'narrator' || character === 'story-narrator') return 0; // Highest priority for narrator
+    if (character === 'game-master' || character === 'system') return 1; // High priority
     if (character === 'cha-hae-in') return 2; // Medium priority
     return 3; // Lowest priority
   };

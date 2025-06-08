@@ -1776,10 +1776,11 @@ export default function SoloLeveling() {
     const currentStory = story[gameState.currentScene];
     if (currentStory?.narration) {
       setTimeout(() => {
-        generateStoryNarration(currentStory.narration);
+        // Use the main voice system with narrator priority
+        playVoice(currentStory.narration, 'narrator');
       }, 1000); // Delay to allow scene transition
     }
-  }, [gameState.currentScene, generateStoryNarration]);
+  }, [gameState.currentScene, playVoice]);
 
   // Update fade effects every 5 seconds for immersion
   useEffect(() => {
@@ -2924,7 +2925,7 @@ export default function SoloLeveling() {
                         <div className="mb-4">
                           <div className="flex items-start gap-3">
                             <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 glassmorphism flex items-center justify-center flex-shrink-0 ${
-                              isNarrationPlaying ? 'animate-pulse ring-2 ring-purple-400' : ''
+                              isPlaying ? 'animate-pulse ring-2 ring-purple-400' : ''
                             }`}>
                               <span className="text-white text-sm">📖</span>
                             </div>
@@ -2932,7 +2933,7 @@ export default function SoloLeveling() {
                               <div className="glassmorphism rounded-2xl p-4">
                                 <div className="flex items-center gap-2 mb-2">
                                   <span className="text-white font-semibold text-sm">Narrator</span>
-                                  {isNarrationPlaying && (
+                                  {isPlaying && (
                                     <span className="text-purple-300 text-xs animate-pulse">🎵 Speaking...</span>
                                   )}
                                 </div>
