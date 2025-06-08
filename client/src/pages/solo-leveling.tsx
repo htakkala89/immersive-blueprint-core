@@ -845,6 +845,501 @@ export default function SoloLeveling() {
         { text: "Anywhere with you is perfect", detail: "Focus on her company", type: 'anywhere_perfect' }
       ],
       leadsTo: { follow_lead: 'HER_CHOICE_RESTAURANT', suggest_special: 'SPECIAL_RESTAURANT', anywhere_perfect: 'ROMANTIC_DECLARATION' }
+    },
+    'STRENGTH_APPRECIATION': {
+      prompt: "Jin-Woo admiring Cha Hae-In's incredible power and grace. Appreciation and awe, anime style.",
+      narration: "Watching her strength fills you with admiration and something deeper.",
+      chat: [
+        { sender: 'player', text: "Your strength is incredible, Hae-In. The way you fight... it's like art." },
+        { sender: 'Cha Hae-In', text: "You really think so? Coming from someone as strong as you, that means everything." },
+        { sender: 'Cha Hae-In', text: "But it's not just physical strength that matters, is it?" }
+      ],
+      choices: [
+        { text: "Your heart is strongest", detail: "Focus on her character", type: 'heart_strongest' },
+        { text: "We complement each other", detail: "Partnership focus", type: 'complement_each_other' },
+        { text: "You inspire me", detail: "Personal impact", type: 'you_inspire_me' }
+      ],
+      leadsTo: { heart_strongest: 'HEART_RECOGNITION', complement_each_other: 'PERFECT_MATCH', you_inspire_me: 'MUTUAL_INSPIRATION' }
+    },
+    'ENERGIZED_MISSION': {
+      prompt: "Cha Hae-In channeling her confidence toward the mission. Focused energy, anime style.",
+      narration: "Her renewed confidence transforms the entire atmosphere.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Alright! Let's tackle this mission with everything we've got!" },
+        { sender: 'player', text: "That's the spirit. Nothing can stop us now." },
+        { sender: 'Cha Hae-In', text: "Ready to show this dungeon what real teamwork looks like?" }
+      ],
+      choices: [
+        { text: "Lead the charge together", detail: "United assault", type: 'lead_together' },
+        { text: "Follow her lead", detail: "Let her shine", type: 'follow_her_lead' },
+        { text: "Create a strategy", detail: "Tactical approach", type: 'create_strategy' }
+      ],
+      leadsTo: { lead_together: 'UNITED_CHARGE', follow_her_lead: 'HER_LEADERSHIP', create_strategy: 'TACTICAL_PLANNING' }
+    },
+    'COOL_RESPONSE': {
+      prompt: "Jin-Woo playing it cool during first meeting. Composed confidence, anime style.",
+      narration: "Your calm demeanor catches her attention.",
+      chat: [
+        { sender: 'player', text: "Just another day for the Shadow Monarch." },
+        { sender: 'Cha Hae-In', text: "Confidence suits you. I like that you don't feel the need to show off." },
+        { sender: 'Cha Hae-In', text: "Most hunters would be bragging about clearing an S-rank gate solo." }
+      ],
+      choices: [
+        { text: "Actions speak louder", detail: "Philosophy on strength", type: 'actions_speak' },
+        { text: "Ask about her missions", detail: "Show interest in her", type: 'ask_missions' },
+        { text: "Suggest working together", detail: "Partnership proposal", type: 'suggest_partnership' }
+      ],
+      leadsTo: { actions_speak: 'PHILOSOPHY_MOMENT', ask_missions: 'MISSION_DISCUSSION', suggest_partnership: 'PARTNERSHIP_INTEREST' }
+    },
+    'HUMBLE_RESPONSE': {
+      prompt: "Jin-Woo showing humility despite his power. Modest strength, anime style.",
+      narration: "Your humility impresses her more than arrogance ever could.",
+      chat: [
+        { sender: 'player', text: "I just did what needed to be done. Anyone would have." },
+        { sender: 'Cha Hae-In', text: "Not anyone could have done that, Jin-Woo. Your humility is... refreshing." },
+        { sender: 'Cha Hae-In', text: "Most S-rank hunters have egos the size of skyscrapers." }
+      ],
+      choices: [
+        { text: "Strength without wisdom is dangerous", detail: "Share philosophy", type: 'wisdom_matters' },
+        { text: "What about you?", detail: "Turn focus to her", type: 'about_you' },
+        { text: "We all have our roles", detail: "Humble perspective", type: 'our_roles' }
+      ],
+      leadsTo: { wisdom_matters: 'WISDOM_DISCUSSION', about_you: 'ABOUT_HER', our_roles: 'ROLE_PHILOSOPHY' }
+    },
+    'HUMBLE_MOMENT': {
+      prompt: "Jin-Woo deflecting praise with humility. Self-deprecating charm, anime style.",
+      narration: "Your modest response draws a genuine smile from her.",
+      chat: [
+        { sender: 'player', text: "Mine was boring compared to yours. I just hit things until they stopped moving." },
+        { sender: 'Cha Hae-In', text: "Don't sell yourself short. There's an art to what you do too." },
+        { sender: 'Cha Hae-In', text: "Besides, I'd love to hear about it anyway." }
+      ],
+      choices: [
+        { text: "Share your story", detail: "Open up about adventures", type: 'share_adventure' },
+        { text: "Focus on her instead", detail: "Redirect attention", type: 'focus_on_her' },
+        { text: "Suggest coffee and stories", detail: "Extend the conversation", type: 'coffee_stories' }
+      ],
+      leadsTo: { share_adventure: 'ADVENTURE_SHARING', focus_on_her: 'HER_FOCUS', coffee_stories: 'COFFEE_INVITATION' }
+    },
+    'STORY_SHARING': {
+      prompt: "Jin-Woo sharing his adventures with Cha Hae-In. Storytelling moment, anime style.",
+      narration: "As you recount your experiences, she listens with genuine interest.",
+      chat: [
+        { sender: 'player', text: "The dungeon was unlike anything I'd seen. Ancient magic, puzzles that tested more than just strength..." },
+        { sender: 'Cha Hae-In', text: "That sounds incredible. I love dungeons that challenge the mind too." },
+        { sender: 'Cha Hae-In', text: "Most hunters just want to rush in and fight, but there's beauty in the complexity." }
+      ],
+      choices: [
+        { text: "You understand perfectly", detail: "Acknowledge her insight", type: 'perfect_understanding' },
+        { text: "Want to explore one together?", detail: "Partnership invitation", type: 'explore_together' },
+        { text: "Tell me about your favorites", detail: "Learn about her preferences", type: 'her_favorites' }
+      ],
+      leadsTo: { perfect_understanding: 'UNDERSTANDING_BOND', explore_together: 'EXPLORATION_PARTNERSHIP', her_favorites: 'FAVORITE_DUNGEONS' }
+    },
+    'SHADOW_VICTORY': {
+      prompt: "Jin-Woo's shadow army overwhelming the ice dragon. Epic shadow dominance, anime style.",
+      narration: "Your shadows surge forward like a dark tide, overwhelming the ancient beast.",
+      chat: [
+        { sender: 'system', text: "Shadow Army deployed! The ice dragon is completely overwhelmed!" },
+        { sender: 'Cha Hae-In', text: "Incredible... the power of the Shadow Monarch in full display." },
+        { sender: 'Cha Hae-In', text: "You could have handled this alone, couldn't you?" }
+      ],
+      choices: [
+        { text: "But it's better with you", detail: "Value her presence", type: 'better_with_you' },
+        { text: "Extract the dragon's shadow", detail: "Add to your army", type: 'extract_shadow' },
+        { text: "Power means nothing alone", detail: "Philosophical response", type: 'power_meaningless_alone' }
+      ],
+      leadsTo: { better_with_you: 'VALUED_PARTNERSHIP', extract_shadow: 'SHADOW_EXTRACTION', power_meaningless_alone: 'POWER_PHILOSOPHY' }
+    },
+    'HAE_IN_MOMENT': {
+      prompt: "Cha Hae-In taking the lead against the ice dragon. Her moment to shine, anime style.",
+      narration: "You step back, allowing Hae-In to show her true strength.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Thank you for trusting me with this." },
+        { sender: 'system', text: "Cha Hae-In unleashes her ultimate sword technique!" },
+        { sender: 'Cha Hae-In', text: "That felt amazing! Having your support gave me confidence I've never felt before." }
+      ],
+      choices: [
+        { text: "You were magnificent", detail: "Praise her performance", type: 'you_magnificent' },
+        { text: "We make a perfect team", detail: "Emphasize partnership", type: 'perfect_team' },
+        { text: "I believed in you completely", detail: "Show faith in her", type: 'believed_in_you' }
+      ],
+      leadsTo: { you_magnificent: 'MAGNIFICENT_PRAISE', perfect_team: 'PERFECT_TEAMWORK', believed_in_you: 'COMPLETE_FAITH' }
+    },
+    'SHADOW_EXTRACTION': {
+      prompt: "Jin-Woo extracting the ice dragon's shadow. Dark power absorption, anime style.",
+      narration: "The dragon's essence flows into your shadow realm, adding to your army.",
+      chat: [
+        { sender: 'system', text: "Shadow successfully extracted! Ice Dragon added to your army!" },
+        { sender: 'Cha Hae-In', text: "Every time I see you do that, it amazes me. The power to command even death itself." },
+        { sender: 'Cha Hae-In', text: "But you use that power to protect people. That's what makes you special." }
+      ],
+      choices: [
+        { text: "You make me want to be better", detail: "Her positive influence", type: 'make_me_better' },
+        { text: "Power is meaningless without purpose", detail: "Share your philosophy", type: 'power_purpose' },
+        { text: "Shall we head back?", detail: "Mission complete", type: 'head_back' }
+      ],
+      leadsTo: { make_me_better: 'POSITIVE_INFLUENCE', power_purpose: 'PURPOSE_DISCUSSION', head_back: 'MISSION_COMPLETE' }
+    },
+    'TEASE_RESPONSE': {
+      prompt: "Cha Hae-In's reaction to Jin-Woo's teasing. Playful romantic tension, anime style.",
+      narration: "Your teasing brings out a playful side of her you've never seen.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Maybe I'm imagining things? You're terrible!" },
+        { sender: 'player', text: "Am I though? Your face is pretty red for someone who's imagining things." },
+        { sender: 'Cha Hae-In', text: "That's... that's just from the dungeon heat! You're impossible, Jin-Woo." }
+      ],
+      choices: [
+        { text: "I love seeing you flustered", detail: "Continue the teasing", type: 'love_flustered' },
+        { text: "You're cute when you're embarrassed", detail: "Sweet compliment", type: 'cute_embarrassed' },
+        { text: "Okay, I'll be serious", detail: "Switch to sincerity", type: 'be_serious' }
+      ],
+      leadsTo: { love_flustered: 'FLUSTERED_RESPONSE', cute_embarrassed: 'CUTE_REACTION', be_serious: 'SERIOUS_MOMENT' }
+    },
+    'TENDER_EMBRACE': {
+      prompt: "Jin-Woo and Cha Hae-In sharing a tender embrace. Emotional intimacy, anime style.",
+      narration: "She melts into your arms, and for a moment, the world feels perfect.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I never thought I could feel this safe with someone." },
+        { sender: 'player', text: "You are safe with me. Always." },
+        { sender: 'Cha Hae-In', text: "Jin-Woo... I think I'm falling in love with you." }
+      ],
+      choices: [
+        { text: "I love you too", detail: "Mutual confession", type: 'love_you_too' },
+        { text: "I've loved you for a while", detail: "Admit longer feelings", type: 'loved_you_while' },
+        { text: "Kiss her gently", detail: "Actions over words", type: 'gentle_kiss' }
+      ],
+      leadsTo: { love_you_too: 'MUTUAL_LOVE', loved_you_while: 'LONG_LOVE', gentle_kiss: 'GENTLE_KISS' }
+    },
+    'PERFECT_MOMENT': {
+      prompt: "Jin-Woo and Cha Hae-In savoring a perfect moment together. Pure happiness, anime style.",
+      narration: "Time seems to stop as you both realize this is where you belong.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I want to remember this moment forever." },
+        { sender: 'player', text: "So do I. This feeling... I never want it to end." },
+        { sender: 'Cha Hae-In', text: "With you, every moment feels like it could last forever." }
+      ],
+      choices: [
+        { text: "Promise me more moments like this", detail: "Future commitment", type: 'promise_more_moments' },
+        { text: "You're my everything", detail: "Deep declaration", type: 'my_everything' },
+        { text: "Let's make this official", detail: "Relationship milestone", type: 'make_official' }
+      ],
+      leadsTo: { promise_more_moments: 'FUTURE_PROMISE', my_everything: 'EVERYTHING_DECLARATION', make_official: 'OFFICIAL_RELATIONSHIP' }
+    },
+    'HEART_RECOGNITION': {
+      prompt: "Jin-Woo recognizing Cha Hae-In's inner strength. Heart connection, anime style.",
+      narration: "Your words touch the core of who she is.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "My heart? I... thank you for seeing that in me." },
+        { sender: 'player', text: "Your compassion, your determination to protect others - that's your real strength." }
+      ],
+      choices: [
+        { text: "That's what I fell for", detail: "Romantic admission", type: 'fell_for_heart' },
+        { text: "Continue the mission", detail: "Focus ahead", type: 'mission_continue' }
+      ],
+      leadsTo: { fell_for_heart: 'HEART_CONFESSION', mission_continue: 'GATE_ENTRANCE' }
+    },
+    'PERFECT_MATCH': {
+      prompt: "Jin-Woo and Cha Hae-In as perfect complements. Harmony, anime style.",
+      narration: "The balance between you feels natural and right.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "We really do complement each other perfectly." },
+        { sender: 'player', text: "Your light balances my shadows." }
+      ],
+      choices: [
+        { text: "We were meant to meet", detail: "Destiny theme", type: 'meant_to_meet' },
+        { text: "Let's prove it together", detail: "Action focus", type: 'prove_together' }
+      ],
+      leadsTo: { meant_to_meet: 'DESTINY_MOMENT', prove_together: 'GATE_ENTRANCE' }
+    },
+    'MUTUAL_INSPIRATION': {
+      prompt: "Both inspiring each other to greater heights. Shared motivation, anime style.",
+      narration: "The synergy between you creates something greater than the sum of its parts.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "And you inspire me to be braver than I ever thought possible." },
+        { sender: 'player', text: "Together, we can face anything." }
+      ],
+      choices: [
+        { text: "Promise to always support each other", detail: "Mutual commitment", type: 'mutual_support' },
+        { text: "Face the future together", detail: "Forward focus", type: 'future_together' }
+      ],
+      leadsTo: { mutual_support: 'SUPPORT_PROMISE', future_together: 'SHARED_FUTURE' }
+    },
+    'SKILL_APPRECIATION': {
+      prompt: "Jin-Woo deeply appreciating Cha Hae-In's combat mastery. Technical admiration, anime style.",
+      narration: "Her technique is flawless, a perfect blend of power and grace.",
+      chat: [
+        { sender: 'player', text: "Your swordsmanship is art in motion. Every strike has purpose and beauty." },
+        { sender: 'Cha Hae-In', text: "Coming from you, that means everything. I've always admired your tactical mind." }
+      ],
+      choices: [
+        { text: "Spar with me sometime?", detail: "Training invitation", type: 'spar_invitation' },
+        { text: "Teach me your techniques", detail: "Learning request", type: 'teach_techniques' }
+      ],
+      leadsTo: { spar_invitation: 'SPARRING_AGREEMENT', teach_techniques: 'TEACHING_MOMENT' }
+    },
+    'CLOSE_FORMATION': {
+      prompt: "Jin-Woo and Cha Hae-In in close protective formation. Intimate teamwork, anime style.",
+      narration: "Moving as one unit, you clear the dungeon with unprecedented coordination.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This formation feels so natural with you." },
+        { sender: 'player', text: "Like we've been fighting together for years." }
+      ],
+      choices: [
+        { text: "We should make this permanent", detail: "Partnership proposal", type: 'permanent_team' },
+        { text: "Focus on the boss ahead", detail: "Mission priority", type: 'focus_boss' }
+      ],
+      leadsTo: { permanent_team: 'PERMANENT_PARTNERSHIP', focus_boss: 'BOSS_APPROACH' }
+    },
+    'PERFECT_COORDINATION': {
+      prompt: "Flawless combat coordination between Jin-Woo and Cha Hae-In. Synchronized fighting, anime style.",
+      narration: "Your movements flow together like a deadly dance.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Our timing is perfect! It's like you can read my mind." },
+        { sender: 'player', text: "Maybe I can. Or maybe we're just meant to fight together." }
+      ],
+      choices: [
+        { text: "This is how it should always be", detail: "Permanent partnership", type: 'always_together' },
+        { text: "Press the advantage", detail: "Tactical focus", type: 'press_advantage' }
+      ],
+      leadsTo: { always_together: 'ETERNAL_PARTNERSHIP', press_advantage: 'BOSS_APPROACH' }
+    },
+    'TEAMWORK_MOMENT': {
+      prompt: "Celebrating successful teamwork. Victory through collaboration, anime style.",
+      narration: "Your combined efforts have created something beautiful.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Look what we accomplished together! I've never felt this powerful." },
+        { sender: 'player', text: "Teamwork makes us both stronger." }
+      ],
+      choices: [
+        { text: "Let's keep working together", detail: "Future partnership", type: 'keep_working' },
+        { text: "You make me stronger too", detail: "Mutual empowerment", type: 'make_stronger' }
+      ],
+      leadsTo: { keep_working: 'CONTINUED_PARTNERSHIP', make_stronger: 'MUTUAL_STRENGTH' }
+    },
+    'DUNGEON_CONFESSION': {
+      prompt: "Jin-Woo confessing feelings in the middle of a dungeon. Romantic vulnerability, anime style.",
+      narration: "Sometimes the heart chooses its moment, regardless of circumstance.",
+      chat: [
+        { sender: 'player', text: "Hae-In, I need to tell you something. I care about you more than just as a partner." },
+        { sender: 'Cha Hae-In', text: "Jin-Woo... in the middle of a dungeon? You really know how to surprise a girl." },
+        { sender: 'Cha Hae-In', text: "But I'm glad you said it. I feel the same way." }
+      ],
+      choices: [
+        { text: "When we get out, I want to take you somewhere special", detail: "Date promise", type: 'date_promise' },
+        { text: "Can we finish this mission first?", detail: "Mission focus", type: 'mission_first' }
+      ],
+      leadsTo: { date_promise: 'DATE_PROMISE', mission_first: 'MISSION_PRIORITY' }
+    },
+    'SILENT_BOND': {
+      prompt: "A moment of silent understanding between Jin-Woo and Cha Hae-In. Wordless connection, anime style.",
+      narration: "Sometimes the deepest connections need no words.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "..." },
+        { sender: 'player', text: "..." },
+        { sender: 'Cha Hae-In', text: "I understand completely." }
+      ],
+      choices: [
+        { text: "Take her hand", detail: "Physical connection", type: 'take_hand' },
+        { text: "Nod and continue", detail: "Respectful acknowledgment", type: 'nod_continue' }
+      ],
+      leadsTo: { take_hand: 'HAND_HOLDING', nod_continue: 'RESPECTFUL_BOND' }
+    },
+    'LOVE_DECLARATION': {
+      prompt: "Jin-Woo declaring his love for Cha Hae-In. Ultimate confession, anime style.",
+      narration: "The words come from the deepest part of your heart.",
+      chat: [
+        { sender: 'player', text: "I love you, Cha Hae-In. Completely and utterly." },
+        { sender: 'Cha Hae-In', text: "Jin-Woo... I love you too. More than I ever thought possible." }
+      ],
+      choices: [
+        { text: "Kiss her", detail: "Seal the declaration", type: 'sealing_kiss' },
+        { text: "Hold her close", detail: "Tender embrace", type: 'tender_hold' }
+      ],
+      leadsTo: { sealing_kiss: 'LOVE_KISS', tender_hold: 'LOVE_EMBRACE' }
+    },
+    'LOVE_SEALED': {
+      prompt: "Their love officially sealed. Complete romantic union, anime style.",
+      narration: "Nothing can separate you now.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This feels like a dream come true." },
+        { sender: 'player', text: "The best kind of dream - one we're living together." }
+      ],
+      choices: [
+        { text: "Plan our future", detail: "Look ahead together", type: 'plan_future' },
+        { text: "Savor this moment", detail: "Stay in the present", type: 'savor_now' }
+      ],
+      leadsTo: { plan_future: 'FUTURE_PLANNING', savor_now: 'PRESENT_BLISS' }
+    },
+    'SOUL_BOND': {
+      prompt: "Jin-Woo and Cha Hae-In forming a soul bond. Spiritual connection, anime style.",
+      narration: "Your souls resonate at the same frequency, creating an unbreakable bond.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I can feel it... our connection goes deeper than anything physical." },
+        { sender: 'player', text: "We're bound now, in every way that matters." }
+      ],
+      choices: [
+        { text: "Promise to protect this bond", detail: "Sacred vow", type: 'protect_bond' },
+        { text: "Embrace the eternal connection", detail: "Accept destiny", type: 'embrace_eternal' }
+      ],
+      leadsTo: { protect_bond: 'BOND_PROTECTION', embrace_eternal: 'ETERNAL_LOVE' }
+    },
+    'NATURAL_MOMENT': {
+      prompt: "A perfectly natural moment between Jin-Woo and Cha Hae-In. Organic connection, anime style.",
+      narration: "Everything feels effortless when you're together.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This feels so natural, like we've always been together." },
+        { sender: 'player', text: "Some things are just meant to be." }
+      ],
+      choices: [
+        { text: "Stay in this moment", detail: "Savor the feeling", type: 'stay_moment' },
+        { text: "Make it permanent", detail: "Commitment", type: 'make_permanent' }
+      ],
+      leadsTo: { stay_moment: 'SAVORED_MOMENT', make_permanent: 'PERMANENT_BOND' }
+    },
+    'RELATIONSHIP_BUILDING': {
+      prompt: "Jin-Woo and Cha Hae-In building their relationship. Growing connection, anime style.",
+      narration: "Each conversation deepens what you have together.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I love how we can talk about anything." },
+        { sender: 'player', text: "With you, conversation flows like breathing." }
+      ],
+      choices: [
+        { text: "Share your deepest thoughts", detail: "Vulnerability", type: 'deepest_thoughts' },
+        { text: "Ask about her dreams", detail: "Learn about her", type: 'her_dreams' }
+      ],
+      leadsTo: { deepest_thoughts: 'DEEP_SHARING', her_dreams: 'DREAM_SHARING' }
+    },
+    'FRIENDSHIP_BUILDING': {
+      prompt: "Building a strong friendship foundation. Platonic but meaningful connection, anime style.",
+      narration: "The foundation of trust you're building is solid and real.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I'm so glad we're friends, Jin-Woo. I feel like I can trust you completely." },
+        { sender: 'player', text: "That trust means everything to me. I'll never betray it." }
+      ],
+      choices: [
+        { text: "Friends who can become more", detail: "Hint at romance", type: 'friends_to_more' },
+        { text: "Loyal friendship forever", detail: "Platonic commitment", type: 'loyal_friendship' }
+      ],
+      leadsTo: { friends_to_more: 'ROMANTIC_POTENTIAL', loyal_friendship: 'ETERNAL_FRIENDSHIP' }
+    },
+    'MUTUAL_FEELINGS': {
+      prompt: "Both expressing mutual romantic feelings. Love confession, anime style.",
+      narration: "The truth is finally out in the open.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I've been feeling the same way for so long." },
+        { sender: 'player', text: "Then why did we wait so long to say it?" },
+        { sender: 'Cha Hae-In', text: "Because now feels perfect." }
+      ],
+      choices: [
+        { text: "Kiss her", detail: "Seal the moment", type: 'kiss_seal' },
+        { text: "Hold her hands", detail: "Gentle connection", type: 'hold_hands' }
+      ],
+      leadsTo: { kiss_seal: 'SEALING_KISS', hold_hands: 'HAND_CONNECTION' }
+    },
+    'PASSIONATE_MOMENT': {
+      prompt: "A passionate romantic moment between Jin-Woo and Cha Hae-In. Intense connection, anime style.",
+      narration: "The intensity of your feelings overwhelms both of you.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Jin-Woo... I never knew I could feel this way." },
+        { sender: 'player', text: "You've awakened something in me I didn't know existed." }
+      ],
+      choices: [
+        { text: "Express your love completely", detail: "Total vulnerability", type: 'complete_love' },
+        { text: "Promise to cherish her always", detail: "Eternal commitment", type: 'cherish_always' }
+      ],
+      leadsTo: { complete_love: 'COMPLETE_LOVE', cherish_always: 'ETERNAL_PROMISE' }
+    },
+    'ROMANTIC_PROMISE': {
+      prompt: "Jin-Woo making a romantic promise to Cha Hae-In. Commitment, anime style.",
+      narration: "Your words carry the weight of your entire heart.",
+      chat: [
+        { sender: 'player', text: "I promise to love you, protect you, and stand by you always." },
+        { sender: 'Cha Hae-In', text: "And I promise the same to you. We're in this together, forever." }
+      ],
+      choices: [
+        { text: "Seal it with a kiss", detail: "Physical confirmation", type: 'seal_kiss' },
+        { text: "Plan your future together", detail: "Look ahead", type: 'plan_together' }
+      ],
+      leadsTo: { seal_kiss: 'PROMISE_KISS', plan_together: 'FUTURE_TOGETHER' }
+    },
+    'INTIMATE_CLOSENESS': {
+      prompt: "Jin-Woo and Cha Hae-In sharing intimate closeness. Emotional intimacy, anime style.",
+      narration: "Physical and emotional barriers dissolve between you.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Being this close to you feels like coming home." },
+        { sender: 'player', text: "You are my home, Hae-In." }
+      ],
+      choices: [
+        { text: "Stay like this forever", detail: "Wish for permanence", type: 'stay_forever' },
+        { text: "Tell her you love her", detail: "Verbal confirmation", type: 'say_love' }
+      ],
+      leadsTo: { stay_forever: 'ETERNAL_MOMENT', say_love: 'LOVE_WORDS' }
+    },
+    'SOUL_CONNECTION': {
+      prompt: "A deep soul connection forming. Spiritual bond, anime style.",
+      narration: "Something fundamental shifts between you, deeper than words.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "It's like our souls recognize each other." },
+        { sender: 'player', text: "Maybe they've been searching for each other all along." }
+      ],
+      choices: [
+        { text: "Embrace the connection", detail: "Accept the bond", type: 'embrace_connection' },
+        { text: "Promise never to let go", detail: "Commitment", type: 'never_let_go' }
+      ],
+      leadsTo: { embrace_connection: 'EMBRACED_SOULS', never_let_go: 'ETERNAL_HOLD' }
+    },
+    'DEEP_APPRECIATION': {
+      prompt: "Jin-Woo expressing deep appreciation for Cha Hae-In. Heartfelt gratitude, anime style.",
+      narration: "Your appreciation goes beyond words.",
+      chat: [
+        { sender: 'player', text: "You've changed my life in ways I never imagined possible." },
+        { sender: 'Cha Hae-In', text: "You've done the same for me. I'm a better person because of you." }
+      ],
+      choices: [
+        { text: "We make each other better", detail: "Mutual growth", type: 'mutual_better' },
+        { text: "Thank you for being you", detail: "Pure appreciation", type: 'thank_you' }
+      ],
+      leadsTo: { mutual_better: 'MUTUAL_IMPROVEMENT', thank_you: 'GRATITUDE_MOMENT' }
+    },
+    'TENDER_CARE': {
+      prompt: "Jin-Woo showing tender care for Cha Hae-In. Gentle affection, anime style.",
+      narration: "Your gentleness touches her heart.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "You're so gentle with me. It makes me feel precious." },
+        { sender: 'player', text: "Because you are precious. The most precious thing in my world." }
+      ],
+      choices: [
+        { text: "Promise to always be gentle", detail: "Tender vow", type: 'gentle_promise' },
+        { text: "Show her how much she means to you", detail: "Demonstration", type: 'show_meaning' }
+      ],
+      leadsTo: { gentle_promise: 'GENTLE_VOW', show_meaning: 'MEANINGFUL_GESTURE' }
+    },
+    'PARTNERSHIP_VOW': {
+      prompt: "Making a partnership vow. Professional and personal commitment, anime style.",
+      narration: "Your vow encompasses both mission and heart.",
+      chat: [
+        { sender: 'player', text: "I vow to stand by you in battle and in life." },
+        { sender: 'Cha Hae-In', text: "And I vow the same. Partners in everything." }
+      ],
+      choices: [
+        { text: "Seal the vow", detail: "Make it official", type: 'seal_vow' },
+        { text: "Begin your partnership", detail: "Start immediately", type: 'begin_partnership' }
+      ],
+      leadsTo: { seal_vow: 'SEALED_VOW', begin_partnership: 'PARTNERSHIP_BEGINS' }
+    },
+    'OFFICIAL_TEAM': {
+      prompt: "Officially becoming a team. Professional partnership, anime style.",
+      narration: "Your partnership is now official and recognized.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "The Shadow Monarch and the Sword Saint, official partners." },
+        { sender: 'player', text: "The perfect combination of power and grace." }
+      ],
+      choices: [
+        { text: "Take on our first mission", detail: "Begin working together", type: 'first_mission' },
+        { text: "Celebrate our partnership", detail: "Mark the occasion", type: 'celebrate_partnership' }
+      ],
+      leadsTo: { first_mission: 'FIRST_TEAM_MISSION', celebrate_partnership: 'PARTNERSHIP_CELEBRATION' }
     }
   };
 
