@@ -235,9 +235,38 @@ RESPONSE GUIDELINES:
       const response = result.response;
       const responseText = response.text();
 
+      // Check if the message requests visual content
+      const visualRequests = ['show me', 'let me see', 'bikini', 'outfit', 'dress', 'clothing', 'what you look like', 'how you look'];
+      const shouldGenerateImage = visualRequests.some(keyword => message.toLowerCase().includes(keyword));
+
+      let imageUrl = null;
+      if (shouldGenerateImage) {
+        try {
+          // Generate image for the visual request
+          const imagePrompt = `Cha Hae-In from Solo Leveling, beautiful Korean S-rank hunter with blonde hair, ${message.includes('bikini') ? 'wearing a blue bikini' : 'in elegant pose'}, anime style, high quality, detailed artwork`;
+          
+          const imageGenResponse = await fetch(`${req.protocol}://${req.get('host')}/api/generate-scene-image`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              prompt: imagePrompt,
+              gameState: { ...gameState, storyPath: 'romantic' }
+            })
+          });
+
+          if (imageGenResponse.ok) {
+            const imageData = await imageGenResponse.json();
+            imageUrl = imageData.imageUrl;
+          }
+        } catch (error) {
+          console.error('Failed to generate visual response:', error);
+        }
+      }
+
       res.json({ 
         response: responseText,
-        sender: 'Cha Hae-In'
+        sender: 'Cha Hae-In',
+        imageUrl: imageUrl
       });
     } catch (error) {
       console.error(`Failed to generate chat response: ${error}`);

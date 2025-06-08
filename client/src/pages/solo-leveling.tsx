@@ -2004,18 +2004,36 @@ export default function SoloLeveling() {
                     alt="AI Generated Scene"
                     className="absolute inset-0 w-full h-full object-cover filter brightness-110 contrast-110"
                     style={{ zIndex: 1 }}
+                    onLoad={() => console.log('AI background image loaded successfully')}
+                    onError={(e) => console.log('AI background image failed to load:', e)}
+                  />
+                ) : currentBackground.startsWith('data:') ? (
+                  <img 
+                    src={currentBackground}
+                    alt="Background Scene"
+                    className="absolute inset-0 w-full h-full object-cover filter brightness-110 contrast-110"
+                    style={{ zIndex: 1 }}
+                    onLoad={() => console.log('Current background image loaded successfully')}
+                    onError={(e) => console.log('Current background image failed to load:', e)}
                   />
                 ) : (
                   <div 
                     className="absolute inset-0 transition-opacity duration-500 filter brightness-110 contrast-110"
                     style={{ 
-                      backgroundImage: currentBackground.startsWith('data:') ? `url("${currentBackground}")` : currentBackground,
+                      backgroundImage: currentBackground,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center center',
                       backgroundRepeat: 'no-repeat',
                       zIndex: 1
                     }}
                   />
+                )}
+                
+                {/* Debug info */}
+                {(sceneBackground || currentBackground.startsWith('data:')) && (
+                  <div className="absolute top-4 left-4 bg-green-500 text-white px-2 py-1 rounded text-xs z-50">
+                    AI Image Active
+                  </div>
                 )}
                 
 
