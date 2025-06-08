@@ -123,7 +123,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       },
       body: JSON.stringify({
         instances: [{
-          prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel"
+          prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: Cha Hae-In with purple hair, Cha Hae-In with black hair, Cha Hae-In with brown hair, Jin-Woo with blonde hair, incorrect hair colors"
         }],
         parameters: {
           sampleCount: 1,
@@ -158,7 +158,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
         },
         body: JSON.stringify({
           instances: [{
-            prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel"
+            prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: Cha Hae-In with purple hair, Cha Hae-In with black hair, Cha Hae-In with brown hair, Jin-Woo with blonde hair, incorrect hair colors"
           }],
           parameters: {
             sampleCount: 1,
@@ -395,11 +395,11 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   
   // For romantic/interaction scenes, always show both characters together
   if (isRomanticScene || (includeJinWoo && includeHaeIn)) {
-    characterDescription = ", Sung Jin-Woo and Cha Hae-In together (Jin-Woo: Korean male, age 24, SHORT BLACK HAIR, sharp features, dark eyes, black hunter outfit; Cha Hae-In: Korean female, age 23, SHOULDER-LENGTH BLONDE HAIR, beautiful features, red armor or elegant clothing), romantic interaction, standing close together, meaningful eye contact, gentle expressions, couple scene";
+    characterDescription = ", Sung Jin-Woo and Cha Hae-In together (Jin-Woo: Korean male, age 24, SHORT BLACK HAIR ONLY - never blonde or purple, sharp features, dark eyes, black hunter outfit; Cha Hae-In: Korean female, age 23, BRIGHT GOLDEN BLONDE HAIR ONLY - never purple or black or brown, beautiful features, red armor or elegant clothing), romantic interaction, standing close together, meaningful eye contact, gentle expressions, couple scene. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair";
   } else if (includeJinWoo) {
-    characterDescription = ", Sung Jin-Woo (MUST BE: Korean male, age 24, SHORT BLACK HAIR - NOT blonde/long, sharp angular facial features, dark eyes, athletic build, wearing black hunter outfit or casual dark clothing, confident posture, Solo Leveling manhwa art style - NEVER make him blonde or feminine)";
+    characterDescription = ", Sung Jin-Woo (MUST BE: Korean male, age 24, SHORT BLACK HAIR ONLY - NOT blonde/long/purple, sharp angular facial features, dark eyes, athletic build, wearing black hunter outfit or casual dark clothing, confident posture, Solo Leveling manhwa art style - NEVER make him blonde or feminine)";
   } else if (includeHaeIn) {
-    characterDescription = ", Cha Hae-In (MUST BE: Korean female, age 23, SHOULDER-LENGTH BLONDE HAIR, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style - NEVER make her brunette or masculine)";
+    characterDescription = ", Cha Hae-In (MUST BE: Korean female, age 23, BRIGHT GOLDEN BLONDE HAIR ONLY - never purple/black/brown hair, beautiful feminine features, bright eyes, athletic but graceful build, wearing red knight armor OR elegant casual clothing, sword at side, confident but gentle expression, Solo Leveling manhwa art style - NEVER give her dark hair or purple hair)";
   }
 
   // Prioritize environmental and location-based scenes over character portraits
@@ -441,7 +441,7 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   }
   
   if (narration.includes("café") || narration.includes("coffee") || narration.includes("table") || narration.includes("sitting")) {
-    return `${baseStyle}, wide establishing shot of cozy Korean café interior showing full scene, Sung Jin-Woo (Korean male, black hair, dark hunter outfit) and Cha Hae-In (Korean female, blonde hair, elegant hunter attire) sitting across from each other at wooden table, coffee cups and steam visible, warm ambient lighting from windows, intimate conversation scene, both characters clearly visible in frame, detailed café environment with wooden furniture and soft lighting, manhwa romance composition`;
+    return `${baseStyle}, wide establishing shot of cozy Korean café interior showing full scene, Sung Jin-Woo (Korean male, SHORT BLACK HAIR ONLY - never blonde or purple, dark hunter outfit) and Cha Hae-In (Korean female, BRIGHT GOLDEN BLONDE HAIR ONLY - never purple or black or brown hair, elegant hunter attire) sitting across from each other at wooden table, coffee cups and steam visible, warm ambient lighting from windows, intimate conversation scene, both characters clearly visible in frame, detailed café environment with wooden furniture and soft lighting, manhwa romance composition. IMPORTANT: Cha Hae-In MUST have blonde hair, NOT purple hair`;
   }
   
   if (narration.includes("holding hands") || narration.includes("hand finds") || narration.includes("fingers intertwine")) {
