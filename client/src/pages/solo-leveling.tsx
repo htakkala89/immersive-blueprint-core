@@ -2981,7 +2981,7 @@ export default function SoloLeveling() {
 
         {/* Skill Tree Modal */}
         <SkillTree
-        gameState={gameState as any}
+          gameState={gameState as any}
         onUpgradeSkill={(skillId) => {
           characterProgression.upgradeSkill(skillId);
           // Update local state for immediate feedback
@@ -3123,7 +3123,6 @@ export default function SoloLeveling() {
         }}
         gameState={gameState}
       />
-      </div>
     </div>
   );
 }
