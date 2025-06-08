@@ -698,39 +698,41 @@ export default function SoloLeveling() {
 
                   {/* Choices Section - Horizontal Carousel */}
                   {currentStory?.choices && currentStory.choices.length > 0 && (
-                    <div className="bg-black/90 backdrop-blur-md border-t border-purple-500/40 p-3" style={{ height: '140px' }}>
-                      <div className="text-xs text-white/80 font-semibold mb-3 flex items-center justify-between">
+                    <div className="bg-gray-900/95 backdrop-blur-md border-t border-purple-500/60 p-4" style={{ height: '160px' }}>
+                      <div className="text-sm text-white font-semibold mb-3 flex items-center justify-between">
                         <span>Choose your action:</span>
-                        <span className="text-white/60">{currentChoiceIndex + 1} / {currentStory.choices.length}</span>
+                        <span className="text-purple-400 bg-purple-500/20 px-2 py-1 rounded-full text-xs">
+                          {currentChoiceIndex + 1} / {currentStory.choices.length}
+                        </span>
                       </div>
                       
-                      <div className="flex items-center gap-2 h-full">
+                      <div className="flex items-stretch gap-3" style={{ height: '100px' }}>
                         {/* Previous Button */}
                         {currentStory.choices.length > 1 && (
                           <button
                             onClick={prevChoice}
-                            className="w-10 h-10 bg-purple-600/30 border border-purple-400/60 rounded-full flex items-center justify-center text-white hover:bg-purple-600/50 transition-all flex-shrink-0 text-lg font-bold shadow-lg"
+                            className="w-12 bg-purple-600/80 border-2 border-purple-500 rounded-xl flex items-center justify-center text-white hover:bg-purple-600 transition-all flex-shrink-0 text-2xl font-bold shadow-lg"
                           >
                             ‹
                           </button>
                         )}
 
                         {/* Current Choice Display */}
-                        <div className="flex-1 h-full">
+                        <div className="flex-1">
                           <button
                             onClick={() => handleChoice(currentStory.choices[currentChoiceIndex])}
-                            className="w-full bg-purple-500/20 border border-purple-400/50 rounded-lg p-3 hover:bg-purple-500/30 hover:border-purple-400/70 transition-all text-left backdrop-blur-sm h-full group"
+                            className="w-full h-full bg-purple-600/30 border-2 border-purple-500/60 rounded-xl p-4 hover:bg-purple-600/50 hover:border-purple-400 transition-all text-left backdrop-blur-sm group"
                           >
-                            <div className="flex items-center gap-3 h-full">
-                              <div className="w-10 h-10 bg-purple-500/40 rounded-lg flex items-center justify-center text-lg flex-shrink-0 group-hover:bg-purple-500/60 transition-all">
+                            <div className="flex items-center gap-4 h-full">
+                              <div className="w-12 h-12 bg-purple-500/80 rounded-xl flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-purple-500 transition-all border border-purple-400">
                                 ⚔️
                               </div>
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                <div className="text-white text-sm font-semibold mb-1 leading-tight">
+                                <div className="text-white text-base font-bold mb-2 leading-tight">
                                   {currentStory.choices[currentChoiceIndex].text}
                                 </div>
                                 {currentStory.choices[currentChoiceIndex].detail && (
-                                  <div className="text-white/80 text-xs leading-relaxed">
+                                  <div className="text-gray-200 text-sm leading-relaxed">
                                     {currentStory.choices[currentChoiceIndex].detail}
                                   </div>
                                 )}
@@ -743,7 +745,7 @@ export default function SoloLeveling() {
                         {currentStory.choices.length > 1 && (
                           <button
                             onClick={nextChoice}
-                            className="w-10 h-10 bg-purple-600/30 border border-purple-400/60 rounded-full flex items-center justify-center text-white hover:bg-purple-600/50 transition-all flex-shrink-0 text-lg font-bold shadow-lg"
+                            className="w-12 bg-purple-600/80 border-2 border-purple-500 rounded-xl flex items-center justify-center text-white hover:bg-purple-600 transition-all flex-shrink-0 text-2xl font-bold shadow-lg"
                           >
                             ›
                           </button>
