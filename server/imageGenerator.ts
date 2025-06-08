@@ -279,9 +279,19 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     
     lastImageGeneration = now;
     
-    // Check if this is mature/romantic content based on narration
-    const narration = gameState.narration || '';
-    const useMatureGenerator = isMatureContent(narration);
+    // Use the actual scene prompt if available, otherwise use narration
+    const scenePrompt = gameState.narration || '';
+    const useMatureGenerator = isMatureContent(scenePrompt);
+    
+    // If the prompt contains café/coffee scene description, use it directly with Google Imagen
+    if (scenePrompt.includes('café') || scenePrompt.includes('coffee') || scenePrompt.includes('sitting across from each other')) {
+      console.log('🎯 Detected café scene - using direct prompt with Google Imagen');
+      const googleImage = await generateWithGoogleImagen(scenePrompt);
+      if (googleImage) {
+        console.log('✅ Google Imagen generated café scene successfully');
+        return googleImage;
+      }
+    }
     
     if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
       console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
