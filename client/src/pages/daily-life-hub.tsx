@@ -332,19 +332,20 @@ export default function DailyLifeHub() {
     gold: 500,
     level: 15,
     experience: 750,
-    affectionLevel: 3,
+    affectionLevel: 8,
     energy: 8,
     maxEnergy: 10,
-    relationshipStatus: 'dating',
-    intimacyLevel: 3,
-    sharedMemories: 5,
-    livingTogether: false,
-    daysTogether: 14
+    relationshipStatus: 'married',
+    intimacyLevel: 9,
+    sharedMemories: 25,
+    livingTogether: true,
+    daysTogether: 120
   });
 
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('morning');
+  const { generateImage, isGenerating, generatedImage, clearImage } = useIntimateImageGeneration();
 
   // Update activities based on stats and time
   useEffect(() => {
@@ -371,7 +372,7 @@ export default function DailyLifeHub() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleActivitySelect = (activity: Activity) => {
+  const handleActivitySelect = async (activity: Activity) => {
     if (!activity.available || playerStats.energy < activity.energyCost) {
       return;
     }
@@ -386,6 +387,17 @@ export default function DailyLifeHub() {
       localStorage.setItem('activityType', activity.id);
       setLocation('/solo-leveling');
       return;
+    }
+
+    // Generate mature content images for intimate activities
+    const intimateActivities = ['strip_poker', 'make_love', 'shower_together', 'intimate_evening', 'wake_up_together'];
+    if (intimateActivities.includes(activity.id)) {
+      clearImage(); // Clear any previous image
+      await generateImage({
+        activityId: activity.id,
+        relationshipStatus: playerStats.relationshipStatus,
+        intimacyLevel: playerStats.intimacyLevel
+      });
     }
 
     // Handle immediate activities
@@ -593,6 +605,27 @@ export default function DailyLifeHub() {
                 {getActivityResultTitle(selectedActivity, playerStats)}
               </h3>
               
+              {/* Generated Image Display */}
+              {generatedImage && (
+                <div className="mb-4">
+                  <img 
+                    src={generatedImage} 
+                    alt="Intimate moment" 
+                    className="w-full h-64 object-cover rounded-lg border border-white/20"
+                  />
+                </div>
+              )}
+              
+              {/* Image Generation Loading */}
+              {isGenerating && (
+                <div className="mb-4 p-4 bg-purple-500/20 rounded-lg border border-purple-300/20">
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-300 mr-3"></div>
+                    <div className="text-purple-300">Generating intimate artwork...</div>
+                  </div>
+                </div>
+              )}
+
               {/* Cha Hae-In's Response */}
               <div className="bg-pink-500/20 rounded-lg p-4 mb-4">
                 <div className="flex items-center mb-2">
@@ -620,7 +653,10 @@ export default function DailyLifeHub() {
               </div>
               
               <button
-                onClick={() => setSelectedActivity(null)}
+                onClick={() => {
+                  setSelectedActivity(null);
+                  clearImage();
+                }}
                 className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
               >
                 Continue
