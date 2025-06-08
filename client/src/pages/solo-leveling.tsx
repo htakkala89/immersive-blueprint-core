@@ -558,9 +558,10 @@ export default function SoloLeveling() {
       ],
       choices: [
         { text: "Kiss her gently", detail: "Seal the moment", type: 'gentle_kiss' },
-        { text: "Plan a real date", detail: "Ask her out properly", type: 'real_date' }
+        { text: "Plan a real date", detail: "Ask her out properly", type: 'real_date' },
+        { text: "Suggest working together", detail: "Team up for missions", type: 'team_missions' }
       ],
-      leadsTo: { gentle_kiss: 'CAFE_KISS', real_date: 'DATE_PLANNING' }
+      leadsTo: { gentle_kiss: 'CAFE_KISS', real_date: 'DATE_PLANNING', team_missions: 'GATE_ENTRANCE' }
     },
     'UNDERSTANDING_MOMENT': {
       prompt: "Jin-Woo and Cha Hae-In sharing a moment of silent understanding. Perfect connection, anime style.",
@@ -857,9 +858,10 @@ export default function SoloLeveling() {
       ],
       choices: [
         { text: "Promise something special", detail: "Commit to romance", type: 'special_promise' },
-        { text: "Start with this mission", detail: "Make this the first date", type: 'mission_date' }
+        { text: "Start with this mission", detail: "Make this the first date", type: 'mission_date' },
+        { text: "Head to the gate now", detail: "Adventure together", type: 'gate_adventure' }
       ],
-      leadsTo: { special_promise: 'ROMANTIC_PROMISE', mission_date: 'GATE_ENTRANCE' }
+      leadsTo: { special_promise: 'ROMANTIC_PROMISE', mission_date: 'GATE_ENTRANCE', gate_adventure: 'GATE_ENTRANCE' }
     },
     'CONNECTION_DEEPENS': {
       prompt: "The connection between Jin-Woo and Cha Hae-In deepening profoundly. Soul bond, anime style.",
@@ -870,9 +872,10 @@ export default function SoloLeveling() {
       ],
       choices: [
         { text: "Confirm your bond", detail: "Acknowledge the connection", type: 'confirm_bond' },
-        { text: "Seal it with love", detail: "Express your love", type: 'seal_with_love' }
+        { text: "Seal it with love", detail: "Express your love", type: 'seal_with_love' },
+        { text: "Test your bond in battle", detail: "Face the gate together", type: 'battle_test' }
       ],
-      leadsTo: { confirm_bond: 'SOUL_BOND', seal_with_love: 'LOVE_SEALED' }
+      leadsTo: { confirm_bond: 'SOUL_BOND', seal_with_love: 'LOVE_SEALED', battle_test: 'GATE_ENTRANCE' }
     },
     'DATE_ACCEPTED': {
       prompt: "Cha Hae-In blushing and smiling after being asked on a date. Happy romantic acceptance, anime style.",
