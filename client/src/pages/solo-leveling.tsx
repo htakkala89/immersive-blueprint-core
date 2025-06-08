@@ -555,6 +555,20 @@ export default function SoloLeveling() {
 
                 {/* Chat Container */}
                 <div ref={chatContainerRef} className="flex-1 p-3 overflow-y-auto" style={{ maxHeight: 'calc(100% - 140px)' }}>
+                  {/* Current Story Narration - appears first */}
+                  {currentStory && (
+                    <div className="mb-5 p-4 rounded-2xl bg-gray-800/60 border border-purple-500/20">
+                      <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
+                          🎭
+                        </div>
+                        <span className="text-white">AI Game Master</span>
+                      </div>
+                      <div className="text-gray-200 leading-relaxed">{currentStory.narration}</div>
+                    </div>
+                  )}
+
+                  {/* Chat Messages - main focus */}
                   {chatMessages.map(msg => (
                     <div 
                       key={msg.id}
@@ -582,27 +596,15 @@ export default function SoloLeveling() {
                     </div>
                   ))}
 
-                  {/* Current Story Narration */}
-                  {currentStory && (
-                    <div className="mb-5 p-4 rounded-2xl bg-gray-800/60 border border-purple-500/20">
-                      <div className="flex items-center gap-2 mb-2 text-xs opacity-80 font-semibold">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-xs">
-                          🎭
-                        </div>
-                        <span className="text-white">AI Game Master</span>
-                      </div>
-                      <div className="text-gray-200 leading-relaxed">{currentStory.narration}</div>
-                    </div>
-                  )}
-
-                  {/* Choices */}
+                  {/* Choices - appear after chat messages */}
                   {currentStory?.choices && (
-                    <div className="grid gap-3 mt-5">
+                    <div className="mt-6 space-y-3">
+                      <div className="text-sm text-white/70 font-semibold px-2">Choose your next action:</div>
                       {currentStory.choices.map((choice, index) => (
                         <button
                           key={index}
                           onClick={() => handleChoice(choice)}
-                          className="bg-purple-500/15 border border-purple-500/30 rounded-xl p-4 flex items-center gap-3 hover:bg-purple-500/25 hover:border-purple-500/50 hover:-translate-y-0.5 transition-all duration-200 text-left"
+                          className="w-full bg-purple-500/15 border border-purple-500/30 rounded-xl p-4 flex items-center gap-3 hover:bg-purple-500/25 hover:border-purple-500/50 hover:-translate-y-0.5 transition-all duration-200 text-left"
                         >
                           <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-sm flex-shrink-0">
                             ⚔️
