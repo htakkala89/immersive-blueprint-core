@@ -143,26 +143,26 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-xl border border-purple-400/20 shadow-2xl w-full max-w-md h-[600px] flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center">
+      <div className="bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl w-full max-w-md h-[600px] flex flex-col overflow-hidden">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-purple-400/20">
+        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5 backdrop-blur-md">
           <div className="flex items-center space-x-3">
-            <Avatar className="h-10 w-10 border-2 border-purple-400/30">
+            <Avatar className="h-12 w-12 border-2 border-white/30 shadow-lg">
               <AvatarImage src="/placeholder-hae-in.jpg" />
-              <AvatarFallback className="bg-purple-600 text-white">CH</AvatarFallback>
+              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">CH</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="text-white font-semibold">Cha Hae-In</h3>
+              <h3 className="text-white font-semibold text-lg drop-shadow-sm">Cha Hae-In</h3>
               <div className="flex items-center space-x-1">
                 {Array.from({ length: 5 }, (_, i) => (
                   <Heart 
                     key={i} 
-                    className={`w-3 h-3 ${i < (gameState?.affection || 3) ? 'text-red-400 fill-current' : 'text-gray-600'}`} 
+                    className={`w-3 h-3 ${i < (gameState?.affection || 3) ? 'text-red-400 fill-current drop-shadow-sm' : 'text-white/30'}`} 
                   />
                 ))}
-                <span className="text-xs text-gray-400 ml-1">
+                <span className="text-xs text-white/70 ml-1 drop-shadow-sm">
                   {gameState?.affection || 3}/5
                 </span>
               </div>
@@ -172,7 +172,7 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
             variant="ghost" 
             size="sm" 
             onClick={onClose}
-            className="text-gray-400 hover:text-white"
+            className="text-white/70 hover:text-white hover:bg-white/10 rounded-full w-10 h-10 p-0 backdrop-blur-sm"
           >
             <X className="w-4 h-4" />
           </Button>
@@ -186,10 +186,10 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
                 <div className={`max-w-[80%] ${message.sender === 'user' ? 'order-2' : 'order-1'}`}>
                   
                   {/* Message bubble */}
-                  <div className={`rounded-lg p-3 ${
+                  <div className={`rounded-2xl p-4 shadow-lg backdrop-blur-xl border transition-all duration-300 ${
                     message.sender === 'user' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-slate-700 text-white border border-purple-400/20'
+                      ? 'bg-blue-500/20 backdrop-blur-2xl text-white border-blue-400/30 ml-4' 
+                      : 'bg-white/15 backdrop-blur-2xl text-white border-white/20 mr-4'
                   }`}>
                     
                     {/* Image if present */}
@@ -234,11 +234,11 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
             {/* Typing indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-slate-700 text-white rounded-lg p-3 border border-purple-400/20">
+                <div className="bg-white/15 backdrop-blur-2xl text-white rounded-2xl p-4 border border-white/20 mr-4 shadow-lg">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-white/70 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                 </div>
               </div>
@@ -247,12 +247,12 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
         </ScrollArea>
 
         {/* Input area */}
-        <div className="p-4 border-t border-purple-400/20">
-          <div className="flex items-center space-x-2">
+        <div className="p-6 border-t border-white/10 bg-white/5 backdrop-blur-md">
+          <div className="flex items-center space-x-3">
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-gray-400 hover:text-white"
+              className="text-white/70 hover:text-white hover:bg-white/10 rounded-full w-10 h-10 p-0 backdrop-blur-sm"
               title="Voice message"
             >
               <Mic className="w-4 h-4" />
@@ -260,7 +260,7 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-gray-400 hover:text-white"
+              className="text-white/70 hover:text-white hover:bg-white/10 rounded-full w-10 h-10 p-0 backdrop-blur-sm"
               title="Request image"
             >
               <Camera className="w-4 h-4" />
@@ -270,25 +270,25 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
-              className="flex-1 bg-slate-700 border-purple-400/20 text-white placeholder-gray-400"
+              className="flex-1 bg-white/10 backdrop-blur-xl border-white/20 text-white placeholder-white/50 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-white/30 focus:border-transparent"
               disabled={chatMutation.isPending}
             />
             <Button 
               onClick={handleSendMessage}
               disabled={!inputText.trim() || chatMutation.isPending}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="bg-blue-500/30 backdrop-blur-xl hover:bg-blue-500/40 text-white border border-blue-400/30 rounded-full w-12 h-12 p-0 shadow-lg transition-all duration-300"
             >
               <Send className="w-4 h-4" />
             </Button>
           </div>
           
           {/* Quick action buttons */}
-          <div className="flex space-x-2 mt-2">
+          <div className="flex space-x-2 mt-4">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => setInputText("How was your day?")}
-              className="text-xs border-purple-400/20 text-gray-300 hover:text-white"
+              className="text-xs bg-white/5 backdrop-blur-md border-white/20 text-white/70 hover:text-white hover:bg-white/10 rounded-full px-4 py-2"
             >
               Daily Chat
             </Button>
@@ -296,7 +296,7 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
               variant="outline" 
               size="sm" 
               onClick={() => setInputText("I missed you")}
-              className="text-xs border-purple-400/20 text-gray-300 hover:text-white"
+              className="text-xs bg-white/5 backdrop-blur-md border-white/20 text-white/70 hover:text-white hover:bg-white/10 rounded-full px-4 py-2"
             >
               Romantic
             </Button>
@@ -304,7 +304,7 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
               variant="outline" 
               size="sm" 
               onClick={() => setInputText("Want to go on a mission together?")}
-              className="text-xs border-purple-400/20 text-gray-300 hover:text-white"
+              className="text-xs bg-white/5 backdrop-blur-md border-white/20 text-white/70 hover:text-white hover:bg-white/10 rounded-full px-4 py-2"
             >
               Mission
             </Button>
