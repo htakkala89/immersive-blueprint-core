@@ -95,7 +95,7 @@ export class MemStorage implements IStorage {
     const gameState: GameState = { 
       id,
       sessionId: insertGameState.sessionId,
-      narration: startingNode.narration,
+      narration: startingNode?.narration || "Welcome to your new life with Cha Hae-In. You wake up in your shared apartment, sunlight streaming through the windows.",
       health: insertGameState.health || 100,
       maxHealth: insertGameState.maxHealth || 100,
       mana: insertGameState.mana || 50,
@@ -104,7 +104,10 @@ export class MemStorage implements IStorage {
       experience: 0,
       statPoints: 0,
       skillPoints: 0,
-      choices: startingNode.choices,
+      choices: startingNode?.choices || [
+        { id: "explore_home", icon: "🏠", text: "Look around your home", detail: "Explore your shared living space" },
+        { id: "find_hae_in", icon: "💕", text: "Find Cha Hae-In", detail: "See what she's up to" }
+      ],
       sceneData: insertGameState.sceneData || null,
       storyPath: "entrance",
       choiceHistory: [],

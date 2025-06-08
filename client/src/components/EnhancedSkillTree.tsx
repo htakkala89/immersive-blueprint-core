@@ -83,7 +83,7 @@ export function EnhancedSkillTree({ gameState, onClose, sessionId }: EnhancedSki
       stealth: Eye,
       shadow_preservation: Shield,
       shadow_storage: Target,
-      enhanced_agility: Lightning,
+      enhanced_agility: Bolt,
       shadow_exchange: Flame,
       shadow_armor: Shield,
       enhanced_senses: Eye,
