@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Send, Image, Mic, Camera, X } from "lucide-react";
+import { Heart, Send, Image, Mic, Camera, X, MessageSquare, Volume2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
@@ -38,8 +38,29 @@ export function RealtimeChat({ gameState, isVisible, onClose, onAffectionChange 
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [actionMode, setActionMode] = useState<'action' | 'speak'>('action');
+  const [carouselIndex, setCarouselIndex] = useState(0);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { speak, speaking, stop } = useSpeechSynthesis();
+
+  // Action button configurations
+  const actionButtons = [
+    { text: "How was your day?", label: "Daily Chat", category: "casual" },
+    { text: "I missed you", label: "Romantic", category: "romantic" },
+    { text: "Want to go on a mission together?", label: "Mission", category: "action" },
+    { text: "You look beautiful today", label: "Compliment", category: "romantic" },
+    { text: "Let's train together", label: "Training", category: "action" },
+    { text: "What are you thinking about?", label: "Deep Talk", category: "casual" },
+    { text: "Hold my hand", label: "Intimate", category: "romantic" },
+    { text: "Tell me about your day", label: "Listen", category: "casual" }
+  ];
+
+  const speakButtons = [
+    { text: "Read the last message", label: "Read Last", action: () => speak(messages[messages.length - 1]?.text || "") },
+    { text: "Stop speaking", label: "Stop", action: () => stop() },
+    { text: "Speak slower", label: "Slower", action: () => {} },
+    { text: "Speak faster", label: "Faster", action: () => {} }
+  ];
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
