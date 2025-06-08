@@ -10,6 +10,10 @@ const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPE
 let lastImageGeneration = 0;
 const IMAGE_GENERATION_COOLDOWN = 1000; // 1 second between generations
 
+// Image cache to reduce generation times
+const imageCache = new Map<string, { url: string; timestamp: number }>();
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
 // Content classification for mature scene detection
 function isMatureContent(prompt: string, activityId?: string): boolean {
   const promptLower = prompt.toLowerCase();
@@ -278,6 +282,16 @@ export async function generateIntimateActivityImage(activityId: string, relation
 
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
   try {
+    // Create cache key based on scene and game state
+    const cacheKey = `${gameState.currentScene}_${gameState.level}_${gameState.narration?.slice(0, 50) || 'default'}`;
+    
+    // Check cache first
+    const cached = imageCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      console.log('📸 Using cached image for scene');
+      return cached.url;
+    }
+    
     // Check rate limit
     const now = Date.now();
     if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
@@ -297,6 +311,7 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
       const googleImage = await generateWithGoogleImagen(scenePrompt);
       if (googleImage) {
         console.log('✅ Google Imagen generated café scene successfully');
+        imageCache.set(cacheKey, { url: googleImage, timestamp: Date.now() });
         return googleImage;
       }
     }
@@ -318,6 +333,8 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     const googleImage = await generateWithGoogleImagen(generalPrompt);
     if (googleImage) {
       console.log('✅ Google Imagen generated image successfully');
+      // Cache the successfully generated image
+      imageCache.set(cacheKey, { url: googleImage, timestamp: Date.now() });
       return googleImage;
     }
     console.log('⚠️ Google Imagen failed, trying OpenAI fallback');
