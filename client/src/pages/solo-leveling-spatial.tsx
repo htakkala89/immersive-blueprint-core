@@ -545,7 +545,7 @@ export default function SoloLevelingSpatial() {
         
         {/* Monarch's Aura Eye - Testing */}
         <motion.button
-          className="absolute top-6 right-4 w-12 h-12 liquid-glass rounded-full flex items-center justify-center"
+          className="fixed top-6 right-6 w-12 h-12 liquid-glass rounded-full flex items-center justify-center z-40"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setMonarchAuraVisible(true)}
@@ -555,7 +555,7 @@ export default function SoloLevelingSpatial() {
 
         {/* Location Info Overlay */}
         <motion.div
-          className="absolute top-6 left-6 liquid-glass-enhanced px-4 py-3 max-w-xs"
+          className="absolute top-6 left-6 liquid-glass-enhanced px-3 py-2 max-w-64"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
