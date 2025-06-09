@@ -14,6 +14,11 @@ const IMAGE_GENERATION_COOLDOWN = 1000; // 1 second between generations
 const imageCache = new Map<string, { url: string; timestamp: number }>();
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
+// Track mature content images to prevent chat overlay generation
+let currentMatureImageActive = false;
+let matureImageTimestamp = 0;
+const MATURE_IMAGE_PROTECTION_TIME = 30 * 1000; // 30 seconds protection
+
 // Content classification for mature scene detection
 function isMatureContent(prompt: string, activityId?: string): boolean {
   const promptLower = prompt.toLowerCase();
@@ -199,8 +204,14 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
 // New function to generate images based on chat descriptions
 export async function generateChatSceneImage(chatResponse: string, userMessage: string): Promise<string | null> {
   try {
-    // Rate limiting check
+    // Don't generate chat images over mature content images
     const now = Date.now();
+    if (currentMatureImageActive && (now - matureImageTimestamp) < MATURE_IMAGE_PROTECTION_TIME) {
+      console.log('🔞 Skipping chat image generation - mature content image protected');
+      return null;
+    }
+
+    // Rate limiting check
     if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
       console.log('Image generation rate limited, skipping');
       return null;
@@ -328,9 +339,12 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     
     if (useMatureGenerator && process.env.NOVELAI_API_KEY) {
       console.log(`🔥 Mature content detected in scene "${gameState.storyPath}" - using NovelAI`);
-      const maturePrompt = createMatureSoloLevelingPrompt(gameState);
+      const maturePrompt = isIntimateActivity ? createContextualIntimatePrompt(gameState) : createMatureSoloLevelingPrompt(gameState);
       const novelaiImage = await generateWithNovelAI(maturePrompt);
       if (novelaiImage) {
+        // Mark mature image as active to prevent chat overlays
+        currentMatureImageActive = true;
+        matureImageTimestamp = Date.now();
         console.log('✅ NovelAI generated mature content successfully');
         return novelaiImage;
       }
@@ -353,7 +367,9 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     if (openai) {
       try {
         // Enhance prompt for accurate character generation
-        const fallbackPrompt = useMatureGenerator ? createMatureSoloLevelingPrompt(gameState) : generalPrompt;
+        const fallbackPrompt = useMatureGenerator ? 
+          (isIntimateActivity ? createContextualIntimatePrompt(gameState) : createMatureSoloLevelingPrompt(gameState)) : 
+          generalPrompt;
         const enhancedPrompt = (fallbackPrompt.includes('Jin-Woo') || fallbackPrompt.includes('Sung')) ? 
           `${fallbackPrompt}. Korean male protagonist with short BLACK hair, dark eyes, NOT blonde, accurate Solo Leveling character design` : 
           fallbackPrompt;
@@ -695,6 +711,20 @@ function createIntimatePrompt(activityId: string, relationshipStatus: string, in
     default:
       return `${baseStyle}, romantic scene, beautiful couple, intimate atmosphere, tasteful composition, emotional connection`;
   }
+}
+
+function createContextualIntimatePrompt(gameState: GameState): string {
+  const activitySettings = {
+    shower_together: "Luxurious bathroom with glass shower, steam rising, soft lighting, Jin-Woo and Cha Hae-In sharing intimate shower moment, romantic atmosphere",
+    cuddle_together: "Cozy bedroom with soft lighting, comfortable bed with silky sheets, Jin-Woo and Cha Hae-In cuddling intimately, warm romantic glow",
+    bedroom_intimacy: "Romantic bedroom with candles, rose petals scattered on silk sheets, Jin-Woo and Cha Hae-In in intimate embrace, emotional connection",
+    make_love: "Private romantic sanctuary, Jin-Woo and Cha Hae-In in ultimate intimate moment, soft candlelight, deep emotional connection, tasteful romantic scene"
+  };
+
+  const setting = activitySettings[gameState.currentScene as keyof typeof activitySettings] || 
+    "Jin-Woo and Cha Hae-In in intimate romantic moment, soft lighting, emotional connection";
+  
+  return `${setting}, beautiful anime art style, Solo Leveling aesthetic, tasteful romantic artwork, emotional intimacy focus, Korean manhwa style characters, Jin-Woo with black hair, Cha Hae-In with golden blonde hair, mature romantic content`;
 }
 
 function createMatureSoloLevelingPrompt(gameState: GameState): string {
