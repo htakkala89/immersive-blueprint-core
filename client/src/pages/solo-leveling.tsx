@@ -2948,6 +2948,7 @@ export default function SoloLeveling() {
         ...prev, 
         affection: Math.min(5, prev.affection + affectionGain) 
       }));
+      triggerAffectionSparkle();
       
       // Show affection gain effect
       setTimeout(() => {
@@ -3163,6 +3164,7 @@ export default function SoloLeveling() {
             ...prev, 
             affection: Math.min(5, prev.affection + 1) 
           }));
+          triggerAffectionSparkle();
           setTimeout(() => {
             createHeartEffect();
             showAffectionIncreaseIndicator(Math.min(5, previousAffection + 1), previousAffection);
@@ -3935,7 +3937,7 @@ export default function SoloLeveling() {
                   {/* Relationship System Button */}
                   <button 
                     onClick={() => setShowRelationshipSystem(true)}
-                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-pink-500/50 transition-all border border-pink-400/30 shadow-lg"
+                    className={`w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-pink-500/50 transition-all border border-pink-400/30 shadow-lg ${affectionButtonSparkle ? 'sparkle-effect' : ''}`}
                     title="Relationship Status"
                   >
                     💖
@@ -4150,14 +4152,7 @@ export default function SoloLeveling() {
                           <span className="text-white text-xs font-medium">{gameState.gold || 500}</span>
                         </div>
                         
-                        {/* Affection Hearts */}
-                        <div className="flex items-center gap-0.5">
-                          {[...Array(5)].map((_, i) => (
-                            <span key={i} className={`text-xs ${i < Math.floor(gameState.affection) ? 'text-pink-400' : 'text-gray-600'}`}>
-                              ❤️
-                            </span>
-                          ))}
-                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -4757,6 +4752,15 @@ export default function SoloLeveling() {
               [slot]: undefined
             }));
             
+            // Add back to available equipment if not already there
+            setAvailableEquipment(prev => {
+              const exists = prev.some(item => item.id === unequipped.id);
+              if (!exists) {
+                return [...prev, unequipped];
+              }
+              return prev;
+            });
+            
             // Remove equipment bonuses
             const stats = unequipped.stats;
             setGameState(prev => ({
@@ -4767,7 +4771,7 @@ export default function SoloLeveling() {
               mana: Math.max(0, prev.mana - (stats.mana || 0))
             }));
             
-            addChatMessage('System', `Unequipped ${unequipped.name}. Stats reduced by Attack -${stats.attack || 0}, Defense -${stats.defense || 0}`);
+            addChatMessage('System', `Unequipped ${unequipped.name}. It's now available in your inventory.`);
           }
         }}
       />
