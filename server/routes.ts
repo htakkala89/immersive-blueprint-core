@@ -535,7 +535,7 @@ MANDATORY: Each response must be completely unique and never repeated. Show emot
   });
 
   // Speech-to-text using Gemini API
-  app.post("/api/speech-to-text", async (req, res) => {
+  app.post("/api/speech-to-text", async (req: any, res) => {
     try {
       if (!process.env.GEMINI_API_KEY) {
         return res.status(500).json({ error: "Gemini API key not configured" });

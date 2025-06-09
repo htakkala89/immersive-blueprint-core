@@ -37,6 +37,7 @@ interface DailyLifeHubModalProps {
   onActivitySelect: (activity: Activity) => void;
   onImageGenerated: (imageUrl: string) => void;
   gameState: any;
+  audioMuted?: boolean;
 }
 
 const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity[] => {
@@ -302,7 +303,7 @@ const getActivityDialogue = (activity: Activity): string => {
   return dialogues[activity.id] || "*smiles warmly* What do you have in mind? I'm always up for spending quality time with you.";
 };
 
-export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImageGenerated, gameState }: DailyLifeHubModalProps) {
+export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImageGenerated, gameState, audioMuted = false }: DailyLifeHubModalProps) {
   const { playVoice } = useVoice();
   const [currentTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
@@ -379,7 +380,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     if (activityDialogue) {
       setTimeout(() => {
         console.log(`Playing dialogue for ${activity.id}:`, activityDialogue);
-        playVoice(activityDialogue, 'cha-hae-in');
+        playVoice(activityDialogue, 'cha-hae-in', audioMuted);
       }, intimateActivities.includes(activity.id) ? 1500 : 500); // Longer delay for image generation
     }
 

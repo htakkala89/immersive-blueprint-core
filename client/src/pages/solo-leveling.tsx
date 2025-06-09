@@ -5135,6 +5135,7 @@ export default function SoloLeveling() {
       <DailyLifeHubModal
         isVisible={showDailyLifeHub}
         onClose={() => setShowDailyLifeHub(false)}
+        audioMuted={audioMuted}
         onActivitySelect={(activity) => {
           // Set as active activity for continuous interaction
           setActiveActivity(activity);
