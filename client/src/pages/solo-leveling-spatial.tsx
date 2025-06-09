@@ -702,7 +702,7 @@ export default function SoloLevelingSpatial() {
               
               {/* Close Button */}
               <motion.button
-                className="absolute top-2 right-2 w-8 h-8 bg-slate-800/60 hover:bg-slate-700/80 rounded-full flex items-center justify-center border border-slate-600/30 transition-colors z-10"
+                className="absolute top-2 right-2 w-8 h-8 bg-slate-800/60 hover:bg-slate-700/80 rounded-full flex items-center justify-center border border-slate-600/30 transition-colors z-[10000]"
                 onClick={exitFocusMode}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
