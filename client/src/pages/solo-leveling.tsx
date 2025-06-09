@@ -628,27 +628,63 @@ export default function SoloLeveling() {
           </div>
         </div>
 
-        {/* Main Game Area */}
-        <div className="flex-1 flex">
+        {/* Main Game Area - Mobile First Responsive */}
+        <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 lg:p-6">
           
-          {/* Story Panel */}
-          <div className="flex-1 p-6">
-            <div className="max-w-4xl mx-auto">
-              
-              {/* Story Content */}
-              <Card className="bg-black/60 backdrop-blur-md border-white/20 mb-6">
-                <CardContent className="p-8">
+          {/* Image Panel - Permanent & Responsive */}
+          <div className="w-full lg:w-80 xl:w-96 order-1">
+            <Card className="bg-black/70 backdrop-blur-md border-purple-500/30 h-64 lg:h-96">
+              <CardContent className="p-4 h-full">
+                <div className="h-full flex flex-col">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-sm lg:text-base font-semibold text-white">Current Scene</h3>
+                    <Button 
+                      size="sm"
+                      onClick={generateSceneImage} 
+                      disabled={isLoading}
+                      className="bg-purple-600 hover:bg-purple-700 text-xs px-2 py-1"
+                    >
+                      {isLoading ? "..." : "Generate"}
+                    </Button>
+                  </div>
                   
-                  {/* Current Scene Image */}
-                  {currentImage && (
-                    <div className="mb-6">
+                  <div className="flex-1 relative">
+                    {currentImage ? (
                       <img 
                         src={currentImage}
                         alt="Current scene"
-                        className="w-full h-64 object-cover rounded-lg border border-purple-400/30 shadow-lg"
+                        className="w-full h-full object-cover rounded-lg border border-purple-400/30 shadow-lg"
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-lg border border-purple-400/20 flex items-center justify-center">
+                        <div className="text-center text-gray-400">
+                          <Camera className="w-6 h-6 lg:w-8 lg:h-8 mx-auto mb-2" />
+                          <p className="text-xs lg:text-sm">Click Generate to create scene image</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {isLoading && (
+                      <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                        <div className="text-center text-white">
+                          <div className="animate-spin w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full mx-auto mb-2"></div>
+                          <p className="text-xs">Generating...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Story Panel */}
+          <div className="flex-1 order-2 min-h-0">
+            <div className="h-full flex flex-col">
+              
+              {/* Story Content */}
+              <Card className="bg-black/60 backdrop-blur-md border-white/20 flex-1 mb-4">
+                <CardContent className="p-4 lg:p-6 h-full overflow-y-auto">
                   
                   {/* Narration */}
                   <div className="mb-6">
@@ -683,18 +719,6 @@ export default function SoloLeveling() {
                     ))}
                   </div>
 
-                  {/* Image Generation Button */}
-                  <div className="mt-6 text-center">
-                    <Button
-                      onClick={generateSceneImage}
-                      variant="outline"
-                      className="border-purple-500/30 hover:bg-purple-500/10 text-white"
-                    >
-                      <Camera className="w-4 h-4 mr-2" />
-                      Generate Scene Image
-                    </Button>
-                  </div>
-
                   {/* Loading State */}
                   {isLoading && (
                     <div className="mt-6 text-center">
@@ -709,77 +733,54 @@ export default function SoloLeveling() {
             </div>
           </div>
 
-          {/* Chat Sidebar */}
-          <div className="w-96 border-l border-white/20 bg-black/40 backdrop-blur-sm">
-            <div className="h-full flex flex-col">
-              
-              {/* Chat Header */}
-              <div className="p-4 border-b border-white/20">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5 text-purple-400" />
-                  Chat with Cha Hae-In
-                </h3>
-              </div>
-
-              {/* Chat Messages */}
-              <ScrollArea className="flex-1 p-4 chat-container">
-                <div className="space-y-4">
-                  {chatMessages.map((msg, index) => (
-                    <div key={index} className={`flex ${msg.speaker === 'player' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs p-3 rounded-lg ${
-                        msg.speaker === 'player' 
-                          ? 'bg-purple-600 text-white' 
-                          : 'bg-white/10 text-gray-100'
-                      }`}>
-                        <div className="text-sm font-medium mb-1">
-                          {msg.speaker === 'player' ? 'You' : 'Cha Hae-In'}
-                        </div>
-                        <div className="text-sm">{msg.message}</div>
-                        {msg.audioUrl && voiceEnabled && (
-                          <audio 
-                            src={msg.audioUrl} 
-                            autoPlay 
-                            className="hidden"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-
-              {/* Chat Input */}
-              <div className="p-4 border-t border-white/20">
-                <div className="flex gap-2">
-                  <Input
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Talk to Cha Hae-In..."
-                    className="flex-1 bg-white/10 border-white/20 text-white placeholder-white/50"
-                    disabled={isLoading}
-                  />
-                  
-                  <Button 
-                    onClick={sendChatMessage}
-                    disabled={isLoading || !chatInput.trim()}
-                    size="sm"
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
-                  
-                  <Button
-                    onClick={isRecording ? stopRecording : startRecording}
-                    size="sm"
-                    variant={isRecording ? "destructive" : "secondary"}
-                  >
-                    {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+
+        {/* Chat Panel - Mobile Responsive Bottom Section */}
+        <div className="lg:hidden">
+          <Card className="bg-black/60 backdrop-blur-md border-white/20 mt-4 mx-4">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                  <Heart className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">Chat with Cha Hae-In</h3>
+                  <p className="text-xs text-gray-400">Your S-Rank partner</p>
+                </div>
+              </div>
+
+              {/* Chat Messages - Mobile */}
+              <div className="max-h-32 overflow-y-auto mb-3 space-y-2">
+                {chatMessages.slice(-3).map((msg, index) => (
+                  <div key={index} className={`flex ${msg.speaker === 'player' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-xs p-2 rounded-lg text-sm ${
+                      msg.speaker === 'player' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-700 text-gray-100'
+                    }`}>
+                      {msg.message}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Chat Input - Mobile */}
+              <div className="flex gap-2">
+                <Input
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Talk to Cha Hae-In..."
+                  className="flex-1 bg-gray-800 border-gray-600 text-white placeholder-gray-400 text-sm"
+                  onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+                />
+                <Button size="sm" onClick={sendChatMessage} disabled={!chatInput.trim()}>
+                  <MessageCircle className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
       </div>
 
       {/* Modals */}
