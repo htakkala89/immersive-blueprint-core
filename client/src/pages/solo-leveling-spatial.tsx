@@ -425,6 +425,16 @@ export default function SoloLevelingSpatial() {
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
       
+      {/* Monarch's Aura Eye - Testing */}
+      <motion.button
+        className="fixed top-6 right-6 w-12 h-12 liquid-glass rounded-full flex items-center justify-center z-50"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setMonarchAuraVisible(true)}
+      >
+        <Eye className="w-6 h-6 text-purple-400" />
+      </motion.button>
+      
       {/* Spatial View - The Living Diorama */}
       <motion.div
         ref={spatialViewRef}
@@ -543,15 +553,7 @@ export default function SoloLevelingSpatial() {
           </motion.div>
         ))}
         
-        {/* Monarch's Aura Eye - Testing */}
-        <motion.button
-          className="absolute top-6 right-6 w-12 h-12 liquid-glass rounded-full flex items-center justify-center z-40"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setMonarchAuraVisible(true)}
-        >
-          <Eye className="w-6 h-6 text-purple-400" />
-        </motion.button>
+
 
         {/* Location Info Overlay */}
         <motion.div
