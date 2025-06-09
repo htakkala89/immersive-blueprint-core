@@ -198,7 +198,7 @@ export function DungeonRaid({
       
       {/* UI Header */}
       <div className="relative z-10 p-4 flex justify-between items-start">
-        <div className="backdrop-blur-md bg-black/50 rounded-lg p-3 border border-red-500/30">
+        <div className="liquid-glass p-3">
           <h2 className="text-xl font-bold text-white mb-2">Shadow Dungeon Raid</h2>
           <div className="flex gap-4 text-sm">
             <span className="text-red-400">Difficulty: B-Rank</span>
@@ -325,7 +325,7 @@ export function DungeonRaid({
 
           {/* Action Bar */}
           <div className="absolute bottom-4 left-4 right-4">
-            <div className="backdrop-blur-md bg-black/60 rounded-lg p-4 border border-purple-500/30">
+            <div className="liquid-glass-modal p-4">
               {/* Synergy Gauge */}
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-1">

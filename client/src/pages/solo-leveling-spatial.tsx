@@ -523,7 +523,7 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-2xl border-t border-white/20"
+            className="absolute bottom-0 left-0 right-0 liquid-glass-modal border-t border-white/20"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -533,7 +533,7 @@ export default function SoloLevelingSpatial() {
               
               {/* Dialogue Text */}
               <motion.div
-                className="bg-slate-800/50 rounded-2xl p-6 border border-purple-400/30"
+                className="liquid-glass p-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}

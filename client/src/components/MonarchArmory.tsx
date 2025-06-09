@@ -131,7 +131,7 @@ export function MonarchArmory({
         <motion.div
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="backdrop-blur-md bg-black/50 rounded-lg p-4 border border-purple-500/30"
+          className="liquid-glass p-4"
         >
           <h2 className="text-2xl font-bold text-white mb-1">Monarch's Armory</h2>
           <p className="text-purple-300 text-sm">Level {playerLevel} Shadow Monarch</p>
