@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import { EnhancedGateRaidSystem } from "@/components/EnhancedGateRaidSystem";
 
 interface GameState {
@@ -79,6 +80,7 @@ export default function SoloLeveling() {
   };
 
   const [gameState, setGameState] = useState<GameState>(initializeGameState);
+  const [showDailyLife, setShowDailyLife] = useState(false);
   const [showGateRaid, setShowGateRaid] = useState(false);
 
   const story: Record<string, StoryScene> = {
@@ -129,8 +131,14 @@ export default function SoloLeveling() {
           </h1>
           <div className="flex space-x-4">
             <button
+              onClick={() => setShowDailyLife(true)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            >
+              Daily Life
+            </button>
+            <button
               onClick={() => setShowGateRaid(true)}
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg transition-all duration-200 font-medium shadow-lg"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
             >
               Gate Raids
             </button>
@@ -190,7 +198,14 @@ export default function SoloLeveling() {
         </div>
       </div>
 
-      {/* Enhanced Gate Raid System */}
+      {/* Modals */}
+      <DailyLifeHubModal
+        isOpen={showDailyLife}
+        onClose={() => setShowDailyLife(false)}
+        gameState={gameState}
+        setGameState={setGameState}
+      />
+
       <EnhancedGateRaidSystem
         isOpen={showGateRaid}
         onClose={() => setShowGateRaid(false)}
