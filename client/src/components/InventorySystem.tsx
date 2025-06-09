@@ -245,8 +245,8 @@ export function InventorySystem({
 
         {/* Items Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-          {usableItems.map((item) => (
-            <Card key={item.id} className="bg-gray-800 border-gray-700">
+          {usableItems.map((item, index) => (
+            <Card key={`${item.id}-${index}`} className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
                 <CardTitle className={`text-lg flex items-center gap-2 ${getRarityColor(item.rarity)}`}>
                   {getTypeIcon(item.type)}

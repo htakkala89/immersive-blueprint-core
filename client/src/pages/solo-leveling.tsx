@@ -3814,6 +3814,15 @@ export default function SoloLeveling() {
                     🎒
                   </button>
 
+                  {/* Equipment Button */}
+                  <button 
+                    onClick={() => setShowEquipmentSystem(true)}
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-purple-500/50 transition-all border border-purple-400/30 shadow-lg"
+                    title="Equipment & Gear"
+                  >
+                    ⚔️
+                  </button>
+
                   {/* Daily Life Hub Button - Available after romantic relationship */}
                   {gameState.affection >= 3 && (
                     <button 
@@ -4327,6 +4336,44 @@ export default function SoloLeveling() {
           onCancel={() => {
             setActiveMiniGame(null);
             setPendingChoice(null);
+          }}
+        />
+      )}
+
+      {/* Equipment System */}
+      {showEquipmentSystem && (
+        <EquipmentSystem
+          isVisible={showEquipmentSystem}
+          onClose={() => setShowEquipmentSystem(false)}
+          playerLevel={gameState.level}
+          equippedGear={playerEquippedGear}
+          availableEquipment={availableEquipment}
+          onEquip={(equipment) => {
+            const slot = equipment.slot as keyof EquippedGear;
+            setPlayerEquippedGear(prev => ({
+              ...prev,
+              [slot]: equipment
+            }));
+            
+            // Remove from available equipment
+            setAvailableEquipment(prev => prev.filter(item => item.id !== equipment.id));
+            
+            addChatMessage('System', `Equipped ${equipment.name} in ${equipment.slot} slot!`);
+          }}
+          onUnequip={(slot) => {
+            const equippedItem = playerEquippedGear[slot as keyof EquippedGear];
+            if (equippedItem) {
+              // Add back to available equipment
+              setAvailableEquipment(prev => [...prev, equippedItem]);
+              
+              // Remove from equipped gear
+              setPlayerEquippedGear(prev => ({
+                ...prev,
+                [slot]: undefined
+              }));
+              
+              addChatMessage('System', `Unequipped ${equippedItem.name} from ${slot} slot!`);
+            }
           }}
         />
       )}
