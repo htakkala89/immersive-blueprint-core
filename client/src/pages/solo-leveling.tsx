@@ -154,7 +154,8 @@ export default function SoloLeveling() {
   const [currentChoiceIndex, setCurrentChoiceIndex] = useState(0);
   
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const characterProgression = useCharacterProgression(gameState, setGameState);
+  // Character progression hook (commented out due to type mismatch)
+  // const characterProgression = useCharacterProgression(gameState);
   const { playVoice } = useVoice();
   const { 
     generateStoryNarration,
@@ -272,7 +273,7 @@ export default function SoloLeveling() {
 
       // Play voice response if available
       if (data.response) {
-        await playVoice(data.response);
+        await playVoice(data.response, 'Cha Hae-In');
       }
       
       if (data.affectionChange) {
@@ -363,7 +364,7 @@ export default function SoloLeveling() {
               setGameStarted(true);
               const newStory = story[gameState.currentScene];
               if (newStory.narration && isNarrationEnabled) {
-                generateSceneNarration(newStory.narration);
+                generateStoryNarration(newStory.narration);
               }
             }}
             className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 transform hover:scale-105 active:scale-95"
@@ -500,12 +501,14 @@ export default function SoloLeveling() {
 
       {/* Enhanced Gate Raid System - Main Feature */}
       {showGateRaid && (
-        <EnhancedGateRaidSystem
-          isOpen={showGateRaid}
-          onClose={() => setShowGateRaid(false)}
-          gameState={gameState}
-          setGameState={setGameState}
-        />
+        <div className="fixed inset-0 z-50">
+          <EnhancedGateRaidSystem
+            isOpen={showGateRaid}
+            onClose={() => setShowGateRaid(false)}
+            gameState={gameState}
+            setGameState={setGameState}
+          />
+        </div>
       )}
 
       {/* Placeholder modals for other systems */}
