@@ -34,14 +34,14 @@ export function Inventory({ items, isVisible, onClose }: InventoryProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
       <div className="bg-black bg-opacity-80 border border-blue-500 border-opacity-30 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-white text-2xl font-bold drop-shadow-lg">🎒 Inventory</h2>
           <button 
             onClick={onClose}
-            className="text-white hover:text-red-400 text-2xl transition-colors"
+            className="text-white hover:text-red-400 text-2xl transition-colors relative z-[10001]"
           >
             ✕
           </button>

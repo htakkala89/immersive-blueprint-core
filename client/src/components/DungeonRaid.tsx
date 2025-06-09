@@ -191,7 +191,7 @@ export function DungeonRaid({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="fixed inset-0 z-50 bg-gradient-to-b from-gray-900 via-red-950 to-black"
+      className="fixed inset-0 z-[9999] bg-gradient-to-b from-gray-900 via-red-950 to-black"
     >
       {/* Dungeon Atmosphere */}
       <div className="absolute inset-0 bg-[url('/dungeon-bg.jpg')] bg-cover bg-center opacity-30" />
@@ -219,7 +219,7 @@ export function DungeonRaid({
           onClick={onClose}
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-white/10"
+          className="text-white hover:bg-white/10 relative z-[10001]"
         >
           <X className="w-5 h-5" />
         </Button>

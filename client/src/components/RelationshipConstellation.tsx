@@ -124,7 +124,7 @@ export function RelationshipConstellation({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-gradient-to-b from-indigo-950 via-purple-950 to-black"
+      className="fixed inset-0 z-[9999] bg-gradient-to-b from-indigo-950 via-purple-950 to-black"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -151,7 +151,7 @@ export function RelationshipConstellation({
         onClick={onClose}
         variant="ghost"
         size="sm"
-        className="absolute top-4 right-4 z-10 text-white hover:bg-white/10"
+        className="absolute top-4 right-4 z-[10001] text-white hover:bg-white/10"
       >
         <X className="w-5 h-5" />
       </Button>
