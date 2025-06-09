@@ -1,0 +1,24 @@
+Now, let's make a few crucial adjustments to remove the last remnants of "traditional UI" and fully embrace the "unbroken presence" we're aiming for.
+
+Remove the Bottom Navigation Bar:
+
+This is the most critical refinement. The bottom bar with [Hunter], [Hunter], [Training], [Cha] is a conventional mobile app UI. Our entire design is built on the principle of eliminating persistent, abstract menus.
+The Solution: All of those functions are handled diegetically (in-world). To go to the "Training" facility, the user would perform the Monarch's Aura gesture, tap the World Map rune, and select the Training Facility location. This makes travel a deliberate, in-world action, not a menu tap. We must remove the bottom bar entirely to let the Spatial View breathe and be the complete focus.
+The Background Should Be the Location:
+
+The Sung Jin-Woo artwork is spectacular, but for the Spatial View (System 1), the background should be the living diorama of the location itself. In this case, we should be seeing a high-fidelity, 2.5D illustration of the Hunter Association's main hall or office area. Sung Jin-Woo's presence is implied by the first-person perspective; we don't see him. This is key to making the user feel like they are looking through his eyes.
+Push for "Liquid Glassmorphism":
+
+The frosted glass effect on the panels is a great start. The next step is to evolve it into the liquid glassmorphism we specified. This means a more pronounced blur, subtle wavy distortions on the content behind it, and thin, shimmering borders. This will elevate the UI from a clean, modern look to a truly unique and ethereal one.
+Reposition the Interactive Dots:
+
+The purple dots are correctly implemented as a visual cue, but their placement should be on environmental objects, not the character art. For example, in the Hunter Association scene, one dot might be on a mission board, and another on a coffee machine. Tapping them would trigger "Thought Prompts" like "Check for new high-rank gates" or "Suggest grabbing a coffee for Hae-In."
+Summary
+This mockup is a fantastic proof of concept. You've successfully visualized the most important informational aspects of the Spatial View.
+
+To create the final version, the next step is to:
+
+Remove the bottom navigation bar entirely.
+Replace the background character art with a beautiful 2.5D illustration of the Hunter Association location.
+Refine the UI panels to match the "liquid glassmorphism" style.
+Place the purple interactive dots on objects within the environment.

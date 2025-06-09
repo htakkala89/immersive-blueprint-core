@@ -518,7 +518,7 @@ export default function SoloLevelingSpatial() {
 
         {/* Location Info Overlay */}
         <motion.div
-          className="absolute top-6 left-6 liquid-glass px-6 py-4"
+          className="absolute top-6 left-6 liquid-glass-enhanced px-6 py-4"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
@@ -745,34 +745,7 @@ export default function SoloLevelingSpatial() {
         )}
       </AnimatePresence>
       
-      {/* Navigation Menu - Spatial Interface */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
-        <div className="liquid-glass-nav-bar px-4 py-2">
-          <div className="flex items-center gap-1">
-            {Object.entries(worldLocations).map(([locationId, location]) => (
-              <motion.button
-                key={locationId}
-                className={`liquid-glass-nav-item px-4 py-3 flex flex-col items-center gap-1 min-w-[60px] ${
-                  currentLocation === locationId ? 'active' : ''
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setCurrentLocation(locationId)}
-              >
-                <div className="w-5 h-5 flex items-center justify-center">
-                  {locationId === 'hunter_association' && <Building className="w-4 h-4 text-white/80" />}
-                  {locationId === 'coffee_shop' && <Coffee className="w-4 h-4 text-white/80" />}
-                  {locationId === 'training_facility' && <Dumbbell className="w-4 h-4 text-white/80" />}
-                  {locationId === 'cha_apartment' && <Home className="w-4 h-4 text-white/80" />}
-                </div>
-                <span className="text-xs text-white/70 font-medium">
-                  {location.name.split(' ')[0]}
-                </span>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-      </div>
+
 
       {/* Feature Modals */}
       <DailyLifeHubModal
