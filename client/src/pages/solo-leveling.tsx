@@ -5833,9 +5833,9 @@ export default function SoloLeveling() {
                                       <span className="text-purple-300 text-xs animate-pulse">🎵 Speaking...</span>
                                     )}
                                   </div>
-                                  {!autoPlayVoice && (
+                                  {!autoPlayVoice && !audioMuted && (
                                     <button
-                                      onClick={() => playVoice(currentStory.narration, 'narrator')}
+                                      onClick={() => playVoice(currentStory.narration, 'narrator', audioMuted)}
                                       className="w-6 h-6 rounded-full flex items-center justify-center transition-all bg-white/10 hover:bg-white/20"
                                       title="Play voice"
                                     >
@@ -6801,14 +6801,67 @@ export default function SoloLeveling() {
             }));
             setIntimacyLevel(prev => Math.min(100, prev + gift.intimacyGain));
             
-            // Show gift reaction
-            addChatMessage('Cha Hae-In', gift.chaHaeInReaction);
-            setShowAffectionIncrease(true);
-            setAffectionIncreaseAmount(gift.affectionGain);
-            setTimeout(() => setShowAffectionIncrease(false), 3000);
+            // Show gift presentation modal
+            setSelectedGift({
+              id: gift.id,
+              name: gift.name,
+              description: gift.description,
+              price: gift.price,
+              rarity: gift.rarity,
+              type: 'gift',
+              category: 'gifts',
+              icon: '🎁',
+              affectionGain: gift.affectionGain,
+              intimacyGain: gift.intimacyGain,
+              chaHaeInReaction: gift.chaHaeInReaction
+            } as ShopItem);
+            setShowGiftGiving(true);
           }
         }}
       />
+
+      {/* Gift Presentation Modal */}
+      {showGiftGiving && selectedGift && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-purple-900/90 to-pink-900/90 backdrop-blur-md rounded-2xl p-6 max-w-md w-full border border-white/20 shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🎁</span>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-white mb-2">Present Gift</h2>
+              <p className="text-purple-200 mb-4">Give this gift to Cha Hae-In?</p>
+              
+              <div className="bg-black/30 rounded-xl p-4 mb-6 border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-2">{selectedGift.name}</h3>
+                <p className="text-gray-300 text-sm mb-2">{selectedGift.description}</p>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-purple-300">Value: {selectedGift.price} gold</span>
+                  <span className="text-pink-300 capitalize">{selectedGift.rarity} quality</span>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowGiftGiving(false);
+                    setSelectedGift(null);
+                  }}
+                  className="flex-1 py-3 px-4 bg-gray-600/50 hover:bg-gray-600/70 text-white rounded-xl transition-all border border-gray-500/30"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => presentGiftToChaHaeIn(selectedGift)}
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-xl transition-all shadow-lg transform hover:scale-105"
+                >
+                  Give Gift
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Intimate Activity Modal */}
       <IntimateActivityModal
