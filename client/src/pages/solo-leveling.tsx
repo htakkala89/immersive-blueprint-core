@@ -3959,19 +3959,7 @@ export default function SoloLeveling() {
                     )}
                   </button>
 
-                  {/* Skills & Stats Button */}
-                  <button 
-                    onClick={() => setShowSkillTree(true)}
-                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all border border-white/10 shadow-lg relative"
-                    title="Skills & Stats"
-                  >
-                    👑
-                    {((gameState.skillPoints || 0) + (gameState.statPoints || 0)) > 0 && (
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold">
-                        {(gameState.skillPoints || 0) + (gameState.statPoints || 0)}
-                      </div>
-                    )}
-                  </button>
+
 
                   {/* Inventory Button */}
                   <button 
@@ -3985,10 +3973,15 @@ export default function SoloLeveling() {
                   {/* Character Profile Button */}
                   <button 
                     onClick={() => setShowCharacterProfile(true)}
-                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-blue-500/50 transition-all border border-blue-400/30 shadow-lg"
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-blue-500/50 transition-all border border-blue-400/30 shadow-lg relative"
                     title="Character Profile"
                   >
                     👤
+                    {((gameState.skillPoints || 0) + (gameState.statPoints || 0)) > 0 && (
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold">
+                        {(gameState.skillPoints || 0) + (gameState.statPoints || 0)}
+                      </div>
+                    )}
                   </button>
 
                   {/* Equipment Button */}
