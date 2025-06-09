@@ -1820,6 +1820,51 @@ export default function SoloLeveling() {
       ],
       leadsTo: { wisdom_matters: 'WISDOM_DISCUSSION', about_you: 'ABOUT_HER', our_roles: 'ROLE_PHILOSOPHY' }
     },
+    'WISDOM_DISCUSSION': {
+      prompt: "Jin-Woo and Cha Hae-In having a philosophical discussion about strength and wisdom. Deep conversation, anime style.",
+      narration: "Your philosophical perspective resonates deeply with her. She appreciates your thoughtful approach to power.",
+      chat: [
+        { sender: 'player', text: "Strength without wisdom is dangerous. I've seen too many hunters let power corrupt them." },
+        { sender: 'Cha Hae-In', text: "That's... exactly what I've been thinking. Raw power means nothing without the wisdom to use it properly." },
+        { sender: 'Cha Hae-In', text: "You're different from other S-rank hunters, Jin-Woo. More thoughtful." }
+      ],
+      choices: [
+        { text: "Power is responsibility", detail: "Share your philosophy", type: 'responsibility_talk' },
+        { text: "What made you realize this?", detail: "Ask about her journey", type: 'her_realization' },
+        { text: "We should protect people", detail: "Express protective nature", type: 'protective_nature' }
+      ],
+      leadsTo: { responsibility_talk: 'RESPONSIBILITY_MOMENT', her_realization: 'HER_WISDOM_STORY', protective_nature: 'PROTECTIVE_BOND' }
+    },
+    'ABOUT_HER': {
+      prompt: "Cha Hae-In surprised and pleased that Jin-Woo is asking about her. Warm expression, anime style.",
+      narration: "Your genuine interest in her catches her off guard. She's clearly not used to being the focus of attention.",
+      chat: [
+        { sender: 'player', text: "What about you? I'd rather hear about what you've been up to." },
+        { sender: 'Cha Hae-In', text: "Oh... you actually want to know about me? That's... nice." },
+        { sender: 'Cha Hae-In', text: "I've been working on improving my sword techniques. Always trying to get stronger." }
+      ],
+      choices: [
+        { text: "Tell me about your training", detail: "Show interest in her growth", type: 'training_interest' },
+        { text: "You're already incredibly strong", detail: "Compliment her abilities", type: 'strength_compliment' },
+        { text: "What drives you to improve?", detail: "Ask about her motivation", type: 'motivation_question' }
+      ],
+      leadsTo: { training_interest: 'TRAINING_DISCUSSION', strength_compliment: 'STRENGTH_RECOGNITION', motivation_question: 'MOTIVATION_SHARING' }
+    },
+    'ROLE_PHILOSOPHY': {
+      prompt: "Jin-Woo expressing his humble philosophy about roles and teamwork. Wise perspective, anime style.",
+      narration: "Your humble perspective on teamwork and individual roles resonates with her deeply.",
+      chat: [
+        { sender: 'player', text: "We all have our roles to play. No one person can handle everything alone." },
+        { sender: 'Cha Hae-In', text: "That's a refreshing viewpoint. Most hunters think they're the center of the universe." },
+        { sender: 'Cha Hae-In', text: "I like how you see the bigger picture, Jin-Woo." }
+      ],
+      choices: [
+        { text: "Teamwork makes us stronger", detail: "Emphasize cooperation", type: 'teamwork_focus' },
+        { text: "Everyone has unique strengths", detail: "Acknowledge individual value", type: 'unique_strengths' },
+        { text: "What's your role in all this?", detail: "Ask about her perspective", type: 'her_role' }
+      ],
+      leadsTo: { teamwork_focus: 'TEAMWORK_BOND', unique_strengths: 'STRENGTH_APPRECIATION', her_role: 'HER_ROLE_DISCUSSION' }
+    },
     'HUMBLE_MOMENT': {
       prompt: "Jin-Woo deflecting praise with humility. Self-deprecating charm, anime style.",
       narration: "Your modest response draws a genuine smile from her.",
