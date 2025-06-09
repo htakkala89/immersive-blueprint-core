@@ -28,6 +28,41 @@ const openai = new OpenAI({
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+// Function to create emotional prompts for Cha Hae-In based on her presence and emotional state
+function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOfDay: string): string {
+  const baseCharacterDescription = "Cha Hae-In from Solo Leveling anime, beautiful S-rank hunter with long blonde hair, striking blue eyes, wearing her signature hunter outfit or elegant casual clothing";
+  
+  const locationMappings: Record<string, string> = {
+    hunter_association: "inside the Hunter Association headquarters with its modern glass architecture and professional atmosphere",
+    gangnam_tower: "at the advanced training facility with combat equipment and simulation chambers visible",
+    hongdae_cafe: "in a cozy artisan coffee house with warm lighting and artistic decor",
+    myeongdong_restaurant: "in an elegant traditional Korean restaurant with refined interior design",
+    chahaein_apartment: "in her modern, minimalist apartment with soft lighting and personal touches"
+  };
+
+  const timeOfDayMappings: Record<string, string> = {
+    morning: "during morning hours with soft natural light streaming through windows",
+    afternoon: "during bright afternoon with clear daylight illuminating the scene",
+    evening: "during golden hour evening with warm sunset lighting",
+    night: "during peaceful night hours with soft ambient lighting"
+  };
+
+  const emotionalMappings: Record<string, string> = {
+    present_confident: "looking confident and content, with a warm smile and relaxed posture, her presence filling the space with positive energy",
+    absent_contemplative: "appearing thoughtful and slightly distant, as if thinking about someone special, with a gentle expression and soft eyes",
+    romantic_anticipation: "with a subtle blush and hopeful expression, looking as if she's waiting for someone important",
+    professional_focused: "in her professional hunter mode, alert and composed, radiating competence and determination",
+    peaceful_content: "completely at ease and peaceful, with a serene expression showing inner happiness",
+    playful_teasing: "with a mischievous smile and playful glint in her eyes, showing her more lighthearted side"
+  };
+
+  const locationDesc = locationMappings[location] || "in a beautiful indoor setting";
+  const timeDesc = timeOfDayMappings[timeOfDay] || "with beautiful lighting";
+  const emotionDesc = emotionalMappings[emotion] || "with a gentle, warm expression";
+
+  return `${baseCharacterDescription} ${emotionDesc}, positioned ${locationDesc} ${timeDesc}. High quality anime art style, detailed facial features, atmospheric lighting, cinematic composition, masterpiece quality. Focus on her emotional expression and the romantic atmosphere of the scene.`;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get or create game state
   app.get("/api/game-state/:sessionId", async (req, res) => {
@@ -250,6 +285,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error(`Failed to generate intimate image: ${error}`);
       res.status(500).json({ error: "Failed to generate intimate image" });
+    }
+  });
+
+  // Generate emotional scene images of Cha Hae-In for location cards
+  app.get("/api/chat-scene-image", async (req, res) => {
+    try {
+      const { emotion, location, timeOfDay } = req.query;
+      
+      if (!emotion || !location || !timeOfDay) {
+        return res.status(400).json({ error: "Missing required parameters: emotion, location, timeOfDay" });
+      }
+
+      console.log(`🎭 Generating emotional scene for Cha Hae-In: ${emotion} at ${location} during ${timeOfDay}`);
+
+      if (!openaiClient) {
+        console.error("OpenAI client not initialized - API key missing");
+        return res.status(500).json({ error: "Image generation service unavailable" });
+      }
+
+      // Create emotional prompt for Cha Hae-In
+      const emotionalPrompt = createChaHaeInEmotionalPrompt(emotion as string, location as string, timeOfDay as string);
+      
+      try {
+        const response = await openaiClient.images.generate({
+          model: "dall-e-3",
+          prompt: emotionalPrompt,
+          n: 1,
+          size: "1024x1024",
+          quality: "hd",
+          style: "vivid"
+        });
+
+        const imageUrl = response.data?.[0]?.url;
+        if (imageUrl) {
+          // Convert to base64 for consistent handling
+          const imageResponse = await fetch(imageUrl);
+          const imageBuffer = await imageResponse.arrayBuffer();
+          const base64Image = Buffer.from(imageBuffer).toString('base64');
+          const dataUrl = `data:image/png;base64,${base64Image}`;
+          
+          console.log(`✅ Generated emotional scene successfully`);
+          res.json({ imageUrl: dataUrl });
+        } else {
+          console.error("No image URL returned from OpenAI");
+          res.status(500).json({ error: "Failed to generate emotional scene" });
+        }
+      } catch (openaiError: any) {
+        console.error("OpenAI API error:", openaiError.message);
+        res.status(500).json({ error: "Image generation failed" });
+      }
+    } catch (error) {
+      console.error(`Failed to generate emotional scene: ${error}`);
+      res.status(500).json({ error: "Failed to generate emotional scene" });
     }
   });
 
