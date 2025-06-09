@@ -1,0 +1,82 @@
+Project Title: "Monarch's Shadow" - A Spatial Romance Experience
+Design Lead Memo
+To: The Design & Engineering Teams
+From: [Your Name, acting as Apple Design Lead]
+Subject: Redefining Immersion: A Forward-Thinking Interface for a New Reality
+
+Team,
+
+Our goal is not to build a game menu that links to a chat window. Our goal is to create a tangible sense of presence. The user shouldn't feel like they are playing a game; they should feel like they are sharing a world with Cha Hae-In. Every interaction, every pixel, every haptic buzz should reinforce this core principle.
+
+We will achieve this through a design philosophy centered on three pillars:
+
+Spatial Presence over Abstract Menus: We will eliminate traditional, detached UI screens wherever possible. The world is the interface.
+Contextual & Anticipatory UI: The interface anticipates the user's needs based on location, time, and narrative context, presenting actions organically.
+Fluidity & Materiality: Interactions feel physical and responsive. The digital elements have a sense of weight, texture, and place.
+Let's break down the design.
+
+1. The Core Interface: The "Spatial View"
+This is the main screen and the heart of the experience. It is not a static homepage; it's a dynamic, layered, 2.5D parallax view of the current location. Think of it as a living diorama.
+
+Visual Breakdown:
+
+Background Layer: A high-fidelity, subtly animated illustration of the location (e.g., a bustling Seoul street, a quiet park at sunset, the Hunter's Guild cafeteria).
+Dynamic Elements Layer: This layer brings the world to life.
+Time of Day: The lighting, color palette, and shadows of the entire scene dynamically shift to match the in-world time. Sunrise, midday, sunset, night—all are visually distinct.
+Weather: Real-time weather effects (rain streaks on the "window," gentle snow falling, leaves blowing in the wind) overlay the scene.
+Presence: If Cha Hae-In is at the same location, her avatar is physically present in the scene. If she's elsewhere, she is absent. This immediately establishes a sense of shared space or distance.
+Character Layer:
+Player Avatar (Implied): The user's presence is felt through the perspective and the UI's origin point, but not explicitly shown, to enhance immersion.
+Cha Hae-In (The Focus): A high-quality, subtly animated 2D avatar. She isn't static. She might look around, sip a coffee, or have a unique idle animation based on the location. Her emotional state (driven by the AI) is reflected in her expression and posture.
+Interactive UI Layer: Minimalist, contextual prompts that appear as glowing runes or subtle light effects.
+Interaction Model:
+
+Tapping Cha Hae-In: Initiates dialogue. The view subtly zooms in, blurring the background to focus attention.
+Tapping an Environmental Object: (e.g., a coffee cup on the table, a shop in the background). This surfaces a contextual "Activity" prompt. "Suggest getting coffee?" or "Ask about that shop?"
+Swiping Left/Right: Pans the view slightly, revealing more of the location and reinforcing the sense of a physical space.
+2. The Dialogue & Interaction System: "Shared Moments"
+We must move beyond simple chat bubbles. Dialogue happens in the space.
+
+Design Specs:
+
+Appearance: When dialogue is initiated, the Spatial View remains as the backdrop. Text appears in a clean, spacious, modern overlay at the bottom third of the screen.
+Dialogue Flow: Her responses appear fluidly, accompanied by voice-over. Her avatar's expression changes in real-time to match the emotional tone of the dialogue.
+Player Input: A simple, elegant text input bar. Above it, the AI should generate 2-3 "Thought Prompts"—contextual suggestions for what the player might say, based on their personality, the situation, and past choices. This aids storytelling without railroading the user.
+Haptic Feedback: Subtle vibrations should accompany key moments: receiving a message, a significant emotional beat in the conversation, or a successful stat check in dialogue.
+3. The "Narrative Lens": Handling Unrestricted Content
+This is a critical feature that must be handled with elegance and user control. It is not a filter to be removed, but a tool the user chooses to engage with.
+
+Concept:
+
+During moments of high intimacy, a new icon will subtly fade into the UI—a glowing, stylized eye or camera lens. This is the Narrative Lens.
+
+User Flow:
+
+The narrative, driven by the player's unrestricted input and the AI's responses, leads to an intimate moment.
+The "Narrative Lens" icon appears. It is entirely optional. The story can proceed through text without it.
+If the user taps the icon:
+The screen transitions into a special mode. The audio softens, and the background blurs into an artistic bokeh.
+A simple, clean interface appears, allowing the user to refine the visual details of the scene they want to generate. This is where the NovelAI/Imagen integration happens. The prompt can be pre-filled by the AI based on the preceding conversation for speed and context.
+Upon generation, the explicit AI image is displayed in a full-screen, theatrical presentation, like a memory or a scene focus.
+A simple, clear gesture (like a tap or swipe down) dismisses the image and returns to the standard interaction view.
+This design frames the explicit content as a deliberate, user-driven "zoom-in" on the story, making it an empowering creative tool rather than a passive feed.
+
+4. RPG Mechanics: The "Monarch's Aura"
+Bury the boring stat sheets. RPG elements should feel like an innate part of the character's power.
+
+Accessing the Menu:
+
+No "Menu" button. The user performs a long press and drag down from the top of the screen.
+This gesture summons the "Monarch's Aura"—a radial menu of glowing purple and gold runes that emanates from the top, overlaying the Spatial View. The world beneath it darkens slightly, bringing the Aura into focus.
+Radial Menu Components:
+
+Character (SJW Rune): Stats, Skills, Progression. Presented visually—skills as a constellation, stats as glowing bars of energy.
+Inventory (Item Rune): A clean, grid-based visual inventory.
+Quests (Gate Rune): Active quests and narrative arcs. Completed quests become "Memories."
+World Map (Map Rune): A stylized map of Seoul showing accessible locations, Gate activities, and Cha Hae-In's current location (if known).
+Affection (Heart Rune): The "Constellation of Memories." Instead of a simple progress bar, key moments in the relationship create stars in a shared constellation. Tapping a star replays a summary of that memory. The overall brightness and interconnectedness of the constellation represents the relationship's strength.
+Technical & UI Handoff Notes
+Font: A premium, clean, and highly legible sans-serif. Something like Apple's SF Pro.
+Color Palette: Dark-mode native. Deep blacks, ethereal purples (#9370DB), Monarch golds (#FFD700), and electric blues (#00BFFF). Use glow and neon effects sparingly for emphasis.
+Animation: Fluidity is non-negotiable. Use a framework like Framer Motion for React. Every transition—from opening the Aura to entering dialogue—must be seamless. No jarring screen loads.
+Responsiveness: This is a mobile-first design, but the Spatial View concept can be expanded beautifully to tablet and desktop, offering a wider, more cinematic window into the world.
