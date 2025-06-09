@@ -597,8 +597,10 @@ export default function SoloLevelingSpatial() {
         )}
         
         {/* Interactive Elements Layer */}
-        {currentLocationData.interactiveElements.map((element) => (
-          <motion.div
+        {currentLocationData.interactiveElements.map((element) => {
+          console.log('Rendering element:', element.id, 'at position:', element.position);
+          return (
+            <motion.div
             key={element.id}
             className="absolute group"
             style={{
