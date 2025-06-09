@@ -632,8 +632,8 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="fixed bottom-20 left-4 right-4 max-w-2xl mx-auto liquid-glass-modal z-50"
-            style={{ maxHeight: '45vh' }}
+            className="fixed top-1/2 left-4 right-4 max-w-2xl mx-auto liquid-glass-modal z-50"
+            style={{ transform: 'translateY(-50%)', maxHeight: '60vh' }}
             initial={{ y: 100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
