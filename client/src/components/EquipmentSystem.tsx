@@ -89,6 +89,58 @@ const STARTING_EQUIPMENT: Equipment[] = [
     },
     description: 'A cloak that seems to absorb light itself. Worn by the Shadow Monarch.',
     requirements: { level: 1 }
+  },
+  {
+    id: 'knight_helmet',
+    name: 'Knight Captain Helmet',
+    type: 'armor',
+    slot: 'helmet',
+    rarity: 'rare',
+    stats: {
+      defense: 45,
+      health: 100
+    },
+    description: 'A sturdy helmet worn by elite knight captains.',
+    requirements: { level: 1 }
+  },
+  {
+    id: 'leather_boots',
+    name: 'Hunter Leather Boots',
+    type: 'armor',
+    slot: 'boots',
+    rarity: 'common',
+    stats: {
+      defense: 25,
+      speed: 10
+    },
+    description: 'Comfortable boots favored by dungeon hunters.',
+    requirements: { level: 1 }
+  },
+  {
+    id: 'steel_sword',
+    name: 'Reinforced Steel Sword',
+    type: 'weapon',
+    slot: 'weapon',
+    rarity: 'rare',
+    stats: {
+      attack: 120,
+      critRate: 10
+    },
+    description: 'A well-balanced sword made from reinforced steel.',
+    requirements: { level: 1 }
+  },
+  {
+    id: 'mana_ring',
+    name: 'Ring of Mana Flow',
+    type: 'accessory',
+    slot: 'ring',
+    rarity: 'epic',
+    stats: {
+      mana: 200,
+      speed: 5
+    },
+    description: 'A mystical ring that enhances mana circulation.',
+    requirements: { level: 1 }
   }
 ];
 
@@ -294,6 +346,11 @@ export function EquipmentSystem({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-h-96 overflow-y-auto">
+              {selectedTab === 'inventory' && availableEquipment.length === 0 && (
+                <div className="col-span-full text-center text-slate-400 py-8">
+                  No equipment available in inventory
+                </div>
+              )}
               {selectedTab === 'inventory' && availableEquipment.map(item => {
                 const canEquip = (!item.requirements?.level || playerLevel >= item.requirements.level);
                 const isEquipped = Object.values(equippedGear).some(equipped => equipped?.id === item.id);

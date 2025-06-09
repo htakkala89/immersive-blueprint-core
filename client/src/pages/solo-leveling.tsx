@@ -106,11 +106,8 @@ export default function SoloLeveling() {
       statPoints: 5,
       skillPoints: 2,
       gold: 500,
-      equippedGear: {
-        weapon: STARTING_EQUIPMENT.find(e => e.id === 'demon_king_daggers'),
-        chest: STARTING_EQUIPMENT.find(e => e.id === 'shadow_cloak')
-      },
-      availableEquipment: STARTING_EQUIPMENT.slice(2),
+      equippedGear: {},
+      availableEquipment: [],
       intimacyLevel: 10,
       stats: {
         strength: 342,
@@ -323,11 +320,90 @@ export default function SoloLeveling() {
   const [showEquipmentSystem, setShowEquipmentSystem] = useState(false);
   const [showGiftSystem, setShowGiftSystem] = useState(false);
   const [showUnifiedShop, setShowUnifiedShop] = useState(false);
-  const [playerEquippedGear, setPlayerEquippedGear] = useState<EquippedGear>({
-    weapon: STARTING_EQUIPMENT.find(e => e.id === 'demon_king_daggers'),
-    chest: STARTING_EQUIPMENT.find(e => e.id === 'shadow_cloak')
-  });
-  const [availableEquipment, setAvailableEquipment] = useState<Equipment[]>(STARTING_EQUIPMENT);
+  const [playerEquippedGear, setPlayerEquippedGear] = useState<EquippedGear>({});
+  const [availableEquipment, setAvailableEquipment] = useState<Equipment[]>([
+    {
+      id: 'demon_king_daggers',
+      name: "Demon King's Daggers",
+      type: 'weapon',
+      slot: 'weapon',
+      rarity: 'mythic',
+      stats: {
+        attack: 250,
+        critRate: 25,
+        critDamage: 50,
+        speed: 15
+      },
+      description: 'Ancient daggers forged in the depths of hell. They hunger for battle and grow stronger with each kill.',
+      requirements: { level: 1 }
+    },
+    {
+      id: 'shadow_cloak',
+      name: 'Shadow Monarch Cloak',
+      type: 'armor',
+      slot: 'chest',
+      rarity: 'legendary',
+      stats: {
+        defense: 100,
+        health: 200,
+        mana: 150
+      },
+      description: 'A cloak that seems to absorb light itself. Worn by the Shadow Monarch.',
+      requirements: { level: 1 }
+    },
+    {
+      id: 'knight_helmet',
+      name: 'Knight Captain Helmet',
+      type: 'armor',
+      slot: 'helmet',
+      rarity: 'rare',
+      stats: {
+        defense: 45,
+        health: 100
+      },
+      description: 'A sturdy helmet worn by elite knight captains.',
+      requirements: { level: 1 }
+    },
+    {
+      id: 'leather_boots',
+      name: 'Hunter Leather Boots',
+      type: 'armor',
+      slot: 'boots',
+      rarity: 'common',
+      stats: {
+        defense: 25,
+        speed: 10
+      },
+      description: 'Comfortable boots favored by dungeon hunters.',
+      requirements: { level: 1 }
+    },
+    {
+      id: 'steel_sword',
+      name: 'Reinforced Steel Sword',
+      type: 'weapon',
+      slot: 'weapon',
+      rarity: 'rare',
+      stats: {
+        attack: 120,
+        critRate: 10
+      },
+      description: 'A well-balanced sword made from reinforced steel.',
+      requirements: { level: 1 }
+    },
+    {
+      id: 'mana_ring',
+      name: 'Ring of Mana Flow',
+      type: 'accessory',
+      slot: 'ring',
+      rarity: 'epic',
+      stats: {
+        mana: 200,
+        speed: 5
+      },
+      description: 'A mystical ring that enhances mana circulation.',
+      requirements: { level: 1 }
+    }
+  ]);
 
   // Calculate total combat stats including equipment bonuses
   const calculateTotalStats = () => {
