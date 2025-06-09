@@ -143,58 +143,62 @@ export function EquipmentSystem({
   const totalStats = calculateTotalStats();
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-purple-500/30 rounded-xl w-full max-w-6xl h-5/6 overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-purple-500/30">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Shield className="w-6 h-6 text-purple-400" />
-            Equipment System
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-purple-500/30 rounded-xl w-full max-w-6xl h-full sm:h-5/6 overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between p-3 sm:p-6 border-b border-purple-500/30 shrink-0">
+          <h2 className="text-lg sm:text-2xl font-bold text-white flex items-center gap-2">
+            <Shield className="w-4 h-4 sm:w-6 sm:h-6 text-purple-400" />
+            <span className="hidden sm:inline">Equipment System</span>
+            <span className="sm:hidden">Equipment</span>
           </h2>
           <Button onClick={onClose} variant="ghost" size="sm" className="text-white hover:bg-purple-500/20">
             ×
           </Button>
         </div>
 
-        <div className="flex h-full">
+        <div className="flex flex-col lg:flex-row h-full overflow-hidden">
           {/* Equipment Slots */}
-          <div className="w-1/3 p-6 border-r border-purple-500/30">
-            <h3 className="text-lg font-semibold text-white mb-4">Equipped Gear</h3>
+          <div className="w-full lg:w-1/3 p-3 sm:p-6 lg:border-r border-purple-500/30 overflow-y-auto">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Equipped Gear</h3>
             
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
               {['weapon', 'helmet', 'chest', 'legs', 'boots', 'ring', 'necklace'].map(slot => {
                 const equipped = equippedGear[slot as keyof EquippedGear];
                 return (
                   <Card key={slot} className="bg-slate-800/50 border-slate-600">
-                    <CardContent className="p-3">
-                      <div className="flex items-center gap-2 mb-2">
+                    <CardContent className="p-2 sm:p-3">
+                      <div className="flex items-center gap-1 sm:gap-2 mb-2">
                         {getSlotIcon(slot)}
-                        <span className="text-sm text-white capitalize">{slot}</span>
+                        <span className="text-xs sm:text-sm text-white capitalize truncate">{slot}</span>
                       </div>
                       
                       {equipped ? (
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-1 sm:gap-2 mb-1">
                             <Badge className={`${getRarityColor(equipped.rarity)} text-white text-xs`}>
                               {equipped.rarity}
                             </Badge>
                           </div>
-                          <p className="text-sm text-white font-medium">{equipped.name}</p>
-                          <div className="text-xs text-slate-300 mt-1">
-                            {Object.entries(equipped.stats).map(([stat, value]) => (
-                              <div key={stat}>{stat}: +{value}</div>
+                          <p className="text-xs sm:text-sm text-white font-medium truncate">{equipped.name}</p>
+                          <div className="text-xs text-slate-300 mt-1 space-y-1">
+                            {Object.entries(equipped.stats).slice(0, 2).map(([stat, value]) => (
+                              <div key={stat} className="truncate">{stat}: +{value}</div>
                             ))}
+                            {Object.entries(equipped.stats).length > 2 && (
+                              <div className="text-slate-400">+{Object.entries(equipped.stats).length - 2} more</div>
+                            )}
                           </div>
                           <Button 
                             onClick={() => onUnequip(slot)}
                             size="sm" 
                             variant="outline" 
-                            className="mt-2 text-xs"
+                            className="mt-2 text-xs w-full"
                           >
                             Unequip
                           </Button>
                         </div>
                       ) : (
-                        <div className="text-slate-400 text-sm">Empty</div>
+                        <div className="text-slate-400 text-xs sm:text-sm">Empty</div>
                       )}
                     </CardContent>
                   </Card>
@@ -222,25 +226,25 @@ export function EquipmentSystem({
           </div>
 
           {/* Available Equipment */}
-          <div className="flex-1 p-6">
-            <div className="flex gap-4 mb-6">
+          <div className="flex-1 p-3 sm:p-6 overflow-y-auto">
+            <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6">
               <Button
                 onClick={() => setSelectedTab('equipped')}
                 variant={selectedTab === 'equipped' ? 'default' : 'outline'}
-                className="text-white"
+                className="text-white text-xs sm:text-sm flex-1 sm:flex-none"
               >
                 Equipped
               </Button>
               <Button
                 onClick={() => setSelectedTab('inventory')}
                 variant={selectedTab === 'inventory' ? 'default' : 'outline'}
-                className="text-white"
+                className="text-white text-xs sm:text-sm flex-1 sm:flex-none"
               >
                 Inventory
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-h-96 overflow-y-auto">
               {availableEquipment.map(item => {
                 const canEquip = (!item.requirements?.level || playerLevel >= item.requirements.level);
                 const isEquipped = Object.values(equippedGear).some(equipped => equipped?.id === item.id);
