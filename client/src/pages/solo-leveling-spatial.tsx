@@ -552,11 +552,8 @@ export default function SoloLevelingSpatial() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          gameState,
           location: playerLocation,
-          timeOfDay,
-          weather,
-          chaPresent: currentLocationData.chaHaeInPresent
+          timeOfDay
         })
       });
       
