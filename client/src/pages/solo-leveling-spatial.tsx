@@ -206,20 +206,28 @@ export default function SoloLevelingSpatial() {
     const currentTime = getCurrentTimeOfDay();
     const affection = gameState.affection;
     
-    // Simple probability-based location system
+    // Enhanced probability-based location system with all Seoul districts
     if (currentTime === 'morning') {
-      if (affection >= 70 && Math.random() < 0.8) return 'chahaein_apartment';
-      if (Math.random() < 0.7) return 'training_facility';
-      return 'hongdae_cafe';
+      if (affection >= 70 && Math.random() < 0.4) return 'chahaein_apartment';
+      if (Math.random() < 0.3) return 'training_facility';
+      if (Math.random() < 0.3) return 'hongdae_cafe';
+      if (Math.random() < 0.2) return 'gangnam_tower';
+      return 'hunter_association';
     } else if (currentTime === 'afternoon') {
-      if (Math.random() < 0.85) return 'hunter_association';
-      return 'training_facility';
+      if (Math.random() < 0.4) return 'hunter_association';
+      if (Math.random() < 0.2) return 'training_facility';
+      if (Math.random() < 0.15) return 'itaewon_market';
+      if (Math.random() < 0.15) return 'myeongdong_shopping';
+      return 'gangnam_tower';
     } else if (currentTime === 'evening') {
-      if (affection >= 40 && Math.random() < 0.6) return 'myeongdong_restaurant';
-      if (affection >= 70 && Math.random() < 0.7) return 'chahaein_apartment';
-      return 'hangang_park';
+      if (affection >= 40 && Math.random() < 0.3) return 'myeongdong_restaurant';
+      if (affection >= 50 && Math.random() < 0.2) return 'namsan_tower';
+      if (affection >= 70 && Math.random() < 0.3) return 'chahaein_apartment';
+      if (Math.random() < 0.2) return 'hangang_park';
+      return 'hongdae_club';
     } else { // night
-      if (affection >= 70 && Math.random() < 0.95) return 'chahaein_apartment';
+      if (affection >= 70 && Math.random() < 0.8) return 'chahaein_apartment';
+      if (affection >= 60 && Math.random() < 0.2) return 'namsan_tower';
       return null; // She's not available at night unless high affection
     }
   };
@@ -227,61 +235,179 @@ export default function SoloLevelingSpatial() {
   const chaHaeInCurrentLocation = getChaHaeInLocation();
 
   const worldLocations = {
+    // Gangnam District - Business & Hunter Association
     hunter_association: {
       id: 'hunter_association',
-      name: 'Hunter Association',
-      description: 'The prestigious headquarters where elite hunters gather',
+      name: 'Hunter Association HQ',
+      description: 'The prestigious headquarters in Gangnam where elite hunters gather',
       backgroundImage: '/api/scenes/hunter_association.jpg',
-      chaHaeInPresent: true,
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_association',
       chaActivity: 'reviewing mission reports at her desk',
       chaPosition: { x: 60, y: 40 },
-      chaExpression: 'focused',
+      chaExpression: 'focused' as const,
       interactiveElements: [
-        { id: 'cha_hae_in_desk', name: 'Cha Hae-In reviewing mission reports at her desk', position: { x: 60, y: 45 }, action: 'Approach Cha Hae-In' },
+        { id: 'cha_desk', name: 'Cha Hae-In at her desk', position: { x: 60, y: 45 }, action: 'Approach Cha Hae-In' },
         { id: 'mission_board', name: 'Mission Board', position: { x: 20, y: 30 }, action: 'Check available missions' },
         { id: 'coffee_machine', name: 'Coffee Machine', position: { x: 80, y: 60 }, action: 'Offer to get coffee' }
       ]
     },
-    coffee_shop: {
-      id: 'coffee_shop',
-      name: 'Hunter Café',
-      description: 'A cozy café where hunters unwind between missions',
-      backgroundImage: '/api/scenes/coffee_shop.jpg',
-      chaHaeInPresent: timeOfDay === 'morning',
-      chaActivity: 'enjoying her morning latte',
-      chaPosition: { x: 45, y: 50 },
-      chaExpression: 'happy',
+    
+    gangnam_tower: {
+      id: 'gangnam_tower',
+      name: 'Gangnam Business Tower',
+      description: 'High-end corporate district with view of Seoul',
+      backgroundImage: '/api/scenes/gangnam_tower.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'gangnam_tower',
+      chaActivity: 'attending a hunter briefing meeting',
+      chaPosition: { x: 50, y: 35 },
+      chaExpression: 'focused' as const,
       interactiveElements: [
-        { id: 'menu_board', name: 'Menu', position: { x: 70, y: 20 }, action: 'Browse the menu together' },
-        { id: 'window_seat', name: 'Window Seat', position: { x: 30, y: 60 }, action: 'Suggest sitting by the window' }
+        { id: 'conference_room', name: 'Conference Room', position: { x: 45, y: 30 }, action: 'Join the meeting' },
+        { id: 'city_view', name: 'City View Window', position: { x: 80, y: 25 }, action: 'Admire the Seoul skyline' }
       ]
     },
+
+    // Hongdae District - Youth & Entertainment
+    hongdae_cafe: {
+      id: 'hongdae_cafe',
+      name: 'Artisan Coffee House',
+      description: 'Trendy café in the heart of Hongdae\'s artistic district',
+      backgroundImage: '/api/scenes/hongdae_cafe.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hongdae_cafe',
+      chaActivity: 'enjoying her morning latte while reading',
+      chaPosition: { x: 45, y: 50 },
+      chaExpression: 'happy' as const,
+      interactiveElements: [
+        { id: 'menu_board', name: 'Artisan Menu', position: { x: 70, y: 20 }, action: 'Browse specialty drinks together' },
+        { id: 'window_seat', name: 'Cozy Window Seat', position: { x: 30, y: 60 }, action: 'Suggest sitting by the window' },
+        { id: 'art_display', name: 'Local Art Display', position: { x: 15, y: 40 }, action: 'Discuss the artwork' }
+      ]
+    },
+
+    hongdae_club: {
+      id: 'hongdae_club',
+      name: 'Underground Music Venue',
+      description: 'Popular nightclub where hunters sometimes unwind',
+      backgroundImage: '/api/scenes/hongdae_club.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hongdae_club',
+      chaActivity: 'reluctantly chaperoning younger hunters',
+      chaPosition: { x: 65, y: 45 },
+      chaExpression: 'shy' as const,
+      interactiveElements: [
+        { id: 'dance_floor', name: 'Dance Floor', position: { x: 50, y: 55 }, action: 'Ask her to dance' },
+        { id: 'quiet_corner', name: 'Quiet Corner', position: { x: 20, y: 35 }, action: 'Find somewhere to talk' }
+      ]
+    },
+
+    // Myeongdong District - Shopping & Dining
+    myeongdong_restaurant: {
+      id: 'myeongdong_restaurant',
+      name: 'Traditional Korean Restaurant',
+      description: 'Elegant dining establishment in Myeongdong',
+      backgroundImage: '/api/scenes/myeongdong_restaurant.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'myeongdong_restaurant',
+      chaActivity: 'enjoying a quiet dinner',
+      chaPosition: { x: 55, y: 50 },
+      chaExpression: 'happy' as const,
+      interactiveElements: [
+        { id: 'private_table', name: 'Private Dining Table', position: { x: 55, y: 55 }, action: 'Join her for dinner' },
+        { id: 'garden_view', name: 'Traditional Garden View', position: { x: 75, y: 30 }, action: 'Comment on the scenery' }
+      ]
+    },
+
+    myeongdong_shopping: {
+      id: 'myeongdong_shopping',
+      name: 'Myeongdong Shopping District',
+      description: 'Bustling shopping area with luxury brands and street food',
+      backgroundImage: '/api/scenes/myeongdong_shopping.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'myeongdong_shopping',
+      chaActivity: 'window shopping for hunter gear accessories',
+      chaPosition: { x: 40, y: 45 },
+      chaExpression: 'neutral' as const,
+      interactiveElements: [
+        { id: 'gear_shop', name: 'Hunter Gear Boutique', position: { x: 35, y: 40 }, action: 'Browse equipment together' },
+        { id: 'street_food', name: 'Street Food Stalls', position: { x: 70, y: 60 }, action: 'Suggest trying local snacks' }
+      ]
+    },
+
+    // Itaewon District - International & Diverse
+    itaewon_market: {
+      id: 'itaewon_market',
+      name: 'International Hunter Market',
+      description: 'Diverse marketplace with global hunter supplies',
+      backgroundImage: '/api/scenes/itaewon_market.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'itaewon_market',
+      chaActivity: 'researching international hunter techniques',
+      chaPosition: { x: 50, y: 40 },
+      chaExpression: 'focused' as const,
+      interactiveElements: [
+        { id: 'weapon_stall', name: 'International Weapons', position: { x: 25, y: 45 }, action: 'Examine foreign weaponry' },
+        { id: 'technique_scrolls', name: 'Technique Scrolls', position: { x: 70, y: 35 }, action: 'Study combat methods together' }
+      ]
+    },
+
+    // Dongdaemun District - Training & Sports
     training_facility: {
       id: 'training_facility',
-      name: 'Training Facility',
-      description: 'State-of-the-art combat training center',
+      name: 'Elite Hunter Training Center',
+      description: 'State-of-the-art combat training facility in Dongdaemun',
       backgroundImage: '/api/scenes/training_facility.jpg',
-      chaHaeInPresent: timeOfDay === 'afternoon',
-      chaActivity: 'practicing sword techniques',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'training_facility',
+      chaActivity: 'practicing advanced sword techniques',
       chaPosition: { x: 50, y: 45 },
-      chaExpression: 'focused',
+      chaExpression: 'focused' as const,
       interactiveElements: [
-        { id: 'training_dummy', name: 'Training Dummy', position: { x: 70, y: 50 }, action: 'Ask to spar together' },
-        { id: 'equipment_rack', name: 'Equipment', position: { x: 20, y: 40 }, action: 'Examine training weapons' }
+        { id: 'training_dummy', name: 'Advanced Training Dummy', position: { x: 70, y: 50 }, action: 'Ask to spar together' },
+        { id: 'equipment_rack', name: 'Training Equipment', position: { x: 20, y: 40 }, action: 'Examine training weapons' },
+        { id: 'meditation_area', name: 'Meditation Corner', position: { x: 80, y: 25 }, action: 'Suggest meditation break' }
       ]
     },
-    cha_apartment: {
-      id: 'cha_apartment',
+
+    // Special Locations - Personal Spaces
+    chahaein_apartment: {
+      id: 'chahaein_apartment',
       name: "Cha Hae-In's Apartment",
-      description: 'Her private sanctuary, warm and inviting',
+      description: 'Her private sanctuary, warm and inviting with personal touches',
       backgroundImage: '/api/scenes/apartment.jpg',
-      chaHaeInPresent: timeOfDay === 'evening' || timeOfDay === 'night',
-      chaActivity: timeOfDay === 'evening' ? 'relaxing on the couch' : 'preparing for bed',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'chahaein_apartment',
+      chaActivity: timeOfDay === 'evening' ? 'relaxing on the couch with tea' : 'preparing for bed',
       chaPosition: { x: 40, y: 55 },
-      chaExpression: 'shy',
+      chaExpression: 'loving' as const,
       interactiveElements: [
-        { id: 'kitchen', name: 'Kitchen', position: { x: 75, y: 30 }, action: 'Offer to cook together' },
-        { id: 'balcony', name: 'Balcony', position: { x: 85, y: 50 }, action: 'Step onto the balcony' }
+        { id: 'couch', name: 'Comfortable Couch', position: { x: 45, y: 60 }, action: 'Sit together' },
+        { id: 'kitchen', name: 'Modern Kitchen', position: { x: 75, y: 40 }, action: 'Offer to cook together' },
+        { id: 'balcony', name: 'City View Balcony', position: { x: 20, y: 30 }, action: 'Step out for fresh air' }
+      ]
+    },
+
+    hangang_park: {
+      id: 'hangang_park',
+      name: 'Hangang River Park',
+      description: 'Peaceful riverside park perfect for evening walks',
+      backgroundImage: '/api/scenes/hangang_park.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hangang_park',
+      chaActivity: 'taking an evening walk along the river',
+      chaPosition: { x: 60, y: 70 },
+      chaExpression: 'happy' as const,
+      interactiveElements: [
+        { id: 'river_path', name: 'River Walking Path', position: { x: 65, y: 75 }, action: 'Walk together along the river' },
+        { id: 'bench', name: 'Park Bench', position: { x: 30, y: 50 }, action: 'Sit and watch the sunset' },
+        { id: 'food_truck', name: 'Evening Food Truck', position: { x: 80, y: 45 }, action: 'Buy snacks to share' }
+      ]
+    },
+
+    namsan_tower: {
+      id: 'namsan_tower',
+      name: 'N Seoul Tower',
+      description: 'Iconic tower with romantic city views',
+      backgroundImage: '/api/scenes/namsan_tower.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'namsan_tower',
+      chaActivity: 'enjoying the panoramic view of Seoul',
+      chaPosition: { x: 45, y: 40 },
+      chaExpression: 'happy' as const,
+      interactiveElements: [
+        { id: 'observation_deck', name: 'Observation Deck', position: { x: 50, y: 35 }, action: 'Admire the city lights together' },
+        { id: 'love_locks', name: 'Love Lock Fence', position: { x: 70, y: 55 }, action: 'Attach a lock together' }
       ]
     }
   };
@@ -330,7 +456,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const currentLocationData = worldLocations[playerLocation as keyof typeof worldLocations];
+  const currentLocationData = worldLocations[playerLocation as keyof typeof worldLocations] || worldLocations.hunter_association;
 
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
