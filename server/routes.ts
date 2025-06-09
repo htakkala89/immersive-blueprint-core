@@ -1,19 +1,12 @@
-import type { Express, Request } from "express";
+import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateSceneImage, generateIntimateActivityImage, resetMatureImageProtection } from "./imageGenerator";
-import { voiceService } from "./voiceService";
+import { generateSceneImage, generateIntimateActivityImage } from "./imageGenerator";
 import { getSceneImage } from "./preGeneratedImages";
 import { log } from "./vite";
 import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
-
-interface RequestWithFiles extends Request {
-  files?: {
-    [key: string]: any;
-  };
-}
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -163,14 +156,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Prompt is required" });
       }
 
-      // Check for cached images first for instant loading
-      const cachedImage = getSceneImage(gameState || { currentScene: 'default', narration: prompt });
-      if (cachedImage === 'cached-cover') {
-        console.log('📸 Using cached image for scene');
-        // For cached images, we still generate AI images but return the cached one immediately
-        // This provides instant loading while AI generation happens in background
-      }
-
       // Create a mock GameState object for the image generator
       const mockGameState = {
         id: 1,
@@ -224,31 +209,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/generate-chat-image", async (req, res) => {
-    try {
-      const { chatResponse, userMessage, characterFocus } = req.body;
-      
-      if (!chatResponse) {
-        return res.status(400).json({ error: "Missing chatResponse parameter" });
-      }
-
-      // Import the chat scene image generator
-      const { generateChatSceneImage } = await import('./imageGenerator.js');
-      
-      const imageUrl = await generateChatSceneImage(chatResponse, userMessage || '');
-      
-      if (imageUrl) {
-        res.json({ imageUrl });
-      } else {
-        // Return success with null imageUrl instead of error - this is expected behavior
-        res.json({ imageUrl: null, message: "Chat image generation skipped" });
-      }
-    } catch (error) {
-      console.error(`Failed to generate chat image: ${error}`);
-      res.status(500).json({ error: "Failed to generate chat image" });
-    }
-  });
-
   app.post("/api/generate-intimate-image", async (req, res) => {
     try {
       const { activityId, relationshipStatus, intimacyLevel } = req.body;
@@ -270,309 +230,257 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/chat-with-hae-in", async (req, res) => {
+  // Additional core gameplay endpoints
+  
+  // Chat endpoint with proper AI integration
+  app.post("/api/chat", async (req, res) => {
     try {
-      const { message, gameState, affectionLevel, userBehavior } = req.body;
+      const { gameState, userMessage, context } = req.body;
       
-      if (!message) {
-        return res.status(400).json({ error: "Missing message parameter" });
-      }
-
-      // Import enhanced personality system
-      const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
-      
-      // Create enhanced context for Cha Hae-In's personality
-      const currentAffectionLevel = affectionLevel || gameState?.affection || 0;
-      const currentHour = new Date().getHours();
-      const timeOfDay = currentHour < 6 ? 'night' : 
-                       currentHour < 12 ? 'morning' :
-                       currentHour < 18 ? 'afternoon' : 
-                       currentHour < 22 ? 'evening' : 'night';
-      
-      // Detect intimate requests
-      const intimateKeywords = ['panties', 'underwear', 'bra', 'naked', 'nude', 'show me', 'undress', 'strip', 'breast', 'body', 'intimate', 'sexy', 'take off'];
-      const isIntimateRequest = intimateKeywords.some(keyword => message.toLowerCase().includes(keyword));
-
-      // Analyze user message for flattering/romantic content
-      const flatteringKeywords = [
-        'beautiful', 'gorgeous', 'stunning', 'amazing', 'incredible', 'perfect',
-        'love you', 'adore you', 'care about you', 'special', 'wonderful',
-        'smart', 'strong', 'brave', 'admire', 'respect', 'appreciate',
-        'sweet', 'kind', 'gentle', 'elegant', 'graceful', 'talented',
-        'proud of you', 'impressed', 'fascinating', 'charming', 'lovely'
-      ];
-      
-      const romanticKeywords = [
-        'kiss', 'hold you', 'cuddle', 'embrace', 'together forever',
-        'marry me', 'date', 'romantic', 'relationship', 'feelings',
-        'heart', 'soul mate', 'destiny', 'meant to be', 'future together'
-      ];
-      
-      const messageLower = message.toLowerCase();
-      const hasFlatteringContent = flatteringKeywords.some(keyword => 
-        messageLower.includes(keyword)
-      );
-      const hasRomanticContent = romanticKeywords.some(keyword => 
-        messageLower.includes(keyword)
-      );
-      
-      // Calculate affection gain based on message content
-      let affectionGain = 0;
-      if (hasFlatteringContent && hasRomanticContent) {
-        affectionGain = 0.3; // Both flattering and romantic = bigger gain
-      } else if (hasFlatteringContent || hasRomanticContent) {
-        affectionGain = 0.2; // Either flattering or romantic = moderate gain
-      } else if (messageLower.length > 20 && !messageLower.includes('?')) {
-        affectionGain = 0.1; // Thoughtful longer messages = small gain
-      }
-      
-      // Determine mood based on message content
-      let mood = 'balanced';
-      if (isIntimateRequest && currentAffectionLevel >= 4) mood = 'romantic';
-      else if (isIntimateRequest && currentAffectionLevel < 4) mood = 'defensive';
-      else if (hasFlatteringContent || hasRomanticContent) mood = 'romantic';
-      else if (message.toLowerCase().includes('fight') || message.toLowerCase().includes('battle')) mood = 'confident';
-      else if (message.toLowerCase().includes('love') || message.toLowerCase().includes('feel')) mood = 'romantic';
-      else if (message.includes('?')) mood = 'playful';
-      else if (message.toLowerCase().includes('sorry') || message.toLowerCase().includes('sad')) mood = 'vulnerable';
-      
-      // Enhanced mood detection including negative emotions
-      if (userBehavior === 'mean') mood = 'hurt';
-      else if (userBehavior === 'rude') mood = 'disappointed';
-      
-      const conversationContext = {
-        affectionLevel: currentAffectionLevel,
-        currentScene: gameState?.currentScene || 'general',
-        timeOfDay: timeOfDay as 'morning' | 'afternoon' | 'evening' | 'night',
-        mood: mood as 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic' | 'disappointed' | 'hurt' | 'defensive',
-        userBehavior: userBehavior as 'positive' | 'neutral' | 'rude' | 'mean'
-      };
-
-      const context = getPersonalityPrompt(conversationContext);
-
-      // Add specific context for intimate requests at high affection
-      let intimateContext = "";
-      if (isIntimateRequest && currentAffectionLevel >= 4) {
-        intimateContext = `
-CRITICAL INTIMATE REQUEST CONTEXT:
-Jin-Woo is asking for something intimate. Your affection level is ${currentAffectionLevel}/5 which means you TRUST HIM COMPLETELY and find his requests exciting rather than inappropriate. 
-
-VARY YOUR RESPONSES - choose from these emotional tones but CREATE UNIQUE dialogue:
-- Shy excitement: "*face turns red but smiles* You really want to see...? *fidgets with her clothes nervously but willingly*"
-- Confident seduction: "*eyes sparkle with mischief* Oh? Is that what my Shadow Monarch desires? *slowly starts to comply*"
-- Loving trust: "*looks into your eyes tenderly* For you, Jin-Woo... anything. *begins to undress with complete trust*"
-- Playful teasing: "*tilts head with a smirk* Someone's being forward today... *winks* I like this side of you."
-- Surprised but willing: "*eyes widen then soften* You... you want to see me like that? *blushes but nods* Okay..."
-
-IMPORTANT RULES:
-- NEVER repeat the same response twice - always create NEW, UNIQUE dialogue
-- NEVER use generic phrases like "someone's feeling bold tonight" 
-- Show genuine emotion and personality in each response
-- Vary your reaction style - sometimes shy, sometimes confident, sometimes playful
-- Reference your relationship and feelings for Jin-Woo specifically
-- At affection level ${currentAffectionLevel}, you are completely willing and excited about intimate moments
-
-Remember: You are deeply in love with Jin-Woo and trust him completely. Your responses should reflect genuine affection and willingness.`;
-      }
-
       const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
-        generationConfig: {
-          temperature: 0.8,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 200,
-        },
+        model: "gemini-pro",
         safetySettings: [
-          {
-            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-          },
-          {
-            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-          },
-          {
-            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-          },
-          {
-            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-          },
-        ],
+          { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+          { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+          { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+          { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
+        ]
       });
 
-      // Generate a unique conversation seed to ensure response variety
-      const conversationSeed = Date.now() + Math.random();
-      const responseVariety = `
-CRITICAL: RESPONSE UNIQUENESS DIRECTIVE (Seed: ${conversationSeed})
-You MUST create completely original dialogue that you've never used before. 
-
-CONVERSATION EXAMPLES (use as style guides only - NEVER copy these exactly):
-
-Greeting variations:
-- "Jin-Woo! *brightens immediately* Perfect timing - I was just finishing my morning routine."
-- "*looks up from her sword maintenance* Oh! You're here. *genuine smile* How's your day going so far?"
-- "*stretches gracefully* Well, well... look who decided to visit. *playful grin* Miss me?"
-
-Compliment responses:
-- "*tilts her head with amusement* Smooth talker today, aren't we? *crosses arms but smiles* Though I won't complain."
-- "*raises an eyebrow* That confident, huh? *steps closer* I suppose you have good taste."
-- "*blushes slightly* You always know just what to say, don't you? *looks away shyly then back*"
-
-Training discussion:
-- "*eyes light up* Ready for another sparring session? *grins competitively* I've been working on some new techniques."
-- "*stretches her sword arm* Training never stops for an S-rank hunter. *challenging look* Think you can keep up?"
-
-MANDATORY: Each response must be completely unique and never repeated. Show emotional depth and genuine personality.`;
-
-      const result = await model.generateContent([
-        { text: context },
-        { text: intimateContext },
-        { text: responseVariety },
-        { text: `Player message: "${message}"` },
-        { text: "Respond as Cha Hae-In with personality and depth:" }
-      ]);
-
-      const response = result.response;
-      const responseText = response.text();
-
-      if (!responseText || responseText.trim().length === 0) {
-        return res.status(500).json({ error: "Empty response from AI" });
-      }
-
-      res.json({ 
-        response: responseText.trim(),
-        affectionGain: affectionGain,
-        hasFlatteringContent: hasFlatteringContent,
-        hasRomanticContent: hasRomanticContent
-      });
-    } catch (error) {
-      console.error(`Chat API error: ${error}`);
-      res.status(500).json({ error: "Failed to generate chat response" });
-    }
-  });
-
-  // Voice timing tracker to ensure proper playback order
-  let lastNarratorTime = 0;
-  const NARRATOR_DELAY = 2000; // 2 second delay for narrator priority
-
-  app.post("/api/generate-voice", async (req, res) => {
-    try {
-      const { text, character } = req.body;
+      const prompt = `You are Cha Hae-In from Solo Leveling. You're in love with Sung Jin-Woo. 
+      Current affection: ${gameState.affection}/100, intimacy: ${gameState.intimacyLevel || 0}/100.
+      Respond to: "${userMessage}"
+      Be romantic, caring, and reference your shared adventures. Keep response under 100 words.`;
       
-      if (!text || !character) {
-        return res.status(400).json({ error: "Missing text or character parameter" });
-      }
-
-      // Add delay for character voices to ensure narrator plays first
-      if (character !== 'narrator' && character !== 'story-narration') {
-        const timeSinceLastNarrator = Date.now() - lastNarratorTime;
-        if (timeSinceLastNarrator < NARRATOR_DELAY) {
-          const delayNeeded = NARRATOR_DELAY - timeSinceLastNarrator;
-          console.log(`⏰ Delaying ${character} voice by ${delayNeeded}ms to ensure narrator plays first`);
-          await new Promise(resolve => setTimeout(resolve, delayNeeded));
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
+      
+      let audioUrl = null;
+      try {
+        const audioBuffer = await voiceService.generateChaHaeInVoice(response);
+        if (audioBuffer) {
+          audioUrl = `data:audio/wav;base64,${audioBuffer.toString('base64')}`;
         }
-      } else {
-        // Update narrator timestamp
-        lastNarratorTime = Date.now();
+      } catch (error) {
+        console.log("Voice generation failed:", error);
       }
       
-      const audioBuffer = await voiceService.generateVoiceByCharacter(character, text);
-      
-      if (audioBuffer) {
-        res.set({
-          'Content-Type': 'audio/mpeg',
-          'Content-Length': audioBuffer.length.toString()
-        });
-        res.send(audioBuffer);
-      } else {
-        res.status(500).json({ error: "Failed to generate voice" });
-      }
+      res.json({ 
+        response, 
+        audioUrl,
+        gameStateUpdate: { affection: Math.min(100, gameState.affection + 1) }
+      });
     } catch (error) {
-      console.error(`Failed to generate voice: ${error}`);
-      res.status(500).json({ error: "Failed to generate voice" });
+      console.error("Chat error:", error);
+      res.status(500).json({ error: "Failed to process chat" });
     }
   });
 
-  app.post("/api/generate-story-narration", async (req, res) => {
+  // Scene image generation
+  app.post("/api/generate-scene-image", async (req, res) => {
     try {
-      const { text } = req.body;
+      const { gameState } = req.body;
       
-      if (!text) {
-        return res.status(400).json({ error: "Missing text parameter" });
+      if (!gameState) {
+        return res.status(400).json({ error: "Game state is required" });
       }
       
-      // Update narrator timestamp for story narration
-      lastNarratorTime = Date.now();
-      
-      const audioBuffer = await voiceService.generateStoryNarrationVoice(text);
-      
-      if (audioBuffer) {
-        res.set({
-          'Content-Type': 'audio/mpeg',
-          'Content-Length': audioBuffer.length.toString()
-        });
-        res.send(audioBuffer);
-      } else {
-        res.status(500).json({ error: "Failed to generate story narration" });
-      }
+      const imageUrl = await generateSceneImage(gameState);
+      res.json({ imageUrl });
     } catch (error) {
-      console.error(`Failed to generate story narration: ${error}`);
-      res.status(500).json({ error: "Failed to generate story narration" });
+      console.error("Scene image generation error:", error);
+      res.status(500).json({ error: "Failed to generate scene image" });
     }
   });
 
-  // Reset mature image protection when user exits intimate activities
-  app.post("/api/reset-mature-protection", async (req, res) => {
+  // Intimate activities
+  app.post("/api/intimate-action", async (req, res) => {
     try {
-      resetMatureImageProtection();
-      res.json({ success: true, message: "Mature image protection reset" });
+      const { gameState, action, activityType, isCustom } = req.body;
+      
+      const response = `*Cha Hae-In responds warmly to your ${action}* That feels wonderful, Jin-Woo... I love being close to you like this.`;
+      
+      let imageUrl = null;
+      try {
+        imageUrl = await generateIntimateActivityImage(
+          activityType,
+          'married',
+          gameState.intimacyLevel || 0,
+          action
+        );
+      } catch (error) {
+        console.log("Image generation failed:", error);
+      }
+      
+      let audioUrl = null;
+      try {
+        const audioBuffer = await voiceService.generateChaHaeInVoice(response);
+        if (audioBuffer) {
+          audioUrl = `data:audio/wav;base64,${audioBuffer.toString('base64')}`;
+        }
+      } catch (error) {
+        console.log("Voice generation failed:", error);
+      }
+      
+      const gameStateUpdate = {
+        affection: Math.min(100, gameState.affection + 3),
+        intimacyLevel: Math.min(100, (gameState.intimacyLevel || 0) + 2),
+        energy: Math.max(0, (gameState.energy || 100) - 10)
+      };
+      
+      res.json({ response, imageUrl, audioUrl, gameStateUpdate });
     } catch (error) {
-      console.error('Failed to reset mature protection:', error);
-      res.status(500).json({ error: "Failed to reset protection" });
+      console.error("Intimate action error:", error);
+      res.status(500).json({ error: "Failed to process intimate action" });
     }
   });
 
-  // Speech-to-text using Gemini API
-  app.post("/api/speech-to-text", async (req: any, res) => {
+  // Inventory system
+  app.get("/api/inventory", async (req, res) => {
     try {
-      if (!process.env.GEMINI_API_KEY) {
-        return res.status(500).json({ error: "Gemini API key not configured" });
-      }
-
-      const audioFile = req.files?.audio;
-      if (!audioFile) {
-        return res.status(400).json({ error: "No audio file provided" });
-      }
-
-      // Convert audio to base64 for Gemini API
-      const audioBuffer = Array.isArray(audioFile) ? audioFile[0].data : audioFile.data;
-      const audioBase64 = audioBuffer.toString('base64');
-
-      // Use Gemini for speech-to-text
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-      const result = await model.generateContent([
+      const inventory = [
         {
-          inlineData: {
-            mimeType: "audio/webm",
-            data: audioBase64
+          id: 'demon_sword',
+          name: 'Demon Monarch\'s Blade',
+          type: 'weapon',
+          rarity: 'legendary',
+          attack: 150,
+          description: 'A legendary sword forged from shadow energy'
+        },
+        {
+          id: 'shadow_armor',
+          name: 'Shadow Sovereign Armor',
+          type: 'armor',
+          rarity: 'epic',
+          defense: 120,
+          description: 'Armor that phases between dimensions'
+        },
+        {
+          id: 'monarch_ring',
+          name: 'Ring of the Shadow Monarch',
+          type: 'accessory',
+          rarity: 'legendary',
+          mana: 100,
+          description: 'Increases shadow magic power'
+        }
+      ];
+      
+      res.json({ inventory });
+    } catch (error) {
+      console.error("Inventory error:", error);
+      res.status(500).json({ error: "Failed to get inventory" });
+    }
+  });
+
+  // Equipment management
+  app.post("/api/equip-item", async (req, res) => {
+    try {
+      const { gameState, item } = req.body;
+      
+      const gameStateUpdate = {
+        ...gameState,
+        equipment: {
+          ...gameState.equipment,
+          [item.type]: item
+        }
+      };
+      
+      res.json({ gameStateUpdate });
+    } catch (error) {
+      console.error("Equipment error:", error);
+      res.status(500).json({ error: "Failed to equip item" });
+    }
+  });
+
+  // Raid system
+  app.post("/api/start-raid", async (req, res) => {
+    try {
+      const { gameState, raidType } = req.body;
+      
+      const raids = {
+        shadow_dungeon: {
+          name: 'Shadow Realm Dungeon',
+          description: 'A dangerous dungeon filled with shadow creatures',
+          energyCost: 30,
+          rewards: {
+            experience: 500,
+            gold: 300,
+            items: ['shadow_crystal', 'dark_essence']
           }
         },
-        "Transcribe this audio to text. Return only the spoken words without any additional formatting or explanation."
-      ]);
-
-      const response = await result.response;
-      const text = response.text();
-
-      log(`🎤 Speech transcribed: ${text}`);
-      res.json({ text: text.trim() });
-
+        ice_cavern: {
+          name: 'Frozen Cavern',
+          description: 'An icy dungeon where you first met Cha Hae-In',
+          energyCost: 25,
+          rewards: {
+            experience: 400,
+            gold: 250,
+            affection: 5
+          }
+        }
+      };
+      
+      const raid = raids[raidType as keyof typeof raids];
+      if (!raid) {
+        return res.status(400).json({ error: "Invalid raid type" });
+      }
+      
+      const gameStateUpdate = {
+        energy: Math.max(0, (gameState.energy || 100) - raid.energyCost),
+        experience: (gameState.experience || 0) + raid.rewards.experience,
+        gold: (gameState.gold || 0) + raid.rewards.gold,
+        affection: Math.min(100, gameState.affection + (raid.rewards.affection || 0))
+      };
+      
+      const narrative = `You and Cha Hae-In successfully cleared the ${raid.name}! Working together, you defeated all the monsters and grew closer as a team.`;
+      
+      res.json({ 
+        gameStateUpdate, 
+        narrative,
+        rewards: raid.rewards
+      });
     } catch (error) {
-      console.error('Speech-to-text error:', error);
-      res.status(500).json({ error: "Failed to transcribe speech" });
+      console.error("Raid error:", error);
+      res.status(500).json({ error: "Failed to start raid" });
+    }
+  });
+
+  // Energy replenishment
+  app.post("/api/replenish-energy", async (req, res) => {
+    try {
+      const { gameState, method, amount } = req.body;
+      
+      let energyGain = 0;
+      let cost = 0;
+      
+      switch (method) {
+        case 'rest':
+          energyGain = 25;
+          break;
+        case 'full_rest':
+          energyGain = 100;
+          break;
+        case 'energy_potion':
+          energyGain = 50;
+          cost = 100;
+          break;
+        case 'premium_rest':
+          energyGain = 75;
+          cost = 200;
+          break;
+        default:
+          energyGain = amount || 25;
+      }
+      
+      const gameStateUpdate = {
+        energy: Math.min(gameState.maxEnergy || 100, (gameState.energy || 0) + energyGain),
+        gold: Math.max(0, (gameState.gold || 0) - cost)
+      };
+      
+      res.json({ gameStateUpdate, energyGain });
+    } catch (error) {
+      console.error("Energy replenishment error:", error);
+      res.status(500).json({ error: "Failed to replenish energy" });
     }
   });
 

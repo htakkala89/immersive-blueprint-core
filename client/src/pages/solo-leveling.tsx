@@ -103,7 +103,7 @@ interface PlayerEquipment {
 interface ShopItem {
   id: string;
   name: string;
-  category: 'weapons' | 'armor' | 'accessories' | 'gifts' | 'consumables';
+  category: 'weapons' | 'armor' | 'gifts' | 'consumables' | 'special';
   price: number;
   description: string;
   icon: string;
