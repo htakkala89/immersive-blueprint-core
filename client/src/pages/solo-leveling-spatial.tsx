@@ -87,6 +87,35 @@ export default function SoloLevelingSpatial() {
   const [gestureStart, setGestureStart] = useState({ x: 0, y: 0, time: 0 });
   const [isLongPressing, setIsLongPressing] = useState(false);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const [isFocusMode, setIsFocusMode] = useState(false);
+  const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy'>('focused');
+  const [showLivingPortrait, setShowLivingPortrait] = useState(false);
+
+  // Focus Animation for immersive dialogue
+  const handleChaHaeInInteraction = async () => {
+    // Step 1: Focus Animation (300ms)
+    setIsFocusMode(true);
+    
+    // Step 2: UI transitions
+    setTimeout(() => {
+      setShowLivingPortrait(true);
+      setChaHaeInExpression('recognition');
+      
+      // Step 3: Generate context-aware dialogue
+      const contextualDialogue = "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?";
+      setCurrentDialogue(contextualDialogue);
+      
+      // Step 4: Set thought prompts
+      setThoughtPrompts([
+        "Just wanted to see you.",
+        "Anything interesting in the report?", 
+        "Ready for a break? I can handle the rest."
+      ]);
+      
+      setDialogueActive(true);
+      setChaHaeInExpression('welcoming');
+    }, 300);
+  };
 
   const handleGestureActivation = (e: React.TouchEvent | React.MouseEvent) => {
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
@@ -483,7 +512,12 @@ export default function SoloLevelingSpatial() {
       {/* Spatial View - The Living Diorama */}
       <motion.div
         ref={spatialViewRef}
-        className="relative w-full h-full"
+        className="relative w-full h-full overflow-hidden"
+        animate={{
+          scale: isFocusMode ? 1.05 : 1,
+          filter: isFocusMode ? "blur(2px)" : "blur(0px)"
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         
         {/* Background Sky Layer */}
@@ -562,18 +596,25 @@ export default function SoloLevelingSpatial() {
               top: `${element.position.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
+            animate={{ opacity: isFocusMode ? 0 : 1 }}
+            transition={{ duration: 0.3 }}
           >
             <motion.button
               className="w-6 h-6 bg-purple-500/60 rounded-full border border-purple-300/80 backdrop-blur-sm relative"
               whileHover={{ scale: 1.3 }}
               whileTap={{ scale: 0.8 }}
               onClick={() => {
-                handleEnvironmentalInteraction({
-                  action: element.action,
-                  name: element.name,
-                  x: element.position.x,
-                  y: element.position.y
-                });
+                // Check if this is Cha Hae-In interaction
+                if (element.name.includes("Cha Hae-In")) {
+                  handleChaHaeInInteraction();
+                } else {
+                  handleEnvironmentalInteraction({
+                    action: element.action,
+                    name: element.name,
+                    x: element.position.x,
+                    y: element.position.y
+                  });
+                }
               }}
             >
               {/* Pulsing glow effect */}
@@ -604,8 +645,11 @@ export default function SoloLevelingSpatial() {
         <motion.div
           className="absolute top-6 left-6 liquid-glass-enhanced px-3 py-2 max-w-64"
           initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
+          animate={{ 
+            opacity: isFocusMode ? 0 : 1, 
+            x: isFocusMode ? -50 : 0 
+          }}
+          transition={{ duration: 0.3 }}
         >
           <h2 className="text-xl font-bold text-white mb-1">{currentLocationData.name}</h2>
           <p className="text-slate-300 text-sm mb-2">{currentLocationData.description}</p>
@@ -688,10 +732,71 @@ export default function SoloLevelingSpatial() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center shrink-0">
-                    <Heart className="w-4 h-4 text-white" />
-                  </div>
+                <div className="flex items-start gap-4">
+                  {/* Living Portrait of Cha Hae-In */}
+                  <motion.div 
+                    className="shrink-0"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: showLivingPortrait ? 1 : 0, x: showLivingPortrait ? 0 : -20 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    <div className="w-16 h-20 relative">
+                      {/* Portrait Background */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-slate-700/50 to-slate-800/50 rounded-lg backdrop-blur-sm border border-pink-300/20" />
+                      
+                      {/* Portrait Face */}
+                      <div className="absolute inset-1 flex flex-col items-center justify-center text-pink-200">
+                        {/* Hair */}
+                        <div className="w-8 h-3 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-full mb-1" />
+                        
+                        {/* Face */}
+                        <div className="w-6 h-6 bg-gradient-to-b from-pink-100 to-pink-200 rounded-full relative">
+                          {/* Eyes - Expression changes based on chaHaeInExpression */}
+                          <motion.div 
+                            className="absolute top-1.5 left-1 w-1 h-1 bg-slate-800 rounded-full"
+                            animate={{
+                              scaleY: chaHaeInExpression === 'focused' ? 0.6 : 1,
+                              y: chaHaeInExpression === 'recognition' ? -0.5 : 0
+                            }}
+                            transition={{ duration: 0.3 }}
+                          />
+                          <motion.div 
+                            className="absolute top-1.5 right-1 w-1 h-1 bg-slate-800 rounded-full"
+                            animate={{
+                              scaleY: chaHaeInExpression === 'focused' ? 0.6 : 1,
+                              y: chaHaeInExpression === 'recognition' ? -0.5 : 0
+                            }}
+                            transition={{ duration: 0.3 }}
+                          />
+                          
+                          {/* Mouth - Expression changes */}
+                          <motion.div
+                            className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-0.5 bg-slate-700 rounded-full"
+                            animate={{
+                              width: chaHaeInExpression === 'welcoming' ? 10 : 8,
+                              borderRadius: chaHaeInExpression === 'welcoming' ? '0 0 8px 8px' : '2px'
+                            }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </div>
+                        
+                        {/* Body */}
+                        <div className="w-5 h-4 bg-gradient-to-b from-blue-800 to-blue-900 rounded-b-lg mt-0.5" />
+                      </div>
+                      
+                      {/* Glow effect based on expression */}
+                      <motion.div 
+                        className="absolute inset-0 rounded-lg"
+                        animate={{
+                          boxShadow: chaHaeInExpression === 'welcoming' 
+                            ? '0 0 12px rgba(236, 72, 153, 0.4)' 
+                            : '0 0 6px rgba(236, 72, 153, 0.2)'
+                        }}
+                        transition={{ duration: 0.5 }}
+                      />
+                    </div>
+                  </motion.div>
+                  
                   <div className="flex-1">
                     {isLoading ? (
                       <div className="flex items-center gap-2 text-slate-400">
