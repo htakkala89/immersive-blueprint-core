@@ -677,3 +677,5 @@ export function EnhancedGateRaidSystem({ isOpen, onClose, gameState, setGameStat
     </div>
   );
 }
+
+export default EnhancedGateRaidSystem;

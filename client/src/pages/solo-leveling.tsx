@@ -20,7 +20,7 @@ import { EquipmentSystem, STARTING_EQUIPMENT, type Equipment, type EquippedGear 
 import { GiftSystem, type GiftItem } from "@/components/GiftSystem";
 import { UnifiedShop, type ShopItem } from "@/components/UnifiedShop";
 import { IntimateActivityModal } from "@/components/IntimateActivityModal";
-import { EnhancedGateRaidSystem } from "@/components/EnhancedGateRaidSystem";
+import EnhancedGateRaidSystem from "@/components/EnhancedGateRaidSystem";
 
 interface GameState {
   level: number;
@@ -270,8 +270,9 @@ export default function SoloLeveling() {
         { sender: 'Cha Hae-In', text: data.response, id: `ai-${messageId}` }
       ]);
 
-      if (autoPlayVoice && !audioMuted) {
-        await playVoice(data.response, !audioMuted);
+      // Play voice response if available
+      if (data.response) {
+        await playVoice(data.response);
       }
       
       if (data.affectionChange) {
@@ -447,13 +448,14 @@ export default function SoloLeveling() {
             {/* Story Choices */}
             <div className="space-y-3 mb-6">
               {currentStory.choices.map((choice, index) => (
-                <EnhancedChoiceButton
+                <button
                   key={index}
-                  choice={choice}
-                  index={index}
-                  isActive={index === currentChoiceIndex}
                   onClick={() => handleChoice(choice)}
-                />
+                  className="w-full p-4 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-600 text-left transition-colors"
+                >
+                  <div className="font-semibold">{choice.text}</div>
+                  {choice.detail && <div className="text-sm opacity-70 mt-1">{choice.detail}</div>}
+                </button>
               ))}
             </div>
 
@@ -496,60 +498,7 @@ export default function SoloLeveling() {
         </div>
       </div>
 
-      {/* Modals and Systems */}
-      {showProfile && (
-        <CharacterProfile
-          gameState={gameState}
-          setGameState={setGameState}
-          onClose={() => setShowProfile(false)}
-        />
-      )}
-
-      {showSkillTree && (
-        <SkillTree
-          gameState={gameState}
-          setGameState={setGameState}
-          onClose={() => setShowSkillTree(false)}
-        />
-      )}
-
-      {showInventory && (
-        <InventorySystem
-          gameState={gameState}
-          setGameState={setGameState}
-          onClose={() => setShowInventory(false)}
-        />
-      )}
-
-      {showEquipment && (
-        <EquipmentSystem
-          gameState={gameState}
-          setGameState={setGameState}
-          onClose={() => setShowEquipment(false)}
-          onEquip={handleEquipItem}
-        />
-      )}
-
-      {showShop && (
-        <UnifiedShop
-          gameState={gameState}
-          setGameState={setGameState}
-          onClose={() => setShowShop(false)}
-        />
-      )}
-
-      {showDailyLife && (
-        <DailyLifeHubModal
-          gameState={gameState}
-          setGameState={setGameState}
-          onClose={() => setShowDailyLife(false)}
-          onOpenActivity={(activityId) => {
-            setActiveActivity(activityId);
-            setShowIntimateActivity(true);
-          }}
-        />
-      )}
-
+      {/* Enhanced Gate Raid System - Main Feature */}
       {showGateRaid && (
         <EnhancedGateRaidSystem
           isOpen={showGateRaid}
@@ -559,66 +508,95 @@ export default function SoloLeveling() {
         />
       )}
 
-      {showIntimateActivity && activeActivity && (
-        <IntimateActivityModal
-          isOpen={showIntimateActivity}
-          onClose={() => {
-            setShowIntimateActivity(false);
-            setActiveActivity(null);
-          }}
-          activityId={activeActivity}
-          gameState={gameState}
-          setGameState={setGameState}
-        />
+      {/* Placeholder modals for other systems */}
+      {showProfile && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-white mb-4">Character Profile</h2>
+            <p className="text-slate-300 mb-4">Level {gameState.level} Hunter</p>
+            <button 
+              onClick={() => setShowProfile(false)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
 
-      {showCombat && (
-        <CombatSystem
-          gameState={gameState}
-          setGameState={setGameState}
-          onClose={() => setShowCombat(false)}
-          onVictory={() => {
-            setGameState(prev => ({ ...prev, inCombat: false }));
-            setShowCombat(false);
-          }}
-        />
+      {showSkillTree && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-white mb-4">Skill Tree</h2>
+            <p className="text-slate-300 mb-4">Skill Points: {gameState.skillPoints || 0}</p>
+            <button 
+              onClick={() => setShowSkillTree(false)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
 
-      {/* Mini Games */}
-      {activeMiniGame === 'lockpicking' && (
-        <LockPickingGame
-          onSuccess={() => {
-            setActiveMiniGame(null);
-            if (pendingChoice) handleChoice(pendingChoice);
-            setPendingChoice(null);
-          }}
-          onFailure={() => setActiveMiniGame(null)}
-          onClose={() => setActiveMiniGame(null)}
-        />
+      {showInventory && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-white mb-4">Inventory</h2>
+            <p className="text-slate-300 mb-4">Items: {gameState.inventory.length}</p>
+            <button 
+              onClick={() => setShowInventory(false)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
 
-      {activeMiniGame === 'rune_sequence' && (
-        <RuneSequenceGame
-          onSuccess={() => {
-            setActiveMiniGame(null);
-            if (pendingChoice) handleChoice(pendingChoice);
-            setPendingChoice(null);
-          }}
-          onFailure={() => setActiveMiniGame(null)}
-          onClose={() => setActiveMiniGame(null)}
-        />
+      {showEquipment && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-white mb-4">Equipment</h2>
+            <p className="text-slate-300 mb-4">Manage your gear and weapons</p>
+            <button 
+              onClick={() => setShowEquipment(false)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
 
-      {activeMiniGame === 'dragon_encounter' && (
-        <DragonEncounterGame
-          onSuccess={() => {
-            setActiveMiniGame(null);
-            if (pendingChoice) handleChoice(pendingChoice);
-            setPendingChoice(null);
-          }}
-          onFailure={() => setActiveMiniGame(null)}
-          onClose={() => setActiveMiniGame(null)}
-        />
+      {showShop && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-white mb-4">Shop</h2>
+            <p className="text-slate-300 mb-4">Gold: {gameState.gold?.toLocaleString() || 0}</p>
+            <button 
+              onClick={() => setShowShop(false)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showDailyLife && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-white mb-4">Daily Life</h2>
+            <p className="text-slate-300 mb-4">Spend time with Cha Hae-In</p>
+            <button 
+              onClick={() => setShowDailyLife(false)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Affection Feedback */}
