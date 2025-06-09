@@ -31,6 +31,8 @@ interface GameState {
   intimacyLevel?: number;
   energy?: number;
   maxEnergy?: number;
+  experience?: number;
+  maxExperience?: number;
 }
 
 interface WorldLocation {
@@ -785,7 +787,6 @@ export default function SoloLevelingSpatial() {
           if (success) {
             setGameState(prev => ({
               ...prev,
-              experience: (prev.experience || 0) + 500,
               gold: (prev.gold || 0) + 1000,
               affection: Math.min(100, prev.affection + 10)
             }));
