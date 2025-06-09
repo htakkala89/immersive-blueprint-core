@@ -615,7 +615,7 @@ export default function SoloLevelingSpatial() {
               whileTap={{ scale: 0.8 }}
               onClick={() => {
                 // Check if this is Cha Hae-In interaction
-                if (element.name.includes("Cha Hae-In")) {
+                if (element.id === 'cha_hae_in_desk') {
                   handleChaHaeInInteraction();
                 } else {
                   handleEnvironmentalInteraction({
