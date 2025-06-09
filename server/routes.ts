@@ -286,10 +286,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const intimateKeywords = ['panties', 'underwear', 'bra', 'naked', 'nude', 'show me', 'undress', 'strip', 'breast', 'body', 'intimate', 'sexy', 'take off'];
       const isIntimateRequest = intimateKeywords.some(keyword => message.toLowerCase().includes(keyword));
 
+      // Analyze user message for flattering/romantic content
+      const flatteringKeywords = [
+        'beautiful', 'gorgeous', 'stunning', 'amazing', 'incredible', 'perfect',
+        'love you', 'adore you', 'care about you', 'special', 'wonderful',
+        'smart', 'strong', 'brave', 'admire', 'respect', 'appreciate',
+        'sweet', 'kind', 'gentle', 'elegant', 'graceful', 'talented',
+        'proud of you', 'impressed', 'fascinating', 'charming', 'lovely'
+      ];
+      
+      const romanticKeywords = [
+        'kiss', 'hold you', 'cuddle', 'embrace', 'together forever',
+        'marry me', 'date', 'romantic', 'relationship', 'feelings',
+        'heart', 'soul mate', 'destiny', 'meant to be', 'future together'
+      ];
+      
+      const messageLower = message.toLowerCase();
+      const hasFlatteringContent = flatteringKeywords.some(keyword => 
+        messageLower.includes(keyword)
+      );
+      const hasRomanticContent = romanticKeywords.some(keyword => 
+        messageLower.includes(keyword)
+      );
+      
+      // Calculate affection gain based on message content
+      let affectionGain = 0;
+      if (hasFlatteringContent && hasRomanticContent) {
+        affectionGain = 0.3; // Both flattering and romantic = bigger gain
+      } else if (hasFlatteringContent || hasRomanticContent) {
+        affectionGain = 0.2; // Either flattering or romantic = moderate gain
+      } else if (messageLower.length > 20 && !messageLower.includes('?')) {
+        affectionGain = 0.1; // Thoughtful longer messages = small gain
+      }
+      
       // Determine mood based on message content
       let mood = 'balanced';
       if (isIntimateRequest && currentAffectionLevel >= 4) mood = 'romantic';
       else if (isIntimateRequest && currentAffectionLevel < 4) mood = 'defensive';
+      else if (hasFlatteringContent || hasRomanticContent) mood = 'romantic';
       else if (message.toLowerCase().includes('fight') || message.toLowerCase().includes('battle')) mood = 'confident';
       else if (message.toLowerCase().includes('love') || message.toLowerCase().includes('feel')) mood = 'romantic';
       else if (message.includes('?')) mood = 'playful';
@@ -401,7 +435,12 @@ MANDATORY: Each response must be completely unique and never repeated. Show emot
         return res.status(500).json({ error: "Empty response from AI" });
       }
 
-      res.json({ response: responseText.trim() });
+      res.json({ 
+        response: responseText.trim(),
+        affectionGain: affectionGain,
+        hasFlatteringContent: hasFlatteringContent,
+        hasRomanticContent: hasRomanticContent
+      });
     } catch (error) {
       console.error(`Chat API error: ${error}`);
       res.status(500).json({ error: "Failed to generate chat response" });
