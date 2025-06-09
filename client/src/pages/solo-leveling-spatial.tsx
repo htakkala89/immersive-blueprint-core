@@ -687,7 +687,7 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
-        {/* Character Layer - Cha Hae-In */}
+        {/* Character Presence Indicator - Blue Tile for Cha Hae-In */}
         {currentLocationData.chaHaeInPresent && (
           <motion.div
             className="absolute cursor-pointer"
@@ -696,35 +696,60 @@ export default function SoloLevelingSpatial() {
               top: `${currentLocationData.chaPosition.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={handleChaHaeInInteraction}
           >
-            {/* Cha Hae-In Avatar */}
+            {/* Blue Tile Indicator */}
             <div className="relative">
-              <div className="w-24 h-32 bg-gradient-to-b from-blue-400 to-blue-600 rounded-lg shadow-2xl flex items-end justify-center">
-                <div className="text-white text-xs text-center p-2">
-                  Cha Hae-In
-                  <br />
-                  <span className="text-blue-200 text-xs">{currentLocationData.chaActivity}</span>
-                </div>
-              </div>
-              
-              {/* Presence Glow */}
               <motion.div
-                className="absolute inset-0 bg-pink-400/30 rounded-lg blur-lg"
-                animate={{ opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className="w-16 h-16 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-2xl shadow-2xl border-2 border-blue-300/50 backdrop-blur-sm"
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  boxShadow: [
+                    '0 10px 30px rgba(59, 130, 246, 0.3)',
+                    '0 15px 40px rgba(59, 130, 246, 0.5)',
+                    '0 10px 30px rgba(59, 130, 246, 0.3)'
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                {/* Character Icon */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                    <span className="text-blue-600 text-lg font-bold">C</span>
+                  </div>
+                </div>
+                
+                {/* Animated Border Glow */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl border-2 border-yellow-400/60"
+                  animate={{ 
+                    opacity: [0.4, 0.8, 0.4],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </motion.div>
+              
+              {/* Presence Aura */}
+              <motion.div
+                className="absolute inset-0 bg-blue-400/20 rounded-2xl blur-xl"
+                animate={{ 
+                  scale: [1, 1.4, 1], 
+                  opacity: [0.3, 0.1, 0.3] 
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Interaction Prompt */}
+              {/* Name Label */}
               <motion.div
-                className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded-full"
+                className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded-full border border-blue-400/30"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
+                transition={{ delay: 0.5 }}
               >
-                Tap to interact
+                Cha Hae-In
               </motion.div>
             </div>
           </motion.div>
@@ -892,67 +917,66 @@ export default function SoloLevelingSpatial() {
                 transition={{ delay: 0.2 }}
               >
                 <div className="flex items-start gap-4">
-                  {/* Living Portrait of Cha Hae-In */}
+                  {/* Cha Hae-In Emotional Avatar */}
                   <motion.div 
                     className="shrink-0"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: showLivingPortrait ? 1 : 0, x: showLivingPortrait ? 0 : -20 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
-                    <div className="w-16 h-20 relative">
-                      {/* Portrait Background */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-slate-700/50 to-slate-800/50 rounded-lg backdrop-blur-sm border border-pink-300/20" />
-                      
-                      {/* Portrait Face */}
-                      <div className="absolute inset-1 flex flex-col items-center justify-center text-pink-200">
-                        {/* Hair */}
-                        <div className="w-8 h-3 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-full mb-1" />
-                        
-                        {/* Face */}
-                        <div className="w-6 h-6 bg-gradient-to-b from-pink-100 to-pink-200 rounded-full relative">
-                          {/* Eyes - Expression changes based on chaHaeInExpression */}
-                          <motion.div 
-                            className="absolute top-1.5 left-1 w-1 h-1 bg-slate-800 rounded-full"
-                            animate={{
-                              scaleY: chaHaeInExpression === 'focused' ? 0.6 : 1,
-                              y: chaHaeInExpression === 'recognition' ? -0.5 : 0
-                            }}
-                            transition={{ duration: 0.3 }}
-                          />
-                          <motion.div 
-                            className="absolute top-1.5 right-1 w-1 h-1 bg-slate-800 rounded-full"
-                            animate={{
-                              scaleY: chaHaeInExpression === 'focused' ? 0.6 : 1,
-                              y: chaHaeInExpression === 'recognition' ? -0.5 : 0
-                            }}
-                            transition={{ duration: 0.3 }}
-                          />
-                          
-                          {/* Mouth - Expression changes */}
-                          <motion.div
-                            className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-0.5 bg-slate-700 rounded-full"
-                            animate={{
-                              width: chaHaeInExpression === 'welcoming' ? 10 : 8,
-                              borderRadius: chaHaeInExpression === 'welcoming' ? '0 0 8px 8px' : '2px'
-                            }}
-                            transition={{ duration: 0.3 }}
-                          />
-                        </div>
-                        
-                        {/* Body */}
-                        <div className="w-5 h-4 bg-gradient-to-b from-blue-800 to-blue-900 rounded-b-lg mt-0.5" />
-                      </div>
-                      
-                      {/* Glow effect based on expression */}
+                    <div className="w-20 h-24 relative">
+                      {/* Emotional Portrait Image */}
                       <motion.div 
-                        className="absolute inset-0 rounded-lg"
+                        className="absolute inset-0 rounded-xl overflow-hidden border-2 border-pink-300/30 shadow-2xl"
                         animate={{
                           boxShadow: chaHaeInExpression === 'welcoming' 
-                            ? '0 0 12px rgba(236, 72, 153, 0.4)' 
-                            : '0 0 6px rgba(236, 72, 153, 0.2)'
+                            ? '0 0 20px rgba(236, 72, 153, 0.4)' 
+                            : '0 0 10px rgba(236, 72, 153, 0.2)'
                         }}
                         transition={{ duration: 0.5 }}
-                      />
+                      >
+                        <img 
+                          src={`/api/chat-scene-image?emotion=${chaHaeInExpression === 'welcoming' ? 'romantic_anticipation' : chaHaeInExpression === 'focused' ? 'professional_focused' : 'peaceful_content'}&location=${gameState.currentScene}&timeOfDay=${timeOfDay}`}
+                          alt="Cha Hae-In"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            const fallback = target.nextElementSibling as HTMLDivElement;
+                            target.style.display = 'none';
+                            if (fallback) {
+                              fallback.style.display = 'flex';
+                              fallback.classList.remove('hidden');
+                            }
+                          }}
+                        />
+                        
+                        {/* Fallback Simple Portrait */}
+                        <div className="w-full h-full bg-gradient-to-b from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-pink-300/20 hidden items-center justify-center">
+                          <div className="text-pink-200 text-center">
+                            <div className="w-8 h-3 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-full mb-1 mx-auto" />
+                            <div className="w-6 h-6 bg-gradient-to-b from-pink-100 to-pink-200 rounded-full mx-auto mb-1" />
+                            <div className="w-5 h-4 bg-gradient-to-b from-blue-800 to-blue-900 rounded-b-lg mx-auto" />
+                          </div>
+                        </div>
+                        
+                        {/* Gradient Overlay for Depth */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                      </motion.div>
+                      
+                      {/* Expression Indicator */}
+                      <motion.div 
+                        className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-800 flex items-center justify-center text-xs"
+                        animate={{
+                          backgroundColor: chaHaeInExpression === 'welcoming' ? '#ec4899' : 
+                                          chaHaeInExpression === 'focused' ? '#8b5cf6' : '#06b6d4'
+                        }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <span className="text-white">
+                          {chaHaeInExpression === 'welcoming' ? '💕' : 
+                           chaHaeInExpression === 'focused' ? '🎯' : '😌'}
+                        </span>
+                      </motion.div>
                     </div>
                   </motion.div>
                   
