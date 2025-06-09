@@ -429,7 +429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         energy: Math.max(0, (gameState.energy || 100) - raid.energyCost),
         experience: (gameState.experience || 0) + raid.rewards.experience,
         gold: (gameState.gold || 0) + raid.rewards.gold,
-        affection: Math.min(100, gameState.affection + (raid.rewards.affection || 0))
+        affection: Math.min(100, gameState.affection + ((raid.rewards as any).affection || 0))
       };
       
       const narrative = `You and Cha Hae-In successfully cleared the ${raid.name}! Working together, you defeated all the monsters and grew closer as a team.`;
