@@ -429,8 +429,6 @@ export default function SoloLevelingSpatial() {
       <motion.div
         ref={spatialViewRef}
         className="relative w-full h-full"
-        onTouchStart={handleGestureActivation}
-        onMouseDown={handleGestureActivation}
       >
         
         {/* Background Sky Layer */}
@@ -515,7 +513,12 @@ export default function SoloLevelingSpatial() {
               whileHover={{ scale: 1.3 }}
               whileTap={{ scale: 0.8 }}
               onClick={() => {
-                handlePlayerResponse(`*${element.action}*`);
+                handleEnvironmentalInteraction({
+                  action: element.action,
+                  name: element.name,
+                  x: element.position.x,
+                  y: element.position.y
+                });
               }}
             >
               {/* Pulsing glow effect */}
@@ -540,25 +543,18 @@ export default function SoloLevelingSpatial() {
           </motion.div>
         ))}
         
-        {/* Gesture Hint - Monarch's Aura */}
-        <AnimatePresence>
-          {!monarchAuraVisible && (
-            <motion.div
-              className="absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 0.6, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ delay: 2 }}
-            >
-              <motion.div
-                className="w-1 h-8 bg-gradient-to-b from-purple-400 to-transparent rounded-full"
-                animate={{ scaleY: [1, 1.5, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              <span className="text-xs text-white/60 mt-1">Long press & drag down</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Monarch's Aura Button - Temporary */}
+        <motion.button
+          className="absolute top-6 right-6 liquid-glass px-4 py-2 rounded-lg"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setMonarchAuraVisible(true)}
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse" />
+            <span className="text-white text-sm font-medium">Monarch's Aura</span>
+          </div>
+        </motion.button>
 
         {/* Location Info Overlay */}
         <motion.div
