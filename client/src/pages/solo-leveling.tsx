@@ -11,6 +11,7 @@ import { RelationshipSystem } from "@/components/RelationshipSystem";
 import { MemoryLaneAnimation } from "@/components/MemoryLaneAnimation";
 import { CombatSystem } from "@/components/CombatSystem";
 import { AchievementSystem, useAchievementSystem } from "@/components/AchievementSystem";
+import { CharacterProfile } from "@/components/CharacterProfile";
 import { StoryBranching, EnhancedChoiceButton } from "@/components/StoryBranching";
 import { DungeonRaidSystem } from "@/components/DungeonRaidSystem";
 import { ShadowArmyManager } from "@/components/ShadowArmyManager";
@@ -318,6 +319,7 @@ export default function SoloLeveling() {
   ]);
   const [showCombatTactics, setShowCombatTactics] = useState(false);
   const [showEquipmentSystem, setShowEquipmentSystem] = useState(false);
+  const [showCharacterProfile, setShowCharacterProfile] = useState(false);
   const [showGiftSystem, setShowGiftSystem] = useState(false);
   const [showUnifiedShop, setShowUnifiedShop] = useState(false);
   const [playerEquippedGear, setPlayerEquippedGear] = useState<EquippedGear>({});
@@ -3977,6 +3979,15 @@ export default function SoloLeveling() {
                     title="Inventory"
                   >
                     🎒
+                  </button>
+
+                  {/* Character Profile Button */}
+                  <button 
+                    onClick={() => setShowCharacterProfile(true)}
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-blue-500/50 transition-all border border-blue-400/30 shadow-lg"
+                    title="Character Profile"
+                  >
+                    👤
                   </button>
 
                   {/* Equipment Button */}
