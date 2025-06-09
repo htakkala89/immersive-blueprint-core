@@ -1746,7 +1746,7 @@ export default function SoloLeveling() {
         { text: "I know a perfect spot", detail: "Suggest your own place", type: 'suggest_spot' },
         { text: "Anywhere with you sounds perfect", detail: "Romantic response", type: 'anywhere_perfect' }
       ],
-      leadsTo: { follow_lead: 'CAFE_SCENE', suggest_spot: 'YOUR_CHOICE_CAFE', anywhere_perfect: 'ROMANTIC_CAFE' }
+      leadsTo: { follow_lead: 'COFFEE_DATE', suggest_spot: 'COFFEE_DATE', anywhere_perfect: 'COFFEE_DATE' }
     },
     'MUTUAL_GROWTH': {
       prompt: "Jin-Woo and Cha Hae-In acknowledging their mutual growth. Deep connection, anime style.",
