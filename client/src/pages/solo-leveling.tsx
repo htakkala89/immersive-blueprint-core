@@ -321,6 +321,7 @@ export default function SoloLeveling() {
   const [showEquipmentSystem, setShowEquipmentSystem] = useState(false);
   const [showCharacterProfile, setShowCharacterProfile] = useState(false);
   const [showGiftSystem, setShowGiftSystem] = useState(false);
+  const [achievements, setAchievements] = useState<any[]>([]);
   const [showUnifiedShop, setShowUnifiedShop] = useState(false);
   const [playerEquippedGear, setPlayerEquippedGear] = useState<EquippedGear>({});
   const [availableEquipment, setAvailableEquipment] = useState<Equipment[]>([
@@ -4038,14 +4039,7 @@ export default function SoloLeveling() {
                     </button>
                   )}
 
-                  {/* Achievement System Button */}
-                  <button 
-                    onClick={() => setShowAchievementSystem(true)}
-                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-yellow-500/50 transition-all border border-yellow-400/30 shadow-lg"
-                    title="Achievements"
-                  >
-                    🏆
-                  </button>
+
 
                   {/* Relationship System Button */}
                   <button 
@@ -4357,6 +4351,41 @@ export default function SoloLeveling() {
             </>
           )}
         </div>
+
+        {/* Character Profile Modal */}
+        <CharacterProfile
+          isVisible={showCharacterProfile}
+          onClose={() => setShowCharacterProfile(false)}
+          gameState={gameState}
+          equippedGear={playerEquippedGear}
+          shadowArmy={shadowArmy}
+          achievements={achievements}
+          onStatPointAllocate={(stat) => {
+            if (gameState.statPoints && gameState.statPoints > 0) {
+              setGameState(prev => ({
+                ...prev,
+                statPoints: (prev.statPoints || 0) - 1,
+                stats: {
+                  ...prev.stats,
+                  [stat]: (prev.stats?.[stat] || 10) + 1
+                } as any
+              }));
+            }
+          }}
+          onSkillUpgrade={(skillId) => {
+            if (gameState.skillPoints && gameState.skillPoints > 0) {
+              setGameState(prev => ({
+                ...prev,
+                skillPoints: (prev.skillPoints || 0) - 1,
+                skills: (prev.skills || []).map(skill =>
+                  skill.id === skillId 
+                    ? { ...skill, level: Math.min(skill.maxLevel, skill.level + 1) }
+                    : skill
+                )
+              }));
+            }
+          }}
+        />
 
         {/* Enhanced Inventory System */}
         <InventorySystem
