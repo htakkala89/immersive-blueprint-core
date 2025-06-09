@@ -632,18 +632,18 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="fixed bottom-16 left-4 right-4 max-w-2xl mx-auto liquid-glass-modal z-50"
-            style={{ maxHeight: '40vh' }}
+            className="fixed bottom-20 left-4 right-4 max-w-2xl mx-auto liquid-glass-modal z-50"
+            style={{ maxHeight: '45vh' }}
             initial={{ y: 100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            <div className="p-4 space-y-3">
+            <div className="p-3 flex flex-col h-full">
               
               {/* Dialogue Text - Scrollable */}
               <motion.div
-                className="liquid-glass p-4 max-h-32 overflow-y-auto"
+                className="liquid-glass p-4 flex-1 overflow-y-auto mb-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -669,50 +669,53 @@ export default function SoloLevelingSpatial() {
                 </div>
               </motion.div>
               
-              {/* Thought Prompts */}
-              {thoughtPrompts.length > 0 && (
+              {/* Bottom Section - Always Visible */}
+              <div className="space-y-3">
+                {/* Thought Prompts */}
+                {thoughtPrompts.length > 0 && (
+                  <motion.div
+                    className="flex gap-2 overflow-x-auto pb-1"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    {thoughtPrompts.map((prompt, index) => (
+                      <motion.button
+                        key={index}
+                        className="bg-purple-600/30 hover:bg-purple-600/50 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap border border-purple-400/30 transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handlePlayerResponse(prompt)}
+                      >
+                        {prompt}
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
+                
+                {/* Player Input */}
                 <motion.div
-                  className="flex gap-3 overflow-x-auto pb-2"
+                  className="flex gap-2"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.6 }}
                 >
-                  {thoughtPrompts.map((prompt, index) => (
-                    <motion.button
-                      key={index}
-                      className="bg-purple-600/30 hover:bg-purple-600/50 text-white px-4 py-2 rounded-xl text-sm whitespace-nowrap border border-purple-400/30 transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handlePlayerResponse(prompt)}
-                    >
-                      {prompt}
-                    </motion.button>
-                  ))}
+                  <Input
+                    value={playerInput}
+                    onChange={(e) => setPlayerInput(e.target.value)}
+                    placeholder="Speak from the heart..."
+                    className="flex-1 bg-slate-800/50 border-purple-400/30 text-white placeholder:text-slate-400 rounded-lg px-3 py-2 text-sm"
+                    onKeyPress={(e) => e.key === 'Enter' && handlePlayerResponse(playerInput)}
+                  />
+                  <Button
+                    onClick={() => handlePlayerResponse(playerInput)}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg px-4 py-2"
+                    disabled={!playerInput.trim() || isLoading}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </Button>
                 </motion.div>
-              )}
-              
-              {/* Player Input */}
-              <motion.div
-                className="flex gap-3"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-              >
-                <Input
-                  value={playerInput}
-                  onChange={(e) => setPlayerInput(e.target.value)}
-                  placeholder="Speak from the heart..."
-                  className="flex-1 bg-slate-800/50 border-purple-400/30 text-white placeholder:text-slate-400 rounded-xl px-4 py-3"
-                  onKeyPress={(e) => e.key === 'Enter' && handlePlayerResponse(playerInput)}
-                />
-                <Button
-                  onClick={() => handlePlayerResponse(playerInput)}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl px-6"
-                  disabled={!playerInput.trim() || isLoading}
-                >
-                  <MessageCircle className="w-4 h-4" />
-                </Button>
-              </motion.div>
+              </div>
               
               {/* Close Dialogue */}
               <motion.button
