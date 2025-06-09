@@ -446,7 +446,38 @@ export default function SoloLevelingSpatial() {
           setMonarchAuraVisible(newState);
         }}
       >
-        <Eye className="w-7 h-7 text-purple-300 drop-shadow-lg pointer-events-none" />
+        <svg className="w-8 h-8 text-purple-300 drop-shadow-lg pointer-events-none" viewBox="0 0 32 32" fill="currentColor">
+          {/* Angular Crown Base */}
+          <path d="M4 20 L8 24 L24 24 L28 20 L28 16 L4 16 Z" 
+                fill="currentColor" 
+                opacity="0.8"
+          />
+          {/* Sharp Crown Spikes */}
+          <path d="M6 16 L8 8 L10 16 Z" fill="currentColor" />
+          <path d="M11 16 L14 4 L17 16 Z" fill="currentColor" />
+          <path d="M18 16 L20 6 L22 16 Z" fill="currentColor" />
+          <path d="M23 16 L26 10 L28 16 Z" fill="currentColor" />
+          {/* Runic Details */}
+          <line x1="16" y1="8" x2="16" y2="12" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+          <line x1="14" y1="10" x2="18" y2="10" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+          {/* Glowing Effect */}
+          <defs>
+            <filter id="purpleGlow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge> 
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <g filter="url(#purpleGlow)" className="animate-pulse">
+            <path d="M4 20 L8 24 L24 24 L28 20 L28 16 L4 16 Z" 
+                  fill="none" 
+                  stroke="rgba(147, 51, 234, 0.9)" 
+                  strokeWidth="0.8"
+            />
+          </g>
+        </svg>
       </motion.button>
       
       {/* Spatial View - The Living Diorama */}
@@ -744,7 +775,7 @@ export default function SoloLevelingSpatial() {
 
       {/* Monarch's Aura - Simple Dropdown Menu */}
       {monarchAuraVisible && (
-        <div className="fixed top-20 right-6 w-48 liquid-glass-enhanced rounded-xl p-4 z-[9998]">
+        <div className="fixed top-20 right-6 w-48 bg-purple-800/60 backdrop-blur-xl border border-white/40 rounded-xl p-4 z-[9998] shadow-2xl" style={{ backdropFilter: 'blur(40px) saturate(180%)', borderImage: 'linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1)) 1' }}>
           <div className="text-white text-lg mb-3 font-semibold drop-shadow-lg">Monarch's Aura</div>
           {[
             { icon: User, label: 'Armory', color: 'text-purple-300', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
@@ -756,7 +787,7 @@ export default function SoloLevelingSpatial() {
           ].map((item, index) => (
             <button
               key={item.label}
-              className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/5 transition-all mb-2 liquid-glass-flowing"
+              className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/20 transition-all mb-2 bg-white/5 border border-white/10"
               onClick={item.onClick}
             >
               <item.icon className={`w-6 h-6 ${item.color} drop-shadow-lg`} />
