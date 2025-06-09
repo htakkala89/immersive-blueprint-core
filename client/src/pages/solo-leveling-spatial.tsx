@@ -516,7 +516,48 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
-
+        {/* Character Layer - Cha Hae-In */}
+        {currentLocationData.chaHaeInPresent && (
+          <motion.div
+            className="absolute cursor-pointer"
+            style={{
+              left: `${currentLocationData.chaPosition.x}%`,
+              top: `${currentLocationData.chaPosition.y}%`,
+              transform: 'translate(-50%, -50%)'
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleChaHaeInInteraction}
+          >
+            {/* Cha Hae-In Avatar */}
+            <div className="relative">
+              <div className="w-24 h-32 bg-gradient-to-b from-blue-400 to-blue-600 rounded-lg shadow-2xl flex items-end justify-center">
+                <div className="text-white text-xs text-center p-2">
+                  Cha Hae-In
+                  <br />
+                  <span className="text-blue-200 text-xs">{currentLocationData.chaActivity}</span>
+                </div>
+              </div>
+              
+              {/* Presence Glow */}
+              <motion.div
+                className="absolute inset-0 bg-pink-400/30 rounded-lg blur-lg"
+                animate={{ opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              
+              {/* Interaction Prompt */}
+              <motion.div
+                className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded-full"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+              >
+                Tap to interact
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
         
         {/* Interactive Elements Layer */}
         {currentLocationData.interactiveElements.map((element) => (
