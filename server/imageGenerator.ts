@@ -234,7 +234,13 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
 
     // Rate limiting check
     if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
-      console.log('Image generation rate limited, skipping');
+      console.log('⏱️ Chat image generation rate limited, skipping');
+      return null;
+    }
+
+    // Skip generation for very short responses or system messages
+    if (!chatResponse || chatResponse.length < 10 || chatResponse.startsWith('System:')) {
+      console.log('📝 Skipping chat image for short/system message');
       return null;
     }
     
@@ -243,42 +249,55 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
     
     console.log('🎨 Generating image based on chat reaction...');
     
-    // Use NovelAI for character emotion scenes
-    const novelAIResult = await generateWithNovelAI(emotionPrompt);
-    if (novelAIResult) {
-      lastImageGeneration = now;
-      console.log('✅ NovelAI generated chat scene successfully');
-      return novelAIResult;
+    // Try NovelAI first for character emotion scenes
+    try {
+      const novelAIResult = await generateWithNovelAI(emotionPrompt);
+      if (novelAIResult) {
+        lastImageGeneration = now;
+        console.log('✅ NovelAI generated chat scene successfully');
+        return novelAIResult;
+      }
+    } catch (novelError) {
+      console.log('⚠️ NovelAI failed for chat scene:', String(novelError));
     }
     
     // Fallback to Google Imagen
-    const googleResult = await generateWithGoogleImagen(emotionPrompt);
-    if (googleResult) {
-      lastImageGeneration = now;
-      console.log('✅ Google Imagen generated chat scene successfully');
-      return googleResult;
+    try {
+      const googleResult = await generateWithGoogleImagen(emotionPrompt);
+      if (googleResult) {
+        lastImageGeneration = now;
+        console.log('✅ Google Imagen generated chat scene successfully');
+        return googleResult;
+      }
+    } catch (googleError) {
+      console.log('⚠️ Google Imagen failed for chat scene:', String(googleError));
     }
     
     // Final fallback to OpenAI
     if (openai) {
-      const openAIResult = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: emotionPrompt,
-        n: 1,
-        size: "1024x1024",
-        quality: "standard",
-      });
-      
-      if (openAIResult.data?.[0]?.url) {
-        lastImageGeneration = now;
-        console.log('✅ OpenAI generated chat scene successfully');
-        return openAIResult.data[0].url;
+      try {
+        const openAIResult = await openai.images.generate({
+          model: "dall-e-3",
+          prompt: emotionPrompt,
+          n: 1,
+          size: "1024x1024",
+          quality: "standard",
+        });
+        
+        if (openAIResult.data?.[0]?.url) {
+          lastImageGeneration = now;
+          console.log('✅ OpenAI generated chat scene successfully');
+          return openAIResult.data[0].url;
+        }
+      } catch (openAIError) {
+        console.log('⚠️ OpenAI failed for chat scene:', String(openAIError));
       }
     }
     
+    console.log('📝 Chat image generation skipped - no services available');
     return null;
   } catch (error) {
-    console.error('Error generating chat scene image:', error);
+    console.error('💥 Chat scene image generation error:', error);
     return null;
   }
 }

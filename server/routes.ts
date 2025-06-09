@@ -240,7 +240,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (imageUrl) {
         res.json({ imageUrl });
       } else {
-        res.status(500).json({ error: "Failed to generate chat image" });
+        // Return success with null imageUrl instead of error - this is expected behavior
+        res.json({ imageUrl: null, message: "Chat image generation skipped" });
       }
     } catch (error) {
       console.error(`Failed to generate chat image: ${error}`);
