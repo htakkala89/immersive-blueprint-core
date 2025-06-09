@@ -432,15 +432,13 @@ export default function SoloLevelingSpatial() {
           position: 'fixed',
           top: '24px',
           right: '24px',
-          zIndex: 9999,
-          background: 'rgba(147, 51, 234, 0.7)',
-          borderColor: 'rgba(147, 51, 234, 0.8)'
+          zIndex: 9999
         }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setMonarchAuraVisible(true)}
       >
-        <Eye className="w-7 h-7 text-white" />
+        <Eye className="w-7 h-7 text-purple-300 drop-shadow-lg" />
       </motion.button>
       
       {/* Spatial View - The Living Diorama */}
