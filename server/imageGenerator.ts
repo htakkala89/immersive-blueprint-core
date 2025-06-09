@@ -315,6 +315,61 @@ export async function generateIntimateActivityImage(activityId: string, relation
   return await generateWithGoogleImagen(prompt);
 }
 
+// New function specifically for location-based scene generation
+export async function generateLocationSceneImage(location: string, timeOfDay: string): Promise<string | null> {
+  try {
+    const now = Date.now();
+    if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
+      return null;
+    }
+    lastImageGeneration = now;
+
+    const cacheKey = `location_${location}_${timeOfDay}`;
+    const cached = imageCache.get(cacheKey);
+    if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+      console.log('📸 Using cached image for location');
+      return cached.url;
+    }
+
+    const locationPrompt = createLocationPrompt(location, timeOfDay);
+    console.log(`🏢 Generating location scene for: ${location} at ${timeOfDay}`);
+    
+    const googleImage = await generateWithGoogleImagen(locationPrompt);
+    if (googleImage) {
+      console.log('✅ Google Imagen generated location scene successfully');
+      imageCache.set(cacheKey, { url: googleImage, timestamp: Date.now() });
+      return googleImage;
+    }
+
+    // Fallback to OpenAI if Google Imagen fails
+    if (openai) {
+      try {
+        const response = await openai.images.generate({
+          model: "dall-e-3",
+          prompt: locationPrompt,
+          n: 1,
+          size: "1024x1024",
+          quality: "standard",
+        });
+        
+        const imageUrl = response.data?.[0]?.url;
+        if (imageUrl) {
+          console.log('✅ OpenAI generated location fallback image successfully');
+          imageCache.set(cacheKey, { url: imageUrl, timestamp: Date.now() });
+          return imageUrl;
+        }
+      } catch (openaiError) {
+        console.log('⚠️ OpenAI location generation failed:', (openaiError as Error)?.message || 'Unknown error');
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error generating location image:', error);
+    return null;
+  }
+}
+
 export async function generateSceneImage(gameState: GameState): Promise<string | null> {
   try {
     // Create cache key based on scene and game state
@@ -420,6 +475,50 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     console.error('Error generating image:', error);
     return null;
   }
+}
+
+function createLocationPrompt(location: string, timeOfDay: string): string {
+  const baseStyle = "Solo Leveling manhwa art style by DUBU, detailed architectural environment, Korean setting, atmospheric lighting, cinematic composition, high quality background art";
+  
+  // Time-based lighting modifiers
+  const lightingMap = {
+    morning: "soft golden morning light streaming through windows, warm sunrise glow, fresh morning atmosphere",
+    afternoon: "bright natural daylight, clear lighting, vibrant colors, bustling daytime activity", 
+    evening: "warm sunset lighting, golden hour ambiance, cozy evening atmosphere, soft shadows",
+    night: "dramatic nighttime lighting, city lights, neon signs, moonlight, atmospheric night scene"
+  };
+  
+  const lighting = lightingMap[timeOfDay as keyof typeof lightingMap] || lightingMap.afternoon;
+  
+  // Location-specific environment descriptions (NO CHARACTERS)
+  const locationPrompts = {
+    hunter_association: `Korean Hunter Association headquarters interior, modern glass and steel architecture, professional government building, large meeting halls with holographic displays, high-tech equipment, polished marble floors, official atmosphere, ${lighting}`,
+    
+    gangnam_tower: `Modern Gangnam business district skyscraper interior, floor-to-ceiling windows with Seoul cityscape view, sleek corporate office space, conference rooms, contemporary Korean architecture, ${lighting}`,
+    
+    hongdae_cafe: `Cozy Korean artisan coffee house interior, wooden furniture, local artwork on walls, large windows, specialty coffee equipment, warm inviting atmosphere, indie café aesthetic, ${lighting}`,
+    
+    hongdae_club: `Underground music venue interior, stage with sound equipment, dim atmospheric lighting, modern club design, Korean nightlife scene, entertainment district aesthetic, ${lighting}`,
+    
+    myeongdong_restaurant: `Traditional Korean restaurant interior, private dining rooms, elegant wooden furniture, traditional decorative elements, garden views, refined dining atmosphere, ${lighting}`,
+    
+    myeongdong_shopping: `Bustling Korean shopping district street view, modern storefronts, fashion boutiques, street vendors, urban commercial area, crowds of shoppers, ${lighting}`,
+    
+    itaewon_market: `International marketplace interior, diverse vendor stalls, global goods, multicultural atmosphere, busy trading environment, eclectic mix of products, ${lighting}`,
+    
+    training_facility: `State-of-the-art combat training center, gymnasium with specialized equipment, training dummies, weapon racks, modern sports facility, professional athlete training environment, ${lighting}`,
+    
+    chahaein_apartment: `Modern Korean apartment interior, comfortable living space, city view through large windows, contemporary furniture, personal touches, cozy home atmosphere, ${lighting}`,
+    
+    hangang_park: `Seoul Hangang River park landscape, walking paths along the water, city skyline in background, peaceful riverside setting, recreational park environment, ${lighting}`,
+    
+    namsan_tower: `N Seoul Tower observation deck interior and city panorama, sweeping views of Seoul, romantic viewpoint, tourist attraction setting, iconic tower atmosphere, ${lighting}`
+  };
+  
+  const locationPrompt = locationPrompts[location as keyof typeof locationPrompts] || 
+    `Korean urban environment, modern architectural setting, ${lighting}`;
+  
+  return `${baseStyle}, ${locationPrompt}, NO PEOPLE, environment focus only, detailed background art, atmospheric scene`;
 }
 
 function createSoloLevelingPrompt(gameState: GameState): string {

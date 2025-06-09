@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateSceneImage, generateIntimateActivityImage } from "./imageGenerator";
+import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage } from "./imageGenerator";
 import { getSceneImage } from "./preGeneratedImages";
 import { voiceService } from "./voiceService";
 import { log } from "./vite";
@@ -152,11 +152,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Image generation endpoints
   app.post("/api/generate-scene-image", async (req, res) => {
     try {
-      const { prompt, gameState } = req.body;
+      const { prompt, gameState, location, timeOfDay } = req.body;
       
-      // Accept either prompt or gameState format
+      // Handle location-specific image generation
+      if (location && timeOfDay) {
+        const imageUrl = await generateLocationSceneImage(location, timeOfDay);
+        return res.json({ imageUrl });
+      }
+      
+      // Accept either prompt or gameState format for existing functionality
       if (!prompt && !gameState) {
-        return res.status(400).json({ error: "Prompt or gameState is required" });
+        return res.status(400).json({ error: "Prompt, gameState, or location parameters are required" });
       }
       
       // If gameState is provided, use it directly with proper structure
