@@ -124,10 +124,46 @@ const INITIAL_INVENTORY: InventoryItem[] = [
   }
 ];
 
-export function InventorySystem({ isVisible, onClose, items = INITIAL_INVENTORY, onItemUse, inCombat = false, playerGold }: InventorySystemProps) {
+export function InventorySystem({ 
+  isVisible, 
+  onClose, 
+  items = INITIAL_INVENTORY, 
+  onItemUse, 
+  inCombat = false, 
+  playerGold,
+  equippedGear,
+  availableEquipment = []
+}: InventorySystemProps) {
   const [selectedTab, setSelectedTab] = useState<'all' | 'consumables' | 'equipment'>('all');
 
   if (!isVisible) return null;
+
+  // Convert equipped gear to inventory items for display
+  const convertEquipmentToInventoryItem = (equipment: Equipment): InventoryItem => ({
+    id: equipment.id,
+    name: equipment.name,
+    type: equipment.type === 'weapon' ? 'weapon' : 'armor',
+    rarity: equipment.rarity,
+    quantity: 1,
+    description: equipment.description,
+    effects: {
+      damage: equipment.stats.attack,
+      defense: equipment.stats.defense,
+      healing: equipment.stats.health,
+      mana: equipment.stats.mana
+    },
+    usableInCombat: false,
+    value: equipment.rarity === 'legendary' ? 5000 : equipment.rarity === 'epic' ? 2500 : 1000
+  });
+
+  // Get equipped items for display
+  const equippedItems: InventoryItem[] = equippedGear ? Object.values(equippedGear)
+    .filter(item => item !== undefined)
+    .map(item => convertEquipmentToInventoryItem(item!)) : [];
+
+  // Get available equipment as inventory items
+  const availableEquipmentItems: InventoryItem[] = availableEquipment
+    .map(equipment => convertEquipmentToInventoryItem(equipment));
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -150,7 +186,12 @@ export function InventorySystem({ isVisible, onClose, items = INITIAL_INVENTORY,
     }
   };
 
-  const filteredItems = items.filter(item => {
+  // Combine all items for filtering
+  const allItems = selectedTab === 'equipment' 
+    ? [...equippedItems, ...availableEquipmentItems, ...items.filter(item => item.type === 'weapon' || item.type === 'armor')]
+    : items;
+
+  const filteredItems = allItems.filter(item => {
     if (selectedTab === 'consumables') return item.type === 'consumable';
     if (selectedTab === 'equipment') return item.type === 'weapon' || item.type === 'armor';
     return true;
