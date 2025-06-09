@@ -601,9 +601,49 @@ export default function SoloLeveling() {
     return { experienceGained, goldGained, obtainedItems };
   };
 
+  const createPurchaseGlowEffect = (itemElement: HTMLElement) => {
+    // Create purchase confirmation glow
+    itemElement.classList.add('purchase-glow');
+    
+    // Add purchase success indicator
+    const successIndicator = document.createElement('div');
+    successIndicator.className = 'purchase-success';
+    successIndicator.textContent = '✓ Purchased!';
+    successIndicator.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(34, 197, 94, 0.9);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 1000;
+      animation: purchase-popup 2s ease-out forwards;
+      pointer-events: none;
+    `;
+    
+    itemElement.style.position = 'relative';
+    itemElement.appendChild(successIndicator);
+    
+    // Remove effects after animation
+    setTimeout(() => {
+      itemElement.classList.remove('purchase-glow');
+      successIndicator.remove();
+    }, 2000);
+  };
+
   const handleUnifiedShopPurchase = (item: ShopItem) => {
     if (playerGold < item.price) {
       return;
+    }
+
+    // Find the clicked item element for glow effect
+    const itemElements = document.querySelectorAll(`[data-item-id="${item.id}"]`);
+    if (itemElements.length > 0) {
+      createPurchaseGlowEffect(itemElements[0] as HTMLElement);
     }
 
     // Deduct gold
@@ -1778,7 +1818,7 @@ export default function SoloLeveling() {
         { text: "We complement each other", detail: "Partnership focus", type: 'complement_each_other' },
         { text: "You inspire me", detail: "Personal impact", type: 'you_inspire_me' }
       ],
-      leadsTo: { heart_strongest: 'HEART_RECOGNITION', complement_each_other: 'PERFECT_MATCH', you_inspire_me: 'MUTUAL_INSPIRATION' }
+      leadsTo: { heart_strongest: 'HEART_RECOGNITION', complement_each_other: 'PERFECT_COMPATIBILITY', you_inspire_me: 'MUTUAL_INSPIRATION' }
     },
     'ENERGIZED_MISSION': {
       prompt: "Cha Hae-In channeling her confidence toward the mission. Focused energy, anime style.",
@@ -2438,7 +2478,7 @@ export default function SoloLeveling() {
         { text: "This connection is special", detail: "Recognize uniqueness", type: 'special_connection' },
         { text: "I understand you completely", detail: "Express deep understanding", type: 'complete_understanding' }
       ],
-      leadsTo: { perfectly_matched: 'PERFECT_MATCH', special_connection: 'SPECIAL_BOND', complete_understanding: 'DEEP_UNDERSTANDING' }
+      leadsTo: { perfectly_matched: 'PERFECT_COMPATIBILITY', special_connection: 'SPECIAL_BOND', complete_understanding: 'DEEP_UNDERSTANDING' }
     },
     'GENTLE_MOMENT': {
       prompt: "Jin-Woo being gentle with Cha Hae-In after teasing. Tender care, anime style.",
