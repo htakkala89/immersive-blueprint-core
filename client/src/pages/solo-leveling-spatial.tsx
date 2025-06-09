@@ -740,31 +740,26 @@ export default function SoloLevelingSpatial() {
         )}
       </AnimatePresence>
       
-      {/* Debug indicator */}
-      {monarchAuraVisible && (
-        <div className="fixed top-4 left-4 bg-red-500 text-white p-2 rounded z-[10000]">
-          Menu Active: {monarchAuraVisible.toString()}
-        </div>
-      )}
+
 
       {/* Monarch's Aura - Simple Dropdown Menu */}
       {monarchAuraVisible && (
-        <div className="fixed top-20 right-6 w-48 bg-purple-900 border-2 border-white rounded-xl p-4 z-[9998]">
-          <div className="text-white text-lg mb-2">Monarch's Aura</div>
+        <div className="fixed top-20 right-6 w-48 liquid-glass-enhanced rounded-xl p-4 z-[9998]">
+          <div className="text-white text-lg mb-3 font-semibold">Monarch's Aura</div>
           {[
-            { icon: User, label: 'Armory', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
-            { icon: Sword, label: 'Raid', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
-            { icon: Star, label: 'Quests', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
-            { icon: MapPin, label: 'World Map', onClick: () => { console.log('World map'); setMonarchAuraVisible(false); } },
-            { icon: Heart, label: 'Constellation', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
-            { icon: Gift, label: 'Daily Life', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
+            { icon: User, label: 'Armory', color: 'text-purple-300', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
+            { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
+            { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
+            { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { console.log('World map'); setMonarchAuraVisible(false); } },
+            { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
+            { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
             <button
               key={item.label}
-              className="w-full flex items-center gap-3 p-2 rounded-lg text-white hover:bg-white/20 transition-all mb-1"
+              className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/10 transition-all mb-2 liquid-glass border border-white/20"
               onClick={item.onClick}
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className={`w-6 h-6 ${item.color} drop-shadow-lg`} />
               <span className="text-sm font-medium">{item.label}</span>
             </button>
           ))}
