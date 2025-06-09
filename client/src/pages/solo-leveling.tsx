@@ -773,9 +773,13 @@ export default function SoloLeveling() {
         affection: Math.min(100, prev.affection + affectionIncrease)
       }));
 
-      // Show affection increase effect
+      // Show affection increase effect with correct amount
+      setAffectionIncreaseAmount(affectionIncrease);
       setShowAffectionIncrease(true);
       triggerAffectionSparkle();
+      
+      // Auto-hide affection animation after 3 seconds
+      setTimeout(() => setShowAffectionIncrease(false), 3000);
       
       addChatMessage('System', `Affection increased by ${affectionIncrease}! Current affection: ${Math.min(100, gameState.affection + affectionIncrease)}`);
     }, 1500);
