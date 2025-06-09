@@ -41,7 +41,7 @@ import {
 import { DailyLifeHubModal } from '@/components/DailyLifeHubModal';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { UnifiedShop } from '@/components/UnifiedShop';
-import { EnergyReplenishmentModal } from '@/components/EnergyReplenishmentModal';
+import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 
 // Types
 interface GameState {
@@ -644,7 +644,10 @@ export default function SoloLeveling() {
           setShowIntimateModal(false);
           setShowDailyLifeHub(true);
         }}
-        activity={activeActivity}
+        activityType={activeActivity as 'shower_together' | 'cuddle_together' | 'bedroom_intimacy' | 'make_love' | null}
+        onAction={(action) => console.log('Action:', action)}
+        intimacyLevel={gameState.intimacyLevel || 1}
+        affectionLevel={gameState.affection}
         gameState={gameState}
         onImageGenerate={(prompt) => {
           fetch('/api/generate-intimate-image', {
@@ -662,10 +665,11 @@ export default function SoloLeveling() {
       />
 
       <UnifiedShop
-        isOpen={showUnifiedShop}
+        isVisible={showUnifiedShop}
         onClose={() => setShowUnifiedShop(false)}
-        gameState={gameState}
-        currentGold={gameState.gold || 0}
+        playerGold={gameState.gold || 0}
+        playerLevel={gameState.level}
+        currentAffection={gameState.affection}
         currentIntimacy={gameState.intimacyLevel || 0}
         onPurchase={handlePurchase}
       />
