@@ -219,6 +219,7 @@ export default function SoloLeveling() {
   const [showCombatSystem, setShowCombatSystem] = useState(false);
   const [showAchievementSystem, setShowAchievementSystem] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
+  const [autoPlayVoice, setAutoPlayVoice] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [speechToTextEnabled, setSpeechToTextEnabled] = useState(true);
@@ -3165,8 +3166,8 @@ export default function SoloLeveling() {
     };
     setChatMessages(prev => [...prev, newMessage]);
     
-    // Play voice for character dialogue automatically
-    if (sender === 'Cha Hae-In') {
+    // Play voice for character dialogue automatically if auto-play is enabled
+    if (sender === 'Cha Hae-In' && autoPlayVoice && !audioMuted) {
       setTimeout(() => playVoice(text, 'cha-hae-in'), 300);
       
       // Check for visual descriptions and generate images automatically
@@ -4757,10 +4758,23 @@ export default function SoloLeveling() {
                             </div>
                             <div className="flex-1">
                               <div className="glassmorphism rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-white font-semibold text-sm">Narrator</span>
-                                  {isPlaying && (
-                                    <span className="text-purple-300 text-xs animate-pulse">🎵 Speaking...</span>
+                                <div className="flex items-center justify-between gap-2 mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-white font-semibold text-sm">Narrator</span>
+                                    {isPlaying && (
+                                      <span className="text-purple-300 text-xs animate-pulse">🎵 Speaking...</span>
+                                    )}
+                                  </div>
+                                  {!autoPlayVoice && (
+                                    <button
+                                      onClick={() => playVoice(currentStory.narration, 'narrator')}
+                                      className="w-6 h-6 rounded-full flex items-center justify-center transition-all bg-white/10 hover:bg-white/20"
+                                      title="Play voice"
+                                    >
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+                                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                                      </svg>
+                                    </button>
                                   )}
                                 </div>
                                 <div className="text-white text-sm leading-relaxed">{currentStory.narration}</div>
@@ -4783,10 +4797,21 @@ export default function SoloLeveling() {
                             </div>
                             <div className="flex-1">
                               <div className="glassmorphism rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center justify-between gap-2 mb-2">
                                   <span className="text-white font-semibold text-sm">
                                     {msg.sender === 'system' ? 'System' : msg.sender}
                                   </span>
+                                  {!autoPlayVoice && (
+                                    <button
+                                      onClick={() => playVoice(msg.text, msg.sender === 'Cha Hae-In' ? 'cha-hae-in' : 'system')}
+                                      className="w-6 h-6 rounded-full flex items-center justify-center transition-all bg-white/10 hover:bg-white/20"
+                                      title="Play voice"
+                                    >
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+                                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                                      </svg>
+                                    </button>
+                                  )}
                                 </div>
                                 <div className="text-white text-sm leading-relaxed">{msg.text}</div>
                               </div>
@@ -4841,8 +4866,19 @@ export default function SoloLeveling() {
                               </div>
                               <div className="flex-1">
                                 <div className="glassmorphism rounded-2xl p-4">
-                                  <div className="flex items-center gap-2 mb-2">
+                                  <div className="flex items-center justify-between gap-2 mb-2">
                                     <span className="text-white font-semibold text-sm">{msg.sender}</span>
+                                    {!autoPlayVoice && (isHaeIn || msg.sender === 'System') && (
+                                      <button
+                                        onClick={() => playVoice(msg.text, isHaeIn ? 'cha-hae-in' : 'system')}
+                                        className="w-6 h-6 rounded-full flex items-center justify-center transition-all bg-white/10 hover:bg-white/20"
+                                        title="Play voice"
+                                      >
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+                                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                                        </svg>
+                                      </button>
+                                    )}
                                   </div>
                                   <div className="text-white text-sm leading-relaxed">{msg.text}</div>
                                 </div>
@@ -4929,6 +4965,20 @@ export default function SoloLeveling() {
                         
                         {/* Audio Controls */}
                         <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setAutoPlayVoice(!autoPlayVoice)}
+                            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                              autoPlayVoice 
+                                ? 'bg-blue-600/90 text-white' 
+                                : 'bg-gray-600/90 text-white'
+                            }`}
+                            title={autoPlayVoice ? 'Disable Auto-Play Voice' : 'Enable Auto-Play Voice'}
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                            </svg>
+                          </button>
+                          
                           <button
                             onClick={() => setAudioMuted(!audioMuted)}
                             className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
