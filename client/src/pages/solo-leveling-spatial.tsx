@@ -197,6 +197,7 @@ export default function SoloLevelingSpatial() {
       chaPosition: { x: 60, y: 40 },
       chaExpression: 'focused',
       interactiveElements: [
+        { id: 'cha_hae_in_desk', name: 'Cha Hae-In reviewing mission reports at her desk', position: { x: 60, y: 45 }, action: 'Approach Cha Hae-In' },
         { id: 'mission_board', name: 'Mission Board', position: { x: 20, y: 30 }, action: 'Check available missions' },
         { id: 'coffee_machine', name: 'Coffee Machine', position: { x: 80, y: 60 }, action: 'Offer to get coffee' }
       ]
