@@ -608,9 +608,18 @@ export default function SoloLeveling() {
         type: item.category === 'weapons' ? 'weapon' : 'armor',
         slot: item.category === 'weapons' ? 'weapon' : 'chest',
         rarity: item.rarity,
-        stats: item.stats || {},
+        stats: {
+          attack: item.stats?.attack || 0,
+          defense: item.stats?.defense || 0,
+          health: item.stats?.health || 0,
+          mana: item.stats?.mana || 0,
+          speed: item.stats?.speed || 0,
+          criticalRate: item.stats?.critRate || 0,
+          criticalDamage: item.stats?.critDamage || 0
+        },
         description: item.description,
-        requirements: { level: 1 }
+        requirements: { level: 1 },
+        value: item.price || 100
       };
       setAvailableEquipment((prev: Equipment[]) => [...prev, newEquipment]);
       
