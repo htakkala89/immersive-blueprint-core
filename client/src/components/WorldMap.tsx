@@ -308,11 +308,33 @@ export function WorldMap({
     setSelectedLocation(location);
   };
 
+  const [isZooming, setIsZooming] = useState(false);
+
   const handleTravel = () => {
     if (selectedLocation) {
-      onLocationSelect(selectedLocation);
-      setSelectedLocation(null);
-      onClose();
+      setIsZooming(true);
+      
+      // Calculate center offset for the selected location
+      const targetX = (50 - selectedLocation.x) * 3;
+      const targetY = (50 - selectedLocation.y) * 3;
+      
+      // Animate zoom and pan to location
+      setZoom(3.0);
+      setMapOffset({ x: targetX, y: targetY });
+      
+      // Wait for zoom animation then travel
+      setTimeout(() => {
+        onLocationSelect(selectedLocation);
+        setSelectedLocation(null);
+        setIsZooming(false);
+        
+        // Reset map state for next visit
+        setTimeout(() => {
+          setZoom(1);
+          setMapOffset({ x: 0, y: 0 });
+          onClose();
+        }, 200);
+      }, 1000);
     }
   };
 
@@ -363,7 +385,7 @@ export function WorldMap({
       >
         {/* Stylized Seoul Background */}
         <div
-          className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/20"
+          className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/20 transition-transform duration-700 ease-in-out"
           style={{
             transform: `translate(${mapOffset.x}px, ${mapOffset.y}px) scale(${zoom})`,
             backgroundImage: `
@@ -504,11 +526,38 @@ export function WorldMap({
               {/* Travel Button */}
               <Button
                 onClick={handleTravel}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                disabled={isZooming}
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white disabled:opacity-50"
               >
-                Travel
+                {isZooming ? 'Traveling...' : 'Travel'}
               </Button>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Zoom Travel Overlay */}
+      <AnimatePresence>
+        {isZooming && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-center text-white"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"
+              />
+              <h3 className="text-xl font-bold mb-2">Traveling to {selectedLocation?.name}</h3>
+              <p className="text-purple-300">Zooming into location...</p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
