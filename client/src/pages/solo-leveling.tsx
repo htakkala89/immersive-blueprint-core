@@ -16,6 +16,8 @@ import { DungeonRaidSystem } from "@/components/DungeonRaidSystem";
 import { ShadowArmyManager } from "@/components/ShadowArmyManager";
 import { InventorySystem } from "@/components/InventorySystem";
 import { CombatTactics } from "@/components/CombatTactics";
+import { EquipmentSystem, STARTING_EQUIPMENT, type Equipment, type EquippedGear } from "@/components/EquipmentSystem";
+import { GiftSystem, type GiftItem } from "@/components/GiftSystem";
 import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
@@ -34,6 +36,9 @@ interface GameState {
   stats?: any;
   skills?: any[];
   gold?: number;
+  equippedGear?: EquippedGear;
+  availableEquipment?: Equipment[];
+  intimacyLevel?: number;
 }
 
 interface StoryScene {
@@ -4041,8 +4046,8 @@ export default function SoloLeveling() {
         <InventorySystem
           isVisible={showInventory}
           onClose={() => setShowInventory(false)}
-          inventory={playerInventory}
-          onUseItem={(item) => {
+          items={playerInventory}
+          onItemUse={(item) => {
             if (item.usableInCombat && gameState.inCombat) {
               // Handle combat item usage
               if (item.id === 'health_potion') {
