@@ -4815,11 +4815,13 @@ export default function SoloLeveling() {
         availableEquipment={availableEquipment}
         playerStats={gameState}
         onEquip={(equipment) => {
+          console.log('Equipping item:', equipment.name, 'to slot:', equipment.slot);
           const slot = equipment.slot as keyof EquippedGear;
           
           // If something is already equipped in this slot, unequip it first
           const currentlyEquipped = playerEquippedGear[slot];
           if (currentlyEquipped) {
+            console.log('Unequipping current item:', currentlyEquipped.name);
             // Remove current equipment stats
             const currentStats = currentlyEquipped.stats;
             setGameState(prev => ({
@@ -4832,13 +4834,21 @@ export default function SoloLeveling() {
           }
           
           // Equip new item
-          setPlayerEquippedGear(prev => ({
-            ...prev,
-            [slot]: equipment
-          }));
+          setPlayerEquippedGear(prev => {
+            const newGear = {
+              ...prev,
+              [slot]: equipment
+            };
+            console.log('New equipped gear:', newGear);
+            return newGear;
+          });
           
           // Remove item from available equipment
-          setAvailableEquipment(prev => prev.filter(item => item.id !== equipment.id));
+          setAvailableEquipment(prev => {
+            const filtered = prev.filter(item => item.id !== equipment.id);
+            console.log('Available equipment after removal:', filtered.length, 'items');
+            return filtered;
+          });
           
           // Add previously equipped item back to available equipment if it exists
           if (currentlyEquipped) {
