@@ -743,8 +743,8 @@ export default function SoloLevelingSpatial() {
 
 
       {/* Monarch's Aura - Simple Dropdown Menu */}
-      <div className={`fixed top-20 right-6 w-48 bg-purple-900 border-2 border-white rounded-xl p-4 z-[9998] transition-all duration-300 ${monarchAuraVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
-        <div className="text-white text-lg mb-3 font-semibold">Monarch's Aura</div>
+      <div className={`fixed top-20 right-6 w-48 liquid-glass-enhanced rounded-xl p-4 z-[9998] transition-all duration-300 ${monarchAuraVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
+        <div className="text-white text-lg mb-3 font-semibold drop-shadow-lg">Monarch's Aura</div>
         {[
           { icon: User, label: 'Armory', color: 'text-purple-300', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
           { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
@@ -755,11 +755,11 @@ export default function SoloLevelingSpatial() {
         ].map((item, index) => (
           <button
             key={item.label}
-            className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/20 transition-all mb-2 bg-white/10 border border-white/20"
+            className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/10 transition-all mb-2 liquid-glass border border-white/20"
             onClick={item.onClick}
           >
             <item.icon className={`w-6 h-6 ${item.color} drop-shadow-lg`} />
-            <span className="text-sm font-medium">{item.label}</span>
+            <span className="text-sm font-medium drop-shadow-sm">{item.label}</span>
           </button>
         ))}
       </div>
