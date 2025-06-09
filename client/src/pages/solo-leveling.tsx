@@ -4697,7 +4697,9 @@ export default function SoloLeveling() {
         addChatMessage('Cha Hae-In', data.response);
         
         // Generate voice for her response
-        playVoice(data.response, 'Cha Hae-In');
+        if (!audioMuted) {
+          playVoice(data.response, 'Cha Hae-In', audioMuted);
+        }
         
         // Enhanced visual description detection for comprehensive image generation
         const visualDescriptions = [
@@ -5991,6 +5993,7 @@ export default function SoloLeveling() {
                                 setAutoPlayVoice(false);
                               } else {
                                 setAudioMuted(true);
+                                stopVoice(); // Stop any currently playing audio
                               }
                             }}
                             className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
