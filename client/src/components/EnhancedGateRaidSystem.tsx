@@ -189,7 +189,7 @@ export function EnhancedGateRaidSystem({ isOpen, onClose, gameState, setGameStat
             
             {isPlayerPosition && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full border-2 border-white shadow-2xl flex items-center justify-center animate-pulse">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full border-2 border-white shadow-2xl flex items-center justify-center battle-glow">
                   <span className="text-sm font-bold text-white">J</span>
                 </div>
                 {/* Player aura effect */}
@@ -199,7 +199,7 @@ export function EnhancedGateRaidSystem({ isOpen, onClose, gameState, setGameStat
             
             {isAllyPosition && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full border-2 border-white shadow-2xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full border-2 border-white shadow-2xl flex items-center justify-center ally-support">
                   <span className="text-sm font-bold text-white">H</span>
                 </div>
                 {/* Ally aura effect */}
@@ -210,7 +210,7 @@ export function EnhancedGateRaidSystem({ isOpen, onClose, gameState, setGameStat
             {enemy && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className={`
-                  w-10 h-10 rounded-full border-2 border-red-300 shadow-2xl flex items-center justify-center
+                  w-10 h-10 rounded-full border-2 border-red-300 shadow-2xl flex items-center justify-center enemy-threat
                   ${enemy.type === 'goblin' ? 'bg-gradient-to-br from-green-600 to-green-800' : ''}
                   ${enemy.type === 'orc' ? 'bg-gradient-to-br from-orange-600 to-orange-800' : ''}
                   ${enemy.type === 'guardian' ? 'bg-gradient-to-br from-purple-600 to-purple-800' : ''}
@@ -220,15 +220,18 @@ export function EnhancedGateRaidSystem({ isOpen, onClose, gameState, setGameStat
                     {enemy.type === 'goblin' ? 'G' : enemy.type === 'orc' ? 'O' : 'B'}
                   </span>
                 </div>
-                {/* Enemy threat indicator */}
-                <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping"></div>
                 
                 {/* Health bar above enemy */}
-                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-slate-700 rounded-full">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-10 h-1.5 bg-slate-700 rounded-full border border-slate-600">
                   <div 
-                    className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-500"
                     style={{ width: `${(enemy.health / enemy.maxHealth) * 100}%` }}
                   />
+                </div>
+                
+                {/* Enemy level indicator */}
+                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs bg-slate-800 text-white px-1 rounded">
+                  Lv.{enemy.level}
                 </div>
               </div>
             )}
@@ -241,7 +244,7 @@ export function EnhancedGateRaidSystem({ isOpen, onClose, gameState, setGameStat
             {/* Attack range indicator */}
             {battleState.selectedAction === 'attack' && isTargetPosition && (
               <div className="absolute inset-0">
-                <div className="w-full h-full bg-red-500/30 border-2 border-red-400 rounded animate-pulse"></div>
+                <div className="w-full h-full bg-red-500/30 border-2 border-red-400 rounded target-highlight"></div>
                 <div className="absolute inset-1 bg-red-400/20 rounded animate-ping"></div>
               </div>
             )}
@@ -341,34 +344,74 @@ export function EnhancedGateRaidSystem({ isOpen, onClose, gameState, setGameStat
             <div className="space-y-6">
               {/* Gate Selection */}
               <div>
-                <h3 className="text-xl font-semibold text-white mb-4">Available Gates</h3>
+                <h3 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
+                  <Star className="text-yellow-400" size={24} />
+                  <span>Available Gates</span>
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {gates.map((gate) => (
+                  {gates.map((gate, index) => (
                     <div
                       key={gate.id}
                       className={`
-                        bg-gradient-to-br ${gate.color} p-6 rounded-xl cursor-pointer
-                        hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl
-                        border border-white/20
+                        bg-gradient-to-br ${gate.color} p-6 rounded-xl cursor-pointer relative overflow-hidden
+                        hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl
+                        border border-white/20 group fade-in-scale
                       `}
                       onClick={() => enterGate(gate.id)}
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h4 className="text-xl font-bold text-white">{gate.name}</h4>
-                          <p className="text-white/90">Difficulty: {gate.difficulty}</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm text-white/80">Energy Cost</div>
-                          <div className="text-lg font-bold text-white">{gate.energy}</div>
-                        </div>
+                      {/* Animated background patterns */}
+                      <div className="absolute inset-0 opacity-10">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-white rounded-full -translate-y-10 translate-x-10 group-hover:scale-150 transition-transform duration-500"></div>
+                        <div className="absolute bottom-0 left-0 w-16 h-16 bg-white rounded-full translate-y-8 -translate-x-8 group-hover:scale-125 transition-transform duration-700"></div>
                       </div>
                       
-                      <div className="bg-black/20 rounded-lg p-3">
-                        <div className="text-sm text-white/90 mb-2">Rewards:</div>
-                        <div className="flex justify-between text-white">
-                          <span>Gold: {gate.rewards.gold.toLocaleString()}</span>
-                          <span>EXP: {gate.rewards.exp.toLocaleString()}</span>
+                      <div className="relative z-10">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h4 className="text-xl font-bold text-white flex items-center space-x-2">
+                              <span>{gate.name}</span>
+                              {gate.difficulty === 'S' && <Star className="text-yellow-300 animate-pulse" size={20} />}
+                            </h4>
+                            <p className="text-white/90 font-medium">Difficulty: {gate.difficulty}-Rank</p>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-white/80">Energy Cost</div>
+                            <div className="text-2xl font-bold text-white drop-shadow-lg">{gate.energy}</div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-black/30 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                          <div className="text-sm text-white/90 mb-3 font-semibold">Rewards:</div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-white">
+                              <span className="flex items-center space-x-1">
+                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                <span>Gold:</span>
+                              </span>
+                              <span className="font-bold">{gate.rewards.gold.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between text-white">
+                              <span className="flex items-center space-x-1">
+                                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                <span>EXP:</span>
+                              </span>
+                              <span className="font-bold">{gate.rewards.exp.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Difficulty indicator */}
+                        <div className="absolute top-4 right-4">
+                          <div className={`
+                            w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
+                            ${gate.difficulty === 'C' ? 'bg-green-500' : ''}
+                            ${gate.difficulty === 'B' ? 'bg-blue-500' : ''}
+                            ${gate.difficulty === 'A' ? 'bg-purple-500' : ''}
+                            ${gate.difficulty === 'S' ? 'bg-red-500 animate-pulse' : ''}
+                          `}>
+                            {gate.difficulty}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -499,40 +542,119 @@ export function EnhancedGateRaidSystem({ isOpen, onClose, gameState, setGameStat
 
               {/* Action Panel */}
               {battleState.turn === 'player' && (
-                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-600/30">
-                  <h4 className="font-semibold text-white mb-4">Battle Actions</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    {battleActions.map((action) => (
+                <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm rounded-xl p-6 border border-slate-600/30 shadow-lg">
+                  <h4 className="font-bold text-white mb-6 text-lg flex items-center space-x-2">
+                    <Sword className="text-blue-400" size={20} />
+                    <span>Battle Actions</span>
+                  </h4>
+                  
+                  {/* Mobile-optimized action grid */}
+                  <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                    {battleActions.map((action, index) => (
                       <button
                         key={action.id}
                         onClick={() => handleActionSelect(action.id)}
                         className={`
-                          ${action.color} p-3 rounded-lg text-white font-medium
-                          hover:opacity-80 transition-all duration-200 flex flex-col items-center space-y-2
-                          ${battleState.selectedAction === action.id ? 'ring-2 ring-yellow-400' : ''}
-                          ${action.cost > player.mana ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
+                          ${action.color} p-4 rounded-xl text-white font-medium relative overflow-hidden group
+                          transition-all duration-300 flex flex-col items-center space-y-3
+                          ${battleState.selectedAction === action.id ? 'ring-3 ring-yellow-400 scale-105 shadow-lg shadow-yellow-400/30' : ''}
+                          ${action.cost > player.mana ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:scale-110 hover:shadow-xl active:scale-95'}
                         `}
                         disabled={action.cost > player.mana}
+                        style={{ animationDelay: `${index * 50}ms` }}
                       >
-                        <action.icon size={24} />
-                        <span className="text-sm">{action.name}</span>
-                        {action.cost > 0 && (
-                          <span className="text-xs opacity-75">MP: {action.cost}</span>
+                        {/* Action button background effect */}
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <div className="relative z-10 flex flex-col items-center space-y-2">
+                          <div className={`
+                            p-3 rounded-full bg-white/20 backdrop-blur-sm
+                            ${battleState.selectedAction === action.id ? 'action-pulse' : ''}
+                          `}>
+                            <action.icon size={28} />
+                          </div>
+                          <span className="text-sm font-bold text-center leading-tight">{action.name}</span>
+                          {action.cost > 0 && (
+                            <div className="flex items-center space-x-1 text-xs">
+                              <Zap size={12} className="text-blue-300" />
+                              <span className="text-blue-200">{action.cost}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Disabled overlay */}
+                        {action.cost > player.mana && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <span className="text-xs text-red-300 font-bold">No MP</span>
+                          </div>
                         )}
                       </button>
                     ))}
                   </div>
                   
-                  {battleState.selectedAction && battleState.targetPosition && (
-                    <div className="mt-4 flex justify-center">
-                      <button
-                        onClick={executeAction}
-                        className="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 rounded-lg text-white font-bold hover:from-purple-700 hover:to-blue-700 transition-all duration-200"
-                      >
-                        Execute Action
-                      </button>
+                  {/* Action execution */}
+                  {battleState.selectedAction && (
+                    <div className="mt-6 space-y-4">
+                      <div className="text-center text-sm text-slate-300">
+                        {battleState.targetPosition ? 
+                          'Target selected - Ready to execute!' : 
+                          'Select a target on the battlefield'
+                        }
+                      </div>
+                      
+                      {battleState.targetPosition && (
+                        <div className="flex justify-center space-x-3">
+                          <button
+                            onClick={executeAction}
+                            className="bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 rounded-xl text-white font-bold 
+                                     hover:from-purple-700 hover:to-blue-700 transition-all duration-300 
+                                     shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95
+                                     flex items-center space-x-2"
+                          >
+                            <Zap size={20} />
+                            <span>Execute Attack</span>
+                          </button>
+                          
+                          <button
+                            onClick={() => setBattleState(prev => ({ ...prev, selectedAction: null, targetPosition: null }))}
+                            className="bg-slate-600 hover:bg-slate-500 px-6 py-4 rounded-xl text-white font-medium
+                                     transition-all duration-300 flex items-center space-x-2"
+                          >
+                            <X size={16} />
+                            <span>Cancel</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
+                </div>
+              )}
+              
+              {/* Enemy turn indicator */}
+              {battleState.turn === 'enemy' && (
+                <div className="bg-gradient-to-br from-red-800/70 to-red-900/70 backdrop-blur-sm rounded-xl p-6 border border-red-600/30">
+                  <div className="text-center">
+                    <h4 className="font-bold text-red-300 mb-3 text-lg">Enemy Turn</h4>
+                    <div className="flex justify-center items-center space-x-2">
+                      <div className="w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
+                      <span className="text-red-200">Enemies are planning their moves...</span>
+                      <div className="w-3 h-3 bg-red-400 rounded-full animate-ping animation-delay-300"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Ally turn indicator */}
+              {battleState.turn === 'ally' && (
+                <div className="bg-gradient-to-br from-pink-800/70 to-pink-900/70 backdrop-blur-sm rounded-xl p-6 border border-pink-600/30">
+                  <div className="text-center">
+                    <h4 className="font-bold text-pink-300 mb-3 text-lg">Cha Hae-In's Turn</h4>
+                    <div className="flex justify-center items-center space-x-2">
+                      <div className="w-3 h-3 bg-pink-400 rounded-full animate-ping"></div>
+                      <span className="text-pink-200">Cha Hae-In is preparing her strike...</span>
+                      <div className="w-3 h-3 bg-pink-400 rounded-full animate-ping animation-delay-300"></div>
+                    </div>
+                  </div>
                 </div>
               )}
 
