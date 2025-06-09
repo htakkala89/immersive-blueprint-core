@@ -210,16 +210,16 @@ export function Marketplace({ isVisible, onClose, onPurchase, playerGold, player
       unlockLevel: 1
     },
     {
-      id: 'demon_blade',
-      name: 'Demon King\'s Blade',
-      description: 'Legendary weapon with immense power',
-      price: 5000,
+      id: 'dragon_slayer_sword',
+      name: 'Dragon Slayer Sword',
+      description: 'Forged from ancient dragon scales and shadow metal. Legendary weapon of ultimate power.',
+      price: 8000,
       category: 'weapon',
       rarity: 'legendary',
-      icon: '⚔️',
-      effects: { attack: 200, defense: 50 },
+      icon: '🐉',
+      effects: { attack: 300, defense: 75, mana: 100 },
       stock: 1,
-      unlockLevel: 50
+      unlockLevel: 60
     },
     {
       id: 'armor_vest',

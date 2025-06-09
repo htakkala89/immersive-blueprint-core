@@ -130,8 +130,8 @@ export function EquipmentSystem({
     Object.values(equippedGear).forEach(item => {
       if (item) {
         Object.entries(item.stats).forEach(([stat, value]) => {
-          if (value && stat in stats) {
-            stats[stat as keyof typeof stats] += value;
+          if (value && stat in stats && typeof value === 'number') {
+            (stats as any)[stat] += value;
           }
         });
       }

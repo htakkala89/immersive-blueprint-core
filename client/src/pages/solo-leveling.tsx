@@ -312,6 +312,14 @@ export default function SoloLeveling() {
     }
   ]);
   const [showCombatTactics, setShowCombatTactics] = useState(false);
+  const [showEquipmentSystem, setShowEquipmentSystem] = useState(false);
+  const [showGiftSystem, setShowGiftSystem] = useState(false);
+  const [playerEquippedGear, setPlayerEquippedGear] = useState<EquippedGear>({
+    weapon: STARTING_EQUIPMENT.find(e => e.id === 'demon_king_daggers'),
+    chest: STARTING_EQUIPMENT.find(e => e.id === 'shadow_cloak')
+  });
+  const [availableEquipment, setAvailableEquipment] = useState<Equipment[]>(STARTING_EQUIPMENT);
+  const [intimacyLevel, setIntimacyLevel] = useState(10);
   const [playerEnergy, setPlayerEnergy] = useState(100);
 
   // Combat reward system
@@ -3746,6 +3754,24 @@ export default function SoloLeveling() {
                     💖
                   </button>
 
+                  {/* Equipment System Button */}
+                  <button 
+                    onClick={() => setShowEquipmentSystem(true)}
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-blue-500/50 transition-all border border-blue-400/30 shadow-lg"
+                    title="Equipment & Gear"
+                  >
+                    ⚔️
+                  </button>
+
+                  {/* Gift System Button */}
+                  <button 
+                    onClick={() => setShowGiftSystem(true)}
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-purple-500/50 transition-all border border-purple-400/30 shadow-lg"
+                    title="Gifts for Cha Hae-In"
+                  >
+                    🎁
+                  </button>
+
 
 
                   {/* Help Button */}
@@ -4474,6 +4500,75 @@ export default function SoloLeveling() {
           { name: 'Dark Crystal', quantity: 8 },
           { name: 'Soul Fragment', quantity: 22 }
         ]}
+      />
+
+      {/* Equipment System */}
+      <EquipmentSystem
+        isVisible={showEquipmentSystem}
+        onClose={() => setShowEquipmentSystem(false)}
+        playerLevel={gameState.level}
+        equippedGear={playerEquippedGear}
+        availableEquipment={availableEquipment}
+        onEquip={(equipment) => {
+          setPlayerEquippedGear(prev => ({
+            ...prev,
+            [equipment.slot]: equipment
+          }));
+          // Update game state with equipment bonuses
+          const stats = equipment.stats;
+          setGameState(prev => ({
+            ...prev,
+            maxHealth: prev.maxHealth + (stats.health || 0),
+            health: prev.health + (stats.health || 0),
+            maxMana: prev.maxMana + (stats.mana || 0),
+            mana: prev.mana + (stats.mana || 0)
+          }));
+        }}
+        onUnequip={(slot) => {
+          const unequipped = playerEquippedGear[slot as keyof EquippedGear];
+          if (unequipped) {
+            setPlayerEquippedGear(prev => ({
+              ...prev,
+              [slot]: undefined
+            }));
+            // Remove equipment bonuses
+            const stats = unequipped.stats;
+            setGameState(prev => ({
+              ...prev,
+              maxHealth: Math.max(100, prev.maxHealth - (stats.health || 0)),
+              health: Math.max(1, prev.health - (stats.health || 0)),
+              maxMana: Math.max(50, prev.maxMana - (stats.mana || 0)),
+              mana: Math.max(0, prev.mana - (stats.mana || 0))
+            }));
+          }
+        }}
+      />
+
+      {/* Gift System */}
+      <GiftSystem
+        isVisible={showGiftSystem}
+        onClose={() => setShowGiftSystem(false)}
+        playerGold={gameState.gold || 0}
+        currentAffection={gameState.affection}
+        currentIntimacy={intimacyLevel}
+        onPurchaseGift={(gift) => {
+          if ((gameState.gold || 0) >= gift.price) {
+            setGameState(prev => ({
+              ...prev,
+              gold: (prev.gold || 0) - gift.price,
+              affection: Math.min(100, prev.affection + gift.affectionGain)
+            }));
+            setIntimacyLevel(prev => Math.min(100, prev + gift.intimacyGain));
+            
+            // Show gift reaction
+            setCurrentChat([
+              { sender: 'Cha Hae-In', text: gift.chaHaeInReaction }
+            ]);
+            setShowAffectionIncrease(true);
+            setAffectionIncreaseAmount(gift.affectionGain);
+            setTimeout(() => setShowAffectionIncrease(false), 3000);
+          }
+        }}
       />
     </div>
   );
