@@ -93,11 +93,14 @@ export default function SoloLevelingSpatial() {
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
+    console.log('Starting Cha Hae-In interaction...');
     // Step 1: Focus Animation (300ms)
     setIsFocusMode(true);
+    console.log('Focus mode activated');
     
     // Step 2: UI transitions
     setTimeout(() => {
+      console.log('Starting dialogue transitions...');
       setShowLivingPortrait(true);
       setChaHaeInExpression('recognition');
       
@@ -113,6 +116,7 @@ export default function SoloLevelingSpatial() {
       ]);
       
       setDialogueActive(true);
+      console.log('Dialogue activated');
       setChaHaeInExpression('welcoming');
     }, 300);
   };
@@ -597,10 +601,8 @@ export default function SoloLevelingSpatial() {
         )}
         
         {/* Interactive Elements Layer */}
-        {currentLocationData.interactiveElements.map((element) => {
-          console.log('Rendering element:', element.id, 'at position:', element.position);
-          return (
-            <motion.div
+        {currentLocationData.interactiveElements.map((element) => (
+          <motion.div
             key={element.id}
             className="absolute group"
             style={{
@@ -612,12 +614,14 @@ export default function SoloLevelingSpatial() {
             transition={{ duration: 0.3 }}
           >
             <motion.button
-              className="w-6 h-6 bg-purple-500/60 rounded-full border border-purple-300/80 backdrop-blur-sm relative"
-              whileHover={{ scale: 1.3 }}
+              className="w-8 h-8 bg-purple-500/80 rounded-full border-2 border-purple-300/90 backdrop-blur-sm relative shadow-lg shadow-purple-500/50"
+              whileHover={{ scale: 1.4 }}
               whileTap={{ scale: 0.8 }}
               onClick={() => {
+                console.log('Clicked element:', element.id);
                 // Check if this is Cha Hae-In interaction
                 if (element.id === 'cha_hae_in_desk') {
+                  console.log('Triggering Cha Hae-In interaction');
                   handleChaHaeInInteraction();
                 } else {
                   handleEnvironmentalInteraction({
@@ -637,7 +641,7 @@ export default function SoloLevelingSpatial() {
               />
               
               {/* Inner dot */}
-              <div className="absolute inset-1 rounded-full bg-purple-300" />
+              <div className="absolute inset-2 rounded-full bg-purple-200 shadow-inner" />
             </motion.button>
             
             {/* Tooltip on hover */}
