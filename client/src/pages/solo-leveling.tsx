@@ -104,6 +104,12 @@ export default function SoloLeveling() {
       statPoints: 5,
       skillPoints: 2,
       gold: 500,
+      equippedGear: {
+        weapon: STARTING_EQUIPMENT.find(e => e.id === 'demon_king_daggers'),
+        chest: STARTING_EQUIPMENT.find(e => e.id === 'shadow_cloak')
+      },
+      availableEquipment: STARTING_EQUIPMENT.slice(2),
+      intimacyLevel: 10,
       stats: {
         strength: 342,
         agility: 298,
@@ -4561,9 +4567,7 @@ export default function SoloLeveling() {
             setIntimacyLevel(prev => Math.min(100, prev + gift.intimacyGain));
             
             // Show gift reaction
-            setCurrentChat([
-              { sender: 'Cha Hae-In', text: gift.chaHaeInReaction }
-            ]);
+            addChatMessage('Cha Hae-In', gift.chaHaeInReaction);
             setShowAffectionIncrease(true);
             setAffectionIncreaseAmount(gift.affectionGain);
             setTimeout(() => setShowAffectionIncrease(false), 3000);
