@@ -305,12 +305,12 @@ export function StoryBranching({
 
   const getPathIcon = (pathType: string) => {
     switch (pathType) {
-      case 'main': return <Star className="w-4 h-4 text-blue-400" />;
-      case 'romantic': return <Heart className="w-4 h-4 text-pink-400" />;
-      case 'intimate': return <Flame className="w-4 h-4 text-red-400" />;
-      case 'friendship': return <Star className="w-4 h-4 text-green-400" />;
-      case 'secret': return <Crown className="w-4 h-4 text-purple-400" />;
-      default: return <Star className="w-4 h-4 text-gray-400" />;
+      case 'main': return <Star className="w-4 h-4" />;
+      case 'romantic': return <Heart className="w-4 h-4" />;
+      case 'intimate': return <Flame className="w-4 h-4" />;
+      case 'friendship': return <Star className="w-4 h-4" />;
+      case 'secret': return <Crown className="w-4 h-4" />;
+      default: return <Star className="w-4 h-4" />;
     }
   };
 
@@ -391,13 +391,13 @@ export function EnhancedChoiceButton({
       
       <div className="flex items-center justify-between text-xs">
         <div className="flex gap-2">
-          {choice.impact?.affectionChange && choice.impact.affectionChange > 0 && (
+          {choice.impact.affectionChange > 0 && (
             <span className="text-pink-400">+{choice.impact.affectionChange} Affection</span>
           )}
-          {choice.impact?.intimacyChange && choice.impact.intimacyChange > 0 && (
+          {choice.impact.intimacyChange && choice.impact.intimacyChange > 0 && (
             <span className="text-red-400">+{choice.impact.intimacyChange} Intimacy</span>
           )}
-          {choice.impact?.trustChange && choice.impact.trustChange > 0 && (
+          {choice.impact.trustChange && choice.impact.trustChange > 0 && (
             <span className="text-blue-400">+{choice.impact.trustChange} Trust</span>
           )}
         </div>
