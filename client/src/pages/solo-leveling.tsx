@@ -6,7 +6,7 @@ import { useStoryNarration } from "@/hooks/useStoryNarration";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/components/MiniGames";
 import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import { RaidSystem } from "@/components/RaidSystem";
-import { Marketplace } from "../components/Marketplace";
+
 import { RelationshipSystem } from "@/components/RelationshipSystem";
 import { MemoryLaneAnimation } from "@/components/MemoryLaneAnimation";
 import { CombatSystem } from "@/components/CombatSystem";
@@ -207,7 +207,7 @@ export default function SoloLeveling() {
   const [autoHiddenMessages, setAutoHiddenMessages] = useState<Set<number>>(new Set());
   const [showDailyLifeHub, setShowDailyLifeHub] = useState(false);
   const [activeActivity, setActiveActivity] = useState<any>(null);
-  const [showMarketplace, setShowMarketplace] = useState(false);
+
   const [previousPage, setPreviousPage] = useState<'hub' | 'story'>('story');
   const [showRaidSystem, setShowRaidSystem] = useState(false);
   const [showRelationshipSystem, setShowRelationshipSystem] = useState(false);
@@ -5738,19 +5738,7 @@ export default function SoloLeveling() {
                     </button>
                   )}
 
-                  {/* Marketplace Button - Available after meeting Cha Hae-In */}
-                  {gameState.affection >= 1 && (
-                    <button 
-                      onClick={() => {
-                        setPreviousPage('story');
-                        setShowMarketplace(true);
-                      }}
-                      className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-yellow-500/50 transition-all border border-yellow-400/30 shadow-lg"
-                      title="Hunter Marketplace"
-                    >
-                      🛒
-                    </button>
-                  )}
+
 
                   {/* Raid System Button - Available after level 5 */}
                   {gameState.level >= 5 && (
@@ -5782,11 +5770,11 @@ export default function SoloLeveling() {
                     💖
                   </button>
 
-                  {/* Unified Marketplace Button */}
+                  {/* Hunter Marketplace */}
                   <button 
                     onClick={() => setShowUnifiedShop(true)}
                     className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-green-500/50 transition-all border border-green-400/30 shadow-lg"
-                    title="Hunter's Marketplace - Weapons, Armor, Gifts & More"
+                    title="Hunter Marketplace - Weapons, Armor, Gifts & More"
                   >
                     🏪
                   </button>
@@ -6384,46 +6372,7 @@ export default function SoloLeveling() {
 
 
 
-      {/* Marketplace Modal */}
-      {showMarketplace && (
-        <Marketplace
-          isVisible={showMarketplace}
-          onClose={() => {
-            setShowMarketplace(false);
-            // Return to previous page logic
-            if (previousPage === 'hub') {
-              setShowDailyLifeHub(true);
-            }
-          }}
-          onPurchase={(item, quantity) => {
-            const totalCost = item.price * quantity;
-            if ((gameState.gold || 500) >= totalCost) {
-              setGameState(prev => ({
-                ...prev,
-                gold: (prev.gold || 500) - totalCost,
-                inventory: [
-                  ...(prev.inventory || []),
-                  {
-                    id: item.id,
-                    name: item.name,
-                    description: item.description,
-                    type: item.category as any,
-                    icon: item.icon,
-                    quantity: quantity
-                  }
-                ]
-              }));
-              
-              addChatMessage('System', `Successfully purchased ${quantity}x ${item.name} for ${totalCost} gold!`);
-            } else {
-              addChatMessage('System', 'Not enough gold for this purchase.');
-            }
-          }}
-          playerGold={gameState.gold || 500}
-          playerLevel={gameState.level}
-          affectionLevel={gameState.affection}
-        />
-      )}
+
 
       {/* Raid System Modal */}
       <RaidSystem
