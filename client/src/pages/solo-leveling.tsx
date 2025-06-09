@@ -2915,6 +2915,538 @@ export default function SoloLeveling() {
       ],
       leadsTo: { what_love_does: 'LOVE_RECOGNITION', see_truth: 'TRUTH_SEEING' }
     },
+    'DIRECT_PRAISE': {
+      prompt: "Jin-Woo directly praising Cha Hae-In's amazing qualities. Sincere admiration, anime style.",
+      narration: "Your sincere praise touches her heart deeply.",
+      chat: [
+        { sender: 'player', text: "You really are amazing, Hae-In. Everything about you." },
+        { sender: 'Cha Hae-In', text: "*blushes deeply* You make me feel so special when you say things like that." },
+        { sender: 'Cha Hae-In', text: "I've never had someone believe in me the way you do." }
+      ],
+      choices: [
+        { text: "Because you deserve it", detail: "Affirm her worth", type: 'deserve_praise' },
+        { text: "I see your true self", detail: "Deep understanding", type: 'true_self' }
+      ],
+      leadsTo: { deserve_praise: 'DESERVED_WORTH', true_self: 'TRUE_SELF_RECOGNITION' }
+    },
+    'MUTUAL_ENHANCEMENT': {
+      prompt: "Jin-Woo and Cha Hae-In bringing out the best in each other. Synergistic growth, anime style.",
+      narration: "Together, you both become better versions of yourselves.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "We really do bring out the best in each other, don't we?" },
+        { sender: 'player', text: "You make me want to be worthy of standing beside you." },
+        { sender: 'Cha Hae-In', text: "And you show me strengths I never knew I had." }
+      ],
+      choices: [
+        { text: "That's true partnership", detail: "Define partnership", type: 'true_partnership' },
+        { text: "We're perfect together", detail: "Express compatibility", type: 'perfect_together' }
+      ],
+      leadsTo: { true_partnership: 'TRUE_PARTNERSHIP', perfect_together: 'PERFECT_COMPATIBILITY' }
+    },
+    'DESERVED_WORTH': {
+      prompt: "Cha Hae-In realizing her own worth through Jin-Woo's recognition. Self-acceptance, anime style.",
+      narration: "She begins to see herself through your eyes.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Maybe... maybe I really am worth all these kind words." },
+        { sender: 'player', text: "You're worth so much more than you realize." },
+        { sender: 'Cha Hae-In', text: "Thank you for helping me see that." }
+      ],
+      choices: [
+        { text: "You're incredible", detail: "Continue praise", type: 'continue_praise' },
+        { text: "Now you're seeing clearly", detail: "Affirm realization", type: 'seeing_clearly' }
+      ],
+      leadsTo: { continue_praise: 'ROMANTIC_MOMENT', seeing_clearly: 'CLEAR_VISION' }
+    },
+    'UNIQUE_VALUE': {
+      prompt: "Jin-Woo emphasizing Cha Hae-In's unique and irreplaceable value. Special recognition, anime style.",
+      narration: "You help her understand just how special she truly is.",
+      chat: [
+        { sender: 'player', text: "There's no one else like you, Hae-In. You're one of a kind." },
+        { sender: 'Cha Hae-In', text: "One of a kind... I like how that sounds coming from you." },
+        { sender: 'Cha Hae-In', text: "You make me feel irreplaceable." }
+      ],
+      choices: [
+        { text: "Because you are irreplaceable", detail: "Affirm uniqueness", type: 'irreplaceable' },
+        { text: "That's why I treasure you", detail: "Express value", type: 'treasure_you' }
+      ],
+      leadsTo: { irreplaceable: 'IRREPLACEABLE_BOND', treasure_you: 'TREASURED_CONNECTION' }
+    },
+    'LEADERSHIP_MOMENT': {
+      prompt: "Cha Hae-In showing natural leadership qualities. Leadership recognition, anime style.",
+      narration: "Her natural leadership abilities shine through.",
+      chat: [
+        { sender: 'player', text: "You're a natural leader, Hae-In. People follow you because they trust you." },
+        { sender: 'Cha Hae-In', text: "I... I never thought of myself as a leader." },
+        { sender: 'Cha Hae-In', text: "But when you say it, I can almost believe it." }
+      ],
+      choices: [
+        { text: "Lead and I'll follow", detail: "Show trust", type: 'follow_lead' },
+        { text: "We can lead together", detail: "Partnership leadership", type: 'lead_together' }
+      ],
+      leadsTo: { follow_lead: 'TRUSTED_LEADER', lead_together: 'JOINT_LEADERSHIP' }
+    },
+    'HEART_STRENGTH': {
+      prompt: "Jin-Woo recognizing that Cha Hae-In's heart guides her strength. Heart-centered power, anime style.",
+      narration: "You acknowledge the source of her true power.",
+      chat: [
+        { sender: 'player', text: "Your heart is what guides your strength. That's what makes you so powerful." },
+        { sender: 'Cha Hae-In', text: "My heart... I never thought of it as a strength before." },
+        { sender: 'Cha Hae-In', text: "You see things in me that I miss completely." }
+      ],
+      choices: [
+        { text: "Your heart chose to protect", detail: "Noble purpose", type: 'chose_protect' },
+        { text: "It's your greatest weapon", detail: "Heart as strength", type: 'greatest_weapon' }
+      ],
+      leadsTo: { chose_protect: 'PROTECTIVE_HEART', greatest_weapon: 'HEART_WEAPON' }
+    },
+    'COMBINED_STRENGTH': {
+      prompt: "Jin-Woo and Cha Hae-In realizing their combined strength. United power, anime style.",
+      narration: "Together, your strengths multiply exponentially.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "When we fight together, it's like our strengths multiply." },
+        { sender: 'player', text: "We're stronger together than apart. That's the power of partnership." },
+        { sender: 'Cha Hae-In', text: "I want to keep fighting by your side." }
+      ],
+      choices: [
+        { text: "Always", detail: "Promise partnership", type: 'always_together' },
+        { text: "We're unstoppable", detail: "Confidence in team", type: 'unstoppable_team' }
+      ],
+      leadsTo: { always_together: 'ETERNAL_PARTNERSHIP', unstoppable_team: 'UNSTOPPABLE_FORCE' }
+    },
+    'SIDE_BY_SIDE': {
+      prompt: "Jin-Woo expressing desire to stand side by side with Cha Hae-In. Equal partnership, anime style.",
+      narration: "You want her by your side as an equal partner.",
+      chat: [
+        { sender: 'player', text: "I want you by my side, Hae-In. Not behind me, not in front. Right beside me." },
+        { sender: 'Cha Hae-In', text: "Side by side... as equals." },
+        { sender: 'Cha Hae-In', text: "That's all I've ever wanted from a partner." }
+      ],
+      choices: [
+        { text: "As equals in everything", detail: "Complete equality", type: 'complete_equals' },
+        { text: "Partners in every way", detail: "Full partnership", type: 'full_partners' }
+      ],
+      leadsTo: { complete_equals: 'EQUAL_PARTNERSHIP', full_partners: 'COMPLETE_PARTNERSHIP' }
+    },
+    'PRESERVED_NATURE': {
+      prompt: "Jin-Woo encouraging Cha Hae-In to preserve her compassionate nature. Character preservation, anime style.",
+      narration: "You want her to keep what makes her special.",
+      chat: [
+        { sender: 'player', text: "Never lose that compassion, Hae-In. It's what makes you who you are." },
+        { sender: 'Cha Hae-In', text: "Sometimes I worry it makes me weak in this harsh world." },
+        { sender: 'player', text: "It makes you strong in ways that matter most." }
+      ],
+      choices: [
+        { text: "The world needs your compassion", detail: "Global importance", type: 'world_needs' },
+        { text: "I need your compassion", detail: "Personal need", type: 'i_need' }
+      ],
+      leadsTo: { world_needs: 'WORLD_HEALER', i_need: 'PERSONAL_HEALING' }
+    },
+    'GREATEST_ASSET': {
+      prompt: "Jin-Woo recognizing Cha Hae-In's compassion as her greatest asset. Asset recognition, anime style.",
+      narration: "You help her see her compassion as a powerful strength.",
+      chat: [
+        { sender: 'player', text: "Your compassion is your greatest asset. It's what sets you apart from everyone else." },
+        { sender: 'Cha Hae-In', text: "An asset... I never thought of kindness that way." },
+        { sender: 'Cha Hae-In', text: "You make me proud of who I am." }
+      ],
+      choices: [
+        { text: "You should be proud", detail: "Encourage pride", type: 'should_be_proud' },
+        { text: "It's your superpower", detail: "Compassion as power", type: 'superpower' }
+      ],
+      leadsTo: { should_be_proud: 'RIGHTFUL_PRIDE', superpower: 'COMPASSION_POWER' }
+    },
+    'IMMEDIATE_ACTION': {
+      prompt: "Jin-Woo and Cha Hae-In taking immediate action together. Dynamic partnership, anime style.",
+      narration: "You both decide to act on your shared vision immediately.",
+      chat: [
+        { sender: 'player', text: "Let's start making a difference today. No more waiting." },
+        { sender: 'Cha Hae-In', text: "Yes! I love your determination. Let's change things now." },
+        { sender: 'Cha Hae-In', text: "Together, we can accomplish anything." }
+      ],
+      choices: [
+        { text: "Plan our first mission", detail: "Strategic approach", type: 'plan_mission' },
+        { text: "Find others to help", detail: "Build team", type: 'find_allies' }
+      ],
+      leadsTo: { plan_mission: 'MISSION_PLANNING', find_allies: 'ALLY_RECRUITMENT' }
+    },
+    'STRATEGIC_PLANNING': {
+      prompt: "Jin-Woo and Cha Hae-In strategically planning their future. Tactical partnership, anime style.",
+      narration: "You both approach your shared goals with careful planning.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "We should plan this carefully. A strategic approach will be more effective." },
+        { sender: 'player', text: "Good thinking. Let's map out our strategy step by step." },
+        { sender: 'Cha Hae-In', text: "With both our skills, we can create something incredible." }
+      ],
+      choices: [
+        { text: "Start with small steps", detail: "Gradual approach", type: 'small_steps' },
+        { text: "Think big from the start", detail: "Ambitious planning", type: 'think_big' }
+      ],
+      leadsTo: { small_steps: 'GRADUAL_PROGRESS', think_big: 'AMBITIOUS_VISION' }
+    },
+    'PARTNER_DEFINITION': {
+      prompt: "Jin-Woo defining what true partnership means. Partnership values, anime style.",
+      narration: "You express your understanding of what real partnership looks like.",
+      chat: [
+        { sender: 'player', text: "That's what true partners do - we lift each other up, make each other stronger." },
+        { sender: 'Cha Hae-In', text: "I've never had a partnership like this before." },
+        { sender: 'Cha Hae-In', text: "You make me believe in what we can accomplish together." }
+      ],
+      choices: [
+        { text: "This is just the beginning", detail: "Future potential", type: 'just_beginning' },
+        { text: "We're perfect partners", detail: "Acknowledge compatibility", type: 'perfect_partners' }
+      ],
+      leadsTo: { just_beginning: 'BEGINNING_JOURNEY', perfect_partners: 'PERFECT_PARTNERSHIP' }
+    },
+    'DAILY_INSPIRATION': {
+      prompt: "Cha Hae-In being inspired by Jin-Woo every day. Ongoing motivation, anime style.",
+      narration: "She expresses how you motivate her continuously.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Every day with you brings new inspiration. You push me to be better." },
+        { sender: 'player', text: "And you inspire me just as much. We're good for each other." },
+        { sender: 'Cha Hae-In', text: "I love how we motivate each other to grow." }
+      ],
+      choices: [
+        { text: "Let's keep growing together", detail: "Continued development", type: 'keep_growing' },
+        { text: "You're my motivation too", detail: "Mutual inspiration", type: 'my_motivation' }
+      ],
+      leadsTo: { keep_growing: 'CONTINUED_GROWTH', my_motivation: 'MUTUAL_MOTIVATION' }
+    },
+    'MUTUAL_COMPLETION': {
+      prompt: "Jin-Woo and Cha Hae-In feeling complete together. Soul completion, anime style.",
+      narration: "You both feel like missing pieces of yourselves have been found.",
+      chat: [
+        { sender: 'player', text: "You complete me too, Hae-In. I never knew what was missing until I found you." },
+        { sender: 'Cha Hae-In', text: "It's like we were meant to find each other." },
+        { sender: 'Cha Hae-In', text: "Two halves becoming whole." }
+      ],
+      choices: [
+        { text: "Destiny brought us together", detail: "Fate recognition", type: 'destiny_brought' },
+        { text: "We make each other whole", detail: "Completeness", type: 'make_whole' }
+      ],
+      leadsTo: { destiny_brought: 'DESTINED_MEETING', make_whole: 'WHOLENESS_ACHIEVED' }
+    },
+    'FUTURE_POTENTIAL': {
+      prompt: "Jin-Woo and Cha Hae-In excited about their future potential. Unlimited possibilities, anime style.",
+      narration: "The potential of what you could accomplish together is limitless.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This is just the beginning of what we can do together." },
+        { sender: 'player', text: "Our potential is limitless. There's nothing we can't face together." },
+        { sender: 'Cha Hae-In', text: "The future has never looked so bright." }
+      ],
+      choices: [
+        { text: "Let's make that future reality", detail: "Action commitment", type: 'make_reality' },
+        { text: "Together, anything is possible", detail: "Unlimited belief", type: 'anything_possible' }
+      ],
+      leadsTo: { make_reality: 'FUTURE_CREATION', anything_possible: 'UNLIMITED_POTENTIAL' }
+    },
+    'ROMANTIC_DESTINY': {
+      prompt: "Jin-Woo and Cha Hae-In accepting their romantic destiny. Fated love, anime style.",
+      narration: "You both acknowledge that your connection was destined to be romantic.",
+      chat: [
+        { sender: 'player', text: "Our destiny is to be together, Hae-In. Not just as partners, but as something more." },
+        { sender: 'Cha Hae-In', text: "*blushes deeply* I... I feel it too. This connection between us." },
+        { sender: 'Cha Hae-In', text: "Maybe some things really are meant to be." }
+      ],
+      choices: [
+        { text: "I'm falling for you", detail: "Romantic confession", type: 'falling_for' },
+        { text: "Let destiny guide us", detail: "Accept fate", type: 'guide_us' }
+      ],
+      leadsTo: { falling_for: 'ROMANTIC_CONFESSION', guide_us: 'DESTINY_ACCEPTANCE' }
+    },
+    'SELF_MADE_DESTINY': {
+      prompt: "Jin-Woo and Cha Hae-In choosing to create their own destiny. Self-determination, anime style.",
+      narration: "You both decide to forge your own path together.",
+      chat: [
+        { sender: 'player', text: "We don't need fate to decide for us. We can make our own destiny." },
+        { sender: 'Cha Hae-In', text: "I like that. We're in control of our own story." },
+        { sender: 'Cha Hae-In', text: "What kind of destiny should we create together?" }
+      ],
+      choices: [
+        { text: "One where we're always together", detail: "Togetherness focus", type: 'always_together' },
+        { text: "One where we protect what matters", detail: "Protection mission", type: 'protect_matters' }
+      ],
+      leadsTo: { always_together: 'ETERNAL_TOGETHERNESS', protect_matters: 'PROTECTIVE_DESTINY' }
+    },
+    'LOVE_RECOGNITION': {
+      prompt: "Jin-Woo and Cha Hae-In recognizing love between them. Love acknowledgment, anime style.",
+      narration: "The word 'love' hangs in the air between you, acknowledged and real.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Love... is that what this is? What I'm feeling?" },
+        { sender: 'player', text: "I think it is. I love you, Hae-In." },
+        { sender: 'Cha Hae-In', text: "*tears in her eyes* I love you too, Jin-Woo." }
+      ],
+      choices: [
+        { text: "Kiss her gently", detail: "Romantic gesture", type: 'gentle_kiss' },
+        { text: "Hold her close", detail: "Intimate embrace", type: 'hold_close' }
+      ],
+      leadsTo: { gentle_kiss: 'LOVE_KISS', hold_close: 'LOVE_EMBRACE' }
+    },
+    'TRUTH_SEEING': {
+      prompt: "Jin-Woo and Cha Hae-In seeing each other's true selves. Authentic connection, anime style.",
+      narration: "All pretenses fall away as you see each other completely.",
+      chat: [
+        { sender: 'player', text: "We see each other's truth - the real person behind all the walls." },
+        { sender: 'Cha Hae-In', text: "No masks, no pretending. Just... us." },
+        { sender: 'Cha Hae-In', text: "I've never felt so known by anyone before." }
+      ],
+      choices: [
+        { text: "That's true intimacy", detail: "Define connection", type: 'true_intimacy' },
+        { text: "I want to know all of you", detail: "Deeper connection", type: 'know_all' }
+      ],
+      leadsTo: { true_intimacy: 'INTIMATE_TRUTH', know_all: 'COMPLETE_KNOWING' }
+    },
+    'TRUE_SELF_RECOGNITION': {
+      prompt: "Jin-Woo recognizing Cha Hae-In's true self completely. Deep recognition, anime style.",
+      narration: "You see past all facades to who she really is.",
+      chat: [
+        { sender: 'player', text: "I see your true self, Hae-In. The real you behind everything else." },
+        { sender: 'Cha Hae-In', text: "No one has ever seen me so clearly before." },
+        { sender: 'Cha Hae-In', text: "It's both terrifying and wonderful." }
+      ],
+      choices: [
+        { text: "Your true self is beautiful", detail: "Affirm her authenticity", type: 'true_beautiful' },
+        { text: "That's who I fell for", detail: "Romantic recognition", type: 'fell_for_true' }
+      ],
+      leadsTo: { true_beautiful: 'AUTHENTIC_BEAUTY', fell_for_true: 'TRUE_LOVE' }
+    },
+    'TRUE_PARTNERSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In achieving true partnership. Perfect collaboration, anime style.",
+      narration: "You've found what real partnership means.",
+      chat: [
+        { sender: 'player', text: "This is what true partnership looks like - equals supporting each other." },
+        { sender: 'Cha Hae-In', text: "I've never experienced anything like this before." },
+        { sender: 'Cha Hae-In', text: "We really do make each other better." }
+      ],
+      choices: [
+        { text: "Partners in everything", detail: "Complete partnership", type: 'partners_everything' },
+        { text: "This is just the start", detail: "Future focus", type: 'just_start' }
+      ],
+      leadsTo: { partners_everything: 'COMPLETE_PARTNERSHIP', just_start: 'PARTNERSHIP_BEGINNING' }
+    },
+    'PERFECT_COMPATIBILITY': {
+      prompt: "Jin-Woo and Cha Hae-In realizing they're perfectly compatible. Ideal compatibility, anime style.",
+      narration: "Every aspect of your personalities complement each other perfectly.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "We really are perfect together, aren't we?" },
+        { sender: 'player', text: "Like two pieces of a puzzle that were made to fit." },
+        { sender: 'Cha Hae-In', text: "I can't imagine being with anyone else." }
+      ],
+      choices: [
+        { text: "You're my perfect match", detail: "Confirm compatibility", type: 'perfect_match' },
+        { text: "We were made for each other", detail: "Destiny acknowledgment", type: 'made_for_each' }
+      ],
+      leadsTo: { perfect_match: 'CONFIRMED_MATCH', made_for_each: 'DESTINED_PAIR' }
+    },
+    'CLEAR_VISION': {
+      prompt: "Cha Hae-In seeing herself clearly through Jin-Woo's eyes. Self-clarity, anime style.",
+      narration: "She finally sees herself as you see her.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Now I'm seeing clearly... seeing myself the way you see me." },
+        { sender: 'player', text: "That's the real you - amazing, strong, beautiful." },
+        { sender: 'Cha Hae-In', text: "Thank you for helping me find myself." }
+      ],
+      choices: [
+        { text: "You were always there", detail: "Inherent worth", type: 'always_there' },
+        { text: "Now you can shine", detail: "Encourage confidence", type: 'now_shine' }
+      ],
+      leadsTo: { always_there: 'INHERENT_WORTH', now_shine: 'CONFIDENT_SHINE' }
+    },
+    'IRREPLACEABLE_BOND': {
+      prompt: "Jin-Woo and Cha Hae-In forming an irreplaceable bond. Unique connection, anime style.",
+      narration: "Your bond is one-of-a-kind, irreplaceable and precious.",
+      chat: [
+        { sender: 'player', text: "What we have is irreplaceable, Hae-In. No one could ever take your place." },
+        { sender: 'Cha Hae-In', text: "And no one could take yours. You're irreplaceable to me too." },
+        { sender: 'Cha Hae-In', text: "This bond we share... it's special." }
+      ],
+      choices: [
+        { text: "It's precious to me", detail: "Value the bond", type: 'precious_bond' },
+        { text: "Let's protect this", detail: "Preserve connection", type: 'protect_this' }
+      ],
+      leadsTo: { precious_bond: 'PRECIOUS_CONNECTION', protect_this: 'PROTECTED_BOND' }
+    },
+    'TREASURED_CONNECTION': {
+      prompt: "Jin-Woo treasuring his connection with Cha Hae-In. Valued relationship, anime style.",
+      narration: "You hold your connection with her as your most treasured possession.",
+      chat: [
+        { sender: 'player', text: "I treasure you, Hae-In. You're the most precious thing in my life." },
+        { sender: 'Cha Hae-In', text: "*touched deeply* You treasure me... no one has ever said that before." },
+        { sender: 'Cha Hae-In', text: "You're precious to me too, more than you know." }
+      ],
+      choices: [
+        { text: "You're my greatest treasure", detail: "Ultimate value", type: 'greatest_treasure' },
+        { text: "I'll always treasure you", detail: "Eternal promise", type: 'always_treasure' }
+      ],
+      leadsTo: { greatest_treasure: 'ULTIMATE_TREASURE', always_treasure: 'ETERNAL_TREASURING' }
+    },
+    'TRUSTED_LEADER': {
+      prompt: "Cha Hae-In as a trusted leader with Jin-Woo's support. Leadership trust, anime style.",
+      narration: "You show complete trust in her leadership abilities.",
+      chat: [
+        { sender: 'player', text: "Lead the way, Hae-In. I trust your judgment completely." },
+        { sender: 'Cha Hae-In', text: "Your trust means everything to me. I won't let you down." },
+        { sender: 'Cha Hae-In', text: "Together, we can accomplish anything." }
+      ],
+      choices: [
+        { text: "I believe in you", detail: "Express faith", type: 'believe_you' },
+        { text: "Lead us to victory", detail: "Victory focus", type: 'lead_victory' }
+      ],
+      leadsTo: { believe_you: 'COMPLETE_FAITH', lead_victory: 'VICTORY_LEADERSHIP' }
+    },
+    'JOINT_LEADERSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In leading together as equals. Shared leadership, anime style.",
+      narration: "You both step up as co-leaders, sharing the responsibility.",
+      chat: [
+        { sender: 'player', text: "We can lead together, as equals. Your strength and mine combined." },
+        { sender: 'Cha Hae-In', text: "Co-leaders... I like that. We complement each other perfectly." },
+        { sender: 'Cha Hae-In', text: "No one could stand against us." }
+      ],
+      choices: [
+        { text: "Perfect partnership", detail: "Ideal collaboration", type: 'perfect_partnership' },
+        { text: "Unstoppable together", detail: "Combined power", type: 'unstoppable_together' }
+      ],
+      leadsTo: { perfect_partnership: 'IDEAL_PARTNERSHIP', unstoppable_together: 'COMBINED_LEADERSHIP' }
+    },
+    'PROTECTIVE_HEART': {
+      prompt: "Cha Hae-In's heart choosing to protect others. Noble heart, anime style.",
+      narration: "Her heart's choice to protect defines her true strength.",
+      chat: [
+        { sender: 'player', text: "Your heart chose to protect the innocent. That's what makes you a true hero." },
+        { sender: 'Cha Hae-In', text: "A hero... I never thought of myself that way." },
+        { sender: 'Cha Hae-In', text: "But if my heart can help people, then I'm proud of that choice." }
+      ],
+      choices: [
+        { text: "You're my hero", detail: "Personal admiration", type: 'my_hero' },
+        { text: "The world's hero", detail: "Global recognition", type: 'worlds_hero' }
+      ],
+      leadsTo: { my_hero: 'PERSONAL_HERO', worlds_hero: 'GLOBAL_HERO' }
+    },
+    'HEART_WEAPON': {
+      prompt: "Cha Hae-In's heart as her greatest weapon. Heart power, anime style.",
+      narration: "Her compassionate heart becomes her most powerful weapon.",
+      chat: [
+        { sender: 'player', text: "Your heart is your greatest weapon - it can defeat any darkness." },
+        { sender: 'Cha Hae-In', text: "My heart as a weapon... that's a beautiful way to think about it." },
+        { sender: 'Cha Hae-In', text: "Then I'll wield it with pride." }
+      ],
+      choices: [
+        { text: "Wield it together", detail: "Combined heart power", type: 'wield_together' },
+        { text: "Unstoppable weapon", detail: "Ultimate power", type: 'unstoppable_weapon' }
+      ],
+      leadsTo: { wield_together: 'COMBINED_HEARTS', unstoppable_weapon: 'ULTIMATE_HEART_POWER' }
+    },
+    'ETERNAL_PARTNERSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In promising eternal partnership. Lifetime commitment, anime style.",
+      narration: "You both commit to standing together forever.",
+      chat: [
+        { sender: 'player', text: "Always, Hae-In. Through every battle, every challenge, every moment." },
+        { sender: 'Cha Hae-In', text: "Always. No matter what comes, we face it together." },
+        { sender: 'Cha Hae-In', text: "Our partnership is eternal." }
+      ],
+      choices: [
+        { text: "Seal it with a promise", detail: "Formal commitment", type: 'seal_promise' },
+        { text: "Forever and always", detail: "Eternal vow", type: 'forever_always' }
+      ],
+      leadsTo: { seal_promise: 'PROMISE_SEALED', forever_always: 'ETERNAL_VOW' }
+    },
+    'UNSTOPPABLE_FORCE': {
+      prompt: "Jin-Woo and Cha Hae-In as an unstoppable force. Ultimate power couple, anime style.",
+      narration: "Together, you become a force that cannot be stopped.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "We're unstoppable together. Nothing can stand in our way." },
+        { sender: 'player', text: "The perfect storm - your precision and my shadows." },
+        { sender: 'Cha Hae-In', text: "Let's show the world what we can do." }
+      ],
+      choices: [
+        { text: "Conquer everything together", detail: "Unlimited ambition", type: 'conquer_everything' },
+        { text: "Protect everything together", detail: "Noble purpose", type: 'protect_everything' }
+      ],
+      leadsTo: { conquer_everything: 'ULTIMATE_CONQUEST', protect_everything: 'ULTIMATE_PROTECTION' }
+    },
+    'EQUAL_PARTNERSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In in perfect equal partnership. Complete equality, anime style.",
+      narration: "You achieve true equality in every aspect of your relationship.",
+      chat: [
+        { sender: 'player', text: "As equals in everything - strength, decisions, dreams, everything." },
+        { sender: 'Cha Hae-In', text: "True equals. I've always wanted a partnership like this." },
+        { sender: 'Cha Hae-In', text: "No one above, no one below. Just us, together." }
+      ],
+      choices: [
+        { text: "Partners for life", detail: "Lifetime equality", type: 'partners_life' },
+        { text: "Equal in love too", detail: "Romantic equality", type: 'equal_love' }
+      ],
+      leadsTo: { partners_life: 'LIFETIME_PARTNERSHIP', equal_love: 'EQUAL_ROMANCE' }
+    },
+    'COMPLETE_PARTNERSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In achieving complete partnership. Total unity, anime style.",
+      narration: "Your partnership encompasses every aspect of life.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Partners in every way - fighting, dreaming, living..." },
+        { sender: 'player', text: "Complete partnership. Nothing held back, nothing separate." },
+        { sender: 'Cha Hae-In', text: "This is what I've always dreamed of." }
+      ],
+      choices: [
+        { text: "Share everything", detail: "Complete openness", type: 'share_everything' },
+        { text: "Build our future", detail: "Future planning", type: 'build_future' }
+      ],
+      leadsTo: { share_everything: 'COMPLETE_SHARING', build_future: 'FUTURE_BUILDING' }
+    },
+    'WORLD_HEALER': {
+      prompt: "Cha Hae-In as a healer for the world through compassion. Global healing, anime style.",
+      narration: "Her compassion becomes a healing force for the entire world.",
+      chat: [
+        { sender: 'player', text: "The world needs your compassion, Hae-In. You can heal hearts and souls." },
+        { sender: 'Cha Hae-In', text: "A healer... not just of bodies, but of spirits." },
+        { sender: 'Cha Hae-In', text: "If I can bring healing to the world, then that's my purpose." }
+      ],
+      choices: [
+        { text: "I'll help you heal the world", detail: "Support her mission", type: 'help_heal' },
+        { text: "You're the light the world needs", detail: "Recognize her role", type: 'worlds_light' }
+      ],
+      leadsTo: { help_heal: 'HEALING_PARTNERSHIP', worlds_light: 'GUIDING_LIGHT' }
+    },
+    'PERSONAL_HEALING': {
+      prompt: "Cha Hae-In's compassion healing Jin-Woo personally. Personal restoration, anime style.",
+      narration: "Her compassion heals wounds in your soul you didn't know existed.",
+      chat: [
+        { sender: 'player', text: "I need your compassion, Hae-In. It heals parts of me I thought were broken forever." },
+        { sender: 'Cha Hae-In', text: "*touches his face gently* Let me heal those wounds." },
+        { sender: 'Cha Hae-In', text: "You've been carrying so much pain alone." }
+      ],
+      choices: [
+        { text: "You make me whole", detail: "Personal completion", type: 'make_whole' },
+        { text: "Heal me completely", detail: "Total restoration", type: 'heal_completely' }
+      ],
+      leadsTo: { make_whole: 'PERSONAL_WHOLENESS', heal_completely: 'COMPLETE_HEALING' }
+    },
+    'RIGHTFUL_PRIDE': {
+      prompt: "Cha Hae-In feeling rightful pride in her compassion. Deserved confidence, anime style.",
+      narration: "She finally feels proud of the qualities that make her special.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "You're right. I should be proud of my compassion." },
+        { sender: 'player', text: "It's one of your greatest strengths. Never hide it." },
+        { sender: 'Cha Hae-In', text: "I won't. I'll wear my heart proudly." }
+      ],
+      choices: [
+        { text: "Shine with that pride", detail: "Encourage confidence", type: 'shine_pride' },
+        { text: "The world will see your light", detail: "Global recognition", type: 'world_see_light' }
+      ],
+      leadsTo: { shine_pride: 'PRIDEFUL_SHINE', world_see_light: 'VISIBLE_LIGHT' }
+    },
+    'COMPASSION_POWER': {
+      prompt: "Cha Hae-In's compassion as her superpower. Ultimate ability, anime style.",
+      narration: "Her compassion becomes recognized as a true superpower.",
+      chat: [
+        { sender: 'player', text: "It really is your superpower - the ability to care, to heal, to inspire." },
+        { sender: 'Cha Hae-In', text: "A superpower... I never thought of kindness that way." },
+        { sender: 'Cha Hae-In', text: "Then I'll use this power to help everyone I can." }
+      ],
+      choices: [
+        { text: "The strongest power there is", detail: "Ultimate strength", type: 'strongest_power' },
+        { text: "Use it to change everything", detail: "World transformation", type: 'change_everything' }
+      ],
+      leadsTo: { strongest_power: 'ULTIMATE_COMPASSION', change_everything: 'COMPASSIONATE_CHANGE' }
+    },
     'DEEP_APPRECIATION': {
       prompt: "Jin-Woo expressing deep appreciation for Cha Hae-In. Heartfelt gratitude, anime style.",
       narration: "Your appreciation goes beyond words.",

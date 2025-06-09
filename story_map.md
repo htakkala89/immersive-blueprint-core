@@ -1,0 +1,106 @@
+# Solo Leveling Story Map
+
+## Main Story Flow
+
+### Starting Scenes
+- START → [accept_quest: FIRST_MEETING, check_stats: STATS_CHECK]
+- STATS_CHECK → [continue: FIRST_MEETING]
+- FIRST_MEETING → [be_caring: CARING_RESPONSE, suggest_team: TEAM_PROPOSAL, show_shadows: SHADOW_SUMMON]
+
+### Early Relationship Building
+- CARING_RESPONSE → [ask_preference: PREFERENCE_RESPONSE, suggest_partnership: PARTNERSHIP_DISCUSSION, acknowledge_strength: STRENGTH_ACKNOWLEDGMENT]
+- TEAM_PROPOSAL → [agree_eagerly: EAGER_ACCEPTANCE, protective_approach: PROTECTIVE_ROUTE, mutual_trust: TRUST_ROUTE]
+- SHADOW_SUMMON → [impressed: EMPOWERED_HAE_IN, partnership: UNIFIED_STRENGTH, professional: PROFESSIONAL_BOND]
+
+### Dungeon Scenarios
+- ICE_DUNGEON → [lead: DUNGEON_PROGRESS, protect: PROTECTIVE_DUNGEON, split: SPLIT_DUNGEON]
+- DUNGEON_PROGRESS → [compliment: COMPLIMENT_RESPONSE, focus_boss: BOSS_APPROACH]
+- BOSS_APPROACH → [attack_together: BOSS_BATTLE, shadow_attack: SHADOW_VICTORY, hae_in_lead: HAE_IN_MOMENT]
+- BOSS_BATTLE → [combined_finisher: VICTORY_TOGETHER]
+- VICTORY_TOGETHER → [extract_shadow: SHADOW_EXTRACTION, focus_hae_in: ROMANTIC_MOMENT]
+
+### Philosophy Conversations
+- PHILOSOPHY_MOMENT → [share_philosophy: PHILOSOPHY_SHARING, ask_thoughts: HER_PHILOSOPHY, make_difference: SHARED_PURPOSE]
+- PHILOSOPHY_SHARING → [inspire_me: INSPIRATION_MOMENT, think_alike: COMPATIBLE_MINDS, youre_special: SPECIAL_RECOGNITION]
+- HER_PHILOSOPHY → [stronger_than_know: STRENGTH_RECOGNITION, fight_alongside: PARTNERSHIP_DESIRE, compassion_strength: CHARACTER_PRAISE]
+- SHARED_PURPOSE → [change_world: WORLD_CHANGING, be_better: MUTUAL_IMPROVEMENT, unstoppable: UNSTOPPABLE_TEAM]
+
+### Romantic Development
+- ROMANTIC_MOMENT → [confess: CONFESSION, tease: TEASE_RESPONSE, take_hand: HAND_HOLDING]
+- CONFESSION → [wait: CONFESSION_RESPONSE]
+- CONFESSION_RESPONSE → [respond_positively: FIRST_KISS, express_feelings: ROMANTIC_HINT]
+- FIRST_KISS → [continue: HAPPY_ENDING]
+
+### Missing Scenes to Implement
+The following scenes are referenced but not defined:
+
+#### Philosophy Scene Continuations
+- INSPIRATION_MOMENT (already exists)
+- COMPATIBLE_MINDS (already exists)
+- SPECIAL_RECOGNITION (already exists)
+- STRENGTH_RECOGNITION (already exists)
+- PARTNERSHIP_DESIRE (already exists)
+- CHARACTER_PRAISE (already exists)
+- WORLD_CHANGING (already exists)
+- MUTUAL_IMPROVEMENT (already exists)
+- UNSTOPPABLE_TEAM (already exists)
+
+#### Missing Supporting Scenes
+- DIRECT_PRAISE
+- MUTUAL_ENHANCEMENT
+- DESERVED_WORTH
+- UNIQUE_VALUE
+- LEADERSHIP_MOMENT
+- HEART_STRENGTH
+- COMBINED_STRENGTH
+- SIDE_BY_SIDE
+- PRESERVED_NATURE
+- GREATEST_ASSET
+- IMMEDIATE_ACTION
+- STRATEGIC_PLANNING
+- PARTNER_DEFINITION
+- DAILY_INSPIRATION
+- MUTUAL_COMPLETION
+- FUTURE_POTENTIAL
+- ROMANTIC_DESTINY
+- SELF_MADE_DESTINY
+- LOVE_RECOGNITION
+- TRUTH_SEEING
+
+#### Daily Life Hub Scenes
+- DAILY_LIFE_HUB (already exists)
+- HUNTER_MARKETPLACE (already exists)
+
+#### Combat Scenes
+- COMBAT_DUNGEON
+- COMBAT_VICTORY
+- BOSS_CHAMBER
+- DRAGON_BATTLE
+- VICTORY_CELEBRATION
+
+#### Additional Relationship Scenes
+- COFFEE_DATE
+- PRESENT_MOMENT
+- HAND_HOLDING
+
+## Scene Categories
+
+### Action/Combat
+- ICE_DUNGEON, DUNGEON_PROGRESS, BOSS_BATTLE, VICTORY_TOGETHER
+- COMBAT_DUNGEON, COMBAT_VICTORY, DRAGON_BATTLE
+
+### Romantic
+- ROMANTIC_MOMENT, CONFESSION, FIRST_KISS, HAPPY_ENDING
+- COFFEE_DATE, HAND_HOLDING, PRESENT_MOMENT
+
+### Character Development
+- PHILOSOPHY_SHARING, HER_PHILOSOPHY, SHARED_PURPOSE
+- STRENGTH_RECOGNITION, CHARACTER_PRAISE
+
+### Partnership/Trust Building
+- PARTNERSHIP_DESIRE, TRUST_ROUTE, PROTECTIVE_ROUTE
+- UNIFIED_STRENGTH, PROFESSIONAL_BOND
+
+### Emotional Moments
+- SPECIAL_MOMENT, UNDERSTANDING_MOMENT, FEELINGS_REVEALED
+- DEEP_CONFESSION, MUTUAL_OPENING
