@@ -4813,7 +4813,19 @@ export default function SoloLeveling() {
         playerLevel={gameState.level}
         equippedGear={playerEquippedGear}
         availableEquipment={availableEquipment}
-        playerStats={gameState}
+        playerStats={{
+          level: gameState.level,
+          health: gameState.health,
+          maxHealth: gameState.maxHealth,
+          mana: gameState.mana,
+          maxMana: gameState.maxMana,
+          stats: gameState.stats || {
+            strength: 10,
+            agility: 10,
+            intelligence: 10,
+            vitality: 10
+          }
+        }}
         onEquip={(equipment) => {
           console.log('Equipping item:', equipment.name, 'to slot:', equipment.slot);
           const slot = equipment.slot as keyof EquippedGear;
