@@ -99,7 +99,7 @@ export default function SoloLeveling() {
       maxHealth: 15420,
       mana: 8750,
       maxMana: 8750,
-      affection: 0,
+      affection: 3,
       currentScene: 'START',
       inventory: [],
       inCombat: false,
@@ -3403,6 +3403,20 @@ export default function SoloLeveling() {
             }
           }, 500);
         }
+
+        // Handle affection changes for successful story navigation
+        const affectionGain = getAffectionGain(choice.type);
+        if (affectionGain > 0) {
+          const previousAffection = gameState.affection;
+          setGameState(prev => {
+            const newAffection = Math.min(5, prev.affection + affectionGain);
+            console.log(`Affection increased by ${affectionGain}: ${previousAffection} -> ${newAffection}`);
+            setTimeout(() => createHeartEffect(), 300);
+            return { ...prev, affection: newAffection };
+          });
+          triggerAffectionSparkle();
+        }
+
         return; // Early return for successful navigation
       } else {
         console.log('ERROR: Next story scene not found:', nextScene);
@@ -3456,7 +3470,17 @@ export default function SoloLeveling() {
       'kiss': 1,
       'compliment': 1,
       'focus_hae_in': 1,
-      'take_hand': 1
+      'take_hand': 1,
+      'caring': 1,
+      'protective': 1,
+      'romantic': 1,
+      'sweet': 1,
+      'understanding': 1,
+      'supportive': 1,
+      'empathetic': 1,
+      'honest': 1,
+      'kind': 1,
+      'gentle': 1
     };
     return affectionMap[choiceType] || 0;
   };
