@@ -328,6 +328,10 @@ export default function SoloLeveling() {
   const [availableEquipment, setAvailableEquipment] = useState<Equipment[]>(STARTING_EQUIPMENT);
   const [intimacyLevel, setIntimacyLevel] = useState(10);
   const [playerEnergy, setPlayerEnergy] = useState(100);
+  const [showIntimateActivity, setShowIntimateActivity] = useState(false);
+  const [currentIntimateActivity, setCurrentIntimateActivity] = useState<string | null>(null);
+  const [intimateActivityResponse, setIntimateActivityResponse] = useState<string>('');
+  const [currentActivityContext, setCurrentActivityContext] = useState<string | null>(null);
 
   // Combat reward system
   const MONSTER_REWARDS = {
@@ -4298,6 +4302,16 @@ export default function SoloLeveling() {
           // Set as active activity for continuous interaction
           setActiveActivity(activity);
           
+          // Handle intimate activities
+          const intimateActivities = ['shower_together', 'cuddle_together', 'bedroom_intimacy', 'make_love'];
+          if (intimateActivities.includes(activity.id)) {
+            setCurrentIntimateActivity(activity.id);
+            setCurrentActivityContext(activity.id);
+            setShowIntimateActivity(true);
+            setShowDailyLifeHub(false);
+            return;
+          }
+          
           // Handle special combat activities
           if (activity.id === 'dungeon_raid') {
             setShowDungeonRaid(true);
@@ -4574,6 +4588,90 @@ export default function SoloLeveling() {
             setTimeout(() => setShowAffectionIncrease(false), 3000);
           }
         }}
+      />
+
+      {/* Intimate Activity Modal */}
+      <IntimateActivityModal
+        isVisible={showIntimateActivity}
+        onClose={() => {
+          setShowIntimateActivity(false);
+          setCurrentIntimateActivity(null);
+          setCurrentActivityContext(null);
+          setIntimateActivityResponse('');
+        }}
+        onReturnToHub={() => {
+          setShowIntimateActivity(false);
+          setCurrentIntimateActivity(null);
+          setCurrentActivityContext(null);
+          setIntimateActivityResponse('');
+          setShowDailyLifeHub(true);
+        }}
+        activityType={currentIntimateActivity as any}
+        onAction={async (action: string, isCustom?: boolean) => {
+          // Generate AI response for the intimate action
+          try {
+            const context = currentActivityContext || 'intimate_moment';
+            const prompt = isCustom 
+              ? `In the context of ${context}, respond to: "${action}". Cha Hae-In's response should be intimate, loving, and appropriate for the situation.`
+              : `In the context of ${context}, respond to the action: "${action}". Generate Cha Hae-In's intimate response.`;
+
+            const response = await fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: prompt,
+                gameState: {
+                  ...gameState,
+                  currentScene: context,
+                  intimacyLevel,
+                  affectionLevel: gameState.affection
+                }
+              })
+            });
+
+            const data = await response.json();
+            setIntimateActivityResponse(data.response);
+            
+            // Increase intimacy and affection
+            setIntimacyLevel(prev => Math.min(100, prev + 2));
+            setGameState(prev => ({
+              ...prev,
+              affection: Math.min(5, prev.affection + 0.1)
+            }));
+
+          } catch (error) {
+            console.error('Error generating intimate response:', error);
+            setIntimateActivityResponse("Cha Hae-In smiles warmly at your gesture, feeling closer to you.");
+          }
+        }}
+        onImageGenerate={async (prompt: string) => {
+          // Context-aware image generation that stays within the current activity
+          try {
+            const contextualPrompt = `${prompt}. Context: ${currentActivityContext}. Jin-Woo and Cha Hae-In in intimate moment within this specific setting. Maintain scene continuity, romantic atmosphere, Solo Leveling anime art style.`;
+            
+            const response = await fetch('/api/generate-scene-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                gameState: {
+                  ...gameState,
+                  currentScene: currentActivityContext,
+                  prompt: contextualPrompt
+                }
+              })
+            });
+
+            const data = await response.json();
+            if (data.imageUrl) {
+              setSceneBackground(data.imageUrl);
+            }
+          } catch (error) {
+            console.error('Error generating contextual image:', error);
+          }
+        }}
+        currentResponse={intimateActivityResponse}
+        intimacyLevel={intimacyLevel}
+        affectionLevel={gameState.affection * 20}
       />
     </div>
   );

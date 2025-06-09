@@ -307,9 +307,13 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     
     lastImageGeneration = now;
     
+    // Context-aware prompt generation for intimate activities
+    const intimateActivities = ['shower_together', 'cuddle_together', 'bedroom_intimacy', 'make_love'];
+    const isIntimateActivity = intimateActivities.includes(gameState.currentScene);
+    
     // Use the actual scene prompt if available, otherwise use narration
     const scenePrompt = gameState.narration || '';
-    const useMatureGenerator = isMatureContent(scenePrompt);
+    const useMatureGenerator = isMatureContent(scenePrompt) || isIntimateActivity;
     
     // If the prompt contains café/coffee scene description, use it directly with Google Imagen
     if (scenePrompt.includes('café') || scenePrompt.includes('coffee') || scenePrompt.includes('sitting across from each other')) {
