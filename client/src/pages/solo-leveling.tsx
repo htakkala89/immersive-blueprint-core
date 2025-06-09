@@ -18,6 +18,7 @@ import { InventorySystem } from "@/components/InventorySystem";
 import { CombatTactics } from "@/components/CombatTactics";
 import { EquipmentSystem, STARTING_EQUIPMENT, type Equipment, type EquippedGear } from "@/components/EquipmentSystem";
 import { GiftSystem, type GiftItem } from "@/components/GiftSystem";
+import { UnifiedShop, type ShopItem } from "@/components/UnifiedShop";
 import { IntimateActivityModal } from "@/components/IntimateActivityModal";
 import type { GameState as GameStateType } from "@shared/schema";
 
@@ -321,6 +322,7 @@ export default function SoloLeveling() {
   const [showCombatTactics, setShowCombatTactics] = useState(false);
   const [showEquipmentSystem, setShowEquipmentSystem] = useState(false);
   const [showGiftSystem, setShowGiftSystem] = useState(false);
+  const [showUnifiedShop, setShowUnifiedShop] = useState(false);
   const [playerEquippedGear, setPlayerEquippedGear] = useState<EquippedGear>({
     weapon: STARTING_EQUIPMENT.find(e => e.id === 'demon_king_daggers'),
     chest: STARTING_EQUIPMENT.find(e => e.id === 'shadow_cloak')
