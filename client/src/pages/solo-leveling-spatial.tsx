@@ -745,9 +745,9 @@ export default function SoloLevelingSpatial() {
             <motion.div
               className="absolute w-80 h-80"
               style={{
-                top: '24px',
-                right: '24px',
-                transform: 'translate(50%, -50%)'
+                top: 0,
+                right: 0,
+                transformOrigin: '24px 24px'
               }}
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
@@ -755,7 +755,7 @@ export default function SoloLevelingSpatial() {
               transition={{ type: 'spring', damping: 20, stiffness: 200 }}
             >
               {/* Central Crown */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+              <div className="absolute w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center" style={{ top: '24px', right: '24px', transform: 'translate(50%, -50%)' }}>
                 <Crown className="w-8 h-8 text-white" />
               </div>
               
@@ -778,9 +778,9 @@ export default function SoloLevelingSpatial() {
                     key={item.label}
                     className={`absolute w-20 h-20 liquid-glass-flowing rounded-full flex flex-col items-center justify-center text-white transition-all`}
                     style={{
-                      left: `calc(50% + ${x}px)`,
-                      top: `calc(50% + ${y}px)`,
-                      transform: 'translate(-50%, -50%)'
+                      right: `${24 - x}px`,
+                      top: `${24 + y}px`,
+                      transform: 'translate(50%, -50%)'
                     }}
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
