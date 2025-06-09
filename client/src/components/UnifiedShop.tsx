@@ -460,7 +460,7 @@ export function UnifiedShop({
                 const canBuy = canPurchase(item);
 
                 return (
-                  <Card key={item.id} className="bg-slate-800/50 border-slate-600 hover:border-purple-500/50 transition-colors">
+                  <Card key={item.id} data-item-id={item.id} className="bg-slate-800/50 border-slate-600 hover:border-purple-500/50 transition-colors">
                     <CardContent className="p-3 sm:p-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xl sm:text-2xl">{item.icon}</span>
