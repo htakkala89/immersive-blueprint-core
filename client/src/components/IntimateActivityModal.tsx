@@ -97,6 +97,13 @@ export function IntimateActivityModal({
   const handlePredefinedAction = async (actionId: string) => {
     setIsGenerating(true);
     await onAction(actionId);
+    
+    // Auto-generate progressive scene image after action
+    setTimeout(() => {
+      const imagePrompt = `${activity.setting}. Jin-Woo and Cha Hae-In in intimate moment, ${actionId.replace('_', ' ')}, romantic atmosphere, tasteful intimate scene, Solo Leveling anime art style, soft lighting, emotional connection.`;
+      onImageGenerate(imagePrompt);
+    }, 1500);
+    
     setIsGenerating(false);
   };
 

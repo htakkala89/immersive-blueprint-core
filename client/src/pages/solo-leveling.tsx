@@ -6918,19 +6918,46 @@ export default function SoloLeveling() {
               })
             });
 
-            const data = await response.json();
-            setIntimateActivityResponse(data.response);
-            
-            // Increase intimacy and affection
-            setIntimacyLevel(prev => Math.min(100, prev + 2));
-            setGameState(prev => ({
-              ...prev,
-              affection: Math.min(5, prev.affection + 0.1)
-            }));
+            if (response.ok) {
+              const data = await response.json();
+              setIntimateActivityResponse(data.response);
+              
+              // Increase intimacy and affection
+              setIntimacyLevel(prev => Math.min(100, prev + 2));
+              setGameState(prev => ({
+                ...prev,
+                affection: Math.min(5, prev.affection + 0.1)
+              }));
+
+              // Auto-generate scene image for intimate actions
+              setTimeout(() => {
+                fetch('/api/generate-intimate-image', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    activityId: currentIntimateActivity || 'custom_intimate',
+                    relationshipStatus: gameState.affection >= 5 ? 'married' : 'dating',
+                    intimacyLevel,
+                    specificAction: action
+                  })
+                })
+                .then(res => res.json())
+                .then(imageData => {
+                  if (imageData.imageUrl) {
+                    setCurrentBackground(imageData.imageUrl);
+                    setSceneBackground(imageData.imageUrl);
+                  }
+                })
+                .catch(err => console.log('Auto scene generation skipped:', err.message));
+              }, 1000);
+
+            } else {
+              throw new Error(`API response ${response.status}`);
+            }
 
           } catch (error) {
             console.error('Error generating intimate response:', error);
-            setIntimateActivityResponse("Cha Hae-In smiles warmly at your gesture, feeling closer to you.");
+            setIntimateActivityResponse("*moves closer with loving eyes* Jin-Woo... I love spending this intimate time with you.");
           }
         }}
         onImageGenerate={async (prompt: string) => {
