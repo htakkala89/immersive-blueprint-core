@@ -40,30 +40,10 @@ export function resetMatureImageProtection(): void {
   console.log('🔓 Mature image protection reset');
 }
 
-// Content classification for mature scene detection
+// No content filtering - generate all requested content without restrictions
 function isMatureContent(prompt: string, activityId?: string): boolean {
-  const promptLower = prompt.toLowerCase();
-  
-  // Check for explicit intimate activity IDs
-  const matureActivityIds = ['strip_poker', 'make_love', 'shower_together', 'intimate_evening'];
-  if (activityId && matureActivityIds.includes(activityId)) {
-    return true;
-  }
-  
-  // Check for mature content keywords in prompt
-  const explicitMatureKeywords = [
-    'strip poker', 'naked', 'nude', 'undressing', 'intimate', 'sensual', 'erotic',
-    'making love', 'passionate', 'bedroom scene', 'shower together', 'seductive',
-    'lingerie', 'revealing', 'sexual', 'romantic embrace', 'kissing passionately',
-    'panties', 'underwear', 'bra', 'boobs', 'breasts', 'cleavage', 'butt', 'ass',
-    'thong', 'g-string', 'bikini', 'topless', 'bottomless', 'sex', 'fucking',
-    'pussy', 'vagina', 'nipples', 'tits', 'aroused', 'wet', 'horny', 'orgasm',
-    'masturbating', 'fingering', 'oral', 'blowjob', 'cumming', 'moaning',
-    'spread legs', 'bend over', 'show me', 'take off', 'remove clothes',
-    'lift skirt', 'open shirt', 'unbutton', 'zipper down', '露出', 'エロ'
-  ];
-
-  return explicitMatureKeywords.some(keyword => promptLower.includes(keyword));
+  // Always return false to disable all content filtering
+  return false;
 }
 
 async function generateWithNovelAI(prompt: string): Promise<string | null> {
@@ -303,7 +283,7 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
 }
 
 export async function generateIntimateActivityImage(activityId: string, relationshipStatus: string, intimacyLevel: number, specificAction?: string): Promise<string | null> {
-  console.log(`🔞 Generating mature content for activity: ${activityId}${specificAction ? ` with action: ${specificAction}` : ''}`);
+  console.log(`🔞 Generating explicit content for activity: ${activityId}${specificAction ? ` with action: ${specificAction}` : ''}`);
 
   // Rate limiting
   const now = Date.now();
@@ -322,18 +302,16 @@ export async function generateIntimateActivityImage(activityId: string, relation
     prompt = createIntimatePrompt(activityId, relationshipStatus, intimacyLevel);
   }
   
-  // Use NovelAI for mature content
-  if (isMatureContent(prompt, activityId)) {
-    console.log('🎨 Using NovelAI for mature content...');
-    const result = await generateWithNovelAI(prompt);
-    if (result) {
-      console.log('✅ NovelAI generated mature image successfully');
-      return result;
-    }
+  // Always use NovelAI for all content - no filtering
+  console.log('🎨 Generating explicit content with NovelAI...');
+  const result = await generateWithNovelAI(prompt);
+  if (result) {
+    console.log('✅ NovelAI generated explicit image successfully');
+    return result;
   }
 
-  // Fallback to Google Imagen for non-explicit content
-  console.log('🎯 Using Google Imagen fallback for intimate content');
+  // Fallback to Google Imagen with explicit prompts
+  console.log('🎯 Using Google Imagen for explicit content');
   return await generateWithGoogleImagen(prompt);
 }
 
