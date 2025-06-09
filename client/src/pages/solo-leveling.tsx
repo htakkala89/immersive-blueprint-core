@@ -2290,6 +2290,51 @@ export default function SoloLeveling() {
       ],
       leadsTo: { love_flustered: 'FLUSTERED_RESPONSE', cute_embarrassed: 'CUTE_REACTION', be_serious: 'SERIOUS_MOMENT' }
     },
+    'FLUSTERED_RESPONSE': {
+      prompt: "Cha Hae-In becoming even more flustered from Jin-Woo's teasing. Adorable embarrassment, anime style.",
+      narration: "Your words make her even more flustered, her face turning a deeper shade of red.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "*covers her face with her hands* You're enjoying this way too much!" },
+        { sender: 'player', text: "I can't help it. You're absolutely adorable when you're like this." },
+        { sender: 'Cha Hae-In', text: "*peeks through her fingers* S-stop saying things like that... my heart can't take it." }
+      ],
+      choices: [
+        { text: "I'll stop if you want me to", detail: "Give her an out", type: 'stop_teasing' },
+        { text: "Your heart is racing?", detail: "Notice her reaction", type: 'heart_racing' },
+        { text: "Come here", detail: "Pull her close", type: 'pull_close' }
+      ],
+      leadsTo: { stop_teasing: 'GENTLE_MOMENT', heart_racing: 'HEART_CONFESSION', pull_close: 'INTIMATE_CLOSENESS' }
+    },
+    'CUTE_REACTION': {
+      prompt: "Cha Hae-In reacting cutely to Jin-Woo's compliment. Sweet romantic moment, anime style.",
+      narration: "Her embarrassed reaction is so endearing that your heart skips a beat.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "*looks down shyly* You think I'm... cute?" },
+        { sender: 'player', text: "The cutest. Especially when you try to hide your smile like that." },
+        { sender: 'Cha Hae-In', text: "*smiles despite herself* Jin-Woo... you're making me feel things I've never felt before." }
+      ],
+      choices: [
+        { text: "What kind of things?", detail: "Ask about her feelings", type: 'what_feelings' },
+        { text: "Good things, I hope", detail: "Hopeful response", type: 'good_things' },
+        { text: "I feel the same way", detail: "Mutual confession", type: 'feel_same' }
+      ],
+      leadsTo: { what_feelings: 'FEELING_EXPLORATION', good_things: 'HOPEFUL_MOMENT', feel_same: 'MUTUAL_FEELINGS' }
+    },
+    'SERIOUS_MOMENT': {
+      prompt: "Jin-Woo switching to a more serious tone with Cha Hae-In. Sincere romantic moment, anime style.",
+      narration: "You decide to be sincere with her, and the atmosphere becomes more intimate.",
+      chat: [
+        { sender: 'player', text: "Sorry for teasing you. I just... I love seeing all these different sides of you." },
+        { sender: 'Cha Hae-In', text: "*looks at him with soft eyes* Different sides?" },
+        { sender: 'Cha Hae-In', text: "You bring out parts of me I didn't know existed, Jin-Woo." }
+      ],
+      choices: [
+        { text: "You do the same for me", detail: "Mutual revelation", type: 'mutual_revelation' },
+        { text: "I want to know all of you", detail: "Deep interest", type: 'know_all_you' },
+        { text: "That makes me happy", detail: "Express joy", type: 'makes_happy' }
+      ],
+      leadsTo: { mutual_revelation: 'MUTUAL_DISCOVERY', know_all_you: 'DEEP_CONNECTION', makes_happy: 'HAPPINESS_SHARED' }
+    },
     'TENDER_EMBRACE': {
       prompt: "Jin-Woo and Cha Hae-In sharing a tender embrace. Emotional intimacy, anime style.",
       narration: "She melts into your arms, and for a moment, the world feels perfect.",
