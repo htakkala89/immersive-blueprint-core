@@ -500,6 +500,18 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+  const handleLocationTravel = (location: { id: string; name: string }) => {
+    setPlayerLocation(location.id);
+    setShowWorldMap(false);
+    setCurrentDialogue('');
+    setThoughtPrompts([]);
+    
+    // Generate scene for new location
+    setTimeout(() => {
+      generateSceneImage();
+    }, 100);
+  };
+
   const handleEnvironmentalInteraction = async (interactionPoint: any) => {
     setDialogueActive(true);
     setIsLoading(true);
@@ -1173,11 +1185,7 @@ export default function SoloLevelingSpatial() {
       <WorldMap
         isVisible={showWorldMap}
         onClose={() => setShowWorldMap(false)}
-        onLocationSelect={(location) => {
-          setPlayerLocation(location.id);
-          setShowWorldMap(false);
-          generateSceneImage();
-        }}
+        onLocationSelect={handleLocationTravel}
         currentTime={timeOfDay}
         chaHaeInLocation={chaHaeInCurrentLocation}
         playerAffection={gameState.affection}
