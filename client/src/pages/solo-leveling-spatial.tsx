@@ -639,11 +639,11 @@ export default function SoloLevelingSpatial() {
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            <div className="p-4 space-y-3 overflow-y-auto" style={{ maxHeight: '50vh' }}>
+            <div className="p-4 space-y-3">
               
-              {/* Dialogue Text */}
+              {/* Dialogue Text - Scrollable */}
               <motion.div
-                className="liquid-glass p-6"
+                className="liquid-glass p-4 max-h-32 overflow-y-auto"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
