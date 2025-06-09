@@ -5,8 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Heart, Crown, Zap, Coins, User, Sword, Star, 
   Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
-  MessageCircle, Gift, Coffee, Home, Building, Dumbbell
+  MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
+  ShoppingCart, Calendar, Battery, Award, Package
 } from 'lucide-react';
+
+import { DailyLifeHubModal } from '@/components/DailyLifeHubModal';
+import { IntimateActivityModal } from '@/components/IntimateActivityModal';
+import { UnifiedShop } from '@/components/UnifiedShop';
+import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 
 interface GameState {
   level: number;
@@ -70,6 +76,13 @@ export default function SoloLevelingSpatial() {
   const [sceneImage, setSceneImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const spatialViewRef = useRef<HTMLDivElement>(null);
+
+  // Modal states
+  const [showDailyLifeHub, setShowDailyLifeHub] = useState(false);
+  const [showIntimateModal, setShowIntimateModal] = useState(false);
+  const [showUnifiedShop, setShowUnifiedShop] = useState(false);
+  const [showEnergyModal, setShowEnergyModal] = useState(false);
+  const [activeActivity, setActiveActivity] = useState<string | null>(null);
 
   const worldLocations: Record<string, WorldLocation> = {
     hunter_association: {
@@ -618,12 +631,12 @@ export default function SoloLevelingSpatial() {
               
               {/* Radial Menu Items */}
               {[
-                { icon: User, label: 'Character', angle: 0, color: 'from-purple-600 to-purple-800' },
-                { icon: Sword, label: 'Inventory', angle: 60, color: 'from-blue-600 to-blue-800' },
-                { icon: Star, label: 'Quests', angle: 120, color: 'from-green-600 to-green-800' },
-                { icon: MapPin, label: 'World Map', angle: 180, color: 'from-red-600 to-red-800' },
-                { icon: Heart, label: 'Affection', angle: 240, color: 'from-pink-600 to-pink-800' },
-                { icon: Coins, label: 'Resources', angle: 300, color: 'from-yellow-600 to-yellow-800' }
+                { icon: User, label: 'Character', angle: 0, color: 'from-purple-600 to-purple-800', onClick: () => console.log('Character stats') },
+                { icon: Sword, label: 'Inventory', angle: 60, color: 'from-blue-600 to-blue-800', onClick: () => console.log('Inventory') },
+                { icon: Star, label: 'Quests', angle: 120, color: 'from-green-600 to-green-800', onClick: () => console.log('Quests') },
+                { icon: MapPin, label: 'World Map', angle: 180, color: 'from-red-600 to-red-800', onClick: () => console.log('World map') },
+                { icon: Heart, label: 'Constellation', angle: 240, color: 'from-pink-600 to-pink-800', onClick: () => console.log('Relationship constellation') },
+                { icon: Gift, label: 'Daily Life', angle: 300, color: 'from-yellow-600 to-yellow-800', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
               ].map((item, index) => {
                 const radius = 120;
                 const radian = (item.angle * Math.PI) / 180;
@@ -644,6 +657,7 @@ export default function SoloLevelingSpatial() {
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
+                    onClick={item.onClick}
                   >
                     <item.icon className="w-6 h-6 mb-1" />
                     <span className="text-xs font-medium">{item.label}</span>
@@ -671,6 +685,78 @@ export default function SoloLevelingSpatial() {
           />
         ))}
       </div>
+
+      {/* Feature Modals */}
+      <DailyLifeHubModal
+        isVisible={showDailyLifeHub}
+        onClose={() => setShowDailyLifeHub(false)}
+        gameState={gameState}
+        onActivitySelect={(activity: any) => {
+          const activityId = typeof activity === 'string' ? activity : activity.id;
+          setActiveActivity(activityId);
+          setShowDailyLifeHub(false);
+          setShowIntimateModal(true);
+        }}
+        onImageGenerated={(imageUrl) => setSceneImage(imageUrl)}
+        audioMuted={false}
+      />
+
+      <IntimateActivityModal
+        isVisible={showIntimateModal}
+        onClose={() => setShowIntimateModal(false)}
+        onReturnToHub={() => {
+          setShowIntimateModal(false);
+          setShowDailyLifeHub(true);
+        }}
+        activityType={activeActivity as 'shower_together' | 'cuddle_together' | 'bedroom_intimacy' | 'make_love' | null}
+        onAction={(action) => console.log('Intimate action:', action)}
+        intimacyLevel={gameState.intimacyLevel || 1}
+        affectionLevel={gameState.affection}
+        onImageGenerate={(prompt) => {
+          fetch('/api/generate-intimate-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, activityId: activeActivity })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.imageUrl) {
+              setSceneImage(data.imageUrl);
+            }
+          });
+        }}
+      />
+
+      <UnifiedShop
+        isVisible={showUnifiedShop}
+        onClose={() => setShowUnifiedShop(false)}
+        playerGold={gameState.gold || 0}
+        playerLevel={gameState.level}
+        currentAffection={gameState.affection}
+        currentIntimacy={gameState.intimacyLevel || 0}
+        onPurchase={(item: any) => {
+          setGameState(prev => ({
+            ...prev,
+            gold: (prev.gold || 0) - item.cost,
+            inventory: [...prev.inventory, item]
+          }));
+        }}
+      />
+
+      <EnergyReplenishmentModal
+        isVisible={showEnergyModal}
+        onClose={() => setShowEnergyModal(false)}
+        currentEnergy={gameState.energy || 0}
+        maxEnergy={gameState.maxEnergy || 100}
+        playerGold={gameState.gold || 0}
+        onEnergyRestore={(amount, cost) => {
+          setGameState(prev => ({
+            ...prev,
+            energy: Math.min((prev.energy || 0) + amount, prev.maxEnergy || 100),
+            gold: (prev.gold || 0) - cost
+          }));
+        }}
+      />
     </div>
   );
 }
