@@ -55,7 +55,7 @@ import {
 import { DailyLifeHubModal } from '@/components/DailyLifeHubModal';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { UnifiedShop } from '@/components/UnifiedShop';
-import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
+import EnergyReplenishmentModal from './EnergyReplenishmentModal';
 
 interface GameState {
   level: number;
@@ -659,34 +659,45 @@ export default function SoloLeveling() {
 
       {/* Modals */}
       <DailyLifeHubModal
-        isOpen={showDailyLifeHub}
+        isVisible={showDailyLifeHub}
         onClose={() => setShowDailyLifeHub(false)}
         gameState={gameState}
-        setGameState={setGameState}
-        onActivitySelect={(activity) => {
-          setActiveActivity(activity);
+        onActivitySelect={(activity: any) => {
+          setActiveActivity(activity.id);
           setShowIntimateModal(true);
           setShowDailyLifeHub(false);
+        }}
+        onImageGenerated={(imageUrl: string) => {
+          console.log('Image generated:', imageUrl);
         }}
       />
 
       <IntimateActivityModal
-        isOpen={showIntimateModal}
+        isVisible={showIntimateModal}
         onClose={() => setShowIntimateModal(false)}
-        activity={activeActivity}
-        gameState={gameState}
-        onComplete={(newState) => {
-          setGameState(newState);
+        onReturnToHub={() => {
           setShowIntimateModal(false);
-          setActiveActivity('');
+          setShowDailyLifeHub(true);
+        }}
+        activityType={activeActivity as any}
+        onAction={(action: string) => {
+          console.log('Action:', action);
         }}
       />
 
       <UnifiedShop
-        isOpen={showUnifiedShop}
+        isVisible={showUnifiedShop}
         onClose={() => setShowUnifiedShop(false)}
-        gameState={gameState}
-        setGameState={setGameState}
+        playerGold={gameState.gold || 0}
+        playerLevel={gameState.level}
+        currentAffection={gameState.affection}
+        onPurchase={(item: any, cost: number) => {
+          setGameState(prev => ({
+            ...prev,
+            gold: prev.gold - cost,
+            inventory: [...prev.inventory, item]
+          }));
+        }}
       />
 
       <EnergyReplenishmentModal
