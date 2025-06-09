@@ -474,6 +474,19 @@ export function WorldMap({
         </div>
       </div>
 
+      {/* Dismissible Overlay */}
+      <AnimatePresence>
+        {selectedLocation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[15]"
+            onClick={() => setSelectedLocation(null)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Location Card */}
       <AnimatePresence>
         {selectedLocation && (
@@ -481,9 +494,25 @@ export function WorldMap({
             initial={{ opacity: 0, scale: 0.9, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 50 }}
-            className="absolute bottom-6 left-6 right-6 max-w-lg mx-auto z-10"
+            className="absolute bottom-6 left-6 right-6 max-w-lg mx-auto z-20"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="liquid-glass p-6 rounded-2xl border border-purple-400/30 relative">
+            <div className="liquid-glass-enhanced p-6 rounded-2xl border border-purple-400/20 relative shadow-2xl shadow-purple-500/20 overflow-hidden" style={{
+              backdropFilter: 'blur(60px) saturate(200%)',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03))',
+              borderImage: 'linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1)) 1'
+            }}>
+              {/* Flowing Liquid Highlights */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-60" />
+                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-white/20 to-transparent opacity-40" />
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-400/10 via-transparent to-blue-400/10 animate-pulse" />
+              </div>
+              
+              {/* Subtle Distortion Effect */}
+              <div className="absolute inset-0 rounded-2xl" style={{
+                background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(168,85,247,0.1) 0%, transparent 50%)'
+              }} />
               {/* Close Button */}
               <Button
                 onClick={() => setSelectedLocation(null)}
@@ -494,9 +523,34 @@ export function WorldMap({
                 <X className="w-4 h-4" />
               </Button>
 
-              {/* Location Image */}
-              <div className="w-full h-32 bg-gradient-to-r from-purple-600/30 to-blue-600/30 rounded-lg mb-4 flex items-center justify-center">
-                <span className="text-3xl">🏢</span>
+              {/* Location Preview Image */}
+              <div className="w-full h-40 rounded-lg mb-4 overflow-hidden relative">
+                <img 
+                  src={`/api/generate-scene-image?location=${selectedLocation.id}&timeOfDay=${currentTime}&preview=true`}
+                  alt={selectedLocation.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to gradient background if image fails to load
+                    const target = e.currentTarget;
+                    const fallback = target.nextElementSibling as HTMLDivElement;
+                    target.style.display = 'none';
+                    if (fallback) {
+                      fallback.style.display = 'flex';
+                      fallback.classList.remove('hidden');
+                    }
+                  }}
+                />
+                <div className="w-full h-full bg-gradient-to-r from-purple-600/30 to-blue-600/30 rounded-lg hidden items-center justify-center">
+                  <span className="text-3xl">🏢</span>
+                </div>
+                
+                {/* Time of Day Overlay */}
+                <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full text-xs text-white">
+                  {currentTime}
+                </div>
+                
+                {/* Atmospheric Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
               </div>
 
               {/* Location Info */}
