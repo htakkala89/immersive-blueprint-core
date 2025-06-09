@@ -299,22 +299,22 @@ export function GiftSystem({
 
           {/* Gift Catalog */}
           <div className="flex-1 p-3 sm:p-6 overflow-y-auto">
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-h-96 overflow-y-auto">
               {filteredGifts.map(gift => {
                 const canAfford = playerGold >= gift.price;
 
                 return (
                   <Card key={gift.id} className="bg-slate-800/50 border-slate-600 hover:border-pink-500/50 transition-colors">
-                    <CardContent className="p-4">
+                    <CardContent className="p-3 sm:p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-2xl">{gift.icon}</span>
+                        <span className="text-xl sm:text-2xl">{gift.icon}</span>
                         <Badge className={`${getRarityColor(gift.rarity)} text-white text-xs`}>
                           {gift.rarity}
                         </Badge>
                       </div>
                       
-                      <h4 className="text-white font-medium mb-2">{gift.name}</h4>
-                      <p className="text-slate-300 text-xs mb-3">{gift.description}</p>
+                      <h4 className="text-white font-medium mb-2 text-sm sm:text-base truncate">{gift.name}</h4>
+                      <p className="text-slate-300 text-xs mb-3 line-clamp-2">{gift.description}</p>
                       
                       <div className="space-y-1 mb-3">
                         <div className="flex justify-between text-xs">
@@ -328,17 +328,17 @@ export function GiftSystem({
                       </div>
 
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-yellow-400 font-medium">{gift.price} Gold</span>
+                        <span className="text-yellow-400 font-medium text-xs sm:text-sm">{gift.price} Gold</span>
                       </div>
 
                       <Button
                         onClick={() => setSelectedGift(gift)}
                         disabled={!canAfford}
                         size="sm"
-                        className="w-full mb-2"
+                        className="w-full mb-2 text-xs sm:text-sm"
                         variant={canAfford ? "default" : "secondary"}
                       >
-                        {canAfford ? 'Preview Gift' : 'Not Enough Gold'}
+                        {canAfford ? 'Preview' : 'Need Gold'}
                       </Button>
                     </CardContent>
                   </Card>
