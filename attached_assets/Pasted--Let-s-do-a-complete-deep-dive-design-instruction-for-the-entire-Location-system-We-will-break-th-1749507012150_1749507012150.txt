@@ -1,0 +1,66 @@
+ Let's do a complete, deep-dive design instruction for the entire Location system.
+
+We will break this down into the core philosophy, the individual components, the background logic that makes it feel alive, and the step-by-step user experience. This will be the definitive guide for your team to build this crucial system.
+
+System 8 (Expanded): The World and Location System
+Design Philosophy: Locations are not interchangeable backgrounds; they are the primary containers for context. Each location dictates the mood, the available activities, the topics of conversation, and character presence. For the user, the choice of where to go must feel as meaningful as the choice of what to say. The world itself is a character in our story.
+
+Part 1: Core Components
+These are the fundamental building blocks of the location system that the user will see and interact with.
+
+Component A: The World Map
+Purpose: The World Map is the central hub for all travel. It is the "table of contents" for the world.
+Access: The user accesses it exclusively through the Monarch's Aura (System 3) by tapping the 'World Map' rune. This is an intentional action, not a persistent button.
+UI/UX:
+Visual Style: It is not a realistic Google Map. It is a stylized, dark, ethereal projection of Seoul, glowing with the Monarch's purple and gold energy. Key districts might be shaded, but individual streets are not visible. It should feel like a magical, system-level view.
+Interaction: The user can pan and zoom slightly. The main interaction is tapping on Location Nodes.
+Component B: The Location Node
+Purpose: A Location Node is a discoverable, interactive point on the World Map that represents a place the user can travel to.
+UI/UX - The States of a Node: The visual state of each node provides the user with crucial information at a glance.
+Default State: A gently pulsing purple rune, indicating a known, accessible location.
+Locked State: The node is dim, desaturated, and has a small, glowing purple lock icon (🔒) over it. Tapping it will show the unlock condition (e.g., "Progress further in the main story" or "Deepen your bond with Cha Hae-In").
+Presence State: If Cha Hae-In is currently at that location, a soft, golden aura will pulse around the node. This is a critical feature, as it guides the player on where to go to find her without breaking immersion.
+Quest State: If a location is tied to an active quest, a sharp, golden exclamation point rune (!) will appear next to the node.
+Hover/Tap State: When the user taps a node, it glows brightly, and the Location Card appears.
+Component C: The Location Card
+Purpose: This is the pop-up that provides details about a location before the user commits to traveling there.
+UI/UX:
+Visual Style: This panel is a prime example of our liquid glassmorphism aesthetic. It's a floating, semi-transparent pane with flowing borders and a pronounced blur effect on the map behind it.
+Contents:
+Header: The Location Name (e.g., "Hunter Association Guild Hall").
+Image: A beautiful, high-quality preview image of the location's Spatial View.
+Description: A short, evocative description of the place.
+Presence Info: A clear text line: "Cha Hae-In is here" or "Cha Hae-In is not here."
+Action Button: A single, clear button labeled "Travel."
+Component D: The Location Itself (The Spatial View)
+Purpose: This is the destination—the interactive, 2.5D "living diorama" where all conversations and activities take place, as defined in System 1.
+UI/UX: Each location is a unique visual and auditory environment.
+Visuals: Has its own high-fidelity art, dynamic lighting/weather, and unique interactive objects (marked with purple dots).
+Audio: Has its own ambient soundscape (e.g., the quiet hum of computers at the Guild, the clatter of dishes in a cafe, the sound of wind in the park).
+Part 2: The Logic Layer
+This is the "brain" behind the system that makes the world feel dynamic and responsive.
+
+Logic A: The Time-of-Day System
+Function: The in-game world operates on a 24-hour clock (which can be accelerated). The time dictates the lighting in every Spatial View and influences Cha Hae-In's schedule.
+Phases: Morning (6 AM - 12 PM), Afternoon (12 PM - 6 PM), Evening (6 PM - 10 PM), Night (10 PM - 6 AM).
+Logic B: Character Scheduling (Cha Hae-In's Presence)
+Function: This is the most important logic for the romance narrative. Cha Hae-In has her own schedule. The system checks the current in-game time and her narrative status to determine her location. This makes finding her a rewarding part of the experience.
+Example Schedule:
+Morning: High chance to be at her Apartment or a favorite Coffee Shop.
+Afternoon: Almost always at the Hunter Association or the Training Facility.
+Evening: Varies greatly. Could be at her Apartment, a Restaurant for a planned date, or another special location.
+Night: Exclusively at her Apartment (and only accessible to the player once the relationship is very strong).
+Logic C: Unlocking New Locations
+Function: The player's world expands as they progress. Locations are unlocked by narrative triggers, not by just exploring.
+Unlock Conditions:
+Story Progression: Completing a major quest might open up a new district or a critical dungeon location.
+Relationship Progression: Reaching a specific level of affection and trust is the only way to unlock highly personal locations like Cha Hae-In's Apartment.
+Part 3: The User Experience Flow (Example)
+Here is the step-by-step journey for a player who wants to find Cha Hae-In on a typical afternoon.
+
+The Goal: The player wants to talk to Cha Hae-In. It's the afternoon.
+Access Map: The player performs the Monarch's Aura gesture and selects the World Map rune.
+Information Gathering: They scan the map of Seoul. They see the node for the "Hunter Association" is pulsing with a soft, golden aura. They instantly know she is there.
+Confirmation: They tap the "Hunter Association" node. The beautiful liquid glassmorphism Location Card slides into view. It shows a picture of the Guild's main hall and the text confirms: "Cha Hae-In is here."
+Action: They tap the "Travel" button.
+Arrival: A swift, cinematic transition plays. The player is now in the Hunter Association Spatial View. The lighting reflects the afternoon sun streaming through the windows, and they can see Cha Hae-In's animated avatar across the hall, talking to another hunter. The journey is complete.

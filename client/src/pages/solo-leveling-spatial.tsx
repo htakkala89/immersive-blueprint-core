@@ -16,6 +16,7 @@ import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellation } from '@/components/RelationshipConstellation';
 import { DungeonRaid } from '@/components/DungeonRaid';
 import { MonarchArmory } from '@/components/MonarchArmory';
+import { WorldMap } from '@/components/WorldMap';
 
 interface GameState {
   level: number;
@@ -69,7 +70,6 @@ export default function SoloLevelingSpatial() {
     maxEnergy: 100
   });
 
-  const [currentLocation, setCurrentLocation] = useState('hunter_association');
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('afternoon');
   const [weather, setWeather] = useState<'clear' | 'rain' | 'snow' | 'cloudy'>('clear');
   const [dialogueActive, setDialogueActive] = useState(false);
@@ -185,12 +185,48 @@ export default function SoloLevelingSpatial() {
   const [showIntimateModal, setShowIntimateModal] = useState(false);
   const [showUnifiedShop, setShowUnifiedShop] = useState(false);
   const [showEnergyModal, setShowEnergyModal] = useState(false);
+  const [showWorldMap, setShowWorldMap] = useState(false);
+  const [playerLocation, setPlayerLocation] = useState('hunter_association');
+  const [gameTime, setGameTime] = useState(new Date());
   const [showConstellation, setShowConstellation] = useState(false);
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
   const [showArmory, setShowArmory] = useState(false);
   const [activeActivity, setActiveActivity] = useState<string | null>(null);
 
-  const worldLocations: Record<string, WorldLocation> = {
+  // Time and scheduling system
+  const getCurrentTimeOfDay = () => {
+    const hour = gameTime.getHours();
+    if (hour >= 6 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 18) return 'afternoon';
+    if (hour >= 18 && hour < 22) return 'evening';
+    return 'night';
+  };
+
+  const getChaHaeInLocation = () => {
+    const currentTime = getCurrentTimeOfDay();
+    const affection = gameState.affection;
+    
+    // Simple probability-based location system
+    if (currentTime === 'morning') {
+      if (affection >= 70 && Math.random() < 0.8) return 'chahaein_apartment';
+      if (Math.random() < 0.7) return 'training_facility';
+      return 'hongdae_cafe';
+    } else if (currentTime === 'afternoon') {
+      if (Math.random() < 0.85) return 'hunter_association';
+      return 'training_facility';
+    } else if (currentTime === 'evening') {
+      if (affection >= 40 && Math.random() < 0.6) return 'myeongdong_restaurant';
+      if (affection >= 70 && Math.random() < 0.7) return 'chahaein_apartment';
+      return 'hangang_park';
+    } else { // night
+      if (affection >= 70 && Math.random() < 0.95) return 'chahaein_apartment';
+      return null; // She's not available at night unless high affection
+    }
+  };
+
+  const chaHaeInCurrentLocation = getChaHaeInLocation();
+
+  const worldLocations = {
     hunter_association: {
       id: 'hunter_association',
       name: 'Hunter Association',
