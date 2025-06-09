@@ -3426,7 +3426,7 @@ export default function SoloLeveling() {
         // Add Game Master narration with voice
         if (nextStory.narration) {
           setTimeout(() => {
-            playVoice(nextStory.narration, 'game-master');
+            playVoice(nextStory.narration, 'game-master', audioMuted);
           }, 500);
         }
         

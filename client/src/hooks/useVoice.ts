@@ -126,7 +126,12 @@ export function useVoice(): VoiceHookReturn {
     setTimeout(() => processQueue(), 500);
   }, []);
 
-  const playVoice = useCallback(async (text: string, character: string) => {
+  const playVoice = useCallback(async (text: string, character: string, muted?: boolean) => {
+    // Skip playback if muted
+    if (muted) {
+      return;
+    }
+
     // Don't generate voice for very short text or non-speech content
     if (text.length < 10 || /^[^a-zA-Z]*$/.test(text)) {
       return;

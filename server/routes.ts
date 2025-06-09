@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateSceneImage, generateIntimateActivityImage, resetMatureImageProtection } from "./imageGenerator";
@@ -8,6 +8,12 @@ import { log } from "./vite";
 import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+
+interface RequestWithFiles extends Request {
+  files?: {
+    [key: string]: any;
+  };
+}
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -525,6 +531,47 @@ MANDATORY: Each response must be completely unique and never repeated. Show emot
     } catch (error) {
       console.error('Failed to reset mature protection:', error);
       res.status(500).json({ error: "Failed to reset protection" });
+    }
+  });
+
+  // Speech-to-text using Gemini API
+  app.post("/api/speech-to-text", async (req, res) => {
+    try {
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({ error: "Gemini API key not configured" });
+      }
+
+      const audioFile = req.files?.audio;
+      if (!audioFile) {
+        return res.status(400).json({ error: "No audio file provided" });
+      }
+
+      // Convert audio to base64 for Gemini API
+      const audioBuffer = Array.isArray(audioFile) ? audioFile[0].data : audioFile.data;
+      const audioBase64 = audioBuffer.toString('base64');
+
+      // Use Gemini for speech-to-text
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+      const result = await model.generateContent([
+        {
+          inlineData: {
+            mimeType: "audio/webm",
+            data: audioBase64
+          }
+        },
+        "Transcribe this audio to text. Return only the spoken words without any additional formatting or explanation."
+      ]);
+
+      const response = await result.response;
+      const text = response.text();
+
+      log(`🎤 Speech transcribed: ${text}`);
+      res.json({ text: text.trim() });
+
+    } catch (error) {
+      console.error('Speech-to-text error:', error);
+      res.status(500).json({ error: "Failed to transcribe speech" });
     }
   });
 
