@@ -3338,6 +3338,51 @@ export default function SoloLeveling() {
       ],
       leadsTo: { perfect_match: 'CONFIRMED_MATCH', made_for_each: 'DESTINED_PAIR' }
     },
+    'CONFIRMED_MATCH': {
+      prompt: "Cha Hae-In and Jin-Woo in a romantic moment, perfect understanding between them, hearts connecting, Solo Leveling art style.",
+      narration: "*Her heart races as she realizes the depth of your connection* Yes... we are perfect matches, Jin-Woo. In every way that matters.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "*reaches for your hand with a radiant smile* You're right, Jin-Woo. We understand each other completely. I feel like I've been waiting my whole life to meet you." },
+        { sender: 'player', text: "And I've been waiting for someone who could understand my heart." },
+        { sender: 'Cha Hae-In', text: "*intertwines fingers with yours* This feels so right, so natural..." }
+      ],
+      choices: [
+        { text: "Take her hand closer", detail: "Deepen the connection", type: 'take_hand' },
+        { text: "Move closer to her", detail: "Close the distance", type: 'move_closer' },
+        { text: "Look into her eyes", detail: "Share the moment", type: 'eye_contact' }
+      ],
+      leadsTo: { take_hand: 'HAND_HOLDING', move_closer: 'ROMANTIC_MOMENT', eye_contact: 'INTIMATE_GAZE' }
+    },
+    'DESTINED_PAIR': {
+      prompt: "Jin-Woo and Cha Hae-In under starlight, destiny bringing them together, romantic fate, Solo Leveling style.",
+      narration: "*She looks into your eyes with wonder and certainty* You really believe we were destined to find each other, don't you? *her voice soft with emotion* I... I think you might be right.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "*steps even closer, her eyes shining* If this is destiny, Jin-Woo, then I'm grateful for every choice that led me to you. You make me feel complete." },
+        { sender: 'player', text: "Every battle, every struggle... it all led me to this moment with you." },
+        { sender: 'Cha Hae-In', text: "*voice trembling with emotion* Then let's not waste another moment of this destiny we've been given." }
+      ],
+      choices: [
+        { text: "Kiss her gently", detail: "Follow your heart", type: 'gentle_kiss' },
+        { text: "Hold her close", detail: "Embrace destiny", type: 'hold_close' },
+        { text: "Promise forever", detail: "Commit to this fate", type: 'promise_forever' }
+      ],
+      leadsTo: { gentle_kiss: 'FIRST_KISS', hold_close: 'ROMANTIC_EMBRACE', promise_forever: 'ETERNAL_PROMISE' }
+    },
+    'INTIMATE_GAZE': {
+      prompt: "Jin-Woo and Cha Hae-In sharing an intimate, prolonged eye contact moment. Deep connection, anime style with soft lighting.",
+      narration: "*Your eyes meet and hold, creating an electric moment of perfect understanding. Time seems to stop as you both recognize the depth of what's between you.*",
+      chat: [
+        { sender: 'Cha Hae-In', text: "*whispers softly* The way you look at me... like I'm the only person in the world that matters." },
+        { sender: 'player', text: "Because to me, you are." },
+        { sender: 'Cha Hae-In', text: "*blushes deeply, unable to look away* Jin-Woo..." }
+      ],
+      choices: [
+        { text: "Tell her how you feel", detail: "Open your heart", type: 'confess_feelings' },
+        { text: "Kiss her softly", detail: "Let actions speak", type: 'soft_kiss' },
+        { text: "Hold this moment", detail: "Cherish the connection", type: 'cherish_gaze' }
+      ],
+      leadsTo: { confess_feelings: 'LOVE_DECLARATION', soft_kiss: 'FIRST_KISS', cherish_gaze: 'ROMANTIC_MOMENT' }
+    },
     'CLEAR_VISION': {
       prompt: "Cha Hae-In seeing herself clearly through Jin-Woo's eyes. Self-clarity, anime style.",
       narration: "She finally sees herself as you see her.",
