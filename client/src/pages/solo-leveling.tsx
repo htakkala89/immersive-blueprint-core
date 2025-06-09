@@ -606,15 +606,17 @@ export default function SoloLeveling() {
                 <CardContent className="p-8">
                   
                   {/* Current Scene Image */}
-                  {currentImage && (
-                    <div className="mb-6">
-                      <img 
-                        src={currentImage}
-                        alt="Current scene"
-                        className="w-full h-64 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
+                  <div className="mb-6">
+                    <img 
+                      src={currentImage || `/api/scene-image?scene=${gameState.currentScene}`}
+                      alt="Current scene"
+                      className="w-full h-64 object-cover rounded-lg border border-purple-400/30"
+                      onError={(e) => {
+                        // Fallback to a default image if generation fails
+                        (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDQwMCAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjU2IiBmaWxsPSJncmFkaWVudCgjZ3JhZDEpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQxIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzY2NjZkYzsiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOTMzM2VhOyIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjIwMCIgeT0iMTI4IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4Ij5Mb2FkaW5nIFNjZW5lLi4uPC90ZXh0Pgo8L3N2Zz4=';
+                      }}
+                    />
+                  </div>
                   
                   {/* Narration */}
                   <div className="mb-6">
@@ -647,6 +649,18 @@ export default function SoloLeveling() {
                         </div>
                       </Button>
                     ))}
+                  </div>
+
+                  {/* Image Generation Button */}
+                  <div className="mt-6 text-center">
+                    <Button
+                      onClick={generateSceneImage}
+                      variant="outline"
+                      className="border-purple-500/30 hover:bg-purple-500/10 text-white"
+                    >
+                      <Camera className="w-4 h-4 mr-2" />
+                      Generate Scene Image
+                    </Button>
                   </div>
 
                   {/* Loading State */}
@@ -1088,19 +1102,19 @@ export default function SoloLeveling() {
                   
                   <Button 
                     className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
-                    disabled={gameState.energy < raid.energyCost}
+                    disabled={(gameState.energy || 0) < raid.energyCost}
                     onClick={() => {
                       // Handle raid start
                       setGameState(prev => ({
                         ...prev,
-                        energy: Math.max(0, prev.energy - raid.energyCost),
+                        energy: Math.max(0, (prev.energy || 0) - raid.energyCost),
                         experience: (prev.experience || 0) + parseInt(raid.rewards[0].split(' ')[0]),
                         gold: (prev.gold || 0) + parseInt(raid.rewards[1].split(' ')[0])
                       }));
                       setShowRaidModal(false);
                     }}
                   >
-                    {gameState.energy < raid.energyCost ? 'Insufficient Energy' : 'Start Raid'}
+                    {(gameState.energy || 0) < raid.energyCost ? 'Insufficient Energy' : 'Start Raid'}
                   </Button>
                 </CardContent>
               </Card>

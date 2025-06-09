@@ -152,8 +152,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { prompt, gameState } = req.body;
       
-      if (!prompt) {
-        return res.status(400).json({ error: "Prompt is required" });
+      // Accept either prompt or gameState format
+      if (!prompt && !gameState) {
+        return res.status(400).json({ error: "Prompt or gameState is required" });
+      }
+      
+      // If gameState is provided, use it directly
+      if (gameState) {
+        const imageUrl = await generateSceneImage(gameState);
+        return res.json({ imageUrl });
       }
 
       // Create a mock GameState object for the image generator
