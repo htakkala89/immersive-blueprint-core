@@ -4340,43 +4340,7 @@ export default function SoloLeveling() {
         />
       )}
 
-      {/* Equipment System */}
-      {showEquipmentSystem && (
-        <EquipmentSystem
-          isVisible={showEquipmentSystem}
-          onClose={() => setShowEquipmentSystem(false)}
-          playerLevel={gameState.level}
-          equippedGear={playerEquippedGear}
-          availableEquipment={availableEquipment}
-          onEquip={(equipment) => {
-            const slot = equipment.slot as keyof EquippedGear;
-            setPlayerEquippedGear(prev => ({
-              ...prev,
-              [slot]: equipment
-            }));
-            
-            // Remove from available equipment
-            setAvailableEquipment(prev => prev.filter(item => item.id !== equipment.id));
-            
-            addChatMessage('System', `Equipped ${equipment.name} in ${equipment.slot} slot!`);
-          }}
-          onUnequip={(slot) => {
-            const equippedItem = playerEquippedGear[slot as keyof EquippedGear];
-            if (equippedItem) {
-              // Add back to available equipment
-              setAvailableEquipment(prev => [...prev, equippedItem]);
-              
-              // Remove from equipped gear
-              setPlayerEquippedGear(prev => ({
-                ...prev,
-                [slot]: undefined
-              }));
-              
-              addChatMessage('System', `Unequipped ${equippedItem.name} from ${slot} slot!`);
-            }
-          }}
-        />
-      )}
+
 
       {/* Marketplace Modal */}
       {showMarketplace && (
@@ -4677,11 +4641,29 @@ export default function SoloLeveling() {
         equippedGear={playerEquippedGear}
         availableEquipment={availableEquipment}
         onEquip={(equipment) => {
+          const slot = equipment.slot as keyof EquippedGear;
+          
+          // If something is already equipped in this slot, unequip it first
+          const currentlyEquipped = playerEquippedGear[slot];
+          if (currentlyEquipped) {
+            // Remove current equipment stats
+            const currentStats = currentlyEquipped.stats;
+            setGameState(prev => ({
+              ...prev,
+              maxHealth: Math.max(100, prev.maxHealth - (currentStats.health || 0)),
+              health: Math.max(1, prev.health - (currentStats.health || 0)),
+              maxMana: Math.max(50, prev.maxMana - (currentStats.mana || 0)),
+              mana: Math.max(0, prev.mana - (currentStats.mana || 0))
+            }));
+          }
+          
+          // Equip new item
           setPlayerEquippedGear(prev => ({
             ...prev,
-            [equipment.slot]: equipment
+            [slot]: equipment
           }));
-          // Update game state with equipment bonuses
+          
+          // Apply new equipment stats
           const stats = equipment.stats;
           setGameState(prev => ({
             ...prev,
@@ -4690,14 +4672,18 @@ export default function SoloLeveling() {
             maxMana: prev.maxMana + (stats.mana || 0),
             mana: prev.mana + (stats.mana || 0)
           }));
+          
+          addChatMessage('System', `Equipped ${equipment.name}! Attack +${stats.attack || 0}, Defense +${stats.defense || 0}`);
         }}
         onUnequip={(slot) => {
           const unequipped = playerEquippedGear[slot as keyof EquippedGear];
           if (unequipped) {
+            // Remove from equipped gear
             setPlayerEquippedGear(prev => ({
               ...prev,
               [slot]: undefined
             }));
+            
             // Remove equipment bonuses
             const stats = unequipped.stats;
             setGameState(prev => ({
@@ -4707,6 +4693,8 @@ export default function SoloLeveling() {
               maxMana: Math.max(50, prev.maxMana - (stats.mana || 0)),
               mana: Math.max(0, prev.mana - (stats.mana || 0))
             }));
+            
+            addChatMessage('System', `Unequipped ${unequipped.name}. Stats reduced by Attack -${stats.attack || 0}, Defense -${stats.defense || 0}`);
           }
         }}
       />
