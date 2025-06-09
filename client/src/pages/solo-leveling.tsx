@@ -155,21 +155,16 @@ export default function SoloLeveling() {
   
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const characterProgression = useCharacterProgression(gameState, setGameState);
-  const { playVoice, audioMuted, autoPlayVoice } = useVoice();
+  const { playVoice } = useVoice();
   const { 
-    generateSceneNarration, 
-    generateChoiceNarration, 
-    generateIntimateNarration,
-    generateDynamicResponse,
-    generateCustomChatResponse,
-    generateAutoMessage,
-    isNarrationEnabled,
-    toggleNarration,
-    isLoading: narrationLoading,
-    stopNarration
+    generateStoryNarration,
+    stopNarration,
+    isPlaying,
+    isLoading: narrationLoading
   } = useStoryNarration();
   
-  const { achievements, newAchievements, clearNewAchievements } = useAchievementSystem(gameState);
+  const achievementSystem = useAchievementSystem();
+  const isNarrationEnabled = true; // Default to enabled
 
   // Core story scenes and game logic
   const story: Record<string, StoryScene> = {
@@ -240,7 +235,7 @@ export default function SoloLeveling() {
       
       const newStory = story[nextScene];
       if (newStory.narration && isNarrationEnabled) {
-        await generateSceneNarration(newStory.narration);
+        await generateStoryNarration(newStory.narration);
       }
     }
   };
@@ -340,11 +335,28 @@ export default function SoloLeveling() {
 
   if (!gameStarted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-8 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Solo Leveling
-          </h1>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center relative overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute top-10 left-10 w-20 h-20 bg-blue-500/10 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-32 h-32 bg-purple-500/10 rounded-full animate-pulse animation-delay-300"></div>
+        
+        <div className="text-center relative z-10 max-w-md mx-auto px-6">
+          <div className="mb-8">
+            <h1 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Solo Leveling
+            </h1>
+            <p className="text-xl text-slate-300 leading-relaxed">
+              You are Sung Jin-Woo, the weakest E-rank hunter who will become the strongest.
+            </p>
+          </div>
+          
+          <div className="space-y-4 mb-8 text-slate-400 text-sm">
+            <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-4 border border-slate-600/30">
+              <p>Your journey begins at the Hunter's Association, where you're about to meet Cha Hae-In of the White Tiger Guild for the first time.</p>
+            </div>
+          </div>
+          
           <button
             onClick={() => {
               setGameStarted(true);
@@ -353,10 +365,17 @@ export default function SoloLeveling() {
                 generateSceneNarration(newStory.narration);
               }
             }}
-            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg"
+            className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 transform hover:scale-105 active:scale-95"
           >
-            Start Game
+            <span className="flex items-center justify-center space-x-2">
+              <span>Begin Your Journey</span>
+              <div className="w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity"></div>
+            </span>
           </button>
+          
+          <p className="mt-6 text-xs text-slate-500">
+            Experience the world through Jin-Woo's eyes
+          </p>
         </div>
       </div>
     );
