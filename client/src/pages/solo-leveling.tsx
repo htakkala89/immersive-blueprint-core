@@ -3051,6 +3051,7 @@ export default function SoloLeveling() {
     console.log('Current scene:', gameState.currentScene);
     console.log('Current story leadsTo:', currentStory?.leadsTo);
     console.log('Looking for choice type:', choice.type);
+    console.log('Available story scenes:', Object.keys(story));
     
     // Check for Daily Life Hub navigation
     if (choice.type === 'daily_life_hub') {
@@ -3091,6 +3092,7 @@ export default function SoloLeveling() {
       const nextScene = currentStory.leadsTo[choice.type];
       const nextStory = story[nextScene];
       console.log('Next scene found:', nextScene);
+      console.log('Next story exists:', !!nextStory);
       
       if (nextStory) {
         setGameState(prev => ({ ...prev, currentScene: nextScene }));
@@ -3158,7 +3160,36 @@ export default function SoloLeveling() {
             }
           }, 500);
         }
+        return; // Early return for successful navigation
+      } else {
+        console.log('ERROR: Next story scene not found:', nextScene);
+        addChatMessage('system', `Navigation error: Scene "${nextScene}" not found`);
       }
+    } else {
+      console.log('No matching choice found in story navigation, using fallback handling');
+      console.log('Available choice types in leadsTo:', Object.keys(currentStory?.leadsTo || {}));
+      
+      // Fallback: try to find a scene that matches the choice text or type
+      if (choice.text.toLowerCase().includes('future') || choice.type.includes('future') || choice.type.includes('plan')) {
+        const fallbackScene = 'SHARED_FUTURE';
+        if (story[fallbackScene]) {
+          console.log('Using fallback navigation to:', fallbackScene);
+          const nextStory = story[fallbackScene];
+          setGameState(prev => ({ ...prev, currentScene: fallbackScene }));
+          addChatMessage('player', choice.text);
+          nextStory.chat.forEach((msg, index) => {
+            setTimeout(() => {
+              addChatMessage(msg.sender, msg.text);
+            }, index * 150);
+          });
+          generateSceneImage(nextStory.prompt);
+          return;
+        }
+      }
+      
+      // Generic fallback - add the choice as dialogue and continue in current scene
+      addChatMessage('player', choice.text);
+      addChatMessage('system', 'Cha Hae-In smiles warmly at your words, her eyes sparkling with affection.');
     }
 
     // Handle affection changes with visual feedback
