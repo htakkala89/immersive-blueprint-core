@@ -245,10 +245,10 @@ export default function SoloLeveling() {
           setGameState(prev => ({ ...prev, ...data.gameStateUpdate }));
         }
         
-        // Generate scene image if needed
-        if (data.generateImage) {
+        // Auto-generate scene image for every response
+        setTimeout(() => {
           generateSceneImage();
-        }
+        }, 500);
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -323,6 +323,11 @@ export default function SoloLeveling() {
         
         if (data.imageUrl) {
           setCurrentImage(data.imageUrl);
+        } else {
+          // Auto-generate scene image for new story content
+          setTimeout(() => {
+            generateSceneImage();
+          }, 1000);
         }
       }
     } catch (error) {
@@ -336,10 +341,22 @@ export default function SoloLeveling() {
   // Image generation functions
   const generateSceneImage = async () => {
     try {
+      setIsLoading(true);
+      setLoadingMessage("Generating scene image...");
+      
       const response = await fetch('/api/generate-scene-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gameState })
+        body: JSON.stringify({ 
+          gameState: {
+            ...gameState,
+            narration: currentStory.narration || "Shadow Monarch Sung Jin-Woo with S-Rank Hunter Cha Hae-In in a romantic scene",
+            currentScene: gameState.currentScene || "romantic",
+            storyPath: "romance_path",
+            level: gameState.level || 1,
+            affectionLevel: gameState.affection || 50
+          }
+        })
       });
 
       if (response.ok) {
@@ -351,6 +368,9 @@ export default function SoloLeveling() {
       }
     } catch (error) {
       console.error('Image generation error:', error);
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
     }
   };
 
