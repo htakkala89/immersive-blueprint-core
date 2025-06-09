@@ -196,6 +196,10 @@ export default function SoloLeveling() {
   const [activeMiniGame, setActiveMiniGame] = useState<string | null>(null);
   const [pendingChoice, setPendingChoice] = useState<any>(null);
   const [showChatTutorial, setShowChatTutorial] = useState(false);
+  const [showDevControls, setShowDevControls] = useState(false);
+  const [affectionInput, setAffectionInput] = useState('');
+  const [levelInput, setLevelInput] = useState('');
+  const [goldInput, setGoldInput] = useState('');
   const [currentChoiceIndex, setCurrentChoiceIndex] = useState(0);
   const [showSkillTree, setShowSkillTree] = useState(false);
   const [chatPinned, setChatPinned] = useState(false);
@@ -4205,6 +4209,15 @@ export default function SoloLeveling() {
 
 
 
+                  {/* Developer Controls Button */}
+                  <button 
+                    onClick={() => setShowDevControls(!showDevControls)}
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-purple-500/50 transition-all border border-purple-400/30 shadow-lg"
+                    title="Developer Controls"
+                  >
+                    ⚙️
+                  </button>
+
                   {/* Help Button */}
                   <button 
                     onClick={() => setShowChatTutorial(true)}
@@ -5210,6 +5223,146 @@ export default function SoloLeveling() {
         currentIntimacy={intimacyLevel}
         onPurchase={handleUnifiedShopPurchase}
       />
+
+      {/* Developer Controls Panel */}
+      {showDevControls && (
+        <div className="fixed bottom-4 right-4 z-50 w-80">
+          <div className="bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-purple-400/30 shadow-2xl p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-bold text-lg">Developer Controls</h3>
+              <button
+                onClick={() => setShowDevControls(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Affection Control */}
+              <div>
+                <label className="text-gray-300 text-sm block mb-2">
+                  Set Affection Level (0-5):
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    value={affectionInput}
+                    onChange={(e) => setAffectionInput(e.target.value)}
+                    className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+                    placeholder="Enter 0-5"
+                  />
+                  <button
+                    onClick={() => {
+                      const value = parseFloat(affectionInput);
+                      if (!isNaN(value) && value >= 0 && value <= 5) {
+                        setGameState(prev => ({ ...prev, affection: value }));
+                        setAffectionInput('');
+                        triggerAffectionSparkle();
+                      }
+                    }}
+                    className="bg-pink-600 hover:bg-pink-700 text-white px-3 py-2 rounded text-sm transition-colors"
+                  >
+                    Set
+                  </button>
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  Current: {gameState.affection.toFixed(1)}
+                </div>
+              </div>
+
+              {/* Level Control */}
+              <div>
+                <label className="text-gray-300 text-sm block mb-2">
+                  Set Player Level:
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={levelInput}
+                    onChange={(e) => setLevelInput(e.target.value)}
+                    className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+                    placeholder="Enter level"
+                  />
+                  <button
+                    onClick={() => {
+                      const value = parseInt(levelInput);
+                      if (!isNaN(value) && value >= 1 && value <= 100) {
+                        setGameState(prev => ({ ...prev, level: value }));
+                        setLevelInput('');
+                      }
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition-colors"
+                  >
+                    Set
+                  </button>
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  Current: {gameState.level}
+                </div>
+              </div>
+
+              {/* Gold Control */}
+              <div>
+                <label className="text-gray-300 text-sm block mb-2">
+                  Set Gold Amount:
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    value={goldInput}
+                    onChange={(e) => setGoldInput(e.target.value)}
+                    className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+                    placeholder="Enter gold"
+                  />
+                  <button
+                    onClick={() => {
+                      const value = parseInt(goldInput);
+                      if (!isNaN(value) && value >= 0) {
+                        setPlayerGold(value);
+                        setGoldInput('');
+                      }
+                    }}
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm transition-colors"
+                  >
+                    Set
+                  </button>
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  Current: {playerGold}
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setGameState(prev => ({ ...prev, affection: 5 }));
+                    triggerAffectionSparkle();
+                  }}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition-colors"
+                >
+                  Max Love
+                </button>
+                <button
+                  onClick={() => {
+                    setPlayerGold(999999);
+                  }}
+                  className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white px-2 py-1 rounded text-xs transition-colors"
+                >
+                  Rich Mode
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
