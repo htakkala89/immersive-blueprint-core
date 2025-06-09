@@ -687,10 +687,10 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
-        {/* Character Presence Indicator - Blue Tile for Cha Hae-In */}
+        {/* Character Presence Indicator - Enhanced Blue Tile for Cha Hae-In */}
         {currentLocationData.chaHaeInPresent && (
           <motion.div
-            className="absolute cursor-pointer"
+            className="absolute cursor-pointer z-20"
             style={{
               left: `${currentLocationData.chaPosition.x}%`,
               top: `${currentLocationData.chaPosition.y}%`,
@@ -700,66 +700,124 @@ export default function SoloLevelingSpatial() {
             whileTap={{ scale: 0.9 }}
             onClick={handleChaHaeInInteraction}
           >
-            {/* Blue Tile Indicator */}
+            {/* Enhanced Blue Tile */}
             <div className="relative">
+              {/* Main Tile */}
               <motion.div
-                className="w-16 h-16 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-2xl shadow-2xl border-2 border-blue-300/50 backdrop-blur-sm"
+                className="w-20 h-20 rounded-3xl shadow-2xl border-2 border-blue-300/60 backdrop-blur-md relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 50%, rgba(29, 78, 216, 0.9) 100%)'
+                }}
                 animate={{ 
-                  scale: [1, 1.05, 1],
+                  scale: [1, 1.03, 1],
+                  rotateY: [0, 5, 0],
                   boxShadow: [
-                    '0 10px 30px rgba(59, 130, 246, 0.3)',
-                    '0 15px 40px rgba(59, 130, 246, 0.5)',
-                    '0 10px 30px rgba(59, 130, 246, 0.3)'
+                    '0 10px 30px rgba(59, 130, 246, 0.4)',
+                    '0 20px 50px rgba(59, 130, 246, 0.6)',
+                    '0 10px 30px rgba(59, 130, 246, 0.4)'
                   ]
                 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               >
-                {/* Character Icon */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 text-lg font-bold">C</span>
+                {/* Liquid Glass Effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-white/30 to-transparent" />
+                
+                {/* Character Avatar */}
+                <div className="absolute inset-2 rounded-2xl overflow-hidden">
+                  <img 
+                    src={`/api/chat-scene-image?emotion=present_confident&location=${gameState.currentScene}&timeOfDay=${timeOfDay}`}
+                    alt="Cha Hae-In"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      const fallback = target.nextElementSibling as HTMLDivElement;
+                      target.style.display = 'none';
+                      if (fallback) {
+                        fallback.style.display = 'flex';
+                        fallback.classList.remove('hidden');
+                      }
+                    }}
+                  />
+                  {/* Fallback */}
+                  <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 hidden items-center justify-center">
+                    <span className="text-white text-2xl font-bold">C</span>
                   </div>
+                  
+                  {/* Overlay Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 via-transparent to-transparent" />
                 </div>
                 
-                {/* Animated Border Glow */}
+                {/* Animated Ring */}
                 <motion.div
-                  className="absolute inset-0 rounded-2xl border-2 border-yellow-400/60"
+                  className="absolute inset-0 rounded-3xl border-2 border-yellow-400/70"
                   animate={{ 
-                    opacity: [0.4, 0.8, 0.4],
-                    scale: [1, 1.1, 1]
+                    opacity: [0.3, 0.8, 0.3],
+                    scale: [1, 1.05, 1],
+                    rotate: [0, 360]
                   }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ 
+                    opacity: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
+                    scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
+                    rotate: { duration: 10, repeat: Infinity, ease: "linear" }
+                  }}
                 />
               </motion.div>
               
-              {/* Presence Aura */}
+              {/* Presence Aura - Multiple Layers */}
               <motion.div
-                className="absolute inset-0 bg-blue-400/20 rounded-2xl blur-xl"
+                className="absolute inset-0 bg-blue-400/15 rounded-3xl blur-2xl"
                 animate={{ 
-                  scale: [1, 1.4, 1], 
-                  opacity: [0.3, 0.1, 0.3] 
+                  scale: [1, 1.6, 1], 
+                  opacity: [0.4, 0.1, 0.4] 
                 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Name Label */}
               <motion.div
-                className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded-full border border-blue-400/30"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                className="absolute inset-0 bg-yellow-400/10 rounded-3xl blur-xl"
+                animate={{ 
+                  scale: [1.2, 1.8, 1.2], 
+                  opacity: [0.2, 0.05, 0.2] 
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              />
+              
+              {/* Status Indicator */}
+              <motion.div
+                className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
               >
-                Cha Hae-In
+                <div className="w-2 h-2 bg-white rounded-full" />
+              </motion.div>
+              
+              {/* Floating Name Tag */}
+              <motion.div
+                className="absolute -bottom-10 left-1/2 transform -translate-x-1/2"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+              >
+                <div className="bg-black/90 backdrop-blur-md text-white text-xs px-4 py-2 rounded-full border border-blue-400/40 shadow-xl">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                    <span className="font-medium">Cha Hae-In</span>
+                  </div>
+                </div>
               </motion.div>
             </div>
           </motion.div>
         )}
         
         {/* Interactive Elements Layer */}
-        {currentLocationData.interactiveElements.map((element: any) => (
+        {currentLocationData.interactiveElements
+          .filter((element: any) => element.id !== 'cha_desk') // Filter out Cha's desk since she has her own tile
+          .map((element: any) => (
           <motion.div
             key={element.id}
-            className="absolute group"
+            className="absolute group z-10"
             style={{
               left: `${element.position.x}%`,
               top: `${element.position.y}%`,
@@ -769,43 +827,42 @@ export default function SoloLevelingSpatial() {
             transition={{ duration: 0.3 }}
           >
             <motion.button
-              className="w-8 h-8 bg-purple-500/80 rounded-full border-2 border-purple-300/90 backdrop-blur-sm relative shadow-lg shadow-purple-500/50"
-              whileHover={{ scale: 1.4 }}
+              className="w-6 h-6 bg-purple-500/70 rounded-full border border-purple-300/60 backdrop-blur-sm relative shadow-md shadow-purple-500/30"
+              whileHover={{ scale: 1.3 }}
               whileTap={{ scale: 0.8 }}
               onClick={() => {
                 console.log('Clicked element:', element.id);
-                // Check if this is Cha Hae-In interaction
-                if (element.id === 'cha_hae_in_desk') {
-                  console.log('Triggering Cha Hae-In interaction');
-                  handleChaHaeInInteraction();
-                } else {
-                  handleEnvironmentalInteraction({
-                    action: element.action,
-                    name: element.name,
-                    x: element.position.x,
-                    y: element.position.y
-                  });
-                }
+                handleEnvironmentalInteraction({
+                  action: element.action,
+                  name: element.name,
+                  x: element.position.x,
+                  y: element.position.y
+                });
               }}
             >
-              {/* Pulsing glow effect */}
+              {/* Subtle pulsing glow effect */}
               <motion.div
-                className="absolute inset-0 rounded-full bg-purple-400/30"
-                animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0.2, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute inset-0 rounded-full bg-purple-400/25"
+                animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.1, 0.4] }}
+                transition={{ duration: 3, repeat: Infinity }}
               />
               
               {/* Inner dot */}
-              <div className="absolute inset-2 rounded-full bg-purple-200 shadow-inner" />
+              <div className="absolute inset-1.5 rounded-full bg-purple-100/80 shadow-inner" />
             </motion.button>
             
-            {/* Tooltip on hover */}
+            {/* Enhanced Tooltip */}
             <motion.div
-              className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black/90 text-white text-xs px-3 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+              className="absolute -top-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30"
               initial={{ y: 5 }}
               whileHover={{ y: 0 }}
             >
-              {element.name}
+              <div className="bg-black/95 backdrop-blur-md text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap border border-purple-400/30 shadow-xl">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+                  <span>{element.name}</span>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         ))}
