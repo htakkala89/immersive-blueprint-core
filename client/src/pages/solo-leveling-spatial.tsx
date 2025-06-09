@@ -388,27 +388,43 @@ export default function SoloLevelingSpatial() {
         
         {/* Interactive Elements Layer */}
         {currentLocationData.interactiveElements.map((element) => (
-          <motion.button
+          <motion.div
             key={element.id}
-            className="absolute w-8 h-8 bg-purple-500/40 rounded-full border-2 border-purple-300/60 backdrop-blur-sm"
+            className="absolute group"
             style={{
               left: `${element.position.x}%`,
               top: `${element.position.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
-            whileHover={{ scale: 1.2, backgroundColor: 'rgba(147, 51, 234, 0.6)' }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => {
-              // Handle environmental interaction
-              handlePlayerResponse(`*${element.action}*`);
-            }}
           >
+            <motion.button
+              className="w-6 h-6 bg-purple-500/60 rounded-full border border-purple-300/80 backdrop-blur-sm relative"
+              whileHover={{ scale: 1.3 }}
+              whileTap={{ scale: 0.8 }}
+              onClick={() => {
+                handlePlayerResponse(`*${element.action}*`);
+              }}
+            >
+              {/* Pulsing glow effect */}
+              <motion.div
+                className="absolute inset-0 rounded-full bg-purple-400/30"
+                animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0.2, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              
+              {/* Inner dot */}
+              <div className="absolute inset-1 rounded-full bg-purple-300" />
+            </motion.button>
+            
+            {/* Tooltip on hover */}
             <motion.div
-              className="w-full h-full rounded-full bg-purple-400/20"
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </motion.button>
+              className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black/90 text-white text-xs px-3 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+              initial={{ y: 5 }}
+              whileHover={{ y: 0 }}
+            >
+              {element.name}
+            </motion.div>
+          </motion.div>
         ))}
         
         {/* Location Info Overlay */}
