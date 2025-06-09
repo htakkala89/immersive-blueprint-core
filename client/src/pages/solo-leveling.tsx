@@ -1454,8 +1454,8 @@ export default function SoloLeveling() {
       ],
       leadsTo: { admit_feelings: 'CONFESSION', rejoin_formation: 'PROTECTIVE_DUNGEON' }
     },
-    'INSPIRATION_MOMENT': {
-      prompt: "Mutual inspiration between Jin-Woo and Cha Hae-In. Shared admiration, anime style.",
+    'BOSS_INSPIRATION': {
+      prompt: "Mutual inspiration between Jin-Woo and Cha Hae-In before boss fight. Shared admiration, anime style.",
       narration: "The mutual respect and admiration between you creates a powerful moment.",
       chat: [
         { sender: 'Cha Hae-In', text: "We inspire each other to be better. That's... beautiful." },
@@ -2716,6 +2716,204 @@ export default function SoloLeveling() {
         { text: "Promise never to let go", detail: "Commitment", type: 'never_let_go' }
       ],
       leadsTo: { embrace_connection: 'EMBRACED_SOULS', never_let_go: 'ETERNAL_HOLD' }
+    },
+    'PHILOSOPHY_SHARING': {
+      prompt: "Jin-Woo sharing his philosophy about strength and protection with Cha Hae-In. Deep conversation, anime style.",
+      narration: "You share your beliefs about what true strength means to you.",
+      chat: [
+        { sender: 'player', text: "I believe strength isn't just about power. It's about protecting those who matter to you." },
+        { sender: 'Cha Hae-In', text: "That's... exactly how I feel. You put it perfectly." },
+        { sender: 'Cha Hae-In', text: "I've always believed hunters should use their power to protect, not just for personal gain." }
+      ],
+      choices: [
+        { text: "You inspire me", detail: "Express admiration", type: 'inspire_me' },
+        { text: "We think alike", detail: "Note compatibility", type: 'think_alike' },
+        { text: "That's why you're special", detail: "Personal compliment", type: 'youre_special' }
+      ],
+      leadsTo: { inspire_me: 'INSPIRATION_MOMENT', think_alike: 'COMPATIBLE_MINDS', youre_special: 'SPECIAL_RECOGNITION' }
+    },
+    'HER_PHILOSOPHY': {
+      prompt: "Cha Hae-In explaining her philosophy about being a hunter. Thoughtful expression, anime style.",
+      narration: "Hae-In opens up about her own beliefs and motivations.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I became a hunter to make a difference. To protect people who can't protect themselves." },
+        { sender: 'Cha Hae-In', text: "Sometimes I wonder if I'm strong enough, but then I remember why I'm fighting." },
+        { sender: 'player', text: "Your heart is what makes you truly strong, Hae-In." }
+      ],
+      choices: [
+        { text: "You're stronger than you know", detail: "Encourage her", type: 'stronger_than_know' },
+        { text: "I want to fight alongside you", detail: "Partnership desire", type: 'fight_alongside' },
+        { text: "Your compassion is your strength", detail: "Praise her character", type: 'compassion_strength' }
+      ],
+      leadsTo: { stronger_than_know: 'STRENGTH_RECOGNITION', fight_alongside: 'PARTNERSHIP_DESIRE', compassion_strength: 'CHARACTER_PRAISE' }
+    },
+    'SHARED_PURPOSE': {
+      prompt: "Jin-Woo and Cha Hae-In realizing their shared purpose. Unity moment, anime style.",
+      narration: "You both realize you share the same fundamental purpose.",
+      chat: [
+        { sender: 'player', text: "We both want to make the world safer. To protect innocent people." },
+        { sender: 'Cha Hae-In', text: "Yes! That's exactly it. We understand each other completely." },
+        { sender: 'Cha Hae-In', text: "With our combined strength, we could really make a difference." }
+      ],
+      choices: [
+        { text: "Let's change the world together", detail: "Grand partnership", type: 'change_world' },
+        { text: "You make me want to be better", detail: "Personal growth", type: 'be_better' },
+        { text: "Together we're unstoppable", detail: "Confidence in unity", type: 'unstoppable' }
+      ],
+      leadsTo: { change_world: 'WORLD_CHANGING', be_better: 'MUTUAL_IMPROVEMENT', unstoppable: 'UNSTOPPABLE_TEAM' }
+    },
+    'INSPIRATION_MOMENT': {
+      prompt: "Cha Hae-In feeling inspired by Jin-Woo's words. Uplifting moment, anime style.",
+      narration: "Your words fill her with renewed purpose and determination.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "You always know exactly what to say to motivate me." },
+        { sender: 'Cha Hae-In', text: "When I'm with you, I feel like I can accomplish anything." }
+      ],
+      choices: [
+        { text: "Because you're amazing", detail: "Praise her directly", type: 'youre_amazing' },
+        { text: "We bring out the best in each other", detail: "Mutual enhancement", type: 'best_in_each' }
+      ],
+      leadsTo: { youre_amazing: 'DIRECT_PRAISE', best_in_each: 'MUTUAL_ENHANCEMENT' }
+    },
+    'COMPATIBLE_MINDS': {
+      prompt: "Jin-Woo and Cha Hae-In discovering their mental compatibility. Understanding moment, anime style.",
+      narration: "You both realize how perfectly your thoughts align.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "It's like we share the same mind sometimes." },
+        { sender: 'player', text: "Great minds think alike, they say." },
+        { sender: 'Cha Hae-In', text: "I've never met anyone who understands me like you do." }
+      ],
+      choices: [
+        { text: "That's what makes us perfect partners", detail: "Partnership focus", type: 'perfect_partners' },
+        { text: "You understand me too", detail: "Mutual understanding", type: 'understand_me_too' }
+      ],
+      leadsTo: { perfect_partners: 'PERFECT_PARTNERSHIP', understand_me_too: 'MUTUAL_UNDERSTANDING' }
+    },
+    'SPECIAL_RECOGNITION': {
+      prompt: "Cha Hae-In feeling recognized and valued by Jin-Woo. Emotional recognition, anime style.",
+      narration: "Your recognition of her special qualities touches her deeply.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "*blushes deeply* You really think I'm special?" },
+        { sender: 'player', text: "More special than you know." },
+        { sender: 'Cha Hae-In', text: "No one has ever made me feel this valued before." }
+      ],
+      choices: [
+        { text: "You deserve to feel special", detail: "Affirm her worth", type: 'deserve_special' },
+        { text: "You're one of a kind", detail: "Emphasize uniqueness", type: 'one_of_kind' }
+      ],
+      leadsTo: { deserve_special: 'DESERVED_WORTH', one_of_kind: 'UNIQUE_VALUE' }
+    },
+    'STRENGTH_RECOGNITION': {
+      prompt: "Jin-Woo recognizing Cha Hae-In's true strength. Empowering moment, anime style.",
+      narration: "You help her see the strength she already possesses.",
+      chat: [
+        { sender: 'player', text: "Your strength isn't just physical. It's your determination, your compassion." },
+        { sender: 'Cha Hae-In', text: "I... I never thought of it that way." },
+        { sender: 'Cha Hae-In', text: "You make me see myself differently." }
+      ],
+      choices: [
+        { text: "You're a natural leader", detail: "Leadership recognition", type: 'natural_leader' },
+        { text: "Your heart guides your strength", detail: "Heart-centered power", type: 'heart_guides' }
+      ],
+      leadsTo: { natural_leader: 'LEADERSHIP_MOMENT', heart_guides: 'HEART_STRENGTH' }
+    },
+    'PARTNERSHIP_DESIRE': {
+      prompt: "Jin-Woo expressing desire to fight alongside Cha Hae-In. Partnership bond, anime style.",
+      narration: "You express your genuine desire to stand beside her in battle.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "You really want to fight with me? Not just protect me?" },
+        { sender: 'player', text: "As equals. As partners. I trust your strength completely." },
+        { sender: 'Cha Hae-In', text: "That means everything to me, Jin-Woo." }
+      ],
+      choices: [
+        { text: "We're stronger together", detail: "Combined strength", type: 'stronger_together' },
+        { text: "I want you by my side", detail: "Personal desire", type: 'by_my_side' }
+      ],
+      leadsTo: { stronger_together: 'COMBINED_STRENGTH', by_my_side: 'SIDE_BY_SIDE' }
+    },
+    'CHARACTER_PRAISE': {
+      prompt: "Jin-Woo praising Cha Hae-In's character and compassion. Character appreciation, anime style.",
+      narration: "You acknowledge what makes her truly exceptional.",
+      chat: [
+        { sender: 'player', text: "Your compassion is what sets you apart from other hunters." },
+        { sender: 'Cha Hae-In', text: "Sometimes I worry it makes me weak..." },
+        { sender: 'player', text: "It makes you stronger. It's why people trust you, why I trust you." }
+      ],
+      choices: [
+        { text: "Never lose that compassion", detail: "Preserve her nature", type: 'keep_compassion' },
+        { text: "It's your greatest strength", detail: "Emphasize importance", type: 'greatest_strength' }
+      ],
+      leadsTo: { keep_compassion: 'PRESERVED_NATURE', greatest_strength: 'GREATEST_ASSET' }
+    },
+    'WORLD_CHANGING': {
+      prompt: "Jin-Woo and Cha Hae-In planning to change the world together. Epic partnership, anime style.",
+      narration: "Together, you envision a future where hunters truly protect humanity.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "With your shadows and my sword, we could revolutionize how hunters operate." },
+        { sender: 'player', text: "A new era of protection, not just power." },
+        { sender: 'Cha Hae-In', text: "I want to build that future with you, Jin-Woo." }
+      ],
+      choices: [
+        { text: "Let's start today", detail: "Immediate action", type: 'start_today' },
+        { text: "We'll need allies", detail: "Strategic thinking", type: 'need_allies' }
+      ],
+      leadsTo: { start_today: 'IMMEDIATE_ACTION', need_allies: 'STRATEGIC_PLANNING' }
+    },
+    'MUTUAL_IMPROVEMENT': {
+      prompt: "Jin-Woo and Cha Hae-In inspiring each other to grow. Mutual enhancement, anime style.",
+      narration: "You both realize how much you've grown since meeting each other.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "You make me want to push my limits, to become stronger." },
+        { sender: 'player', text: "And you show me there's more to strength than just power." },
+        { sender: 'Cha Hae-In', text: "We're both becoming better versions of ourselves." }
+      ],
+      choices: [
+        { text: "That's what partners do", detail: "Partnership definition", type: 'partners_do' },
+        { text: "You inspire me every day", detail: "Daily inspiration", type: 'inspire_daily' }
+      ],
+      leadsTo: { partners_do: 'PARTNER_DEFINITION', inspire_daily: 'DAILY_INSPIRATION' }
+    },
+    'UNSTOPPABLE_TEAM': {
+      prompt: "Jin-Woo and Cha Hae-In as an unstoppable team. Power couple, anime style.",
+      narration: "The confidence in your combined abilities is absolute.",
+      chat: [
+        { sender: 'player', text: "Nothing can stand against us when we're together." },
+        { sender: 'Cha Hae-In', text: "Our synergy is perfect. We complement each other completely." },
+        { sender: 'Cha Hae-In', text: "I've never felt so powerful, so... complete." }
+      ],
+      choices: [
+        { text: "You complete me too", detail: "Mutual completion", type: 'complete_me' },
+        { text: "This is just the beginning", detail: "Future potential", type: 'just_beginning' }
+      ],
+      leadsTo: { complete_me: 'MUTUAL_COMPLETION', just_beginning: 'FUTURE_POTENTIAL' }
+    },
+    'PERFECT_PARTNERSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In achieving perfect partnership. Ideal team, anime style.",
+      narration: "You've found the perfect balance in your partnership.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "We work together like we were meant to be a team." },
+        { sender: 'player', text: "Maybe we were. Some things are just destiny." },
+        { sender: 'Cha Hae-In', text: "Destiny... I like the sound of that." }
+      ],
+      choices: [
+        { text: "Our destiny is together", detail: "Romantic destiny", type: 'destiny_together' },
+        { text: "We make our own destiny", detail: "Self-determination", type: 'make_destiny' }
+      ],
+      leadsTo: { destiny_together: 'ROMANTIC_DESTINY', make_destiny: 'SELF_MADE_DESTINY' }
+    },
+    'MUTUAL_UNDERSTANDING': {
+      prompt: "Jin-Woo and Cha Hae-In sharing deep mutual understanding. Soul connection, anime style.",
+      narration: "Your understanding of each other transcends words.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Sometimes I feel like you know me better than I know myself." },
+        { sender: 'player', text: "That's because I see all the amazing things you don't see in yourself." },
+        { sender: 'Cha Hae-In', text: "And you help me see them too." }
+      ],
+      choices: [
+        { text: "That's what love does", detail: "Love recognition", type: 'what_love_does' },
+        { text: "We see each other's truth", detail: "Truth seeing", type: 'see_truth' }
+      ],
+      leadsTo: { what_love_does: 'LOVE_RECOGNITION', see_truth: 'TRUTH_SEEING' }
     },
     'DEEP_APPRECIATION': {
       prompt: "Jin-Woo expressing deep appreciation for Cha Hae-In. Heartfelt gratitude, anime style.",
@@ -4264,7 +4462,28 @@ export default function SoloLeveling() {
         'THOUGHT_SHARING': 'PAST_SHARING',
         'MUTUAL_DISCOVERY': 'MUTUAL_OPENING',
         'DEEP_CONNECTION': 'DEEP_CONFESSION',
-        'HAPPINESS_SHARED': 'ROMANTIC_MOMENT'
+        'HAPPINESS_SHARED': 'ROMANTIC_MOMENT',
+        // Philosophy scenes
+        'DIRECT_PRAISE': 'ROMANTIC_MOMENT',
+        'MUTUAL_ENHANCEMENT': 'ROMANTIC_MOMENT',
+        'DESERVED_WORTH': 'SPECIAL_MOMENT',
+        'UNIQUE_VALUE': 'SPECIAL_MOMENT',
+        'LEADERSHIP_MOMENT': 'ROMANTIC_MOMENT',
+        'HEART_STRENGTH': 'ROMANTIC_MOMENT',
+        'COMBINED_STRENGTH': 'ROMANTIC_MOMENT',
+        'SIDE_BY_SIDE': 'ROMANTIC_MOMENT',
+        'PRESERVED_NATURE': 'ROMANTIC_MOMENT',
+        'GREATEST_ASSET': 'ROMANTIC_MOMENT',
+        'IMMEDIATE_ACTION': 'ROMANTIC_MOMENT',
+        'STRATEGIC_PLANNING': 'ROMANTIC_MOMENT',
+        'PARTNER_DEFINITION': 'PARTNERSHIP_BOND',
+        'DAILY_INSPIRATION': 'ROMANTIC_MOMENT',
+        'MUTUAL_COMPLETION': 'ROMANTIC_MOMENT',
+        'FUTURE_POTENTIAL': 'ROMANTIC_MOMENT',
+        'ROMANTIC_DESTINY': 'ROMANTIC_MOMENT',
+        'SELF_MADE_DESTINY': 'ROMANTIC_MOMENT',
+        'LOVE_RECOGNITION': 'CONFESSION',
+        'TRUTH_SEEING': 'ROMANTIC_MOMENT'
       };
       
       // Try fallback mapping first
