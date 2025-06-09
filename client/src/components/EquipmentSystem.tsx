@@ -213,6 +213,26 @@ export function EquipmentSystem({
           </Button>
         </div>
 
+        {/* Equipment Tabs - Moved to Top */}
+        <div className="p-4 border-b border-purple-500/30 shrink-0">
+          <div className="flex gap-2 sm:gap-4">
+            <Button
+              onClick={() => setSelectedTab('equipped')}
+              variant={selectedTab === 'equipped' ? 'default' : 'outline'}
+              className="text-white text-xs sm:text-sm flex-1 sm:flex-none"
+            >
+              Equipped
+            </Button>
+            <Button
+              onClick={() => setSelectedTab('inventory')}
+              variant={selectedTab === 'inventory' ? 'default' : 'outline'}
+              className="text-white text-xs sm:text-sm flex-1 sm:flex-none"
+            >
+              Inventory
+            </Button>
+          </div>
+        </div>
+
         <div className="flex flex-col lg:flex-row h-full overflow-hidden">
           {/* Equipment Slots */}
           <div className="w-full lg:w-1/3 p-3 sm:p-6 lg:border-r border-purple-500/30 overflow-y-auto">
@@ -326,24 +346,8 @@ export function EquipmentSystem({
             </Card>
           </div>
 
-          {/* Available Equipment */}
+          {/* Equipment Content */}
           <div className="flex-1 p-3 sm:p-6 overflow-y-auto">
-            <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6">
-              <Button
-                onClick={() => setSelectedTab('equipped')}
-                variant={selectedTab === 'equipped' ? 'default' : 'outline'}
-                className="text-white text-xs sm:text-sm flex-1 sm:flex-none"
-              >
-                Equipped
-              </Button>
-              <Button
-                onClick={() => setSelectedTab('inventory')}
-                variant={selectedTab === 'inventory' ? 'default' : 'outline'}
-                className="text-white text-xs sm:text-sm flex-1 sm:flex-none"
-              >
-                Inventory
-              </Button>
-            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-h-96 overflow-y-auto">
               {selectedTab === 'inventory' && availableEquipment.length === 0 && (
@@ -384,7 +388,12 @@ export function EquipmentSystem({
                       )}
 
                       <Button
-                        onClick={() => onEquip(item)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log('Equip button clicked for:', item.name);
+                          onEquip(item);
+                        }}
                         disabled={!canEquip || isEquipped}
                         size="sm"
                         className="w-full"
