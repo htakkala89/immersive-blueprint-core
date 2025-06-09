@@ -427,18 +427,26 @@ export default function SoloLevelingSpatial() {
       
       {/* Monarch's Aura Eye - Testing */}
       <motion.button
-        className="fixed top-6 right-6 w-14 h-14 liquid-glass-enhanced rounded-full flex items-center justify-center z-[9999]"
+        className="fixed top-6 right-6 w-14 h-14 liquid-glass-enhanced rounded-full flex items-center justify-center z-[9999] cursor-pointer"
         style={{ 
           position: 'fixed',
           top: '24px',
           right: '24px',
-          zIndex: 9999
+          zIndex: 9999,
+          pointerEvents: 'auto'
         }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={() => setMonarchAuraVisible(true)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Eye button clicked, current state:', monarchAuraVisible);
+          const newState = !monarchAuraVisible;
+          console.log('Setting new state to:', newState);
+          setMonarchAuraVisible(newState);
+        }}
       >
-        <Eye className="w-7 h-7 text-purple-300 drop-shadow-lg" />
+        <Eye className="w-7 h-7 text-purple-300 drop-shadow-lg pointer-events-none" />
       </motion.button>
       
       {/* Spatial View - The Living Diorama */}
@@ -732,41 +740,36 @@ export default function SoloLevelingSpatial() {
         )}
       </AnimatePresence>
       
+      {/* Debug indicator */}
+      {monarchAuraVisible && (
+        <div className="fixed top-4 left-4 bg-red-500 text-white p-2 rounded z-[10000]">
+          Menu Active: {monarchAuraVisible.toString()}
+        </div>
+      )}
+
       {/* Monarch's Aura - Simple Dropdown Menu */}
-      <AnimatePresence>
-        {monarchAuraVisible && (
-          <motion.div
-            className="fixed top-20 right-6 w-48 liquid-glass-enhanced rounded-xl p-2 z-[9998]"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-          >
-            {[
-              { icon: User, label: 'Armory', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
-              { icon: Sword, label: 'Raid', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
-              { icon: Star, label: 'Quests', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
-              { icon: MapPin, label: 'World Map', onClick: () => console.log('World map') },
-              { icon: Heart, label: 'Constellation', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
-              { icon: Gift, label: 'Daily Life', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
-            ].map((item, index) => (
-              <motion.button
-                key={item.label}
-                className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/10 transition-all"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={item.onClick}
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="text-sm font-medium">{item.label}</span>
-              </motion.button>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {monarchAuraVisible && (
+        <div className="fixed top-20 right-6 w-48 bg-purple-900 border-2 border-white rounded-xl p-4 z-[9998]">
+          <div className="text-white text-lg mb-2">Monarch's Aura</div>
+          {[
+            { icon: User, label: 'Armory', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
+            { icon: Sword, label: 'Raid', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
+            { icon: Star, label: 'Quests', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
+            { icon: MapPin, label: 'World Map', onClick: () => { console.log('World map'); setMonarchAuraVisible(false); } },
+            { icon: Heart, label: 'Constellation', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
+            { icon: Gift, label: 'Daily Life', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
+          ].map((item, index) => (
+            <button
+              key={item.label}
+              className="w-full flex items-center gap-3 p-2 rounded-lg text-white hover:bg-white/20 transition-all mb-1"
+              onClick={item.onClick}
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-sm font-medium">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Click outside to close */}
       {monarchAuraVisible && (
