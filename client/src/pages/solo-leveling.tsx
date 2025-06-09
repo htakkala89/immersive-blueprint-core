@@ -610,7 +610,7 @@ export default function SoloLeveling() {
         rarity: item.rarity,
         stats: item.stats || {},
         description: item.description,
-        requirements: item.requirements
+        requirements: { level: 1 }
       };
       setAvailableEquipment((prev: Equipment[]) => [...prev, newEquipment]);
       
@@ -1517,19 +1517,7 @@ export default function SoloLeveling() {
       ],
       leadsTo: { confirm_bond: 'SOUL_BOND', seal_with_love: 'LOVE_SEALED', battle_test: 'GATE_ENTRANCE' }
     },
-    'FIRST_KISS': {
-      prompt: "Jin-Woo and Cha Hae-In sharing their first tender kiss. Romantic anime moment with soft lighting.",
-      narration: "Your first kiss is gentle and perfect, sealing your growing connection.",
-      chat: [
-        { sender: 'Cha Hae-In', text: "I've waited so long for this moment..." },
-        { sender: 'player', text: "It was worth every second of waiting." }
-      ],
-      choices: [
-        { text: "Hold her close", detail: "Embrace the moment", type: 'embrace' },
-        { text: "Promise more dates", detail: "Plan the future", type: 'promise_dates' }
-      ],
-      leadsTo: { embrace: 'ROMANTIC_EMBRACE', promise_dates: 'DATE_PLANNING' }
-    },
+
     'LOVE_DECLARATION': {
       prompt: "Jin-Woo declaring his deep love to Cha Hae-In. Emotional anime scene with beautiful lighting.",
       narration: "Your heartfelt declaration changes everything between you.",
@@ -2248,19 +2236,7 @@ export default function SoloLeveling() {
       ],
       leadsTo: { complete_love: 'COMPLETE_LOVE', cherish_always: 'ETERNAL_PROMISE' }
     },
-    'ROMANTIC_PROMISE': {
-      prompt: "Jin-Woo making a romantic promise to Cha Hae-In. Commitment, anime style.",
-      narration: "Your words carry the weight of your entire heart.",
-      chat: [
-        { sender: 'player', text: "I promise to love you, protect you, and stand by you always." },
-        { sender: 'Cha Hae-In', text: "And I promise the same to you. We're in this together, forever." }
-      ],
-      choices: [
-        { text: "Seal it with a kiss", detail: "Physical confirmation", type: 'seal_kiss' },
-        { text: "Plan your future together", detail: "Look ahead", type: 'plan_together' }
-      ],
-      leadsTo: { seal_kiss: 'PROMISE_KISS', plan_together: 'FUTURE_TOGETHER' }
-    },
+
     'INTIMATE_CLOSENESS': {
       prompt: "Jin-Woo and Cha Hae-In sharing intimate closeness. Emotional intimacy, anime style.",
       narration: "Physical and emotional barriers dissolve between you.",
