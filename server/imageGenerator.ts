@@ -732,29 +732,29 @@ function createIntimatePrompt(activityId: string, relationshipStatus: string, in
     case 'make_love':
       if (relationshipStatus === 'married') {
         return intimacyLevel >= 9 
-          ? `${baseStyle}, passionate intimate embrace, married couple in bedroom, romantic atmosphere, beautiful lighting, sensual poses, loving expressions`
-          : `${baseStyle}, tender romantic moment, married couple embracing, soft lighting, intimate but tasteful, loving connection`;
+          ? `${baseStyle}, passionate lovemaking scene, married couple in bed, naked bodies intertwined, explicit sexual intimacy, erotic poses, orgasmic expressions, detailed anatomy, NSFW adult content`
+          : `${baseStyle}, intense sexual encounter, married couple making love, nude bodies, passionate intercourse, intimate penetration, sexual pleasure, erotic scene`;
       } else {
-        return `${baseStyle}, romantic intimate moment, couple embracing tenderly, warm lighting, emotional connection, beautiful scene`;
+        return `${baseStyle}, passionate sex scene, couple making love, naked bodies, sexual intercourse, erotic intimacy, explicit adult content, detailed genitalia`;
       }
     
     case 'shower_together':
       return intimacyLevel >= 8 
-        ? `${baseStyle}, romantic shower scene, steam and water, intimate atmosphere, couple together, sensual but artistic, beautiful lighting`
-        : `${baseStyle}, romantic bathroom scene, couple together, steam effects, intimate but tasteful, warm lighting`;
+        ? `${baseStyle}, explicit shower sex scene, naked couple fucking under water, wet bodies, penetration during shower, erotic water play, sexual climax, detailed genitalia visible`
+        : `${baseStyle}, naked shower scene, nude couple together, wet naked bodies, sexual touching, intimate fondling, erotic shower encounter`;
     
     case 'intimate_evening':
       return intimacyLevel >= 8 
-        ? `${baseStyle}, romantic bedroom scene, couple on bed, intimate atmosphere, beautiful lighting, passionate expressions, sensual poses`
-        : `${baseStyle}, romantic evening at home, couple cuddling, soft lighting, intimate but tasteful, loving atmosphere`;
+        ? `${baseStyle}, explicit bedroom sex scene, hardcore fucking on bed, multiple sex positions, orgasmic faces, detailed penetration, erotic hardcore action, NSFW explicit content`
+        : `${baseStyle}, passionate sex in bedroom, naked couple having intercourse, sexual positions, erotic lovemaking, nude bodies, explicit sexual content`;
     
     case 'wake_up_together':
       return relationshipStatus === 'married' 
-        ? `${baseStyle}, married couple waking up together, bedroom scene, morning light, intimate but tasteful, loving expressions, beautiful composition`
-        : `${baseStyle}, couple waking up together, cozy bedroom, morning atmosphere, romantic but tasteful, warm lighting`;
+        ? `${baseStyle}, naked married couple in bed after sex, morning after lovemaking, nude bodies tangled in sheets, post-orgasmic glow, intimate nudity, erotic morning scene`
+        : `${baseStyle}, naked couple waking up after sex, nude bodies in bed, post-coital intimacy, morning nudity, sexual aftermath, erotic bedroom scene`;
     
     default:
-      return `${baseStyle}, romantic scene, beautiful couple, intimate atmosphere, tasteful composition, emotional connection`;
+      return `${baseStyle}, explicit sexual scene, naked couple having sex, erotic intimacy, detailed anatomy, NSFW adult content, passionate intercourse`;
   }
 }
 

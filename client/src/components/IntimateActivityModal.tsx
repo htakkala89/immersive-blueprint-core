@@ -86,6 +86,10 @@ export function IntimateActivityModal({
   if (!isVisible || !activityType) return null;
 
   const activity = getActivityData(activityType);
+  
+  if (!activity) {
+    return null;
+  }
 
   const handleCustomAction = async () => {
     if (!customAction.trim()) return;
