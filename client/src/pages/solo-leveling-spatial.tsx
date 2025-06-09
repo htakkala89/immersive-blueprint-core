@@ -117,6 +117,15 @@ export default function SoloLevelingSpatial() {
     }, 300);
   };
 
+  const exitFocusMode = () => {
+    setIsFocusMode(false);
+    setDialogueActive(false);
+    setShowLivingPortrait(false);
+    setChaHaeInExpression('focused');
+    setThoughtPrompts([]);
+    setCurrentDialogue('');
+  };
+
   const handleGestureActivation = (e: React.TouchEvent | React.MouseEvent) => {
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
     
@@ -724,6 +733,19 @@ export default function SoloLevelingSpatial() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
             <div className="p-3 flex flex-col h-full">
+              
+              {/* Close Button */}
+              <motion.button
+                className="absolute top-2 right-2 w-8 h-8 bg-slate-800/60 hover:bg-slate-700/80 rounded-full flex items-center justify-center border border-slate-600/30 transition-colors z-10"
+                onClick={exitFocusMode}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <X className="w-4 h-4 text-slate-300" />
+              </motion.button>
               
               {/* Dialogue Text - Scrollable */}
               <motion.div
