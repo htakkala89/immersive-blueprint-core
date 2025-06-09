@@ -52,198 +52,154 @@ const LOCATIONS: Location[] = [
     district: 'gangnam',
     image: '/api/placeholder/400/250',
     timeOfDayMood: {
-      morning: 'Busy with early morning briefings and mission assignments',
+      morning: 'Busy with morning briefings and mission assignments',
       afternoon: 'Peak activity with hunters coming and going',
-      evening: 'Winding down but still active with late missions',
-      night: 'Quiet hours with only emergency operations'
+      evening: 'Quieter, with only dedicated staff remaining',
+      night: 'Nearly empty, emergency personnel only'
     },
     chaHaeInSchedule: {
-      morning: 80,
-      afternoon: 60,
-      evening: 40,
-      night: 20
+      morning: 30,
+      afternoon: 85,
+      evening: 25,
+      night: 5
     }
   },
   {
-    id: 'gangnam_tower',
+    id: 'training_facility',
     name: 'Advanced Training Facility',
     description: 'State-of-the-art combat training complex where hunters hone their skills against simulated monsters.',
-    x: 55,
-    y: 40,
+    x: 52,
+    y: 42,
     unlocked: true,
     district: 'gangnam',
     image: '/api/placeholder/400/250',
     timeOfDayMood: {
-      morning: 'Early training sessions with dedicated hunters',
+      morning: 'Fresh energy, hunters warming up for intense sessions',
       afternoon: 'High-intensity training in full swing',
-      evening: 'Advanced technique practice sessions',
-      night: 'Solo training for elite hunters'
+      evening: 'Cool-down sessions and technique refinement',
+      night: 'Closed for regular training'
     },
     chaHaeInSchedule: {
       morning: 70,
-      afternoon: 90,
+      afternoon: 40,
       evening: 60,
-      night: 30
-    }
-  },
-  {
-    id: 'hongdae_cafe',
-    name: 'Artisan Coffee House',
-    description: 'Trendy café in the heart of Hongdae\'s artistic district. A favorite spot for young hunters to relax.',
-    x: 25,
-    y: 55,
-    unlocked: true,
-    district: 'hongdae',
-    image: '/api/placeholder/400/250',
-    timeOfDayMood: {
-      morning: 'Quiet morning atmosphere with specialty coffee',
-      afternoon: 'Bustling with artists and young professionals',
-      evening: 'Cozy evening conversations over artisan drinks',
-      night: 'Late-night study sessions and intimate talks'
-    },
-    chaHaeInSchedule: {
-      morning: 40,
-      afternoon: 20,
-      evening: 70,
-      night: 30
-    }
-  },
-  {
-    id: 'hongdae_club',
-    name: 'Underground Music Venue',
-    description: 'Popular nightclub where hunters sometimes unwind after difficult missions.',
-    x: 30,
-    y: 60,
-    unlocked: false,
-    district: 'hongdae',
-    image: '/api/placeholder/400/250',
-    unlockCondition: 'Build a closer relationship',
-    requiredAffection: 40,
-    timeOfDayMood: {
-      morning: 'Closed - venue prepares for the night',
-      afternoon: 'Setting up sound equipment and rehearsals',
-      evening: 'Pre-party atmosphere building up',
-      night: 'High-energy music and dancing'
-    },
-    chaHaeInSchedule: {
-      morning: 0,
-      afternoon: 10,
-      evening: 30,
-      night: 80
-    }
-  },
-  {
-    id: 'myeongdong_restaurant',
-    name: 'Traditional Korean Restaurant',
-    description: 'Elegant dining establishment known for its authentic Korean cuisine and private rooms.',
-    x: 40,
-    y: 50,
-    unlocked: true,
-    district: 'myeongdong',
-    image: '/api/placeholder/400/250',
-    timeOfDayMood: {
-      morning: 'Preparing fresh ingredients for the day',
-      afternoon: 'Lunch service with business crowds',
-      evening: 'Romantic dinner atmosphere with soft lighting',
-      night: 'Private dining experiences for special occasions'
-    },
-    chaHaeInSchedule: {
-      morning: 10,
-      afternoon: 30,
-      evening: 80,
-      night: 60
-    }
-  },
-  {
-    id: 'myeongdong_shopping',
-    name: 'Fashion District',
-    description: 'Bustling shopping area with the latest Korean fashion trends and beauty products.',
-    x: 45,
-    y: 55,
-    unlocked: true,
-    district: 'myeongdong',
-    image: '/api/placeholder/400/250',
-    timeOfDayMood: {
-      morning: 'Stores opening with fresh merchandise',
-      afternoon: 'Peak shopping hours with crowds',
-      evening: 'Evening shopping with illuminated storefronts',
-      night: 'Night markets and street food vendors'
-    },
-    chaHaeInSchedule: {
-      morning: 20,
-      afternoon: 60,
-      evening: 40,
-      night: 15
-    }
-  },
-  {
-    id: 'itaewon_market',
-    name: 'International Marketplace',
-    description: 'Diverse cultural hub with international cuisine, shops, and a vibrant nightlife scene.',
-    x: 35,
-    y: 45,
-    unlocked: false,
-    district: 'itaewon',
-    image: '/api/placeholder/400/250',
-    unlockCondition: 'Explore more of Seoul together',
-    requiredAffection: 30,
-    timeOfDayMood: {
-      morning: 'International breakfast spots opening',
-      afternoon: 'Cultural exchange and diverse shopping',
-      evening: 'International dining experiences',
-      night: 'Vibrant nightlife with global influences'
-    },
-    chaHaeInSchedule: {
-      morning: 15,
-      afternoon: 35,
-      evening: 50,
-      night: 40
+      night: 0
     }
   },
   {
     id: 'chahaein_apartment',
-    name: 'Cha Hae-In\'s Apartment',
-    description: 'Modern apartment in a quiet residential area. A personal space where deeper connections can form.',
-    x: 60,
-    y: 30,
+    name: "Cha Hae-In's Apartment",
+    description: 'A elegant, minimalist apartment in an upscale district. Her private sanctuary away from the hunter world.',
+    x: 38,
+    y: 28,
     unlocked: false,
-    district: 'special',
+    district: 'gangnam',
     image: '/api/placeholder/400/250',
-    unlockCondition: 'Develop a close personal relationship',
+    unlockCondition: 'Reach 70+ affection with Cha Hae-In',
     requiredAffection: 70,
     timeOfDayMood: {
-      morning: 'Peaceful morning routines and quiet moments',
-      afternoon: 'Comfortable afternoon relaxation',
-      evening: 'Intimate dinner conversations',
-      night: 'Private moments and deep conversations'
+      morning: 'Soft morning light through large windows, peaceful atmosphere',
+      afternoon: 'Quiet and serene, perfect for intimate conversations',
+      evening: 'Warm ambient lighting, cozy and romantic',
+      night: 'Intimate and private, only for those she truly trusts'
     },
     chaHaeInSchedule: {
-      morning: 90,
-      afternoon: 60,
-      evening: 85,
+      morning: 80,
+      afternoon: 20,
+      evening: 70,
       night: 95
     }
   },
   {
     id: 'hangang_park',
-    name: 'Hangang River Park',
-    description: 'Scenic riverside park perfect for peaceful walks and romantic conversations under the stars.',
-    x: 50,
-    y: 65,
+    name: 'Hangang Park',
+    description: 'A scenic riverside park offering breathtaking views of Seoul. Perfect for quiet walks and heartfelt conversations.',
+    x: 35,
+    y: 55,
     unlocked: true,
     district: 'special',
     image: '/api/placeholder/400/250',
     timeOfDayMood: {
-      morning: 'Morning jogs and peaceful riverside meditation',
-      afternoon: 'Picnics and outdoor activities with families',
-      evening: 'Sunset walks and romantic riverside moments',
-      night: 'Stargazing and intimate conversations by the water'
+      morning: 'Fresh air and joggers, peaceful start to the day',
+      afternoon: 'Families and couples enjoying picnics under the sun',
+      evening: 'Romantic sunset views over the Han River',
+      night: 'Quiet and intimate under the city lights'
     },
     chaHaeInSchedule: {
-      morning: 30,
+      morning: 25,
       afternoon: 15,
-      evening: 70,
-      night: 50
+      evening: 45,
+      night: 20
+    }
+  },
+  {
+    id: 'hongdae_cafe',
+    name: 'Hongdae Coffee District',
+    description: 'Trendy coffee shops and cozy cafes where hunters often meet for casual conversations away from work.',
+    x: 25,
+    y: 40,
+    unlocked: true,
+    district: 'hongdae',
+    image: '/api/placeholder/400/250',
+    timeOfDayMood: {
+      morning: 'Aromatic coffee and quiet morning conversations',
+      afternoon: 'Bustling with students and young professionals',
+      evening: 'Artistic atmosphere with live music and intimate lighting',
+      night: 'Cozy late-night study spots and deep conversations'
+    },
+    chaHaeInSchedule: {
+      morning: 40,
+      afternoon: 30,
+      evening: 35,
+      night: 15
+    }
+  },
+  {
+    id: 'myeongdong_restaurant',
+    name: 'Myeongdong Fine Dining',
+    description: 'Upscale restaurants perfect for special occasions and romantic dinners.',
+    x: 42,
+    y: 48,
+    unlocked: false,
+    district: 'myeongdong',
+    image: '/api/placeholder/400/250',
+    unlockCondition: 'Plan a special date with Cha Hae-In',
+    requiredAffection: 40,
+    timeOfDayMood: {
+      morning: 'Closed for preparation',
+      afternoon: 'Elegant lunch service for business meetings',
+      evening: 'Romantic dinner atmosphere with soft lighting',
+      night: 'Intimate late-night dining for special occasions'
+    },
+    chaHaeInSchedule: {
+      morning: 0,
+      afternoon: 10,
+      evening: 60,
+      night: 30
+    }
+  },
+  {
+    id: 'secret_dungeon_entrance',
+    name: 'Hidden Gate Entrance',
+    description: 'A mysterious portal that appears only to the Shadow Monarch. Gateway to dangerous but rewarding adventures.',
+    x: 65,
+    y: 30,
+    unlocked: false,
+    district: 'special',
+    image: '/api/placeholder/400/250',
+    unlockCondition: 'Unlock Shadow Monarch powers',
+    requiredStoryProgress: 5,
+    timeOfDayMood: {
+      morning: 'Ethereal energy visible in morning mist',
+      afternoon: 'Portal energy dims in bright daylight',
+      evening: 'Glowing intensely as shadows lengthen',
+      night: 'Peak portal activity, darkness amplifies the gate'
+    },
+    chaHaeInSchedule: {
+      morning: 5,
+      afternoon: 15,
+      evening: 25,
+      night: 10
     }
   },
   {
@@ -285,7 +241,6 @@ export function WorldMap({
   const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [zoom, setZoom] = useState(1);
-  const [isZooming, setIsZooming] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
   const lastMousePos = useRef({ x: 0, y: 0 });
 
@@ -340,6 +295,21 @@ export function WorldMap({
     setIsDragging(false);
   };
 
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY * -0.001;
+    setZoom(prev => Math.max(0.8, Math.min(1.5, prev + delta)));
+  };
+
+  const handleLocationClick = (location: Location) => {
+    const state = getLocationState(location);
+    if (state === 'locked') return;
+    
+    setSelectedLocation(location);
+  };
+
+  const [isZooming, setIsZooming] = useState(false);
+
   const handleTravel = () => {
     if (selectedLocation) {
       setIsZooming(true);
@@ -368,19 +338,6 @@ export function WorldMap({
     }
   };
 
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY * -0.001;
-    setZoom(prev => Math.max(0.8, Math.min(1.5, prev + delta)));
-  };
-
-  const handleLocationClick = (location: Location) => {
-    const state = getLocationState(location);
-    if (state === 'locked') return;
-    
-    setSelectedLocation(location);
-  };
-
   if (!isVisible) return null;
 
   return (
@@ -400,23 +357,42 @@ export function WorldMap({
         <X className="w-6 h-6" />
       </Button>
 
+      {/* Map Title */}
+      <div className="absolute top-4 left-4 z-10">
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="liquid-glass p-4"
+        >
+          <h2 className="text-2xl font-bold text-white mb-2">Seoul Map</h2>
+          <div className="flex items-center gap-2 text-purple-200">
+            <MapPin className="w-4 h-4" />
+            <span className="capitalize">{currentTime}</span>
+          </div>
+        </motion.div>
+      </div>
+
       {/* Map Container */}
-      <div 
+      <div
         ref={mapRef}
-        className="w-full h-full overflow-hidden cursor-grab active:cursor-grabbing relative"
+        className="absolute inset-0 overflow-hidden cursor-grab"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
-        {/* Seoul Map Background */}
-        <motion.div
-          className="absolute inset-0 bg-cover bg-center"
+        {/* Stylized Seoul Background */}
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/20 transition-transform duration-700 ease-in-out"
           style={{
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 800 600\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'800\' height=\'600\' fill=\'%23111827\'/%3E%3Cpath d=\'M100 100 L700 100 L700 500 L100 500 Z\' fill=\'none\' stroke=\'%236366f1\' stroke-width=\'2\' stroke-dasharray=\'5,5\'/%3E%3Ctext x=\'400\' y=\'50\' text-anchor=\'middle\' fill=\'%23f3f4f6\' font-size=\'24\' font-weight=\'bold\'%3ESeoul City Map%3C/text%3E%3C/svg%3E")',
-            transform: `scale(${zoom}) translate(${mapOffset.x}px, ${mapOffset.y}px)`,
-            transition: 'transform 0.3s ease-out'
+            transform: `translate(${mapOffset.x}px, ${mapOffset.y}px) scale(${zoom})`,
+            backgroundImage: `
+              radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 40% 70%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)
+            `
           }}
         >
           {/* Location Nodes */}
@@ -427,54 +403,99 @@ export function WorldMap({
             return (
               <motion.div
                 key={location.id}
-                className={`absolute cursor-pointer transform -translate-x-1/2 -translate-y-1/2 ${
-                  state === 'locked' ? 'cursor-not-allowed' : 'cursor-pointer'
-                }`}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.1 * LOCATIONS.indexOf(location) }}
+                className="absolute"
                 style={{
                   left: `${location.x}%`,
                   top: `${location.y}%`,
+                  transform: 'translate(-50%, -50%)'
                 }}
-                whileHover={state !== 'locked' ? { scale: 1.2 } : {}}
-                whileTap={state !== 'locked' ? { scale: 0.9 } : {}}
-                onClick={() => handleLocationClick(location)}
               >
-                {/* Location Node */}
-                <div className={`
-                  w-4 h-4 rounded-full border-2 ${getNodeColor(state)}
-                  ${isPresent ? 'animate-pulse' : ''}
-                  ${state === 'locked' ? 'opacity-50' : 'opacity-100'}
-                `}>
+                {/* Presence Aura */}
+                {isPresent && (
+                  <motion.div
+                    className="absolute inset-0 w-16 h-16 rounded-full bg-gradient-to-r from-yellow-400/30 to-orange-500/30 -translate-x-1/2 -translate-y-1/2 blur-lg"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.3, 0.6, 0.3]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                )}
+
+                {/* Node */}
+                <motion.button
+                  onClick={() => handleLocationClick(location)}
+                  disabled={state === 'locked'}
+                  className={`
+                    relative w-8 h-8 rounded-full border-2 transition-all duration-300
+                    ${getNodeColor(state)}
+                    ${state === 'locked' ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'}
+                  `}
+                  whileHover={state !== 'locked' ? { scale: 1.2 } : {}}
+                  whileTap={state !== 'locked' ? { scale: 0.95 } : {}}
+                >
                   {state === 'locked' && (
-                    <Lock className="w-3 h-3 text-gray-400 absolute -top-1 -left-1" />
+                    <Lock className="w-4 h-4 text-gray-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                   )}
-                  {isPresent && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-yellow-300 animate-ping" />
+                  
+                  {/* Pulsing effect for accessible nodes */}
+                  {state !== 'locked' && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full bg-current opacity-20"
+                      animate={{
+                        scale: [1, 1.5, 1],
+                        opacity: [0.2, 0, 0.2]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
                   )}
-                </div>
-                
+                </motion.button>
+
                 {/* Location Label */}
-                <div className="absolute top-6 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/60 backdrop-blur-sm px-2 py-1 rounded whitespace-nowrap opacity-0 hover:opacity-100 transition-opacity">
-                  {location.name}
-                  {state === 'locked' && location.unlockCondition && (
-                    <div className="text-xs text-gray-400 mt-1">
-                      🔒 {location.unlockCondition}
-                    </div>
-                  )}
+                <div className="absolute top-10 left-1/2 transform -translate-x-1/2 text-center">
+                  <span className="text-xs text-white bg-black/50 backdrop-blur-sm px-2 py-1 rounded whitespace-nowrap">
+                    {location.name}
+                  </span>
                 </div>
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
 
-      {/* Location Details Panel */}
+      {/* Dismissible Overlay */}
       <AnimatePresence>
         {selectedLocation && (
           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            className="absolute top-0 right-0 w-96 h-full z-[10000] overflow-y-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[15]"
+            onClick={() => setSelectedLocation(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Location Card */}
+      <AnimatePresence>
+        {selectedLocation && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 50 }}
+            className="absolute bottom-6 left-6 right-6 max-w-lg mx-auto z-20"
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="liquid-glass-enhanced p-6 rounded-2xl border border-purple-400/20 relative shadow-2xl shadow-purple-500/20 overflow-hidden" style={{
               backdropFilter: 'blur(60px) saturate(200%)',
@@ -527,6 +548,9 @@ export function WorldMap({
                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full text-xs text-white">
                   {currentTime}
                 </div>
+                
+                {/* Atmospheric Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
               </div>
 
               {/* Location Info */}
@@ -610,23 +634,6 @@ export function WorldMap({
         >
           -
         </Button>
-      </div>
-
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 z-10 bg-black/60 backdrop-blur-sm rounded-lg p-3 space-y-2">
-        <div className="text-white text-sm font-semibold mb-2">Legend</div>
-        <div className="flex items-center gap-2 text-xs text-white">
-          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500"></div>
-          Available Location
-        </div>
-        <div className="flex items-center gap-2 text-xs text-white">
-          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500"></div>
-          Cha Hae-In Present
-        </div>
-        <div className="flex items-center gap-2 text-xs text-gray-400">
-          <div className="w-3 h-3 rounded-full bg-gray-600/50 border border-gray-500/30"></div>
-          Locked Location
-        </div>
       </div>
     </motion.div>
   );
