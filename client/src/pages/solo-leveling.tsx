@@ -106,7 +106,7 @@ interface EquippedGear {
 interface ShopItem {
   id: string;
   name: string;
-  category: 'weapons' | 'armor' | 'accessories' | 'gifts' | 'consumables';
+  category: 'weapons' | 'armor' | 'gifts' | 'consumables' | 'special';
   price: number;
   description: string;
   icon: string;
@@ -683,6 +683,11 @@ export default function SoloLeveling() {
         onAction={(action: string) => {
           console.log('Action:', action);
         }}
+        onImageGenerate={(prompt: string) => {
+          console.log('Generating image:', prompt);
+        }}
+        intimacyLevel={gameState.intimacyLevel || 0}
+        affectionLevel={gameState.affection}
       />
 
       <UnifiedShop
@@ -691,10 +696,11 @@ export default function SoloLeveling() {
         playerGold={gameState.gold || 0}
         playerLevel={gameState.level}
         currentAffection={gameState.affection}
-        onPurchase={(item: any, cost: number) => {
+        currentIntimacy={gameState.intimacyLevel || 0}
+        onPurchase={(item: any) => {
           setGameState(prev => ({
             ...prev,
-            gold: prev.gold - cost,
+            gold: Math.max(0, (prev.gold || 0) - item.price),
             inventory: [...prev.inventory, item]
           }));
         }}
