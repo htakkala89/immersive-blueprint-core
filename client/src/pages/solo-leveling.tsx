@@ -99,7 +99,7 @@ export default function SoloLeveling() {
       maxHealth: 15420,
       mana: 8750,
       maxMana: 8750,
-      affection: 3,
+      affection: 0,
       currentScene: 'START',
       inventory: [],
       inCombat: false,
