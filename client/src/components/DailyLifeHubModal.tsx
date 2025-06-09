@@ -40,6 +40,8 @@ interface DailyLifeHubModalProps {
 }
 
 const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity[] => {
+  // Convert 0-5 affection scale to 0-100 scale for unlock logic
+  const scaledAffection = stats.affectionLevel * 20;
   const baseActivities: Activity[] = [
     {
       id: 'dungeon_raid',
@@ -127,7 +129,7 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     });
   }
 
-  if (stats.affectionLevel >= 70 && stats.relationshipStatus !== 'dating') {
+  if (scaledAffection >= 70 && stats.relationshipStatus !== 'dating') {
     baseActivities.push({
       id: 'joint_raid',
       title: 'Joint Raid with Cha Hae-In',
@@ -142,7 +144,7 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
   }
 
   // Living together activities (unlocked at high affection)
-  if (stats.affectionLevel >= 80 && !stats.livingTogether) {
+  if (scaledAffection >= 80 && !stats.livingTogether) {
     baseActivities.push({
       id: 'propose_living_together',
       title: 'Ask to Live Together',
@@ -162,117 +164,117 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
   baseActivities.push({
     id: 'cuddle_together',
     title: 'Cuddle Time',
-    description: stats.affectionLevel >= 30 ? 'Relaxing intimate moments together' : '🔒 Unlock at Affection Level 3',
+    description: scaledAffection >= 60 ? 'Relaxing intimate moments together' : '🔒 Unlock at Affection Level 3',
     icon: '💕',
     energyCost: 15,
     affectionReward: 15,
-    available: stats.affectionLevel >= 30,
+    available: scaledAffection >= 60,
     requiredLevel: 3,
-    lockReason: stats.affectionLevel < 30 ? 'Need stronger emotional bond (Level 3)' : undefined
+    lockReason: scaledAffection < 60 ? 'Need stronger emotional bond (Level 3)' : undefined
   });
 
-  // Level 5+ - Physical intimacy unlocked
+  // Level 4+ - Physical intimacy unlocked
   baseActivities.push({
     id: 'shower_together',
     title: 'Shower Together',
-    description: stats.affectionLevel >= 50 ? 'Intimate shower time (18+)' : '🔒 Unlock at Affection Level 5',
+    description: scaledAffection >= 80 ? 'Intimate shower time (18+)' : '🔒 Unlock at Affection Level 4',
     icon: '🚿',
     energyCost: 20,
     affectionReward: 20,
-    available: stats.affectionLevel >= 50,
-    requiredLevel: 5,
-    lockReason: stats.affectionLevel < 50 ? 'Need deeper trust and intimacy (Level 5)' : undefined
+    available: scaledAffection >= 80,
+    requiredLevel: 4,
+    lockReason: scaledAffection < 80 ? 'Need deeper trust and intimacy (Level 4)' : undefined
   });
 
-  // Level 7+ - Private bedroom intimacy
+  // Level 5+ - Private bedroom intimacy
   baseActivities.push({
     id: 'bedroom_intimacy',
     title: 'Bedroom Time',
-    description: stats.affectionLevel >= 70 ? 'Private intimate moments (18+)' : '🔒 Unlock at Affection Level 7',
+    description: scaledAffection >= 100 ? 'Private intimate moments (18+)' : '🔒 Unlock at MAX Affection',
     icon: '🛏️',
     energyCost: 25,
     affectionReward: 25,
-    available: stats.affectionLevel >= 70,
-    requiredLevel: 7,
-    lockReason: stats.affectionLevel < 70 ? 'Need romantic commitment (Level 7)' : undefined
+    available: scaledAffection >= 100,
+    requiredLevel: 5,
+    lockReason: scaledAffection < 100 ? 'Need maximum romantic commitment (Level 5)' : undefined
   });
 
-  // Level 10+ - Ultimate intimacy (maximum motivation)
+  // Level 5+ - Ultimate intimacy (maximum motivation)
   baseActivities.push({
     id: 'make_love',
     title: 'Make Love',
-    description: stats.affectionLevel >= 100 ? 'Ultimate intimacy together (18+)' : '🔒 Unlock at MAX Affection Level 10',
+    description: scaledAffection >= 100 ? 'Ultimate intimacy together (18+)' : '🔒 Unlock at MAX Affection',
     icon: '❤️‍🔥',
     energyCost: 40,
     affectionReward: 50,
-    available: stats.affectionLevel >= 100,
-    requiredLevel: 10,
-    lockReason: stats.affectionLevel < 100 ? 'Need perfect love bond (MAX Level 10)' : undefined
+    available: scaledAffection >= 100,
+    requiredLevel: 5,
+    lockReason: scaledAffection < 100 ? 'Need perfect love bond (MAX Level 5)' : undefined
   });
 
-  // Level 8+ - Advanced intimate activities
+  // Level 4+ - Advanced intimate activities
   baseActivities.push({
     id: 'intimate_massage',
     title: 'Intimate Massage',
-    description: stats.affectionLevel >= 80 ? 'Sensual relaxation together (18+)' : '🔒 Unlock at Affection Level 8',
+    description: scaledAffection >= 80 ? 'Sensual relaxation together (18+)' : '🔒 Unlock at Affection Level 4',
     icon: '💆‍♀️',
     energyCost: 30,
     affectionReward: 30,
-    available: stats.affectionLevel >= 80,
-    requiredLevel: 8,
-    lockReason: stats.affectionLevel < 80 ? 'Need passionate connection (Level 8)' : undefined
+    available: scaledAffection >= 80,
+    requiredLevel: 4,
+    lockReason: scaledAffection < 80 ? 'Need passionate connection (Level 4)' : undefined
   });
 
-  // Level 9+ - Romantic luxury experiences
+  // Level 4+ - Romantic luxury experiences
   baseActivities.push({
     id: 'romantic_bath',
     title: 'Romantic Bath',
-    description: stats.affectionLevel >= 90 ? 'Luxury intimate bath together (18+)' : '🔒 Unlock at Affection Level 9',
+    description: scaledAffection >= 80 ? 'Luxury intimate bath together (18+)' : '🔒 Unlock at Affection Level 4',
     icon: '🛁',
     energyCost: 35,
     affectionReward: 40,
-    available: stats.affectionLevel >= 90,
-    requiredLevel: 9,
-    lockReason: stats.affectionLevel < 90 ? 'Need devoted partnership (Level 9)' : undefined
+    available: scaledAffection >= 80,
+    requiredLevel: 4,
+    lockReason: scaledAffection < 80 ? 'Need devoted partnership (Level 4)' : undefined
   });
 
-  // Level 6+ - Sensual activities
+  // Level 3+ - Sensual activities
   baseActivities.push({
     id: 'cooking_together',
     title: 'Cook Together',
-    description: stats.affectionLevel >= 60 ? 'Romantic cooking experience' : '🔒 Unlock at Affection Level 6',
+    description: scaledAffection >= 60 ? 'Romantic cooking experience' : '🔒 Unlock at Affection Level 3',
     icon: '👩‍🍳',
     energyCost: 20,
     affectionReward: 25,
-    available: stats.affectionLevel >= 60,
-    requiredLevel: 6,
-    lockReason: stats.affectionLevel < 60 ? 'Need domestic intimacy (Level 6)' : undefined
+    available: scaledAffection >= 60,
+    requiredLevel: 3,
+    lockReason: scaledAffection < 60 ? 'Need domestic intimacy (Level 3)' : undefined
   });
 
-  // Level 10+ - Ultimate exclusive content (maximum motivation)
+  // Level 5+ - Ultimate exclusive content (maximum motivation)
   baseActivities.push({
     id: 'wedding_night',
     title: 'Wedding Night',
-    description: stats.affectionLevel >= 100 ? 'Ultimate romantic union (18+)' : '🔒 MAX LEVEL EXCLUSIVE - Affection Level 10',
+    description: scaledAffection >= 100 ? 'Ultimate romantic union (18+)' : '🔒 MAX LEVEL EXCLUSIVE - Affection Level 5',
     icon: '💒',
     energyCost: 50,
     affectionReward: 100,
-    available: stats.affectionLevel >= 100,
-    requiredLevel: 10,
-    lockReason: stats.affectionLevel < 100 ? 'EXCLUSIVE: Perfect love required (MAX Level 10)' : undefined
+    available: scaledAffection >= 100,
+    requiredLevel: 5,
+    lockReason: scaledAffection < 100 ? 'EXCLUSIVE: Perfect love required (MAX Level 5)' : undefined
   });
 
-  // Level 10+ - Private beach getaway
+  // Level 5+ - Private beach getaway
   baseActivities.push({
     id: 'beach_vacation',
     title: 'Private Beach',
-    description: stats.affectionLevel >= 100 ? 'Secluded romantic getaway (18+)' : '🔒 MAX LEVEL EXCLUSIVE - Affection Level 10',
+    description: scaledAffection >= 100 ? 'Secluded romantic getaway (18+)' : '🔒 MAX LEVEL EXCLUSIVE - Affection Level 5',
     icon: '🏖️',
     energyCost: 45,
     affectionReward: 80,
-    available: stats.affectionLevel >= 100,
-    requiredLevel: 10,
-    lockReason: stats.affectionLevel < 100 ? 'EXCLUSIVE: Ultimate trust required (MAX Level 10)' : undefined
+    available: scaledAffection >= 100,
+    requiredLevel: 5,
+    lockReason: scaledAffection < 100 ? 'EXCLUSIVE: Ultimate trust required (MAX Level 5)' : undefined
   });
 
   return baseActivities; // Show all activities, including locked ones for motivation
