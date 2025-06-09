@@ -336,6 +336,50 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+  const handleEnvironmentalInteraction = async (interactionPoint: any) => {
+    setDialogueActive(true);
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `*${interactionPoint.action}*`,
+          gameState,
+          context: {
+            location: currentLocation,
+            timeOfDay,
+            weather,
+            interactionPoint: interactionPoint.name,
+            affectionLevel: gameState.affection
+          }
+        })
+      });
+      
+      const data = await response.json();
+      setCurrentDialogue(data.response);
+      
+      // Generate contextual thought prompts based on the interaction
+      const contextualPrompts = [
+        "What do you think about this?",
+        "Want to spend more time here?",
+        "This reminds me of something..."
+      ];
+      setThoughtPrompts(contextualPrompts);
+      
+      if (data.gameState) {
+        setGameState(data.gameState);
+      }
+      
+    } catch (error) {
+      console.error('Environmental interaction error:', error);
+      setCurrentDialogue(`*You ${interactionPoint.action} and feel a sense of peace in this moment*`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
 
   const generateSceneImage = async () => {
@@ -518,7 +562,7 @@ export default function SoloLevelingSpatial() {
 
         {/* Location Info Overlay */}
         <motion.div
-          className="absolute top-6 left-6 liquid-glass-enhanced px-6 py-4"
+          className="absolute top-6 left-6 liquid-glass-enhanced px-4 py-3 max-w-xs"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
@@ -588,7 +632,7 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="absolute bottom-4 left-4 right-4 max-w-4xl mx-auto liquid-glass-modal"
+            className="absolute bottom-4 left-4 right-4 max-w-4xl mx-auto liquid-glass-modal z-50"
             initial={{ y: 100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
