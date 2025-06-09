@@ -447,7 +447,7 @@ export function UnifiedShop({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-2 sm:p-4">
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-purple-500/30 rounded-xl w-full max-w-6xl h-full sm:h-5/6 overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-3 sm:p-6 border-b border-purple-500/30 shrink-0">
@@ -461,7 +461,7 @@ export function UnifiedShop({
               <span className="text-yellow-400">💰</span>
               {playerGold}
             </div>
-            <Button onClick={onClose} variant="ghost" size="sm" className="text-white hover:bg-purple-500/20">
+            <Button onClick={onClose} variant="ghost" size="sm" className="text-white hover:bg-purple-500/20 relative z-[10001]">
               ×
             </Button>
           </div>

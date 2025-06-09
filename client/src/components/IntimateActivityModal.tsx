@@ -145,7 +145,7 @@ export function IntimateActivityModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="bg-gradient-to-br from-pink-900/95 to-purple-900/95 border border-pink-500/30 rounded-xl w-full max-w-4xl h-5/6 overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-pink-500/30">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -165,7 +165,7 @@ export function IntimateActivityModal({
               onClick={handleExit}
               variant="ghost"
               size="sm"
-              className="text-white hover:bg-pink-500/20"
+              className="text-white hover:bg-pink-500/20 relative z-[10001]"
             >
               <X className="w-4 h-4" />
             </Button>

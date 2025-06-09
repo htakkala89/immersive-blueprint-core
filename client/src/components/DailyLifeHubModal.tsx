@@ -391,7 +391,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[9999]">
       <div className="w-full max-w-4xl mx-4 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-gradient-to-r from-pink-600 to-purple-600 p-4 flex items-center justify-between">
@@ -404,7 +404,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
           </div>
           <button 
             onClick={onClose}
-            className="w-10 h-10 bg-white/30 backdrop-blur-xl rounded-full flex items-center justify-center text-white hover:bg-white/50 transition-all border border-white/20 shadow-lg"
+            className="w-10 h-10 bg-white/30 backdrop-blur-xl rounded-full flex items-center justify-center text-white hover:bg-white/50 transition-all border border-white/20 shadow-lg relative z-[10001]"
           >
             <X size={20} />
           </button>
