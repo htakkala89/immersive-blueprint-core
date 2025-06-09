@@ -1865,6 +1865,216 @@ export default function SoloLeveling() {
       ],
       leadsTo: { teamwork_focus: 'TEAMWORK_BOND', unique_strengths: 'STRENGTH_APPRECIATION', her_role: 'HER_ROLE_DISCUSSION' }
     },
+    'TEAMWORK_BOND': {
+      prompt: "Jin-Woo and Cha Hae-In working perfectly together as a team. Synchronized combat, anime style.",
+      narration: "Your emphasis on teamwork creates a deeper bond between you. She feels valued as an equal partner.",
+      chat: [
+        { sender: 'player', text: "Together, we're stronger than the sum of our parts." },
+        { sender: 'Cha Hae-In', text: "I've never felt such perfect synchronization with another hunter." },
+        { sender: 'Cha Hae-In', text: "We make a great team, Jin-Woo." }
+      ],
+      choices: [
+        { text: "Want to take on stronger enemies?", detail: "Suggest harder challenges", type: 'stronger_enemies' },
+        { text: "We should do this more often", detail: "Express desire for partnership", type: 'partnership_desire' },
+        { text: "Trust is everything", detail: "Emphasize bond", type: 'trust_focus' }
+      ],
+      leadsTo: { stronger_enemies: 'STRONGER_CHALLENGE', partnership_desire: 'PARTNERSHIP_BOND', trust_focus: 'TRUST_DEEPENING' }
+    },
+    'HER_ROLE_DISCUSSION': {
+      prompt: "Cha Hae-In sharing her perspective on her role as a hunter. Thoughtful expression, anime style.",
+      narration: "She opens up about her own sense of purpose and responsibility.",
+      chat: [
+        { sender: 'player', text: "What do you see as your role in all this?" },
+        { sender: 'Cha Hae-In', text: "I want to be someone who protects others, who makes a difference." },
+        { sender: 'Cha Hae-In', text: "Sometimes I wonder if I'm strong enough for what's coming." }
+      ],
+      choices: [
+        { text: "You're already making a difference", detail: "Reassure her impact", type: 'reassure_impact' },
+        { text: "Strength isn't just power", detail: "Redefine strength", type: 'redefine_strength' },
+        { text: "We'll face it together", detail: "Offer partnership", type: 'face_together' }
+      ],
+      leadsTo: { reassure_impact: 'IMPACT_RECOGNITION', redefine_strength: 'STRENGTH_REDEFINITION', face_together: 'UNITED_FRONT' }
+    },
+    'STRONGER_CHALLENGE': {
+      prompt: "Jin-Woo and Cha Hae-In preparing for an even greater challenge. Determined partnership, anime style.",
+      narration: "Your suggestion to face stronger enemies together shows your confidence in your partnership.",
+      chat: [
+        { sender: 'player', text: "Want to take on stronger enemies? I think we're ready." },
+        { sender: 'Cha Hae-In', text: "I was hoping you'd say that. There's an S-rank gate that just opened." },
+        { sender: 'Cha Hae-In', text: "Just the two of us against whatever's inside." }
+      ],
+      choices: [
+        { text: "Let's do this", detail: "Accept the challenge", type: 'accept_challenge' },
+        { text: "We make our own rules", detail: "Show confidence", type: 'confident_approach' },
+        { text: "Together, we're unstoppable", detail: "Express unity", type: 'express_unity' }
+      ],
+      leadsTo: { accept_challenge: 'DRAGON_BATTLE', confident_approach: 'CONFIDENT_PARTNERSHIP', express_unity: 'UNITY_MOMENT' }
+    },
+    'DRAGON_VICTORY': {
+      prompt: "Jin-Woo and Cha Hae-In standing victorious over the defeated dragon. Epic victory scene, anime style.",
+      narration: "Your combined might proves unstoppable. The dragon falls, and your bond is forged in the fires of victory.",
+      chat: [
+        { sender: 'system', text: "Victory! The ancient dragon has been defeated!" },
+        { sender: 'Cha Hae-In', text: "We did it... I can't believe how perfectly we fought together." },
+        { sender: 'player', text: "This is just the beginning of what we can accomplish." }
+      ],
+      choices: [
+        { text: "Extract the dragon's shadow", detail: "Gain new power", type: 'extract_dragon' },
+        { text: "Celebrate our victory", detail: "Share the moment", type: 'celebrate_victory' },
+        { text: "Check if you're injured", detail: "Show concern", type: 'check_injuries' }
+      ],
+      leadsTo: { extract_dragon: 'SHADOW_DRAGON_VICTORY', celebrate_victory: 'VICTORY_CELEBRATION', check_injuries: 'CARING_MOMENT' }
+    },
+    'SHADOW_DRAGON_VICTORY': {
+      prompt: "Jin-Woo extracting the dragon's shadow while Cha Hae-In watches in amazement. Power absorption scene, anime style.",
+      narration: "As you extract the dragon's shadow, Cha Hae-In witnesses the true extent of your power.",
+      chat: [
+        { sender: 'player', text: "Shadow Extraction!" },
+        { sender: 'Cha Hae-In', text: "Incredible... your power keeps growing stronger." },
+        { sender: 'Cha Hae-In', text: "But you're still the same Jin-Woo I... care about." }
+      ],
+      choices: [
+        { text: "Power means nothing without you", detail: "Romantic confession", type: 'power_confession' },
+        { text: "Want to see what we can do now?", detail: "Show new abilities", type: 'demonstrate_power' },
+        { text: "This dragon will protect others", detail: "Explain purpose", type: 'protective_purpose' }
+      ],
+      leadsTo: { power_confession: 'POWER_LOVE_CONFESSION', demonstrate_power: 'POWER_DEMONSTRATION', protective_purpose: 'NOBLE_PURPOSE' }
+    },
+    'COORDINATED_VICTORY': {
+      prompt: "Jin-Woo and Cha Hae-In executing perfect coordinated attacks against the dragon. Synchronized combat, anime style.",
+      narration: "Your tactical coordination proves devastating. Every move perfectly timed, every strike perfectly placed.",
+      chat: [
+        { sender: 'player', text: "Now! Strike while I hold its attention!" },
+        { sender: 'Cha Hae-In', text: "Perfect timing! We're unstoppable together!" },
+        { sender: 'system', text: "The dragon falls to your coordinated assault!" }
+      ],
+      choices: [
+        { text: "That was incredible teamwork", detail: "Praise partnership", type: 'praise_teamwork' },
+        { text: "We should celebrate", detail: "Suggest celebration", type: 'suggest_celebration' },
+        { text: "Extract the dragon's shadow", detail: "Gain new power", type: 'extract_shadow' }
+      ],
+      leadsTo: { praise_teamwork: 'TEAMWORK_PRAISE', suggest_celebration: 'VICTORY_CELEBRATION', extract_shadow: 'SHADOW_EXTRACTION' }
+    },
+    'TACTICAL_VICTORY': {
+      prompt: "Jin-Woo distracting the dragon while Cha Hae-In delivers the decisive strike. Strategic victory, anime style.",
+      narration: "Your tactical approach works perfectly. The dragon focuses on you while Cha Hae-In finds the perfect opening.",
+      chat: [
+        { sender: 'player', text: "I'll keep it busy - find your opening!" },
+        { sender: 'Cha Hae-In', text: "Got it! Trust me!" },
+        { sender: 'system', text: "Cha Hae-In's precise strike defeats the dragon!" }
+      ],
+      choices: [
+        { text: "Amazing strike!", detail: "Praise her skill", type: 'praise_skill' },
+        { text: "I knew you could do it", detail: "Show confidence in her", type: 'show_confidence' },
+        { text: "We make a perfect team", detail: "Acknowledge partnership", type: 'perfect_team' }
+      ],
+      leadsTo: { praise_skill: 'SKILL_PRAISE', show_confidence: 'CONFIDENCE_MOMENT', perfect_team: 'PERFECT_PARTNERSHIP' }
+    },
+    'RESPONSIBILITY_MOMENT': {
+      prompt: "Jin-Woo sharing his philosophy about power and responsibility. Wise conversation, anime style.",
+      narration: "Your words about responsibility resonate deeply with her values.",
+      chat: [
+        { sender: 'player', text: "With great power comes great responsibility. We have to use our strength to protect others." },
+        { sender: 'Cha Hae-In', text: "That's exactly how I feel. It's nice to meet someone who understands." },
+        { sender: 'Cha Hae-In', text: "Most hunters just want power for its own sake." }
+      ],
+      choices: [
+        { text: "Protection is our purpose", detail: "Share mission", type: 'protection_purpose' },
+        { text: "What drives you to protect?", detail: "Ask about motivation", type: 'motivation_question' },
+        { text: "We're not like other hunters", detail: "Acknowledge difference", type: 'different_hunters' }
+      ],
+      leadsTo: { protection_purpose: 'PROTECTION_BOND', motivation_question: 'MOTIVATION_SHARING', different_hunters: 'UNIQUE_BOND' }
+    },
+    'HER_WISDOM_STORY': {
+      prompt: "Cha Hae-In sharing her journey to understanding wisdom and power. Personal story, anime style.",
+      narration: "She opens up about her own experiences learning the balance between strength and wisdom.",
+      chat: [
+        { sender: 'player', text: "What made you realize the importance of wisdom?" },
+        { sender: 'Cha Hae-In', text: "I saw too many hunters become monsters because they had power without understanding." },
+        { sender: 'Cha Hae-In', text: "I promised myself I'd never become like them." }
+      ],
+      choices: [
+        { text: "That shows real character", detail: "Praise her values", type: 'praise_character' },
+        { text: "I've seen the same thing", detail: "Share similar experience", type: 'shared_experience' },
+        { text: "You're stronger for it", detail: "Acknowledge her strength", type: 'acknowledge_strength' }
+      ],
+      leadsTo: { praise_character: 'CHARACTER_APPRECIATION', shared_experience: 'SHARED_UNDERSTANDING', acknowledge_strength: 'STRENGTH_RECOGNITION' }
+    },
+    'PROTECTIVE_BOND': {
+      prompt: "Jin-Woo and Cha Hae-In bonding over their shared desire to protect others. Noble purpose, anime style.",
+      narration: "Your shared commitment to protection creates a deep bond between you.",
+      chat: [
+        { sender: 'player', text: "We should protect people, not rule over them." },
+        { sender: 'Cha Hae-In', text: "Finally, someone who gets it. Power should serve others, not ourselves." },
+        { sender: 'Cha Hae-In', text: "I feel like we could do great things together." }
+      ],
+      choices: [
+        { text: "Together we're stronger", detail: "Emphasize unity", type: 'unity_strength' },
+        { text: "What should we protect first?", detail: "Plan action", type: 'plan_protection' },
+        { text: "I want to fight beside you", detail: "Express partnership desire", type: 'partnership_desire' }
+      ],
+      leadsTo: { unity_strength: 'UNITY_BOND', plan_protection: 'PROTECTION_PLANNING', partnership_desire: 'PARTNERSHIP_BOND' }
+    },
+    'TRAINING_DISCUSSION': {
+      prompt: "Cha Hae-In talking about her training regimen. Dedicated swordswoman, anime style.",
+      narration: "She lights up when discussing her training, showing her passion for improvement.",
+      chat: [
+        { sender: 'player', text: "Tell me about your training. I'd love to hear about your techniques." },
+        { sender: 'Cha Hae-In', text: "I spend hours every day perfecting my sword forms. Each movement must be precise." },
+        { sender: 'Cha Hae-In', text: "Would you... like to train together sometime?" }
+      ],
+      choices: [
+        { text: "I'd love to train with you", detail: "Accept training invitation", type: 'accept_training' },
+        { text: "Your dedication is inspiring", detail: "Praise her commitment", type: 'praise_dedication' },
+        { text: "We could learn from each other", detail: "Mutual learning", type: 'mutual_learning' }
+      ],
+      leadsTo: { accept_training: 'TRAINING_TOGETHER', praise_dedication: 'DEDICATION_APPRECIATION', mutual_learning: 'LEARNING_BOND' }
+    },
+    'MOTIVATION_SHARING': {
+      prompt: "Cha Hae-In opening up about what drives her to become stronger. Personal motivation, anime style.",
+      narration: "She shares her deeper motivations, revealing more of her inner self.",
+      chat: [
+        { sender: 'player', text: "What drives you to keep improving?" },
+        { sender: 'Cha Hae-In', text: "I want to be strong enough to protect the people I care about." },
+        { sender: 'Cha Hae-In', text: "I never want to feel helpless again." }
+      ],
+      choices: [
+        { text: "You're already protecting people", detail: "Reassure her impact", type: 'reassure_protection' },
+        { text: "That's a noble goal", detail: "Praise her motivation", type: 'praise_goal' },
+        { text: "I understand that feeling", detail: "Share understanding", type: 'shared_feeling' }
+      ],
+      leadsTo: { reassure_protection: 'PROTECTION_REASSURANCE', praise_goal: 'NOBLE_RECOGNITION', shared_feeling: 'EMOTIONAL_CONNECTION' }
+    },
+    'IMPACT_RECOGNITION': {
+      prompt: "Jin-Woo acknowledging Cha Hae-In's positive impact as a hunter. Recognition scene, anime style.",
+      narration: "Your recognition of her impact brings a warm smile to her face.",
+      chat: [
+        { sender: 'player', text: "You're already making a huge difference. I've seen how you inspire other hunters." },
+        { sender: 'Cha Hae-In', text: "Really? I sometimes wonder if what I do matters." },
+        { sender: 'Cha Hae-In', text: "Thank you for saying that, Jin-Woo. It means a lot." }
+      ],
+      choices: [
+        { text: "Your influence is incredible", detail: "Emphasize her impact", type: 'emphasize_influence' },
+        { text: "People look up to you", detail: "Point out her role model status", type: 'role_model' },
+        { text: "You inspire me too", detail: "Personal admission", type: 'personal_inspiration' }
+      ],
+      leadsTo: { emphasize_influence: 'INFLUENCE_DISCUSSION', role_model: 'ROLE_MODEL_TALK', personal_inspiration: 'INSPIRATION_MOMENT' }
+    },
+    'STRENGTH_REDEFINITION': {
+      prompt: "Jin-Woo helping Cha Hae-In redefine what true strength means. Wisdom sharing, anime style.",
+      narration: "Your perspective on strength opens her eyes to new possibilities.",
+      chat: [
+        { sender: 'player', text: "Strength isn't just physical power. Your compassion, your determination - that's real strength." },
+        { sender: 'Cha Hae-In', text: "I never thought of it that way... You see strength differently than most hunters." },
+        { sender: 'Cha Hae-In', text: "Maybe I'm stronger than I thought." }
+      ],
+      choices: [
+        { text: "You're one of the strongest people I know", detail: "Affirm her strength", type: 'affirm_strength' },
+        { text: "Strength comes in many forms", detail: "Expand on concept", type: 'expand_strength' },
+        { text: "Your heart makes you powerful", detail: "Emotional strength", type: 'heart_power' }
+      ],
+      leadsTo: { affirm_strength: 'STRENGTH_AFFIRMATION', expand_strength: 'STRENGTH_PHILOSOPHY', heart_power: 'HEART_POWER_MOMENT' }
+    },
     'HUMBLE_MOMENT': {
       prompt: "Jin-Woo deflecting praise with humility. Self-deprecating charm, anime style.",
       narration: "Your modest response draws a genuine smile from her.",
