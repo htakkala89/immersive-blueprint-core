@@ -236,6 +236,45 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     lockReason: stats.affectionLevel < 90 ? 'Need devoted partnership (Level 9)' : undefined
   });
 
+  // Level 6+ - Sensual activities
+  baseActivities.push({
+    id: 'cooking_together',
+    title: 'Cook Together',
+    description: stats.affectionLevel >= 60 ? 'Romantic cooking experience' : '🔒 Unlock at Affection Level 6',
+    icon: '👩‍🍳',
+    energyCost: 20,
+    affectionReward: 25,
+    available: stats.affectionLevel >= 60,
+    requiredLevel: 6,
+    lockReason: stats.affectionLevel < 60 ? 'Need domestic intimacy (Level 6)' : undefined
+  });
+
+  // Level 10+ - Ultimate exclusive content (maximum motivation)
+  baseActivities.push({
+    id: 'wedding_night',
+    title: 'Wedding Night',
+    description: stats.affectionLevel >= 100 ? 'Ultimate romantic union (18+)' : '🔒 MAX LEVEL EXCLUSIVE - Affection Level 10',
+    icon: '💒',
+    energyCost: 50,
+    affectionReward: 100,
+    available: stats.affectionLevel >= 100,
+    requiredLevel: 10,
+    lockReason: stats.affectionLevel < 100 ? 'EXCLUSIVE: Perfect love required (MAX Level 10)' : undefined
+  });
+
+  // Level 10+ - Private beach getaway
+  baseActivities.push({
+    id: 'beach_vacation',
+    title: 'Private Beach',
+    description: stats.affectionLevel >= 100 ? 'Secluded romantic getaway (18+)' : '🔒 MAX LEVEL EXCLUSIVE - Affection Level 10',
+    icon: '🏖️',
+    energyCost: 45,
+    affectionReward: 80,
+    available: stats.affectionLevel >= 100,
+    requiredLevel: 10,
+    lockReason: stats.affectionLevel < 100 ? 'EXCLUSIVE: Ultimate trust required (MAX Level 10)' : undefined
+  });
+
   return baseActivities; // Show all activities, including locked ones for motivation
 };
 
@@ -350,7 +389,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
 
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50">
-      <div className="w-full max-w-md mx-4 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden shadow-2xl">
+      <div className="w-full max-w-4xl mx-4 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-gradient-to-r from-pink-600 to-purple-600 p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -362,9 +401,9 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
           </div>
           <button 
             onClick={onClose}
-            className="w-8 h-8 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all"
+            className="w-10 h-10 bg-white/30 backdrop-blur-xl rounded-full flex items-center justify-center text-white hover:bg-white/50 transition-all border border-white/20 shadow-lg"
           >
-            <X size={16} />
+            <X size={20} />
           </button>
         </div>
 
@@ -380,7 +419,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
               <div className="text-gray-400">Energy</div>
             </div>
             <div className="text-center">
-              <div className="text-pink-400 font-bold">❤️ {playerStats.affectionLevel}/5</div>
+              <div className="text-pink-400 font-bold">❤️ {Math.floor(playerStats.affectionLevel/10)}/10</div>
               <div className="text-gray-400">Affection</div>
             </div>
           </div>
@@ -396,37 +435,64 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
           </div>
         </div>
 
-        {/* Activities */}
-        <div className="p-4 max-h-96 overflow-y-auto">
-          <h3 className="text-white font-semibold mb-3">Available Activities</h3>
-          <div className="space-y-3">
+        {/* Activities Grid */}
+        <div className="p-6 max-h-96 overflow-y-auto">
+          <h3 className="text-white font-semibold mb-4 text-lg">Activities & Intimate Moments</h3>
+          <div className="grid grid-cols-2 gap-4">
             {availableActivities.map((activity) => (
               <button
                 key={activity.id}
-                onClick={() => handleActivityClick(activity)}
-                className="w-full p-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl hover:bg-white/20 transition-all group"
+                onClick={() => activity.available ? handleActivityClick(activity) : null}
+                disabled={!activity.available}
+                className={`p-4 rounded-xl border transition-all group relative ${
+                  activity.available 
+                    ? 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-pink-400/50 cursor-pointer' 
+                    : 'bg-gray-800/50 border-gray-600/30 cursor-not-allowed'
+                }`}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{activity.icon}</span>
-                  <div className="flex-1 text-left">
-                    <div className="text-white font-medium group-hover:text-pink-300 transition-colors">
-                      {activity.title}
-                    </div>
-                    <div className="text-gray-400 text-sm">{activity.description}</div>
-                    <div className="flex items-center gap-3 mt-1 text-xs">
-                      {activity.energyCost && (
-                        <span className="text-blue-400">⚡ -{activity.energyCost}</span>
-                      )}
-                      {activity.affectionReward && (
-                        <span className="text-pink-400">❤️ +{activity.affectionReward}</span>
-                      )}
-                      {activity.goldReward && (
-                        <span className={activity.goldReward > 0 ? "text-yellow-400" : "text-red-400"}>
-                          💰 {activity.goldReward > 0 ? '+' : ''}{activity.goldReward}
-                        </span>
-                      )}
+                {/* Lock overlay for unavailable activities */}
+                {!activity.available && (
+                  <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🔒</div>
+                      <div className="text-yellow-400 font-bold text-xs">Level {activity.requiredLevel}</div>
                     </div>
                   </div>
+                )}
+                
+                <div className="text-center">
+                  <div className={`text-2xl mb-2 ${!activity.available ? 'opacity-30' : ''}`}>
+                    {activity.icon}
+                  </div>
+                  <div className={`font-medium text-sm mb-1 ${
+                    activity.available ? 'text-white group-hover:text-pink-300' : 'text-gray-500'
+                  }`}>
+                    {activity.title}
+                  </div>
+                  <div className={`text-xs mb-2 leading-tight ${
+                    activity.available ? 'text-gray-300' : 'text-gray-600'
+                  }`}>
+                    {activity.description}
+                  </div>
+                  
+                  {/* Rewards */}
+                  {activity.available && (
+                    <div className="flex justify-center items-center gap-2 text-xs">
+                      {activity.energyCost && (
+                        <span className="text-blue-400">⚡-{activity.energyCost}</span>
+                      )}
+                      {activity.affectionReward && (
+                        <span className="text-pink-400">❤️+{activity.affectionReward}</span>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Lock reason */}
+                  {!activity.available && activity.lockReason && (
+                    <div className="text-yellow-300 text-xs mt-1 font-medium">
+                      {activity.lockReason}
+                    </div>
+                  )}
                 </div>
               </button>
             ))}
