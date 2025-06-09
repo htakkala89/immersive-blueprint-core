@@ -543,17 +543,14 @@ export default function SoloLevelingSpatial() {
           </motion.div>
         ))}
         
-        {/* Monarch's Aura Button - Temporary */}
+        {/* Monarch's Aura Eye - Testing */}
         <motion.button
-          className="absolute top-6 right-6 liquid-glass px-4 py-2 rounded-lg"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="absolute top-6 right-8 w-12 h-12 liquid-glass rounded-full flex items-center justify-center"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => setMonarchAuraVisible(true)}
         >
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse" />
-            <span className="text-white text-sm font-medium">Monarch's Aura</span>
-          </div>
+          <Eye className="w-6 h-6 text-purple-400" />
         </motion.button>
 
         {/* Location Info Overlay */}
