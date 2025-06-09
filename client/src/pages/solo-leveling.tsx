@@ -700,12 +700,11 @@ export default function SoloLeveling() {
         usableInCombat: false
       }]);
       
-      // Show Cha Hae-In's reaction
-      if (item.chaHaeInReaction) {
-        setTimeout(() => {
-          addChatMessage('Cha Hae-In', item.chaHaeInReaction!);
-        }, 1000);
-      }
+      // Show gift presentation modal for player to give the gift
+      setTimeout(() => {
+        setSelectedGift(item);
+        setShowGiftGiving(true);
+      }, 1000);
     } else if (item.type === 'consumable') {
       // Add to inventory
       setPlayerInventory(prev => [...prev, {
@@ -728,6 +727,54 @@ export default function SoloLeveling() {
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
   const { playVoice, stopVoice, isPlaying, currentSpeaker } = useVoice();
+
+  // Function to present a gift to Cha Hae-In
+  const presentGiftToChaHaeIn = async (gift: ShopItem) => {
+    if (!gift) return;
+
+    // Generate Cha Hae-In's reaction based on the gift
+    const giftReactions = {
+      'elegant_necklace': "Oh my... this is beautiful, Jin-Woo. You really didn't have to, but... thank you. *blushes slightly* I'll treasure it.",
+      'premium_perfume': "*eyes light up* This is my favorite brand! How did you know? *smiles warmly* You're very thoughtful.",
+      'silk_scarf': "This is so elegant... *touches the silk gently* It's perfect for the upcoming winter. Thank you, Jin-Woo.",
+      'golden_bracelet': "*gasps softly* Jin-Woo, this is too much... but it's absolutely gorgeous. *extends her wrist* Help me put it on?",
+      'rare_book': "*eyes widen with excitement* This is a first edition! I've been looking for this everywhere. *hugs the book* You're amazing!",
+      'tea_set': "A traditional tea set... *smiles nostalgically* This reminds me of my grandmother's. We should have tea together sometime.",
+      'chocolate_box': "*smiles sweetly* You remembered I have a sweet tooth! These look absolutely delicious. *opens the box* Want to share them with me?",
+      'flower_bouquet': "*gasps in delight* These are gorgeous! *takes a deep breath* They smell wonderful too. Thank you for brightening my day, Jin-Woo."
+    };
+
+    const reaction = giftReactions[gift.id as keyof typeof giftReactions] || 
+      `*smiles warmly* Thank you for thinking of me, Jin-Woo. This means a lot to me.`;
+
+    // Add gift presentation to chat
+    addChatMessage('System', `You present the ${gift.name} to Cha Hae-In...`);
+    
+    setTimeout(() => {
+      addChatMessage('Cha Hae-In', reaction);
+      
+      // Play her voice response if audio is enabled
+      if (!audioMuted) {
+        playVoice(reaction, 'Cha Hae-In', audioMuted);
+      }
+
+      // Increase affection based on gift value
+      const affectionIncrease = Math.floor((gift.price || 1000) / 1000) + (gift.affectionGain || 0);
+      setGameState(prev => ({ 
+        ...prev, 
+        affection: Math.min(100, prev.affection + affectionIncrease)
+      }));
+
+      // Show affection increase effect
+      setShowAffectionIncrease(true);
+      triggerAffectionSparkle();
+      
+      addChatMessage('System', `Affection increased by ${affectionIncrease}! Current affection: ${Math.min(100, gameState.affection + affectionIncrease)}`);
+    }, 1500);
+
+    setShowGiftGiving(false);
+    setSelectedGift(null);
+  };
   const { generateStoryNarration, isPlaying: isNarrationPlaying, stopNarration } = useStoryNarration();
   // Relationship system state
   const [relationshipData, setRelationshipData] = useState({
