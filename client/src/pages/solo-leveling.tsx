@@ -371,12 +371,29 @@ export default function SoloLeveling() {
   };
 
   const totalStats = calculateTotalStats();
+
+  // Function to trigger affection sparkle effect with sound
+  const triggerAffectionSparkle = () => {
+    setAffectionButtonSparkle(true);
+    
+    // Play sparkle sound effect
+    const audio = new Audio();
+    audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhAjaOuvPLfCgG';
+    audio.volume = 0.3;
+    audio.play().catch(() => {}); // Ignore audio errors
+    
+    // Reset sparkle after animation
+    setTimeout(() => {
+      setAffectionButtonSparkle(false);
+    }, 2000);
+  };
   const [intimacyLevel, setIntimacyLevel] = useState(10);
   const [playerEnergy, setPlayerEnergy] = useState(100);
   const [showIntimateActivity, setShowIntimateActivity] = useState(false);
   const [currentIntimateActivity, setCurrentIntimateActivity] = useState<string | null>(null);
   const [intimateActivityResponse, setIntimateActivityResponse] = useState<string>('');
   const [currentActivityContext, setCurrentActivityContext] = useState<string | null>(null);
+  const [affectionButtonSparkle, setAffectionButtonSparkle] = useState(false);
 
   // Combat reward system
   const MONSTER_REWARDS = {
@@ -497,6 +514,7 @@ export default function SoloLeveling() {
       // Apply gift effects
       if (item.affectionGain && item.affectionGain > 0) {
         setGameState(prev => ({ ...prev, affection: prev.affection + item.affectionGain! }));
+        triggerAffectionSparkle();
       }
       if (item.intimacyGain && item.intimacyGain > 0) {
         setGameState(prev => ({ ...prev, intimacyLevel: (prev.intimacyLevel || 0) + item.intimacyGain! }));
@@ -4128,7 +4146,7 @@ export default function SoloLeveling() {
                       <div className="flex items-center gap-4">
                         {/* Gold */}
                         <div className="flex items-center gap-1">
-                          <span className="text-yellow-400 text-xs">💰</span>
+                          <span className="text-yellow-400 text-xs">Gold:</span>
                           <span className="text-white text-xs font-medium">{gameState.gold || 500}</span>
                         </div>
                         
