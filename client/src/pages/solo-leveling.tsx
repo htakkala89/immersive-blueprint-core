@@ -1486,7 +1486,7 @@ export default function SoloLeveling() {
         { text: "Move closer", detail: "Close the distance", type: 'move_closer' },
         { text: "Confess your love", detail: "Express your feelings", type: 'love_confession' }
       ],
-      leadsTo: { move_closer: 'INTIMATE_CLOSENESS', love_confession: 'LOVE_DECLARATION' }
+      leadsTo: { move_closer: 'FIRST_KISS', love_confession: 'CONFESSION' }
     },
     'CAFE_KISS': {
       prompt: "Jin-Woo and Cha Hae-In sharing their first kiss in the café. Sweet romantic moment, anime style.",
@@ -1528,6 +1528,201 @@ export default function SoloLeveling() {
         { text: "Test your bond in battle", detail: "Face the gate together", type: 'battle_test' }
       ],
       leadsTo: { confirm_bond: 'SOUL_BOND', seal_with_love: 'LOVE_SEALED', battle_test: 'GATE_ENTRANCE' }
+    },
+    'FIRST_KISS': {
+      prompt: "Jin-Woo and Cha Hae-In sharing their first tender kiss. Romantic anime moment with soft lighting.",
+      narration: "Your first kiss is gentle and perfect, sealing your growing connection.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I've waited so long for this moment..." },
+        { sender: 'player', text: "It was worth every second of waiting." }
+      ],
+      choices: [
+        { text: "Hold her close", detail: "Embrace the moment", type: 'embrace' },
+        { text: "Promise more dates", detail: "Plan the future", type: 'promise_dates' }
+      ],
+      leadsTo: { embrace: 'ROMANTIC_EMBRACE', promise_dates: 'DATE_PLANNING' }
+    },
+    'LOVE_DECLARATION': {
+      prompt: "Jin-Woo declaring his deep love to Cha Hae-In. Emotional anime scene with beautiful lighting.",
+      narration: "Your heartfelt declaration changes everything between you.",
+      chat: [
+        { sender: 'player', text: "Cha Hae-In, I love you. More than I've ever loved anyone." },
+        { sender: 'Cha Hae-In', text: "Jin-Woo... I love you too. I have for so long." }
+      ],
+      choices: [
+        { text: "Kiss her passionately", detail: "Seal your love", type: 'passionate_kiss' },
+        { text: "Plan your future together", detail: "Talk about tomorrow", type: 'plan_future' }
+      ],
+      leadsTo: { passionate_kiss: 'PASSIONATE_KISS', plan_future: 'FUTURE_PLANNING' }
+    },
+    'ROMANTIC_EMBRACE': {
+      prompt: "Jin-Woo and Cha Hae-In in a tender romantic embrace. Warm anime scene with soft colors.",
+      narration: "In each other's arms, the world feels perfect and complete.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I feel so safe and loved in your arms." },
+        { sender: 'player', text: "This is where you belong, with me." }
+      ],
+      choices: [
+        { text: "Stay like this longer", detail: "Cherish the moment", type: 'cherish_moment' },
+        { text: "Plan a special date", detail: "Make plans", type: 'special_date' }
+      ],
+      leadsTo: { cherish_moment: 'INTIMATE_MOMENT', special_date: 'DATE_PLANNING' }
+    },
+    'PASSIONATE_KISS': {
+      prompt: "Jin-Woo and Cha Hae-In sharing a passionate, loving kiss. Intense romantic anime scene.",
+      narration: "Your passionate kiss expresses all the love you feel for each other.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I never knew love could feel this intense..." },
+        { sender: 'player', text: "This is just the beginning of our story together." }
+      ],
+      choices: [
+        { text: "Promise forever", detail: "Make a commitment", type: 'promise_forever' },
+        { text: "Enjoy the moment", detail: "Live in the present", type: 'enjoy_present' }
+      ],
+      leadsTo: { promise_forever: 'ETERNAL_PROMISE', enjoy_present: 'ROMANTIC_BLISS' }
+    },
+    'SOUL_BOND': {
+      prompt: "Jin-Woo and Cha Hae-In forming a deep soul connection. Mystical anime scene with spiritual energy.",
+      narration: "Your souls connect on a level beyond the physical, creating an unbreakable bond.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I can feel your heart beating with mine..." },
+        { sender: 'player', text: "We're connected now, forever." }
+      ],
+      choices: [
+        { text: "Strengthen the bond", detail: "Deepen connection", type: 'strengthen_bond' },
+        { text: "Face the world together", detail: "Unite as one", type: 'face_together' }
+      ],
+      leadsTo: { strengthen_bond: 'DEEPER_CONNECTION', face_together: 'UNITED_FRONT' }
+    },
+    'LOVE_SEALED': {
+      prompt: "Jin-Woo and Cha Hae-In sealing their love with a sacred promise. Beautiful anime scene with golden light.",
+      narration: "Your love is now sealed with a promise that transcends time itself.",
+      chat: [
+        { sender: 'player', text: "No matter what happens, my love for you is eternal." },
+        { sender: 'Cha Hae-In', text: "And mine for you. We're bound by love itself." }
+      ],
+      choices: [
+        { text: "Begin your life together", detail: "Start your journey", type: 'life_together' },
+        { text: "Face any challenge", detail: "Conquer all obstacles", type: 'face_challenges' }
+      ],
+      leadsTo: { life_together: 'LIFE_TOGETHER', face_challenges: 'CHALLENGE_ACCEPTED' }
+    },
+    'INTIMATE_MOMENT': {
+      prompt: "Jin-Woo and Cha Hae-In sharing an intimate, tender moment together. Soft romantic anime scene.",
+      narration: "This intimate moment deepens your connection beyond words.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Being this close to you feels so natural and right." },
+        { sender: 'player', text: "You're everything I've ever wanted." }
+      ],
+      choices: [
+        { text: "Express your love", detail: "Tell her how you feel", type: 'express_love' },
+        { text: "Plan your future", detail: "Talk about tomorrow", type: 'plan_future' }
+      ],
+      leadsTo: { express_love: 'LOVE_DECLARATION', plan_future: 'FUTURE_PLANNING' }
+    },
+    'ROMANTIC_PROMISE': {
+      prompt: "Jin-Woo making a romantic promise to Cha Hae-In. Heartfelt anime scene with beautiful lighting.",
+      narration: "Your promise touches her heart and strengthens your bond.",
+      chat: [
+        { sender: 'player', text: "I promise to always cherish and protect you." },
+        { sender: 'Cha Hae-In', text: "That's all I've ever wanted to hear from you." }
+      ],
+      choices: [
+        { text: "Seal it with a kiss", detail: "Show your love", type: 'seal_kiss' },
+        { text: "Plan something special", detail: "Make it memorable", type: 'plan_special' }
+      ],
+      leadsTo: { seal_kiss: 'PASSIONATE_KISS', plan_special: 'SPECIAL_SURPRISE' }
+    },
+    'ETERNAL_PROMISE': {
+      prompt: "Jin-Woo making an eternal promise of love to Cha Hae-In. Sacred anime moment with divine lighting.",
+      narration: "Your eternal promise creates an unbreakable bond between your souls.",
+      chat: [
+        { sender: 'player', text: "I promise to love you for all eternity, in this life and beyond." },
+        { sender: 'Cha Hae-In', text: "Jin-Woo... I'll love you forever too. Always and always." }
+      ],
+      choices: [
+        { text: "Begin your eternal journey", detail: "Start your life together", type: 'eternal_journey' },
+        { text: "Face eternity together", detail: "Conquer all time", type: 'face_eternity' }
+      ],
+      leadsTo: { eternal_journey: 'ETERNAL_LOVE', face_eternity: 'TIMELESS_BOND' }
+    },
+    'ROMANTIC_BLISS': {
+      prompt: "Jin-Woo and Cha Hae-In in perfect romantic bliss. Dreamy anime scene with soft, warm colors.",
+      narration: "You're both lost in the perfect bliss of new love.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I never knew happiness could feel this complete." },
+        { sender: 'player', text: "This is just the beginning of our happiness together." }
+      ],
+      choices: [
+        { text: "Make more memories", detail: "Create beautiful moments", type: 'make_memories' },
+        { text: "Promise a beautiful future", detail: "Plan your life", type: 'promise_future' }
+      ],
+      leadsTo: { make_memories: 'MEMORY_MAKING', promise_future: 'FUTURE_PLANNING' }
+    },
+    'DEEPER_CONNECTION': {
+      prompt: "Jin-Woo and Cha Hae-In's connection deepening beyond the physical realm. Mystical anime scene.",
+      narration: "Your connection transcends the physical, reaching into the very essence of your beings.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I can feel your thoughts, your emotions... we're truly one." },
+        { sender: 'player', text: "Our souls are intertwined now. Nothing can separate us." }
+      ],
+      choices: [
+        { text: "Explore this new bond", detail: "Understand the connection", type: 'explore_bond' },
+        { text: "Use it to protect each other", detail: "Strengthen your power", type: 'protective_bond' }
+      ],
+      leadsTo: { explore_bond: 'SOUL_EXPLORATION', protective_bond: 'PROTECTIVE_LOVE' }
+    },
+    'UNITED_FRONT': {
+      prompt: "Jin-Woo and Cha Hae-In standing united as one force. Powerful anime scene with combined auras.",
+      narration: "Together, you're unstoppable. Your combined strength is beyond measure.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "With you beside me, I fear nothing." },
+        { sender: 'player', text: "Together, we can face any challenge the world throws at us." }
+      ],
+      choices: [
+        { text: "Test your combined power", detail: "See your strength", type: 'test_power' },
+        { text: "Protect the world together", detail: "Be heroes", type: 'protect_world' }
+      ],
+      leadsTo: { test_power: 'POWER_TEST', protect_world: 'HEROIC_PARTNERSHIP' }
+    },
+    'LIFE_TOGETHER': {
+      prompt: "Jin-Woo and Cha Hae-In beginning their life together. Heartwarming anime scene of domestic bliss.",
+      narration: "Your new life together is everything you both dreamed it would be.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Our home, our life... it's perfect." },
+        { sender: 'player', text: "Every day with you is a gift I treasure." }
+      ],
+      choices: [
+        { text: "Plan your adventures", detail: "Explore together", type: 'plan_adventures' },
+        { text: "Build your family", detail: "Create a legacy", type: 'build_family' }
+      ],
+      leadsTo: { plan_adventures: 'ADVENTURE_PLANNING', build_family: 'FAMILY_BUILDING' }
+    },
+    'CHALLENGE_ACCEPTED': {
+      prompt: "Jin-Woo and Cha Hae-In accepting life's challenges together. Determined anime scene with heroic poses.",
+      narration: "No challenge is too great when you face it together.",
+      chat: [
+        { sender: 'player', text: "Whatever comes our way, we'll face it as one." },
+        { sender: 'Cha Hae-In', text: "I'm ready for anything as long as you're with me." }
+      ],
+      choices: [
+        { text: "Face the first challenge", detail: "Test your resolve", type: 'first_challenge' },
+        { text: "Prepare for anything", detail: "Build your strength", type: 'prepare_together' }
+      ],
+      leadsTo: { first_challenge: 'FIRST_TRIAL', prepare_together: 'PREPARATION_PHASE' }
+    },
+    'FUTURE_PLANNING': {
+      prompt: "Jin-Woo and Cha Hae-In planning their future together. Optimistic anime scene with bright horizons.",
+      narration: "Planning your future together fills you both with hope and excitement.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I want to experience everything life has to offer with you." },
+        { sender: 'player', text: "Our future is going to be amazing. I can feel it." }
+      ],
+      choices: [
+        { text: "Start your adventures", detail: "Begin your journey", type: 'start_adventures' },
+        { text: "Build your dream home", detail: "Create your sanctuary", type: 'build_home' }
+      ],
+      leadsTo: { start_adventures: 'ADVENTURE_BEGINNING', build_home: 'HOME_BUILDING' }
     },
     'DATE_ACCEPTED': {
       prompt: "Cha Hae-In blushing and smiling after being asked on a date. Happy romantic acceptance, anime style.",
