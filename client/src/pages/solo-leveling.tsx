@@ -4049,91 +4049,121 @@ export default function SoloLeveling() {
         { sender: 'Cha Hae-In', text: "This could be connected to something bigger." }
       ],
       choices: [
-        { text: "Share shadow observations", detail: "Reveal what you've seen", type: 'shadow_intel' },
-        { text: "Discuss possible causes", detail: "Theorize together", type: 'theorize' },
-        { text: "Suggest joint investigation", detail: "Work together", type: 'investigate_together' }
+        { text: "Investigate together", detail: "Join forces", type: 'investigate' },
+        { text: "Share information", detail: "Exchange data", type: 'share_info' },
+        { text: "Plan next steps", detail: "Coordinate actions", type: 'plan' }
       ],
-      leadsTo: { shadow_intel: 'SHADOW_INTELLIGENCE', theorize: 'THEORY_SESSION', investigate_together: 'INVESTIGATION_TEAM' }
+      leadsTo: { investigate: 'INVESTIGATION_TEAM', share_info: 'INFO_EXCHANGE', plan: 'STRATEGIC_PLANNING' }
+    },
+    'ROMANTIC_DECLARATION': {
+      prompt: "Jin-Woo making a romantic declaration to Cha Hae-In, heartfelt confession, anime style.",
+      narration: "Your heart pounds as you gather the courage to express your deepest feelings.",
+      chat: [
+        { sender: 'player', text: "Hae-In, there's something I need to tell you. These feelings I have..." },
+        { sender: 'Cha Hae-In', text: "*looks into your eyes with anticipation* What is it, Jin-Woo?" },
+        { sender: 'player', text: "I love you. More than anything in this world or any other." }
+      ],
+      choices: [
+        { text: "Wait for her response", detail: "Give her time", type: 'wait' },
+        { text: "Express more feelings", detail: "Continue confession", type: 'continue' },
+        { text: "Hold her hand", detail: "Physical connection", type: 'hold_hand' }
+      ],
+      leadsTo: { wait: 'CONFESSION_RESPONSE', continue: 'DEEPER_CONFESSION', hold_hand: 'TENDER_TOUCH' }
+    },
+    'SPECIAL_RESTAURANT': {
+      prompt: "Jin-Woo and Cha Hae-In at a special high-end restaurant, romantic dinner date, anime style.",
+      narration: "You've chosen an elegant restaurant for this special evening together.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This place is beautiful, Jin-Woo. You really didn't have to..." },
+        { sender: 'player', text: "Nothing's too good for you. I wanted tonight to be perfect." },
+        { sender: 'Cha Hae-In', text: "*smiles warmly* Being with you already makes it perfect." }
+      ],
+      choices: [
+        { text: "Order wine", detail: "Celebrate together", type: 'wine' },
+        { text: "Share appetizers", detail: "Intimate sharing", type: 'share' },
+        { text: "Toast to your relationship", detail: "Romantic gesture", type: 'toast' }
+      ],
+      leadsTo: { wine: 'WINE_SELECTION', share: 'SHARED_MEAL', toast: 'RELATIONSHIP_TOAST' }
+    },
+    'HER_CHOICE_RESTAURANT': {
+      prompt: "Cha Hae-In choosing a cozy restaurant, her favorite place, anime style.",
+      narration: "Hae-In leads you to a charming restaurant she's wanted to share with you.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I've been wanting to bring you here. It's... special to me." },
+        { sender: 'player', text: "I love that you're sharing your favorite places with me." },
+        { sender: 'Cha Hae-In', text: "I want to share everything with you, Jin-Woo." }
+      ],
+      choices: [
+        { text: "Ask about the significance", detail: "Learn more", type: 'ask_significance' },
+        { text: "Appreciate her trust", detail: "Express gratitude", type: 'appreciate' },
+        { text: "Focus on the moment", detail: "Enjoy together", type: 'present_moment' }
+      ],
+      leadsTo: { ask_significance: 'RESTAURANT_STORY', appreciate: 'TRUST_MOMENT', present_moment: 'INTIMATE_DINNER' }
     }
   };
 
-  // Use cached Jin-Woo cover for instant loading
-  useEffect(() => {
-    const loadJinWooCover = async () => {
-      console.log('Loading cached Jin-Woo cover for instant display...');
-      try {
-        // Import the cached cover image for immediate loading
-        const cachedCoverModule = await import('@assets/image_1749415701105.png');
-        const cachedCoverUrl = cachedCoverModule.default;
-        setCurrentBackground(cachedCoverUrl);
-        console.log('Cached Jin-Woo cover loaded instantly');
-      } catch (error) {
-        console.log('Asset import failed, using gradient background fallback');
-        setCurrentBackground('linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%)');
-      }
-    };
-    
-    loadJinWooCover();
-    
-    const updateTime = () => {
-      if (timeRef.current) {
-        const now = new Date();
-        timeRef.current.textContent = now.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: false
-        });
-      }
-    };
+  // Get current story scene
+  const getCurrentStory = () => {
+    return story[gameState.currentScene] || story['START'];
+  };
 
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const currentStory = getCurrentStory();
 
-  // Auto-scroll chat to bottom when new messages arrive
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      const element = chatContainerRef.current;
-      element.scrollTop = element.scrollHeight;
+  // Handle story progression
+  const handleChoice = (choice: any) => {
+    const nextScene = currentStory.leadsTo?.[choice.type];
+    if (nextScene && story[nextScene]) {
+      setGameState(prev => ({
+        ...prev,
+        currentScene: nextScene
+      }));
     }
-  }, [chatMessages]);
+  };
 
-  // Reset choice index when story changes to prevent out-of-bounds errors
-  useEffect(() => {
-    const currentStory = story[gameState.currentScene];
-    if (currentStory?.choices && currentStory.choices.length > 0) {
-      setCurrentChoiceIndex(0); // Always reset to first choice when scene changes
-    }
-  }, [gameState.currentScene]);
-
-  // Ensure choice index is always valid
-  useEffect(() => {
-    const currentStory = story[gameState.currentScene];
-    if (currentStory?.choices && currentStory.choices.length > 0) {
-      if (currentChoiceIndex >= currentStory.choices.length) {
-        setCurrentChoiceIndex(0);
-      }
-    }
-  }, [currentChoiceIndex, gameState.currentScene]);
-
-  // Play story narration when scene changes
-  useEffect(() => {
-    const currentStory = story[gameState.currentScene];
-    if (currentStory?.narration) {
-      setTimeout(() => {
-        // Use the main voice system with narrator priority
-        playVoice(currentStory.narration, 'narrator');
-      }, 1000); // Delay to allow scene transition
-    }
-  }, [gameState.currentScene, playVoice]);
-
-  // iMessage-style message lifecycle management
-  const startMessageAnimation = (messageId: number) => {
-    // Clear any existing timer for this message
-    if (messageTimers[messageId]) {
-      clearTimeout(messageTimers[messageId]);
-    }
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white flex flex-col">
+      {/* Game Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Story Display */}
+        <div className="flex-1 p-6">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">{currentStory.narration}</h2>
+            
+            {/* Chat Messages */}
+            <div className="space-y-4 mb-6">
+              {currentStory.chat.map((message, index) => (
+                <div key={index} className={`flex ${message.sender === 'player' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-xs px-4 py-2 rounded-lg ${
+                    message.sender === 'player' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-700 text-white'
+                  }`}>
+                    <div className="text-sm opacity-70 mb-1">{message.sender === 'player' ? 'You' : 'Cha Hae-In'}</div>
+                    <div>{message.text}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Choices */}
+            <div className="space-y-3">
+              {currentStory.choices.map((choice, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleChoice(choice)}
+                  className="w-full p-4 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-600 text-left transition-colors"
+                >
+                  <div className="font-semibold">{choice.text}</div>
+                  {choice.detail && <div className="text-sm opacity-70 mt-1">{choice.detail}</div>}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
     // Start with entering animation
     setMessageStates(prev => ({ ...prev, [messageId]: 'entering' }));
