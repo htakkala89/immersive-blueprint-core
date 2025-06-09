@@ -758,8 +758,14 @@ export default function SoloLeveling() {
         playVoice(reaction, 'Cha Hae-In', audioMuted);
       }
 
-      // Increase affection based on gift value
-      const affectionIncrease = Math.floor((gift.price || 1000) / 1000) + (gift.affectionGain || 0);
+      // Increase affection based on gift value and type
+      let affectionIncrease = gift.affectionGain || Math.max(1, Math.floor((gift.price || 1000) / 1000));
+      
+      // Ensure minimum affection gain for gifts
+      if (affectionIncrease <= 0) {
+        affectionIncrease = gift.price >= 5000 ? 5 : gift.price >= 2000 ? 3 : 2;
+      }
+      
       setGameState(prev => ({ 
         ...prev, 
         affection: Math.min(100, prev.affection + affectionIncrease)
@@ -6794,14 +6800,19 @@ export default function SoloLeveling() {
         currentIntimacy={intimacyLevel}
         onPurchaseGift={(gift) => {
           if ((gameState.gold || 0) >= gift.price) {
+            // Deduct gold but don't apply affection yet - wait for gift presentation
             setGameState(prev => ({
               ...prev,
-              gold: (prev.gold || 0) - gift.price,
-              affection: Math.min(100, prev.affection + gift.affectionGain)
+              gold: (prev.gold || 0) - gift.price
             }));
-            setIntimacyLevel(prev => Math.min(100, prev + gift.intimacyGain));
             
-            // Show gift presentation modal
+            // Calculate proper affection gain
+            let calculatedAffectionGain = gift.affectionGain || Math.max(2, Math.floor(gift.price / 1000));
+            if (calculatedAffectionGain <= 0) {
+              calculatedAffectionGain = gift.price >= 5000 ? 5 : gift.price >= 2000 ? 3 : 2;
+            }
+            
+            // Show gift presentation modal with calculated affection
             setSelectedGift({
               id: gift.id,
               name: gift.name,
@@ -6811,8 +6822,8 @@ export default function SoloLeveling() {
               type: 'gift',
               category: 'gifts',
               icon: '🎁',
-              affectionGain: gift.affectionGain,
-              intimacyGain: gift.intimacyGain,
+              affectionGain: calculatedAffectionGain,
+              intimacyGain: gift.intimacyGain || 1,
               chaHaeInReaction: gift.chaHaeInReaction
             } as ShopItem);
             setShowGiftGiving(true);
@@ -6835,9 +6846,11 @@ export default function SoloLeveling() {
               <div className="bg-black/30 rounded-xl p-4 mb-6 border border-white/10">
                 <h3 className="text-lg font-semibold text-white mb-2">{selectedGift.name}</h3>
                 <p className="text-gray-300 text-sm mb-2">{selectedGift.description}</p>
-                <div className="flex justify-between items-center text-sm">
+                <div className="grid grid-cols-2 gap-2 text-sm">
                   <span className="text-purple-300">Value: {selectedGift.price} gold</span>
                   <span className="text-pink-300 capitalize">{selectedGift.rarity} quality</span>
+                  <span className="text-green-300">Affection: +{selectedGift.affectionGain || 2}</span>
+                  <span className="text-blue-300">Intimacy: +{selectedGift.intimacyGain || 1}</span>
                 </div>
               </div>
               
