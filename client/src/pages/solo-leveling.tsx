@@ -1475,19 +1475,7 @@ export default function SoloLeveling() {
       ],
       leadsTo: { perfect_acceptance: 'ROMANTIC_MOMENT', detailed_appreciation: 'ROMANTIC_MOMENT' }
     },
-    'INTIMATE_MOMENT': {
-      prompt: "Jin-Woo and Cha Hae-In sharing intense eye contact. Deep emotional connection, anime style.",
-      narration: "Looking into her eyes, you see everything you've been searching for.",
-      chat: [
-        { sender: 'Cha Hae-In', text: "When you look at me like that... I feel like I could face anything." },
-        { sender: 'player', text: "You're my strength, Hae-In." }
-      ],
-      choices: [
-        { text: "Move closer", detail: "Close the distance", type: 'move_closer' },
-        { text: "Confess your love", detail: "Express your feelings", type: 'love_confession' }
-      ],
-      leadsTo: { move_closer: 'FIRST_KISS', love_confession: 'CONFESSION' }
-    },
+
     'CAFE_KISS': {
       prompt: "Jin-Woo and Cha Hae-In sharing their first kiss in the café. Sweet romantic moment, anime style.",
       narration: "The kiss is gentle, perfect, and full of promise.",
@@ -1606,19 +1594,6 @@ export default function SoloLeveling() {
         { text: "Face any challenge", detail: "Conquer all obstacles", type: 'face_challenges' }
       ],
       leadsTo: { life_together: 'LIFE_TOGETHER', face_challenges: 'CHALLENGE_ACCEPTED' }
-    },
-    'INTIMATE_MOMENT': {
-      prompt: "Jin-Woo and Cha Hae-In sharing an intimate, tender moment together. Soft romantic anime scene.",
-      narration: "This intimate moment deepens your connection beyond words.",
-      chat: [
-        { sender: 'Cha Hae-In', text: "Being this close to you feels so natural and right." },
-        { sender: 'player', text: "You're everything I've ever wanted." }
-      ],
-      choices: [
-        { text: "Express your love", detail: "Tell her how you feel", type: 'express_love' },
-        { text: "Plan your future", detail: "Talk about tomorrow", type: 'plan_future' }
-      ],
-      leadsTo: { express_love: 'LOVE_DECLARATION', plan_future: 'FUTURE_PLANNING' }
     },
     'ROMANTIC_PROMISE': {
       prompt: "Jin-Woo making a romantic promise to Cha Hae-In. Heartfelt anime scene with beautiful lighting.",
@@ -2203,46 +2178,8 @@ export default function SoloLeveling() {
       ],
       leadsTo: { take_hand: 'HAND_HOLDING', nod_continue: 'RESPECTFUL_BOND' }
     },
-    'LOVE_DECLARATION': {
-      prompt: "Jin-Woo declaring his love for Cha Hae-In. Ultimate confession, anime style.",
-      narration: "The words come from the deepest part of your heart.",
-      chat: [
-        { sender: 'player', text: "I love you, Cha Hae-In. Completely and utterly." },
-        { sender: 'Cha Hae-In', text: "Jin-Woo... I love you too. More than I ever thought possible." }
-      ],
-      choices: [
-        { text: "Kiss her", detail: "Seal the declaration", type: 'sealing_kiss' },
-        { text: "Hold her close", detail: "Tender embrace", type: 'tender_hold' }
-      ],
-      leadsTo: { sealing_kiss: 'LOVE_KISS', tender_hold: 'LOVE_EMBRACE' }
-    },
-    'LOVE_SEALED': {
-      prompt: "Their love officially sealed. Complete romantic union, anime style.",
-      narration: "Nothing can separate you now.",
-      chat: [
-        { sender: 'Cha Hae-In', text: "This feels like a dream come true." },
-        { sender: 'player', text: "The best kind of dream - one we're living together." }
-      ],
-      choices: [
-        { text: "Plan our future", detail: "Look ahead together", type: 'plan_future' },
-        { text: "Start building a life together", detail: "Begin your shared journey", type: 'daily_life_hub' },
-        { text: "Savor this moment", detail: "Stay in the present", type: 'savor_now' }
-      ],
-      leadsTo: { plan_future: 'FUTURE_PLANNING', daily_life_hub: 'DAILY_LIFE_HUB', savor_now: 'PRESENT_BLISS' }
-    },
-    'SOUL_BOND': {
-      prompt: "Jin-Woo and Cha Hae-In forming a soul bond. Spiritual connection, anime style.",
-      narration: "Your souls resonate at the same frequency, creating an unbreakable bond.",
-      chat: [
-        { sender: 'Cha Hae-In', text: "I can feel it... our connection goes deeper than anything physical." },
-        { sender: 'player', text: "We're bound now, in every way that matters." }
-      ],
-      choices: [
-        { text: "Promise to protect this bond", detail: "Sacred vow", type: 'protect_bond' },
-        { text: "Embrace the eternal connection", detail: "Accept destiny", type: 'embrace_eternal' }
-      ],
-      leadsTo: { protect_bond: 'BOND_PROTECTION', embrace_eternal: 'ETERNAL_LOVE' }
-    },
+
+
     'NATURAL_MOMENT': {
       prompt: "A perfectly natural moment between Jin-Woo and Cha Hae-In. Organic connection, anime style.",
       narration: "Everything feels effortless when you're together.",
