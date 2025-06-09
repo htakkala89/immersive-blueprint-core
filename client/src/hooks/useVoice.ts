@@ -9,7 +9,7 @@ interface VoiceQueueItem {
 interface VoiceHookReturn {
   isPlaying: boolean;
   currentSpeaker: string | null;
-  playVoice: (text: string, character: string) => Promise<void>;
+  playVoice: (text: string, character: string, muted?: boolean) => Promise<void>;
   stopVoice: () => void;
 }
 

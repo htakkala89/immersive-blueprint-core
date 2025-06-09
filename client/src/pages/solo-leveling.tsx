@@ -218,6 +218,10 @@ export default function SoloLeveling() {
   const [affectionDecreaseAmount, setAffectionDecreaseAmount] = useState(0);
   const [showCombatSystem, setShowCombatSystem] = useState(false);
   const [showAchievementSystem, setShowAchievementSystem] = useState(false);
+  const [audioMuted, setAudioMuted] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [speechToTextEnabled, setSpeechToTextEnabled] = useState(false);
   const [currentCombatEnemy, setCurrentCombatEnemy] = useState(null);
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
   const [showShadowArmy, setShowShadowArmy] = useState(false);
@@ -3237,6 +3241,70 @@ export default function SoloLeveling() {
     }
   };
 
+  // Speech-to-text functionality
+  const startRecording = async () => {
+    if (isRecording) return;
+    
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks: BlobPart[] = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+        await processAudioToText(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      recorder.start();
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error starting recording:', error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && isRecording) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+      setMediaRecorder(null);
+    }
+  };
+
+  const processAudioToText = async (audioBlob: Blob) => {
+    try {
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+
+      const response = await fetch('/api/speech-to-text', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.text) {
+          setUserInput(data.text);
+          // Auto-submit the transcribed text
+          setTimeout(() => {
+            if (data.text.trim()) {
+              handleUserInput();
+            }
+          }, 100);
+        }
+      }
+    } catch (error) {
+      console.error('Error processing speech to text:', error);
+    }
+  };
+
   const isCombatChoice = (choice: any, scene: string, narration: string) => {
     const combatKeywords = [
       'shadow_attack', 'sword_strike', 'magic_blast', 'combined_attack', 'finisher',
@@ -4679,6 +4747,32 @@ export default function SoloLeveling() {
                           <span className="text-white text-xs font-medium">{gameState.gold || 500}</span>
                         </div>
                         
+                        {/* Audio Controls */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setAudioMuted(!audioMuted)}
+                            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                              audioMuted 
+                                ? 'bg-red-600/90 text-white' 
+                                : 'bg-green-600/90 text-white'
+                            }`}
+                            title={audioMuted ? 'Unmute Audio' : 'Mute Audio'}
+                          >
+                            {audioMuted ? '🔇' : '🔊'}
+                          </button>
+                          
+                          <button
+                            onClick={() => setSpeechToTextEnabled(!speechToTextEnabled)}
+                            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                              speechToTextEnabled 
+                                ? 'bg-blue-600/90 text-white' 
+                                : 'bg-gray-600/90 text-white'
+                            }`}
+                            title={speechToTextEnabled ? 'Disable Voice Input' : 'Enable Voice Input'}
+                          >
+                            🎤
+                          </button>
+                        </div>
 
                       </div>
                     </div>
@@ -4734,6 +4828,22 @@ export default function SoloLeveling() {
                       <div className="px-2">
                         <div className="w-4 h-4 border-2 border-pink-500/20 border-t-pink-500 rounded-full animate-spin" />
                       </div>
+                    )}
+                    {speechToTextEnabled && (
+                      <button
+                        onMouseDown={startRecording}
+                        onMouseUp={stopRecording}
+                        onTouchStart={startRecording}
+                        onTouchEnd={stopRecording}
+                        className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all backdrop-blur-xl border border-white/20 shadow-lg touch-manipulation mr-2 ${
+                          isRecording 
+                            ? 'bg-red-600/90 hover:bg-red-500/90 animate-pulse' 
+                            : 'bg-blue-600/90 hover:bg-blue-500/90'
+                        }`}
+                        title={isRecording ? 'Recording... (Release to send)' : 'Hold to speak'}
+                      >
+                        🎤
+                      </button>
                     )}
                     <button
                       onClick={() => setInputMode(inputMode === 'speak' ? 'action' : 'speak')}
