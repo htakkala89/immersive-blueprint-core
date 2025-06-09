@@ -330,7 +330,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const currentLocationData = worldLocations[playerLocation];
+  const currentLocationData = worldLocations[playerLocation as keyof typeof worldLocations];
 
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
@@ -386,7 +386,7 @@ export default function SoloLevelingSpatial() {
           message: `*${interactionPoint.action}*`,
           gameState,
           context: {
-            location: currentLocation,
+            location: playerLocation,
             timeOfDay,
             weather,
             interactionPoint: interactionPoint.name,
@@ -427,7 +427,7 @@ export default function SoloLevelingSpatial() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           gameState,
-          location: currentLocation,
+          location: playerLocation,
           timeOfDay,
           weather,
           chaPresent: currentLocationData.chaHaeInPresent
@@ -446,7 +446,7 @@ export default function SoloLevelingSpatial() {
   // Generate initial scene
   useEffect(() => {
     generateSceneImage();
-  }, [currentLocation, timeOfDay]);
+  }, [playerLocation, timeOfDay]);
 
   // Time progression
   useEffect(() => {
@@ -596,7 +596,7 @@ export default function SoloLevelingSpatial() {
         )}
         
         {/* Interactive Elements Layer */}
-        {currentLocationData.interactiveElements.map((element) => (
+        {currentLocationData.interactiveElements.map((element: any) => (
           <motion.div
             key={element.id}
             className="absolute group"
@@ -1045,6 +1045,20 @@ export default function SoloLevelingSpatial() {
             affection: Math.min(100, prev.affection + 5)
           }));
         }}
+      />
+
+      <WorldMap
+        isVisible={showWorldMap}
+        onClose={() => setShowWorldMap(false)}
+        onLocationSelect={(location) => {
+          setPlayerLocation(location.id);
+          setShowWorldMap(false);
+          generateSceneImage();
+        }}
+        currentTime={timeOfDay}
+        chaHaeInLocation={chaHaeInCurrentLocation}
+        playerAffection={gameState.affection}
+        storyProgress={gameState.level}
       />
     </div>
   );
