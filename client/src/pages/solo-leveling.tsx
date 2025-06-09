@@ -343,292 +343,428 @@ export default function SoloLeveling() {
   }, [gameState.currentScene]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      {/* Background Image */}
+    <div className="min-h-screen bg-black overflow-hidden relative">
+      {/* Dynamic Background with Parallax Effect */}
       {currentImage && (
-        <div 
-          className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-40"
-          style={{ backgroundImage: `url(${currentImage})` }}
-        />
+        <div className="fixed inset-0 z-0">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-110 transition-transform duration-1000"
+            style={{ backgroundImage: `url(${currentImage})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-purple-900/40 to-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
+        </div>
       )}
       
-      {/* Main Content Container */}
+      {/* Animated Particles Overlay */}
+      <div className="fixed inset-0 z-5 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400/30 rounded-full animate-pulse" />
+        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-blue-400/40 rounded-full animate-ping" />
+        <div className="absolute top-1/2 left-2/3 w-3 h-3 bg-pink-400/20 rounded-full animate-bounce" />
+      </div>
+      
+      {/* Main Game Interface */}
       <div className="relative z-10 min-h-screen flex flex-col">
         
-        {/* Top Status Bar */}
-        <div className="bg-black/60 backdrop-blur-sm border-b border-white/20 p-3 lg:p-4">
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
+        {/* Modern Gaming Header */}
+        <div className="bg-gradient-to-r from-black/80 via-purple-900/60 to-black/80 backdrop-blur-xl border-b border-purple-500/30 shadow-2xl">
+          <div className="max-w-8xl mx-auto px-6 py-4">
             
-            {/* Left Stats */}
-            <div className="flex items-center gap-3 lg:gap-6">
-              <div className="flex items-center gap-2">
-                <Crown className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-400" />
-                <span className="text-lg lg:text-xl font-bold">{gameState.level}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 lg:w-5 lg:h-5 text-red-400" />
-                <Progress value={(gameState.health / gameState.maxHealth) * 100} className="w-16 lg:w-20 h-2" />
-                <span className="text-xs lg:text-sm text-gray-300">{gameState.health}/{gameState.maxHealth}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 lg:w-5 lg:h-5 text-blue-400" />
-                <Progress value={(gameState.mana / gameState.maxMana) * 100} className="w-16 lg:w-20 h-2" />
-                <span className="text-xs lg:text-sm text-gray-300">{gameState.mana}/{gameState.maxMana}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Battery className="w-4 h-4 lg:w-5 lg:h-5 text-green-400" />
-                <Progress value={((gameState.energy || 0) / (gameState.maxEnergy || 100)) * 100} className="w-16 lg:w-20 h-2" />
-                <span className="text-xs lg:text-sm text-gray-300">{gameState.energy || 0}/{gameState.maxEnergy || 100}</span>
-              </div>
-            </div>
-
-            {/* Title */}
-            <div className="hidden lg:block">
-              <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                Solo Leveling: Romance Quest
-              </h1>
-            </div>
-
-            {/* Right Controls */}
-            <div className="flex items-center gap-2 lg:gap-4">
-              <div className="flex items-center gap-2">
-                <Coins className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-400" />
-                <span className="font-bold text-sm lg:text-base">{gameState.gold}</span>
+            {/* Top Row - Title and Quick Actions */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-gradient-to-br from-purple-600 to-blue-600 p-3 rounded-xl shadow-lg">
+                  <Crown className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                    Solo Leveling
+                  </h1>
+                  <p className="text-purple-300 text-sm font-medium">Romance Quest • Shadow Monarch</p>
+                </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 lg:w-5 lg:h-5 text-pink-400" />
-                <span className="text-sm lg:text-base">{gameState.affection}/100</span>
+              {/* Quick Actions */}
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={() => setShowDailyLifeHub(true)}
+                  className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 hover:scale-105"
+                >
+                  <Home className="w-5 h-5 mr-2" />
+                  Activities
+                </Button>
+                
+                <Button
+                  onClick={() => setShowUnifiedShop(true)}
+                  className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 hover:scale-105"
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Shop
+                </Button>
+                
+                <Button
+                  onClick={() => setShowStatsModal(true)}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 hover:scale-105"
+                >
+                  <User className="w-5 h-5 mr-2" />
+                  Stats
+                </Button>
               </div>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowDailyLifeHub(true)}
-                className="hover:bg-white/10 p-1 lg:p-2"
-                title="Daily Life Hub"
-              >
-                <Home className="w-3 h-3 lg:w-4 lg:h-4" />
-              </Button>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowInventoryModal(true)}
-                className="hover:bg-white/10 p-1 lg:p-2"
-                title="Inventory"
-              >
-                <Package className="w-3 h-3 lg:w-4 lg:h-4" />
-              </Button>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowUnifiedShop(true)}
-                className="hover:bg-white/10 p-1 lg:p-2"
-                title="Shop"
-              >
-                <ShoppingCart className="w-3 h-3 lg:w-4 lg:h-4" />
-              </Button>
+            </div>
+            
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setAudioMuted(!audioMuted)}
-                className="hover:bg-white/10 p-1 lg:p-2"
-                title="Audio"
-              >
-                {audioMuted ? <VolumeX className="w-3 h-3 lg:w-4 lg:h-4" /> : <Volume2 className="w-3 h-3 lg:w-4 lg:h-4" />}
-              </Button>
+              {/* Level */}
+              <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-sm rounded-xl p-4 border border-yellow-500/30">
+                <div className="flex items-center gap-3">
+                  <div className="bg-yellow-500/20 p-2 rounded-lg">
+                    <Crown className="w-6 h-6 text-yellow-400" />
+                  </div>
+                  <div>
+                    <p className="text-yellow-300 text-xs font-medium uppercase tracking-wide">Level</p>
+                    <p className="text-white text-2xl font-bold">{gameState.level}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Health */}
+              <div className="bg-gradient-to-br from-red-500/20 to-pink-500/20 backdrop-blur-sm rounded-xl p-4 border border-red-500/30">
+                <div className="flex items-center gap-3">
+                  <div className="bg-red-500/20 p-2 rounded-lg">
+                    <Heart className="w-6 h-6 text-red-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-red-300 text-xs font-medium uppercase tracking-wide">Health</p>
+                    <div className="flex items-center gap-2">
+                      <Progress value={(gameState.health / gameState.maxHealth) * 100} className="h-2 flex-1" />
+                      <span className="text-white text-sm font-bold">{gameState.health}/{gameState.maxHealth}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Mana */}
+              <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-sm rounded-xl p-4 border border-blue-500/30">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-500/20 p-2 rounded-lg">
+                    <Zap className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-blue-300 text-xs font-medium uppercase tracking-wide">Mana</p>
+                    <div className="flex items-center gap-2">
+                      <Progress value={(gameState.mana / gameState.maxMana) * 100} className="h-2 flex-1" />
+                      <span className="text-white text-sm font-bold">{gameState.mana}/{gameState.maxMana}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Energy */}
+              <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-xl p-4 border border-green-500/30">
+                <div className="flex items-center gap-3">
+                  <div className="bg-green-500/20 p-2 rounded-lg">
+                    <Battery className="w-6 h-6 text-green-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-green-300 text-xs font-medium uppercase tracking-wide">Energy</p>
+                    <div className="flex items-center gap-2">
+                      <Progress value={((gameState.energy || 0) / (gameState.maxEnergy || 100)) * 100} className="h-2 flex-1" />
+                      <span className="text-white text-sm font-bold">{gameState.energy || 0}/{gameState.maxEnergy || 100}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Gold */}
+              <div className="bg-gradient-to-br from-yellow-500/20 to-amber-500/20 backdrop-blur-sm rounded-xl p-4 border border-yellow-500/30">
+                <div className="flex items-center gap-3">
+                  <div className="bg-yellow-500/20 p-2 rounded-lg">
+                    <Coins className="w-6 h-6 text-yellow-400" />
+                  </div>
+                  <div>
+                    <p className="text-yellow-300 text-xs font-medium uppercase tracking-wide">Gold</p>
+                    <p className="text-white text-2xl font-bold">{gameState.gold || 0}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Affection */}
+              <div className="bg-gradient-to-br from-pink-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl p-4 border border-pink-500/30">
+                <div className="flex items-center gap-3">
+                  <div className="bg-pink-500/20 p-2 rounded-lg">
+                    <Sparkles className="w-6 h-6 text-pink-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-pink-300 text-xs font-medium uppercase tracking-wide">Affection</p>
+                    <div className="flex items-center gap-2">
+                      <Progress value={gameState.affection} className="h-2 flex-1" />
+                      <span className="text-white text-sm font-bold">{gameState.affection}/100</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
             </div>
           </div>
         </div>
 
-        {/* Main Game Area - Mobile First Responsive */}
-        <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 overflow-hidden">
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col xl:flex-row gap-6 p-6 max-w-8xl mx-auto w-full">
           
-          {/* Image Panel - Permanent & Responsive */}
-          <div className="w-full lg:w-80 xl:w-96 order-1">
-            <Card className="bg-black/70 backdrop-blur-md border-purple-500/30 h-64 lg:h-96">
-              <CardContent className="p-4 h-full">
-                <div className="h-full flex flex-col">
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-sm lg:text-base font-semibold text-white">Current Scene</h3>
-                    <Button 
-                      size="sm"
-                      onClick={generateSceneImage} 
-                      disabled={isLoading}
-                      className="bg-purple-600 hover:bg-purple-700 text-xs px-2 py-1"
-                    >
-                      {isLoading ? "..." : "Generate"}
-                    </Button>
-                  </div>
-                  
-                  <div className="flex-1 relative">
-                    {currentImage ? (
-                      <img 
-                        src={currentImage}
-                        alt="Current scene"
-                        className="w-full h-full object-cover rounded-lg border border-purple-400/30 shadow-lg"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-lg border border-purple-400/20 flex items-center justify-center">
-                        <div className="text-center text-gray-400">
-                          <Camera className="w-6 h-6 lg:w-8 lg:h-8 mx-auto mb-2" />
-                          <p className="text-xs lg:text-sm">Click Generate to create scene image</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {isLoading && (
-                      <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
-                        <div className="text-center text-white">
-                          <div className="animate-spin w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full mx-auto mb-2"></div>
-                          <p className="text-xs">Generating...</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Story Panel */}
-          <div className="flex-1 order-2 min-h-0">
-            <div className="h-full flex flex-col">
-              
-              {/* Story Content */}
-              <Card className="bg-black/60 backdrop-blur-md border-white/20 flex-1 mb-4">
-                <CardContent className="p-4 lg:p-6 h-full overflow-y-auto">
-                  
-                  {/* Narration */}
-                  <div className="mb-6">
-                    <h2 className="text-lg lg:text-xl font-semibold mb-4 text-purple-300">
-                      Narrator
-                    </h2>
-                    <p className="text-sm lg:text-base text-gray-200 leading-relaxed mb-6">
-                      {currentStory.narration}
-                    </p>
-                  </div>
-
-                  {/* System Message */}
-                  <div className="mb-6 p-4 bg-purple-900/30 rounded-lg border border-purple-400/30">
-                    <h3 className="text-purple-300 font-semibold mb-2">System</h3>
-                    <p className="text-purple-100 text-sm lg:text-base">The System has granted you a new quest: Win Cha Hae-In's heart!</p>
-                  </div>
-
-                  {/* Story Choices */}
-                  <div className="space-y-3">
-                    {currentStory.choices.map((choice, index) => (
-                      <Button
-                        key={index}
-                        onClick={() => handleChoice(choice)}
-                        disabled={isLoading}
-                        className="w-full p-4 lg:p-6 h-auto text-left justify-start bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/40 hover:to-blue-600/40 border border-purple-400/30 hover:border-purple-400/50 transition-all duration-300"
-                      >
-                        <div className="text-left">
-                          <div className="font-semibold text-white text-sm lg:text-lg">{choice.text}</div>
-                          <div className="text-purple-200 text-xs lg:text-sm mt-1">{choice.detail}</div>
-                        </div>
-                      </Button>
-                    ))}
-                  </div>
-
-                  {/* Loading State */}
-                  {isLoading && (
-                    <div className="mt-6 text-center">
-                      <div className="inline-flex items-center gap-2 text-purple-300">
-                        <div className="animate-spin w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full"></div>
-                        {loadingMessage}
+          {/* Left Panel - Scene & Visual */}
+          <div className="xl:w-2/5 space-y-6">
+            
+            {/* Scene Viewer */}
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-black/90 via-purple-900/50 to-black/90 backdrop-blur-xl rounded-2xl border border-purple-500/30 shadow-2xl overflow-hidden">
+                <div className="aspect-video relative">
+                  {currentImage ? (
+                    <img 
+                      src={currentImage}
+                      alt="Current scene"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-purple-900/50 to-blue-900/50 flex items-center justify-center">
+                      <div className="text-center text-purple-300">
+                        <Camera className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg font-medium">Scene Loading...</p>
                       </div>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                  
+                  {/* Scene Controls Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                      <div className="space-y-2">
+                        <Button 
+                          onClick={generateSceneImage} 
+                          disabled={isLoading}
+                          className="bg-purple-600/90 hover:bg-purple-700 text-white backdrop-blur-sm border border-purple-400/30"
+                        >
+                          <Camera className="w-4 h-4 mr-2" />
+                          {isLoading ? "Generating..." : "New Scene"}
+                        </Button>
+                        
+                        {generatedImages.length > 0 && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setShowImageGallery(true)}
+                            className="bg-black/50 border-purple-400/30 text-purple-300 hover:text-white backdrop-blur-sm"
+                          >
+                            Gallery ({generatedImages.length})
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Loading Overlay */}
+                  {isLoading && (
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <div className="relative">
+                          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-400/30 border-t-purple-400 mx-auto mb-4"></div>
+                          <div className="absolute inset-0 animate-pulse rounded-full h-16 w-16 border-4 border-pink-400/20 mx-auto"></div>
+                        </div>
+                        <p className="text-lg font-medium">{loadingMessage}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Chat Panel - Mobile Responsive */}
-          <div className="w-full lg:w-96 order-3">
-            <Card className="bg-black/60 backdrop-blur-md border-white/20 h-80 lg:h-full">
-              <CardContent className="p-4 h-full">
-                <div className="h-full flex flex-col">
-                  {/* Chat Header */}
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/20">
-                    <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                      <Heart className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm lg:text-base font-semibold text-white">Chat with Cha Hae-In</h3>
-                      <p className="text-xs text-gray-400">Your S-Rank partner</p>
+          {/* Right Panel - Story & Chat */}
+          <div className="xl:w-3/5 space-y-6">
+            
+            {/* Story Panel */}
+            <div className="bg-gradient-to-br from-black/90 via-purple-900/50 to-black/90 backdrop-blur-xl rounded-2xl border border-purple-500/30 shadow-2xl p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-3 rounded-xl">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Shadow Monarch's Quest</h3>
+                  <p className="text-purple-300">Romance Campaign</p>
+                </div>
+              </div>
+              
+              <div className="space-y-6">
+                {/* Narration */}
+                <div className="bg-black/40 rounded-xl p-6 border border-purple-500/20">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                    <span className="text-purple-300 font-medium">Current Scene</span>
+                  </div>
+                  <p className="text-gray-200 leading-relaxed text-lg">{currentStory.narration}</p>
+                </div>
+                
+                {/* System Quest */}
+                <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl p-6 border border-purple-400/30">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Crown className="w-5 h-5 text-yellow-400" />
+                    <span className="text-purple-300 font-semibold">System Quest</span>
+                  </div>
+                  <p className="text-purple-100">Win Cha Hae-In's heart and unlock the power of love!</p>
+                </div>
+                
+                {/* Story Choices */}
+                {currentStory.choices.length > 0 && (
+                  <div className="space-y-4">
+                    <h4 className="text-xl font-bold text-white flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-pink-400" />
+                      Choose Your Destiny
+                    </h4>
+                    <div className="grid gap-4">
+                      {currentStory.choices.map((choice, index) => (
+                        <Button
+                          key={index}
+                          onClick={() => handleChoice(choice)}
+                          disabled={isLoading}
+                          className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-600/50 hover:to-pink-600/50 border border-purple-500/40 text-white p-6 h-auto justify-start text-left transition-all duration-300 hover:scale-105 group"
+                        >
+                          <div className="flex items-center gap-4 w-full">
+                            <div className="bg-purple-600/40 p-3 rounded-lg group-hover:bg-purple-600/60 transition-colors">
+                              <Star className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-bold text-lg">{choice.text}</div>
+                              {choice.detail && (
+                                <div className="text-purple-300 mt-1">{choice.detail}</div>
+                              )}
+                            </div>
+                          </div>
+                        </Button>
+                      ))}
                     </div>
                   </div>
-
-                  {/* Chat Messages */}
-                  <div className="flex-1 overflow-y-auto mb-3 space-y-3">
+                )}
+              </div>
+            </div>
+            
+            {/* Modern Chat Interface */}
+            <div className="bg-gradient-to-br from-black/90 via-purple-900/50 to-black/90 backdrop-blur-xl rounded-2xl border border-purple-500/30 shadow-2xl">
+              <div className="flex items-center gap-3 p-6 border-b border-purple-500/30">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Chat with Cha Hae-In</h3>
+                  <p className="text-purple-300">S-Rank Hunter • Love Interest</p>
+                </div>
+              </div>
+              
+              <div className="p-6">
+                <ScrollArea className="h-96 mb-4">
+                  <div className="space-y-4">
                     {chatMessages.map((msg, index) => (
-                      <div key={index} className={`flex ${msg.speaker === 'player' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-xs p-3 rounded-lg text-sm ${
-                          msg.speaker === 'player' 
-                            ? 'bg-purple-600 text-white' 
-                            : 'bg-gray-700 text-gray-100'
-                        }`}>
-                          <div className="text-xs font-medium mb-1">
-                            {msg.speaker === 'player' ? 'You' : 'Cha Hae-In'}
-                          </div>
-                          <div>{msg.message}</div>
-                          {msg.audioUrl && voiceEnabled && (
-                            <audio 
-                              src={msg.audioUrl} 
-                              autoPlay 
-                              className="hidden"
-                            />
-                          )}
+                      <div
+                        key={index}
+                        className={`flex ${msg.speaker === 'player' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-xs px-4 py-3 rounded-2xl ${
+                            msg.speaker === 'player'
+                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                              : 'bg-black/40 border border-purple-500/30 text-gray-200'
+                          }`}
+                        >
+                          <p className="text-sm">{msg.message}</p>
                         </div>
                       </div>
                     ))}
                   </div>
-
-                  {/* Chat Input */}
-                  <div className="flex gap-2">
-                    <Input
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Talk to Cha Hae-In..."
-                      className="flex-1 bg-gray-800 border-gray-600 text-white placeholder-gray-400 text-sm"
-                      disabled={isLoading}
-                      onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
-                    />
-                    
-                    <Button 
-                      onClick={sendChatMessage}
-                      disabled={isLoading || !chatInput.trim()}
-                      size="sm"
-                      className="bg-purple-600 hover:bg-purple-700"
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
-                    
-                    <Button
-                      onClick={isRecording ? stopRecording : startRecording}
-                      size="sm"
-                      variant={isRecording ? "destructive" : "secondary"}
-                    >
-                      {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                    </Button>
-                  </div>
+                </ScrollArea>
+                
+                <div className="flex gap-3">
+                  <Input
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Type your message to Cha Hae-In..."
+                    className="flex-1 bg-black/40 border-purple-500/30 text-white placeholder:text-gray-400"
+                    disabled={isLoading}
+                  />
+                  <Button
+                    onClick={sendChatMessage}
+                    disabled={isLoading || !chatInput.trim()}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Modals */}
+        {/* Modals and Overlays */}
+        <DailyLifeHubModal
+          isVisible={showDailyLifeHub}
+          onClose={() => setShowDailyLifeHub(false)}
+          gameState={gameState}
+          onActivitySelect={handleActivitySelect}
+          onImageGenerated={(imageUrl) => setCurrentImage(imageUrl)}
+          audioMuted={audioMuted}
+        />
+
+        <IntimateActivityModal
+          isVisible={showIntimateModal}
+          onClose={() => setShowIntimateModal(false)}
+          onReturnToHub={() => {
+            setShowIntimateModal(false);
+            setShowDailyLifeHub(true);
+          }}
+          activityType={activeActivity as 'shower_together' | 'cuddle_together' | 'bedroom_intimacy' | 'make_love' | null}
+          onAction={(action) => console.log('Action:', action)}
+          intimacyLevel={gameState.intimacyLevel || 1}
+          affectionLevel={gameState.affection}
+          onImageGenerate={(prompt) => {
+            fetch('/api/generate-intimate-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt, activityId: activeActivity })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.imageUrl) {
+                setCurrentImage(data.imageUrl);
+              }
+            });
+          }}
+        />
+
+        <UnifiedShop
+          isVisible={showUnifiedShop}
+          onClose={() => setShowUnifiedShop(false)}
+          playerGold={gameState.gold || 0}
+          playerLevel={gameState.level}
+          currentAffection={gameState.affection}
+          currentIntimacy={gameState.intimacyLevel || 0}
+          onPurchase={handlePurchase}
+        />
+
+        <EnergyReplenishmentModal
+          isVisible={showEnergyModal}
+          onClose={() => setShowEnergyModal(false)}
+          currentEnergy={gameState.energy || 0}
+          maxEnergy={gameState.maxEnergy || 100}
+          playerGold={gameState.gold || 0}
+          onEnergyRestore={(amount, cost) => {
+            setGameState(prev => ({
+              ...prev,
+              energy: Math.min((prev.energy || 0) + amount, prev.maxEnergy || 100),
+              gold: (prev.gold || 0) - cost
+            }));
+          }}
+        />
+      </div>
+    </div>
+  );
+}
       <DailyLifeHubModal
         isVisible={showDailyLifeHub}
         onClose={() => setShowDailyLifeHub(false)}
