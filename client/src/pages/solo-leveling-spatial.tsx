@@ -743,26 +743,28 @@ export default function SoloLevelingSpatial() {
 
 
       {/* Monarch's Aura - Simple Dropdown Menu */}
-      <div className={`fixed top-20 right-6 w-48 liquid-glass-enhanced rounded-xl p-4 z-[9998] transition-all duration-300 ${monarchAuraVisible ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-4 invisible'}`}>
-        <div className="text-white text-lg mb-3 font-semibold drop-shadow-lg">Monarch's Aura</div>
-        {[
-          { icon: User, label: 'Armory', color: 'text-purple-300', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
-          { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
-          { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
-          { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { console.log('World map'); setMonarchAuraVisible(false); } },
-          { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
-          { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
-        ].map((item, index) => (
-          <button
-            key={item.label}
-            className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/5 transition-all mb-2 liquid-glass-flowing"
-            onClick={item.onClick}
-          >
-            <item.icon className={`w-6 h-6 ${item.color} drop-shadow-lg`} />
-            <span className="text-sm font-medium drop-shadow-sm">{item.label}</span>
-          </button>
-        ))}
-      </div>
+      {monarchAuraVisible && (
+        <div className="fixed top-20 right-6 w-48 liquid-glass-enhanced rounded-xl p-4 z-[9998]">
+          <div className="text-white text-lg mb-3 font-semibold drop-shadow-lg">Monarch's Aura</div>
+          {[
+            { icon: User, label: 'Armory', color: 'text-purple-300', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
+            { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
+            { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
+            { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { console.log('World map'); setMonarchAuraVisible(false); } },
+            { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
+            { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
+          ].map((item, index) => (
+            <button
+              key={item.label}
+              className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/5 transition-all mb-2 liquid-glass-flowing"
+              onClick={item.onClick}
+            >
+              <item.icon className={`w-6 h-6 ${item.color} drop-shadow-lg`} />
+              <span className="text-sm font-medium drop-shadow-sm">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Click outside to close */}
       {monarchAuraVisible && (
