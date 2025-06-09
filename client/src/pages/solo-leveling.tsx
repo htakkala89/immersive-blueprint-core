@@ -11,7 +11,7 @@ import { RelationshipSystem } from "@/components/RelationshipSystem";
 import { MemoryLaneAnimation } from "@/components/MemoryLaneAnimation";
 import { CombatSystem } from "@/components/CombatSystem";
 import { AchievementSystem, useAchievementSystem } from "@/components/AchievementSystem";
-import { CharacterProfile } from "@/components/CharacterProfile";
+import CharacterProfile from "@/components/CharacterProfileNew";
 import { StoryBranching, EnhancedChoiceButton } from "@/components/StoryBranching";
 import { DungeonRaidSystem } from "@/components/DungeonRaidSystem";
 import { ShadowArmyManager } from "@/components/ShadowArmyManager";
@@ -4376,8 +4376,7 @@ export default function SoloLeveling() {
           gameState={gameState}
           equippedGear={playerEquippedGear}
           shadowArmy={shadowArmy}
-          achievements={achievements}
-          onStatPointAllocate={(stat) => {
+          onStatIncrease={(stat: string) => {
             if (gameState.statPoints && gameState.statPoints > 0) {
               setGameState(prev => ({
                 ...prev,
