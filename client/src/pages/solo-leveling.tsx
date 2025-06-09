@@ -4950,7 +4950,10 @@ export default function SoloLeveling() {
                             }`}
                             title={speechToTextEnabled ? 'Disable Voice Input' : 'Enable Voice Input'}
                           >
-                            🎤
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                              <path d="M19 11c0 .22-.02.44-.05.65-.15 1.13-.62 2.18-1.32 3.07-.7.89-1.61 1.59-2.63 2.02V19h2c.55 0 1 .45 1 1s-.45 1-1 1h-8c-.55 0-1-.45-1-1s.45-1 1-1h2v-2.26c-1.02-.43-1.93-1.13-2.63-2.02C6.67 14.83 6.2 13.78 6.05 12.65 6.02 12.44 6 12.22 6 11H5c-.55 0-1-.45-1-1s.45-1 1-1h1c0-1.1.9-2 2-2s2 .9 2 2v1c0 2.76 2.24 5 5 5s5-2.24 5-5v-1c0-1.1.9-2 2-2s2 .9 2 2h1c.55 0 1 .45 1 1s-.45 1-1 1h-1z"/>
+                            </svg>
                           </button>
                         </div>
 
@@ -5019,7 +5022,17 @@ export default function SoloLeveling() {
                         }`}
                         title={isRecording ? 'Tap to stop recording' : 'Tap to start recording'}
                       >
-                        {isRecording ? '⏹️' : '🎤'}
+                        {isRecording ? (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="6" width="12" height="12" rx="2"/>
+                          </svg>
+                        ) : (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C10.34 2 9 3.34 9 5v6c0 1.66 1.34 3 3 3s3-1.34 3-3V5c0-1.66-1.34-3-3-3z"/>
+                            <path d="M19 11c0 4.97-4.03 9-9 9s-9-4.03-9-9h2c0 3.87 3.13 7 7 7s7-3.13 7-7h2z"/>
+                            <path d="M10 20h4v2h-4v-2z"/>
+                          </svg>
+                        )}
                       </button>
                     )}
                     <button
