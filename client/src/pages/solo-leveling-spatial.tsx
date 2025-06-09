@@ -736,14 +736,19 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {monarchAuraVisible && (
           <motion.div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setMonarchAuraVisible(false)}
           >
             <motion.div
-              className="relative w-80 h-80"
+              className="absolute w-80 h-80"
+              style={{
+                top: '24px',
+                right: '24px',
+                transform: 'translate(50%, -50%)'
+              }}
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0, rotate: 180 }}
