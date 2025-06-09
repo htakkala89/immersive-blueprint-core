@@ -632,13 +632,14 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="absolute bottom-4 left-4 right-4 max-w-4xl mx-auto liquid-glass-modal z-50"
+            className="fixed bottom-16 left-4 right-4 max-w-2xl mx-auto liquid-glass-modal z-50"
+            style={{ maxHeight: '40vh' }}
             initial={{ y: 100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-3 overflow-y-auto" style={{ maxHeight: '50vh' }}>
               
               {/* Dialogue Text */}
               <motion.div
