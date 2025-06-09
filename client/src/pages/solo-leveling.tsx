@@ -6,7 +6,6 @@ import { useStoryNarration } from "@/hooks/useStoryNarration";
 import { LockPickingGame, RuneSequenceGame, DragonEncounterGame } from "@/components/MiniGames";
 import { DailyLifeHubModal } from "@/components/DailyLifeHubModal";
 import { RaidSystem } from "@/components/RaidSystem";
-
 import { RelationshipSystem } from "@/components/RelationshipSystem";
 import { MemoryLaneAnimation } from "@/components/MemoryLaneAnimation";
 import { CombatSystem } from "@/components/CombatSystem";
@@ -21,7 +20,6 @@ import { EquipmentSystem, STARTING_EQUIPMENT, type Equipment, type EquippedGear 
 import { GiftSystem, type GiftItem } from "@/components/GiftSystem";
 import { UnifiedShop, type ShopItem } from "@/components/UnifiedShop";
 import { IntimateActivityModal } from "@/components/IntimateActivityModal";
-import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
   level: number;
@@ -4164,13 +4162,6 @@ export default function SoloLeveling() {
     </div>
   );
 }
-
-    // Start with entering animation
-    setMessageStates(prev => ({ ...prev, [messageId]: 'entering' }));
-
-    // After entering, transition to staying (longer readable time)
-    const stayingTimer = setTimeout(() => {
-      setMessageStates(prev => ({ ...prev, [messageId]: 'staying' }));
       
       // After staying visible for reading, start exit animation
       const exitTimer = setTimeout(() => {
