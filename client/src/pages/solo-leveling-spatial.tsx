@@ -453,7 +453,7 @@ export default function SoloLevelingSpatial() {
         
         {/* Location Info Overlay */}
         <motion.div
-          className="absolute top-6 left-6 bg-black/70 backdrop-blur-xl rounded-3xl px-6 py-4 border border-white/20"
+          className="absolute top-6 left-6 liquid-glass px-6 py-4"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
@@ -657,7 +657,7 @@ export default function SoloLevelingSpatial() {
                 return (
                   <motion.button
                     key={item.label}
-                    className={`absolute w-20 h-20 bg-gradient-to-br ${item.color} rounded-full flex flex-col items-center justify-center text-white border-2 border-white/30 hover:border-white/60 transition-colors`}
+                    className={`absolute w-20 h-20 liquid-glass-flowing rounded-full flex flex-col items-center justify-center text-white transition-all`}
                     style={{
                       left: `calc(50% + ${x}px)`,
                       top: `calc(50% + ${y}px)`,
