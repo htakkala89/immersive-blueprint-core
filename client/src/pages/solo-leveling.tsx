@@ -4731,6 +4731,14 @@ export default function SoloLeveling() {
             [slot]: equipment
           }));
           
+          // Remove item from available equipment
+          setAvailableEquipment(prev => prev.filter(item => item.id !== equipment.id));
+          
+          // Add previously equipped item back to available equipment if it exists
+          if (currentlyEquipped) {
+            setAvailableEquipment(prev => [...prev, currentlyEquipped]);
+          }
+          
           // Apply new equipment stats
           const stats = equipment.stats;
           setGameState(prev => ({

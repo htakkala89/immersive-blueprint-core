@@ -304,6 +304,25 @@
   to { transform: scale(1.2) translate(3%, -1%); }
 }
 
+@keyframes sparkle {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(255, 192, 203, 0.8), 
+                0 0 40px rgba(255, 192, 203, 0.6),
+                0 0 60px rgba(255, 192, 203, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(255, 192, 203, 1), 
+                0 0 50px rgba(255, 192, 203, 0.8),
+                0 0 70px rgba(255, 192, 203, 0.6);
+    transform: scale(1.1);
+  }
+}
+
+.sparkle-effect {
+  animation: sparkle 1.5s ease-in-out;
+}
+
 :root {
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
