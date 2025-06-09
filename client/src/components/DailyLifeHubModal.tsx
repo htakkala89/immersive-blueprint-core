@@ -27,6 +27,8 @@ interface Activity {
   affectionReward?: number;
   available: boolean;
   cooldown?: number;
+  requiredLevel?: number;
+  lockReason?: string;
 }
 
 interface DailyLifeHubModalProps {
@@ -154,56 +156,87 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     });
   }
 
-  // Add intimate activities based on affection and intimacy levels
-  if (stats.affectionLevel >= 60 && stats.intimacyLevel >= 30) {
-    baseActivities.push({
-      id: 'cuddle_together',
-      title: 'Cuddle Time',
-      description: 'Relaxing intimate moments together',
-      icon: '💕',
-      energyCost: 15,
-      affectionReward: 15,
-      available: true
-    });
-  }
+  // Always show intimate activities for motivation, but lock based on progression
+  
+  // Level 3+ - Romantic touching unlocked
+  baseActivities.push({
+    id: 'cuddle_together',
+    title: 'Cuddle Time',
+    description: stats.affectionLevel >= 30 ? 'Relaxing intimate moments together' : '🔒 Unlock at Affection Level 3',
+    icon: '💕',
+    energyCost: 15,
+    affectionReward: 15,
+    available: stats.affectionLevel >= 30,
+    requiredLevel: 3,
+    lockReason: stats.affectionLevel < 30 ? 'Need stronger emotional bond (Level 3)' : undefined
+  });
 
-  if (stats.affectionLevel >= 70 && stats.intimacyLevel >= 40) {
-    baseActivities.push({
-      id: 'shower_together',
-      title: 'Shower Together',
-      description: 'Intimate shower time (18+)',
-      icon: '🚿',
-      energyCost: 20,
-      affectionReward: 20,
-      available: true
-    });
-  }
+  // Level 5+ - Physical intimacy unlocked
+  baseActivities.push({
+    id: 'shower_together',
+    title: 'Shower Together',
+    description: stats.affectionLevel >= 50 ? 'Intimate shower time (18+)' : '🔒 Unlock at Affection Level 5',
+    icon: '🚿',
+    energyCost: 20,
+    affectionReward: 20,
+    available: stats.affectionLevel >= 50,
+    requiredLevel: 5,
+    lockReason: stats.affectionLevel < 50 ? 'Need deeper trust and intimacy (Level 5)' : undefined
+  });
 
-  if (stats.affectionLevel >= 80 && stats.intimacyLevel >= 50) {
-    baseActivities.push({
-      id: 'bedroom_intimacy',
-      title: 'Bedroom Time',
-      description: 'Private intimate moments (18+)',
-      icon: '🛏️',
-      energyCost: 25,
-      affectionReward: 25,
-      available: true
-    });
-  }
+  // Level 7+ - Private bedroom intimacy
+  baseActivities.push({
+    id: 'bedroom_intimacy',
+    title: 'Bedroom Time',
+    description: stats.affectionLevel >= 70 ? 'Private intimate moments (18+)' : '🔒 Unlock at Affection Level 7',
+    icon: '🛏️',
+    energyCost: 25,
+    affectionReward: 25,
+    available: stats.affectionLevel >= 70,
+    requiredLevel: 7,
+    lockReason: stats.affectionLevel < 70 ? 'Need romantic commitment (Level 7)' : undefined
+  });
 
-  if (stats.affectionLevel >= 90 && stats.intimacyLevel >= 70) {
-    baseActivities.push({
-      id: 'make_love',
-      title: 'Make Love',
-      description: 'Ultimate intimacy together (18+)',
-      icon: '❤️',
-      energyCost: 40,
-      affectionReward: 50,
-      available: true
-    });
-  }
+  // Level 10+ - Ultimate intimacy (maximum motivation)
+  baseActivities.push({
+    id: 'make_love',
+    title: 'Make Love',
+    description: stats.affectionLevel >= 100 ? 'Ultimate intimacy together (18+)' : '🔒 Unlock at MAX Affection Level 10',
+    icon: '❤️‍🔥',
+    energyCost: 40,
+    affectionReward: 50,
+    available: stats.affectionLevel >= 100,
+    requiredLevel: 10,
+    lockReason: stats.affectionLevel < 100 ? 'Need perfect love bond (MAX Level 10)' : undefined
+  });
 
-  return baseActivities.filter(activity => activity.available);
+  // Level 8+ - Advanced intimate activities
+  baseActivities.push({
+    id: 'intimate_massage',
+    title: 'Intimate Massage',
+    description: stats.affectionLevel >= 80 ? 'Sensual relaxation together (18+)' : '🔒 Unlock at Affection Level 8',
+    icon: '💆‍♀️',
+    energyCost: 30,
+    affectionReward: 30,
+    available: stats.affectionLevel >= 80,
+    requiredLevel: 8,
+    lockReason: stats.affectionLevel < 80 ? 'Need passionate connection (Level 8)' : undefined
+  });
+
+  // Level 9+ - Romantic luxury experiences
+  baseActivities.push({
+    id: 'romantic_bath',
+    title: 'Romantic Bath',
+    description: stats.affectionLevel >= 90 ? 'Luxury intimate bath together (18+)' : '🔒 Unlock at Affection Level 9',
+    icon: '🛁',
+    energyCost: 35,
+    affectionReward: 40,
+    available: stats.affectionLevel >= 90,
+    requiredLevel: 9,
+    lockReason: stats.affectionLevel < 90 ? 'Need devoted partnership (Level 9)' : undefined
+  });
+
+  return baseActivities; // Show all activities, including locked ones for motivation
 };
 
 const getActivityDialogue = (activity: Activity): string => {
@@ -241,11 +274,11 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     gold: gameState?.gold || 500,
     level: gameState?.level || 1,
     experience: gameState?.experience || 0,
-    affectionLevel: gameState?.affection || 1,
+    affectionLevel: (gameState?.affection || 0) * 10, // Convert 0-5 scale to 0-50, then multiply by 2 for percentage feel
     energy: gameState?.energy || 80,
     maxEnergy: 100,
     relationshipStatus: gameState?.affection >= 5 ? 'married' : gameState?.affection >= 4 ? 'engaged' : 'dating',
-    intimacyLevel: gameState?.affection || 1,
+    intimacyLevel: (gameState?.intimacyLevel || gameState?.affection * 10 || 0),
     sharedMemories: gameState?.affection * 10 || 10,
     livingTogether: gameState?.affection >= 4,
     daysTogether: (gameState?.affection || 1) * 30
