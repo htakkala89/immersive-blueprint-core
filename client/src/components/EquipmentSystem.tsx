@@ -8,7 +8,7 @@ export interface Equipment {
   id: string;
   name: string;
   description: string;
-  type: 'weapon' | 'armor' | 'accessory' | 'consumable';
+  type: 'weapon' | 'armor' | 'accessory';
   slot: 'weapon' | 'helmet' | 'chest' | 'legs' | 'boots' | 'ring' | 'necklace';
   rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
   stats: {
@@ -64,6 +64,7 @@ export const STARTING_EQUIPMENT: Equipment[] = [
     id: 'starter_sword',
     name: 'Reinforced Steel Sword',
     description: 'A well-balanced sword made from reinforced steel.',
+    type: 'weapon',
     slot: 'weapon',
     rarity: 'common',
     stats: { attack: 120, criticalRate: 5 },

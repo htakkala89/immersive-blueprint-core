@@ -353,7 +353,8 @@ export default function SoloLeveling() {
         mana: 150
       },
       description: 'A cloak that seems to absorb light itself. Worn by the Shadow Monarch.',
-      requirements: { level: 1 }
+      requirements: { level: 1 },
+      value: 25000
     },
     {
       id: 'knight_helmet',
@@ -366,7 +367,8 @@ export default function SoloLeveling() {
         health: 100
       },
       description: 'A sturdy helmet worn by elite knight captains.',
-      requirements: { level: 1 }
+      requirements: { level: 1 },
+      value: 8000
     },
     {
       id: 'leather_boots',
@@ -379,7 +381,8 @@ export default function SoloLeveling() {
         speed: 10
       },
       description: 'Comfortable boots favored by dungeon hunters.',
-      requirements: { level: 1 }
+      requirements: { level: 1 },
+      value: 3000
     },
     {
       id: 'steel_sword',
@@ -389,10 +392,11 @@ export default function SoloLeveling() {
       rarity: 'rare',
       stats: {
         attack: 120,
-        critRate: 10
+        criticalRate: 10
       },
       description: 'A well-balanced sword made from reinforced steel.',
-      requirements: { level: 1 }
+      requirements: { level: 1 },
+      value: 12000
     },
     {
       id: 'mana_ring',
@@ -405,7 +409,8 @@ export default function SoloLeveling() {
         speed: 5
       },
       description: 'A mystical ring that enhances mana circulation.',
-      requirements: { level: 1 }
+      requirements: { level: 1 },
+      value: 15000
     }
   ]);
 
