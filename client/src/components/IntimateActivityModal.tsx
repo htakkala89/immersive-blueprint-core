@@ -105,6 +105,32 @@ export function IntimateActivityModal({
     onImageGenerate(imagePrompt);
   };
 
+  const handleExit = async () => {
+    // Reset mature image protection when exiting intimate activities
+    try {
+      await fetch('/api/reset-mature-protection', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } catch (error) {
+      console.log('Note: Could not reset image protection');
+    }
+    onClose();
+  };
+
+  const handleReturnToHub = async () => {
+    // Reset mature image protection when returning to hub
+    try {
+      await fetch('/api/reset-mature-protection', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } catch (error) {
+      console.log('Note: Could not reset image protection');
+    }
+    onReturnToHub();
+  };
+
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-gradient-to-br from-pink-900/95 to-purple-900/95 border border-pink-500/30 rounded-xl w-full max-w-4xl h-5/6 overflow-hidden">
@@ -114,7 +140,7 @@ export function IntimateActivityModal({
           </h2>
           <div className="flex gap-2">
             <Button
-              onClick={onReturnToHub}
+              onClick={handleReturnToHub}
               variant="outline"
               size="sm"
               className="text-white border-white/30 hover:bg-white/10"
@@ -123,7 +149,7 @@ export function IntimateActivityModal({
               Return to Life Hub
             </Button>
             <Button
-              onClick={onClose}
+              onClick={handleExit}
               variant="ghost"
               size="sm"
               className="text-white hover:bg-pink-500/20"
