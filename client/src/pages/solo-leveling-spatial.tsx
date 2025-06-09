@@ -6,7 +6,7 @@ import {
   Heart, Crown, Zap, Coins, User, Sword, Star, 
   Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
   MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
-  ShoppingCart, Calendar, Battery, Award, Package
+  ShoppingCart, Calendar, Battery, Award, Package, X
 } from 'lucide-react';
 
 import { DailyLifeHubModal } from '@/components/DailyLifeHubModal';
