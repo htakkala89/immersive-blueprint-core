@@ -2718,6 +2718,186 @@ export default function SoloLeveling() {
         { text: "Return to Daily Life Hub", detail: "Continue living", type: 'daily_hub' }
       ],
       leadsTo: { new_game: 'START', daily_hub: 'DAILY_LIFE_HUB' }
+    },
+    'MISSION_DISCUSSION': {
+      prompt: "Jin-Woo and Cha Hae-In discussing their latest missions together, professional meeting, anime style.",
+      narration: "You and Hae-In discuss your recent missions and experiences as S-rank hunters.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "How did your latest dungeon raid go?" },
+        { sender: 'player', text: "It went well. My shadows are getting stronger." },
+        { sender: 'Cha Hae-In', text: "I can sense their power. It's... impressive and a little intimidating." }
+      ],
+      choices: [
+        { text: "Share mission details", detail: "Tell her about the raid", type: 'share_details' },
+        { text: "Ask about her missions", detail: "Learn about her work", type: 'ask_missions' },
+        { text: "Suggest teaming up", detail: "Work together", type: 'team_up' }
+      ],
+      leadsTo: { share_details: 'MISSION_SHARING', ask_missions: 'HER_MISSIONS', team_up: 'TEAM_PROPOSAL' }
+    },
+    'PARTNERSHIP_INTEREST': {
+      prompt: "Cha Hae-In showing interest in partnering with Jin-Woo, professional curiosity, anime style.",
+      narration: "Hae-In expresses genuine interest in working together more often.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I've been thinking... we work well together." },
+        { sender: 'player', text: "I've noticed that too. Our abilities complement each other." },
+        { sender: 'Cha Hae-In', text: "Would you be interested in forming a more permanent partnership?" }
+      ],
+      choices: [
+        { text: "Accept partnership", detail: "Form official team", type: 'accept_partnership' },
+        { text: "Suggest casual cooperation", detail: "Stay flexible", type: 'casual_cooperation' },
+        { text: "Express romantic interest", detail: "Beyond professional", type: 'romantic_hint' }
+      ],
+      leadsTo: { accept_partnership: 'OFFICIAL_PARTNERSHIP', casual_cooperation: 'CASUAL_TEAM', romantic_hint: 'ROMANTIC_HINT' }
+    },
+    'PHILOSOPHY_MOMENT': {
+      prompt: "Jin-Woo and Cha Hae-In having a deep philosophical discussion about power and responsibility, thoughtful moment, anime style.",
+      narration: "A quiet moment leads to a deeper conversation about what it means to have power.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Do you ever wonder if we're doing enough with our power?" },
+        { sender: 'player', text: "I think about it constantly. With great power..." },
+        { sender: 'Cha Hae-In', text: "Comes great responsibility. But sometimes I wonder if that's enough." }
+      ],
+      choices: [
+        { text: "Share your philosophy", detail: "Express your beliefs", type: 'share_philosophy' },
+        { text: "Ask her thoughts", detail: "Learn her perspective", type: 'ask_thoughts' },
+        { text: "Suggest making a difference", detail: "Take action together", type: 'make_difference' }
+      ],
+      leadsTo: { share_philosophy: 'PHILOSOPHY_SHARING', ask_thoughts: 'HER_PHILOSOPHY', make_difference: 'SHARED_PURPOSE' }
+    },
+    'MISSION_SHARING': {
+      prompt: "Jin-Woo sharing details about his shadow army missions with Cha Hae-In, tactical discussion, anime style.",
+      narration: "You share the details of your recent missions, and Hae-In listens with professional interest.",
+      chat: [
+        { sender: 'player', text: "The latest A-rank dungeon was more challenging than expected. My shadows adapted well though." },
+        { sender: 'Cha Hae-In', text: "Your shadow soldiers are incredible. The way they coordinate..." },
+        { sender: 'Cha Hae-In', text: "It's like watching a perfectly orchestrated battle symphony." }
+      ],
+      choices: [
+        { text: "Offer to show her", detail: "Demonstrate abilities", type: 'demonstrate' },
+        { text: "Ask about her techniques", detail: "Learn her methods", type: 'ask_techniques' },
+        { text: "Suggest joint training", detail: "Train together", type: 'joint_training' }
+      ],
+      leadsTo: { demonstrate: 'SHADOW_DEMONSTRATION', ask_techniques: 'SWORD_TECHNIQUES', joint_training: 'TRAINING_TOGETHER' }
+    },
+    'HER_MISSIONS': {
+      prompt: "Cha Hae-In sharing her recent hunter missions with Jin-Woo, professional exchange, anime style.",
+      narration: "Hae-In opens up about her recent experiences as an S-rank hunter.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "I've been dealing with some unusual magic beasts lately. Their scent..." },
+        { sender: 'player', text: "Your sensitivity to magic energy is incredible. What did you sense?" },
+        { sender: 'Cha Hae-In', text: "Something different. Darker. Like they're being influenced by something else." }
+      ],
+      choices: [
+        { text: "Offer assistance", detail: "Help investigate", type: 'offer_help' },
+        { text: "Share similar experiences", detail: "Compare notes", type: 'share_experiences' },
+        { text: "Express concern", detail: "Worry about her safety", type: 'express_concern' }
+      ],
+      leadsTo: { offer_help: 'INVESTIGATION_TEAM', share_experiences: 'SHARED_MYSTERIES', express_concern: 'PROTECTIVE_ROUTE' }
+    },
+    'OFFICIAL_PARTNERSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In forming an official hunter partnership, professional handshake, anime style.",
+      narration: "You formally agree to work together as an official hunter partnership.",
+      chat: [
+        { sender: 'player', text: "I'd be honored to work with you officially." },
+        { sender: 'Cha Hae-In', text: "Perfect. We'll need to register with the Association." },
+        { sender: 'Cha Hae-In', text: "I think we're going to accomplish great things together." }
+      ],
+      choices: [
+        { text: "Plan first mission", detail: "Discuss objectives", type: 'plan_mission' },
+        { text: "Celebrate partnership", detail: "Mark the occasion", type: 'celebrate' },
+        { text: "Express excitement", detail: "Share enthusiasm", type: 'excited' }
+      ],
+      leadsTo: { plan_mission: 'MISSION_PLANNING', celebrate: 'PARTNERSHIP_CELEBRATION', excited: 'ENTHUSIASTIC_RESPONSE' }
+    },
+    'CASUAL_TEAM': {
+      prompt: "Jin-Woo and Cha Hae-In agreeing to casual cooperation, relaxed partnership, anime style.",
+      narration: "You agree to work together when it makes sense, keeping things flexible.",
+      chat: [
+        { sender: 'player', text: "I like the idea of staying flexible. No formal obligations." },
+        { sender: 'Cha Hae-In', text: "Exactly. We can help each other when our goals align." },
+        { sender: 'Cha Hae-In', text: "This feels more natural, doesn't it?" }
+      ],
+      choices: [
+        { text: "Agree completely", detail: "Support the approach", type: 'agree' },
+        { text: "Suggest trial period", detail: "Test the waters", type: 'trial_period' },
+        { text: "Ask about boundaries", detail: "Clarify expectations", type: 'boundaries' }
+      ],
+      leadsTo: { agree: 'MUTUAL_UNDERSTANDING', trial_period: 'TRIAL_PARTNERSHIP', boundaries: 'CLEAR_BOUNDARIES' }
+    },
+    'SHADOW_DEMONSTRATION': {
+      prompt: "Jin-Woo demonstrating his shadow army abilities to Cha Hae-In, impressive display, anime style.",
+      narration: "You summon several shadow soldiers to demonstrate their capabilities to Hae-In.",
+      chat: [
+        { sender: 'player', text: "Arise." },
+        { sender: 'Cha Hae-In', text: "Incredible... they move with such precision and coordination." },
+        { sender: 'Cha Hae-In', text: "It's like watching a perfectly trained elite unit." }
+      ],
+      choices: [
+        { text: "Show advanced techniques", detail: "Demonstrate more abilities", type: 'advanced_demo' },
+        { text: "Ask for her opinion", detail: "Get her thoughts", type: 'ask_opinion' },
+        { text: "Suggest sparring", detail: "Practice together", type: 'sparring' }
+      ],
+      leadsTo: { advanced_demo: 'ADVANCED_ABILITIES', ask_opinion: 'HER_ASSESSMENT', sparring: 'TRAINING_TOGETHER' }
+    },
+    'SWORD_TECHNIQUES': {
+      prompt: "Cha Hae-In demonstrating her sword techniques to Jin-Woo, elegant swordsmanship, anime style.",
+      narration: "Hae-In gracefully demonstrates her sword techniques, each movement flowing like a deadly dance.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "My style focuses on precision and efficiency. Every cut has purpose." },
+        { sender: 'player', text: "Your form is flawless. The way you channel your mana through the blade..." },
+        { sender: 'Cha Hae-In', text: "Would you like to try some techniques together?" }
+      ],
+      choices: [
+        { text: "Accept training offer", detail: "Learn together", type: 'accept_training' },
+        { text: "Share your techniques", detail: "Exchange knowledge", type: 'share_techniques' },
+        { text: "Compliment her skill", detail: "Express admiration", type: 'compliment' }
+      ],
+      leadsTo: { accept_training: 'TRAINING_TOGETHER', share_techniques: 'TECHNIQUE_EXCHANGE', compliment: 'SKILL_APPRECIATION' }
+    },
+    'TRAINING_TOGETHER': {
+      prompt: "Jin-Woo and Cha Hae-In training together, sparring session, anime style.",
+      narration: "You and Hae-In engage in a friendly sparring session, learning from each other's techniques.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Your reflexes are incredible. You adapt so quickly." },
+        { sender: 'player', text: "You're pushing me to be better. This is exactly what I needed." },
+        { sender: 'Cha Hae-In', text: "We make a good team, don't we?" }
+      ],
+      choices: [
+        { text: "Agree about teamwork", detail: "Acknowledge synergy", type: 'teamwork' },
+        { text: "Suggest regular training", detail: "Make it routine", type: 'regular_training' },
+        { text: "Express gratitude", detail: "Thank her", type: 'grateful' }
+      ],
+      leadsTo: { teamwork: 'TEAM_SYNERGY', regular_training: 'TRAINING_PARTNERSHIP', grateful: 'GRATEFUL_MOMENT' }
+    },
+    'INVESTIGATION_TEAM': {
+      prompt: "Jin-Woo and Cha Hae-In forming an investigation team, detective work, anime style.",
+      narration: "You agree to work together to investigate the mysterious dark influences affecting magic beasts.",
+      chat: [
+        { sender: 'player', text: "Let's get to the bottom of this. My shadows can scout ahead." },
+        { sender: 'Cha Hae-In', text: "Perfect. My sensitivity to magic energy will help track the source." },
+        { sender: 'Cha Hae-In', text: "Whatever's causing this, we'll find it together." }
+      ],
+      choices: [
+        { text: "Plan investigation strategy", detail: "Organize approach", type: 'plan_strategy' },
+        { text: "Start immediately", detail: "Begin right away", type: 'start_now' },
+        { text: "Gather more information", detail: "Research first", type: 'research' }
+      ],
+      leadsTo: { plan_strategy: 'STRATEGIC_PLANNING', start_now: 'IMMEDIATE_ACTION', research: 'INFORMATION_GATHERING' }
+    },
+    'SHARED_MYSTERIES': {
+      prompt: "Jin-Woo and Cha Hae-In sharing mysterious experiences, comparing notes, anime style.",
+      narration: "You compare your recent strange encounters, finding disturbing similarities.",
+      chat: [
+        { sender: 'player', text: "I've noticed something similar. The monsters seem... different lately." },
+        { sender: 'Cha Hae-In', text: "Yes! Their scent is wrong, like they're being controlled." },
+        { sender: 'Cha Hae-In', text: "This could be connected to something bigger." }
+      ],
+      choices: [
+        { text: "Share shadow observations", detail: "Reveal what you've seen", type: 'shadow_intel' },
+        { text: "Discuss possible causes", detail: "Theorize together", type: 'theorize' },
+        { text: "Suggest joint investigation", detail: "Work together", type: 'investigate_together' }
+      ],
+      leadsTo: { shadow_intel: 'SHADOW_INTELLIGENCE', theorize: 'THEORY_SESSION', investigate_together: 'INVESTIGATION_TEAM' }
     }
   };
 
