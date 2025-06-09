@@ -450,26 +450,7 @@ export function UnifiedShop({
               ))}
             </div>
 
-            {/* Player Stats */}
-            <Card className="mt-3 sm:mt-6 bg-gradient-to-r from-purple-900/50 to-blue-900/50 border-purple-500/30">
-              <CardHeader className="pb-2 sm:pb-3">
-                <CardTitle className="text-white text-xs sm:text-sm">Status</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-1 sm:space-y-2">
-                <div className="flex justify-between text-xs sm:text-sm">
-                  <span className="text-purple-300">Level</span>
-                  <span className="text-white">{playerLevel}</span>
-                </div>
-                <div className="flex justify-between text-xs sm:text-sm">
-                  <span className="text-pink-300">Affection</span>
-                  <span className="text-white">{currentAffection}/5</span>
-                </div>
-                <div className="flex justify-between text-xs sm:text-sm">
-                  <span className="text-purple-300">Intimacy</span>
-                  <span className="text-white">{currentIntimacy}/5</span>
-                </div>
-              </CardContent>
-            </Card>
+
           </div>
 
           {/* Item Catalog */}

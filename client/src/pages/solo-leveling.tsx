@@ -4181,6 +4181,8 @@ export default function SoloLeveling() {
           isVisible={showInventory}
           onClose={() => setShowInventory(false)}
           items={playerInventory}
+          equippedGear={playerEquippedGear}
+          availableEquipment={availableEquipment}
           onItemUse={(item) => {
             if (item.usableInCombat && gameState.inCombat) {
               // Handle combat item usage
