@@ -84,6 +84,59 @@ export default function SoloLevelingSpatial() {
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [gestureStart, setGestureStart] = useState({ x: 0, y: 0, time: 0 });
+  const [isLongPressing, setIsLongPressing] = useState(false);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMonarchAuraGesture = (e: React.TouchEvent | React.MouseEvent) => {
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    
+    // Only activate in top 80px of screen
+    if (clientY <= 80) {
+      setIsLongPressing(true);
+      
+      // Start long press timer
+      longPressTimer.current = setTimeout(() => {
+        // After 500ms, show visual feedback
+        if (document.body) {
+          document.body.style.background = 'linear-gradient(to bottom, rgba(147, 51, 234, 0.3), transparent)';
+        }
+      }, 500);
+
+      // Add drag listener
+      const handleDrag = (dragEvent: TouchEvent | MouseEvent) => {
+        const dragY = 'touches' in dragEvent ? (dragEvent as TouchEvent).touches[0].clientY : (dragEvent as MouseEvent).clientY;
+        const deltaY = dragY - clientY;
+        
+        if (deltaY > 100 && isLongPressing) {
+          setMonarchAuraVisible(true);
+          if (document.body) {
+            document.body.style.background = '';
+          }
+          cleanup();
+        }
+      };
+
+      const cleanup = () => {
+        setIsLongPressing(false);
+        if (document.body) {
+          document.body.style.background = '';
+        }
+        if (longPressTimer.current) {
+          clearTimeout(longPressTimer.current);
+        }
+        document.removeEventListener('touchmove', handleDrag);
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('touchend', cleanup);
+        document.removeEventListener('mouseup', cleanup);
+      };
+
+      document.addEventListener('touchmove', handleDrag);
+      document.addEventListener('mousemove', handleDrag);
+      document.addEventListener('touchend', cleanup);
+      document.addEventListener('mouseup', cleanup);
+    }
+  };
 
   // Modal states
   const [showDailyLifeHub, setShowDailyLifeHub] = useState(false);
@@ -283,15 +336,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const handleMonarchAuraGesture = (e: React.TouchEvent | React.MouseEvent) => {
-    if ('touches' in e) {
-      // Touch gesture - long press and drag down
-      const startY = e.touches[0].clientY;
-      if (startY < 100) { // Near top of screen
-        setMonarchAuraVisible(true);
-      }
-    }
-  };
+
 
   const generateSceneImage = async () => {
     try {
@@ -523,11 +568,11 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="absolute bottom-0 left-0 right-0 liquid-glass-modal border-t border-white/20"
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="absolute bottom-4 left-4 right-4 max-w-4xl mx-auto liquid-glass-modal"
+            initial={{ y: 100, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 100, opacity: 0, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
             <div className="p-6 space-y-4">
               
