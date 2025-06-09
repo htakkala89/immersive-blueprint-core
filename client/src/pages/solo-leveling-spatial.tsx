@@ -732,8 +732,8 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="fixed top-1/2 left-4 right-4 max-w-2xl mx-auto liquid-glass-modal z-50"
-            style={{ transform: 'translateY(-50%)', maxHeight: '60vh' }}
+            className="fixed bottom-4 left-4 right-4 bg-slate-900/95 backdrop-blur-xl border-2 border-purple-400/50 rounded-2xl shadow-2xl z-[9999]"
+            style={{ maxHeight: '60vh' }}
             initial={{ y: 100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
@@ -756,7 +756,7 @@ export default function SoloLevelingSpatial() {
               
               {/* Dialogue Text - Scrollable */}
               <motion.div
-                className="liquid-glass p-4 flex-1 overflow-y-auto mb-3"
+                className="bg-slate-800/60 border border-purple-400/30 rounded-lg p-4 flex-1 overflow-y-auto mb-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
