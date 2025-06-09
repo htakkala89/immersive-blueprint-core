@@ -166,7 +166,7 @@ export function MonarchArmory({
             onClick={onClose}
             variant="ghost"
             size="sm"
-            className="text-white hover:bg-red-500/20 border border-white/20 liquid-glass"
+            className="text-white hover:bg-red-500/20 border border-white/20 liquid-glass relative z-[10001]"
           >
             <X className="w-5 h-5" />
           </Button>
