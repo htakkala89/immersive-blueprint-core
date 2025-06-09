@@ -758,12 +758,14 @@ export default function SoloLeveling() {
         playVoice(reaction, 'Cha Hae-In', audioMuted);
       }
 
-      // Increase affection based on gift value and type
-      let affectionIncrease = gift.affectionGain || Math.max(1, Math.floor((gift.price || 1000) / 1000));
-      
-      // Ensure minimum affection gain for gifts
-      if (affectionIncrease <= 0) {
-        affectionIncrease = gift.price >= 5000 ? 5 : gift.price >= 2000 ? 3 : 2;
+      // Increase affection based on gift value and type with guaranteed minimum
+      let affectionIncrease = gift.affectionGain;
+      if (!affectionIncrease || affectionIncrease <= 0 || isNaN(affectionIncrease)) {
+        const giftPrice = gift.price || 1000;
+        affectionIncrease = Math.max(2, Math.floor(giftPrice / 1000));
+        if (affectionIncrease <= 0) {
+          affectionIncrease = giftPrice >= 5000 ? 5 : giftPrice >= 2000 ? 3 : 2;
+        }
       }
       
       setGameState(prev => ({ 
@@ -6806,10 +6808,13 @@ export default function SoloLeveling() {
               gold: (prev.gold || 0) - gift.price
             }));
             
-            // Calculate proper affection gain
-            let calculatedAffectionGain = gift.affectionGain || Math.max(2, Math.floor(gift.price / 1000));
-            if (calculatedAffectionGain <= 0) {
-              calculatedAffectionGain = gift.price >= 5000 ? 5 : gift.price >= 2000 ? 3 : 2;
+            // Calculate proper affection gain with guaranteed minimum
+            let calculatedAffectionGain = gift.affectionGain;
+            if (!calculatedAffectionGain || calculatedAffectionGain <= 0) {
+              calculatedAffectionGain = Math.max(2, Math.floor(gift.price / 1000));
+              if (calculatedAffectionGain <= 0) {
+                calculatedAffectionGain = gift.price >= 5000 ? 5 : gift.price >= 2000 ? 3 : 2;
+              }
             }
             
             // Show gift presentation modal with calculated affection
@@ -6849,8 +6854,8 @@ export default function SoloLeveling() {
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <span className="text-purple-300">Value: {selectedGift.price} gold</span>
                   <span className="text-pink-300 capitalize">{selectedGift.rarity} quality</span>
-                  <span className="text-green-300">Affection: +{selectedGift.affectionGain || 2}</span>
-                  <span className="text-blue-300">Intimacy: +{selectedGift.intimacyGain || 1}</span>
+                  <span className="text-green-300">Affection: +{selectedGift?.affectionGain ?? 2}</span>
+                  <span className="text-blue-300">Intimacy: +{selectedGift?.intimacyGain ?? 1}</span>
                 </div>
               </div>
               
