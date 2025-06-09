@@ -13,6 +13,9 @@ import { DailyLifeHubModal } from '@/components/DailyLifeHubModal';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
+import { RelationshipConstellation } from '@/components/RelationshipConstellation';
+import { DungeonRaid } from '@/components/DungeonRaid';
+import { MonarchArmory } from '@/components/MonarchArmory';
 
 interface GameState {
   level: number;
@@ -76,12 +79,18 @@ export default function SoloLevelingSpatial() {
   const [sceneImage, setSceneImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const spatialViewRef = useRef<HTMLDivElement>(null);
+  const [parallaxOffset, setParallaxOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   // Modal states
   const [showDailyLifeHub, setShowDailyLifeHub] = useState(false);
   const [showIntimateModal, setShowIntimateModal] = useState(false);
   const [showUnifiedShop, setShowUnifiedShop] = useState(false);
   const [showEnergyModal, setShowEnergyModal] = useState(false);
+  const [showConstellation, setShowConstellation] = useState(false);
+  const [showDungeonRaid, setShowDungeonRaid] = useState(false);
+  const [showArmory, setShowArmory] = useState(false);
   const [activeActivity, setActiveActivity] = useState<string | null>(null);
 
   const worldLocations: Record<string, WorldLocation> = {
@@ -631,11 +640,11 @@ export default function SoloLevelingSpatial() {
               
               {/* Radial Menu Items */}
               {[
-                { icon: User, label: 'Character', angle: 0, color: 'from-purple-600 to-purple-800', onClick: () => console.log('Character stats') },
-                { icon: Sword, label: 'Inventory', angle: 60, color: 'from-blue-600 to-blue-800', onClick: () => console.log('Inventory') },
-                { icon: Star, label: 'Quests', angle: 120, color: 'from-green-600 to-green-800', onClick: () => console.log('Quests') },
-                { icon: MapPin, label: 'World Map', angle: 180, color: 'from-red-600 to-red-800', onClick: () => console.log('World map') },
-                { icon: Heart, label: 'Constellation', angle: 240, color: 'from-pink-600 to-pink-800', onClick: () => console.log('Relationship constellation') },
+                { icon: User, label: 'Armory', angle: 0, color: 'from-purple-600 to-purple-800', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
+                { icon: Sword, label: 'Raid', angle: 60, color: 'from-red-600 to-red-800', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
+                { icon: Star, label: 'Quests', angle: 120, color: 'from-green-600 to-green-800', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
+                { icon: MapPin, label: 'World Map', angle: 180, color: 'from-blue-600 to-blue-800', onClick: () => console.log('World map') },
+                { icon: Heart, label: 'Constellation', angle: 240, color: 'from-pink-600 to-pink-800', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
                 { icon: Gift, label: 'Daily Life', angle: 300, color: 'from-yellow-600 to-yellow-800', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
               ].map((item, index) => {
                 const radius = 120;
@@ -754,6 +763,54 @@ export default function SoloLevelingSpatial() {
             ...prev,
             energy: Math.min((prev.energy || 0) + amount, prev.maxEnergy || 100),
             gold: (prev.gold || 0) - cost
+          }));
+        }}
+      />
+
+      <RelationshipConstellation
+        isVisible={showConstellation}
+        onClose={() => setShowConstellation(false)}
+        affectionLevel={gameState.affection}
+        memories={[]}
+        onMemorySelect={(memory) => {
+          console.log('Reliving memory:', memory.title);
+          setShowConstellation(false);
+        }}
+      />
+
+      <DungeonRaid
+        isVisible={showDungeonRaid}
+        onClose={() => setShowDungeonRaid(false)}
+        onRaidComplete={(success, loot) => {
+          if (success) {
+            setGameState(prev => ({
+              ...prev,
+              experience: (prev.experience || 0) + 500,
+              gold: (prev.gold || 0) + 1000,
+              affection: Math.min(100, prev.affection + 10)
+            }));
+          }
+        }}
+        playerLevel={gameState.level}
+        affectionLevel={gameState.affection}
+      />
+
+      <MonarchArmory
+        isVisible={showArmory}
+        onClose={() => setShowArmory(false)}
+        playerLevel={gameState.level}
+        equipment={[]}
+        onEquip={(itemId, slot) => {
+          console.log(`Equipped ${itemId} to ${slot}`);
+        }}
+        onUpgrade={(itemId) => {
+          console.log(`Upgraded ${itemId}`);
+        }}
+        onGiftToChaHaeIn={(itemId) => {
+          console.log(`Gifted ${itemId} to Cha Hae-In`);
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + 5)
           }));
         }}
       />

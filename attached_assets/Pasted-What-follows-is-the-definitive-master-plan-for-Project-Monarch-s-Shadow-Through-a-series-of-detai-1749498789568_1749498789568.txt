@@ -1,0 +1,161 @@
+What follows is the definitive master plan for Project "Monarch's Shadow." Through a series of detailed explorations, we have architected an experience founded on a single, unwavering principle: to create a tangible sense of shared presence.
+
+We are officially moving beyond the concept of a game. We are building a window into a life. Every system detailed in this document—from the way the world is presented to the way a relationship is forged in the fires of a dungeon—is designed to dissolve the boundaries between the user and the world. We will reject abstract menus, embrace spatial and contextual interaction, and deliver a fluid, premium experience worthy of its subject matter.
+
+This is our final blueprint. It is ambitious, it is detailed, and it is the future of interactive narrative. Let's build it.
+
+Table of Contents
+Spatial View Interface (Core System)
+Character Interaction System
+Monarch's Aura (Radial Menu)
+Daily Life Hub
+Intimate Activity System
+Relationship Constellation
+Commerce & Progression
+World Navigation
+AI-Driven Narrative
+Technical Features (UX Translation)
+The Dungeon Raid - A Shared Combat Experience
+Equipment Management - The Monarch's Armory
+1. Spatial View Interface (Core System)
+Design Philosophy: The world is not a backdrop; it is the interface. Every piece of information should, where possible, be conveyed through the environment itself.
+
+UX Flow:
+Upon opening the app, the user is immediately placed in the Spatial View for their last known location. There is no main menu.
+The view is a living 2.5D diorama. The user can perform a slow drag/pan left and right to get a wider sense of the space, with parallax layers moving at different speeds to create depth.
+The time of day and weather in the scene dynamically match the in-world clock and conditions, requiring no input from the user.
+If Cha Hae-In is scheduled to be at this location, her avatar is present. If not, the space is empty, creating a tangible sense of her autonomy.
+UI & Visual Specifications:
+Environmental Interactions: Interactive objects or points of interest will not be obvious buttons. Instead, they will be marked by a subtle, slow-pulsing ethereal purple dot of light. This dot appears to hover just in front of the object.
+Interaction Prompt: Tapping this dot does not open a menu. Instead, it populates a "Thought Prompt" near the bottom of the screen (e.g., tapping a dot on a coffee machine prompts: "Suggest grabbing a coffee."). This makes interaction feel like an internal thought, not a command.
+Haptic & Audio Feedback:
+A soft, low-frequency ambient soundscape specific to the location is always active (e.g., quiet chatter in a cafe, wind in a park).
+Panning the view has no sound, reinforcing the feeling of simply looking around.
+2. Character Interaction System
+Design Philosophy: Conversation should feel like a natural extension of being in a shared space, not a separate "dialogue mode."
+
+UX Flow:
+To begin a conversation, the user taps directly on Cha Hae-In's avatar.
+The camera performs the "Focus" animation (a swift, smooth zoom-in; background blurs), and the dialogue UI fades in. Her avatar's expression and posture will already reflect her current AI-driven emotional state.
+The user can type freely or select one of the AI-generated "Thought Prompts" to initiate.
+Her response is generated, her voice is synthesized, and the text appears on screen synced to the audio. Her facial expression on the avatar animates in real-time to match the emotional tone of her words.
+UI & Visual Specifications:
+Dialogue Box: The dialogue UI will utilize liquid glassmorphism. It will appear as a floating pane of glass with a pronounced background blur, subtly tinted with the colors of the scene behind it. Its borders will be thin, shimmering lines that seem to flow. The content visible through the panel will have a very slight, wavy distortion, creating a wet, refractive, and organic feel.
+Emotional States: This is a key visual. Her emotional state isn't just a facial sprite swap. It's a combination of:
+Face: A high-resolution portrait with multiple blend shapes for nuanced expressions (happy, amused, concerned, annoyed, blushing).
+Posture: Her idle animation changes. Happy might be a more open, relaxed stance. Annoyed might be a subtle arm-cross and a shift in weight. Intimate would be a softer, closer posture.
+Haptic & Audio Feedback:
+When her response is delivered, a very subtle haptic pulse can be triggered for emotionally significant lines.
+Her voice should have a very slight, realistic reverb that matches the acoustic properties of the current location.
+3. Monarch's Aura (Radial Menu)
+Design Philosophy: System mechanics should feel like an extension of the protagonist's own power, accessed through a powerful, somatic gesture.
+
+UX Flow:
+The user performs a long-press at the top of the screen and drags down. The world darkens, and the radial menu animates into view.
+The user keeps their finger down and hovers over a rune to see its title.
+Releasing their finger on a rune selects it, causing the sub-menu to expand from the center of the screen with a fluid animation.
+UI & Visual Specifications:
+Menu Style: The entire radial menu will embody liquid glassmorphism. The background will be a deeply blurred, swirling vortex of purple and black energy. Each rune will appear etched onto a piece of flowing, refractive glass, with soft internal glows.
+Iconography: Each of the 6 runes must be a distinct, single-weight line art glyph:
+Character Stats: A stylized silhouette of a rising figure.
+Inventory: A stylized gem or treasure chest.
+Quests: A stylized Gate/portal icon.
+World Map: A stylized compass rose or globe.
+Relationship Constellation: Two interconnected stars.
+Daily Life Activities: A stylized calendar or sun/moon icon.
+Haptic & Audio Feedback:
+Activation: A deep, resonant hum and a strong thump haptic when the menu fully appears.
+Selection: A soft chime and a light tap haptic when a rune is selected.
+4. Daily Life Hub
+Design Philosophy: Choosing how to spend time together should feel like making plans, not selecting levels from a menu.
+
+UX Flow:
+Accessed via the "Daily Life Activities" rune from the Monarch's Aura.
+The interface is a full-screen "Day Planner" with a greeting from Cha Hae-In: "What should we do today?"
+Activities are presented as large, elegant cards. Locked activities are visible but grayed out.
+Tapping an activity card brings up a confirmation screen. Confirming deducts the energy and initiates the activity scene.
+UI & Visual Specifications:
+Activity Cards: Each card will be a pane of liquid glassmorphism, with rounded corners and shimmering borders. The preview images seen through the cards will appear softly distorted and blurred.
+Energy System UI: Represented as a glowing purple orb in the top corner. It will appear as a sphere of contained liquid energy, with subtle internal movement and refractive highlights. It grows dim as energy is depleted.
+Haptic & Audio Feedback:
+Tapping an activity card gives a light, pleasing haptic tap.
+Confirming an activity gives a slightly stronger, affirmative haptic pulse.
+5. Intimate Activity System
+Design Philosophy: Intimacy must be handled with elegance, user agency, and a commitment to unrestricted personal narrative, all while feeling like a natural, private progression of the relationship.
+
+UX Flow:
+New, personal activities organically become available in the "Daily Life Hub" as the relationship deepens.
+Selecting an intimate activity transitions to the appropriate private Spatial View.
+At key moments, the "Narrative Lens" (glowing eye icon) appears, offering the user the option to visualize the scene explicitly.
+Tapping the Lens activates the "Chronostasis" effect and brings up the simplified generator UI (prompt field and "Visualize" button).
+UI & Visual Specifications:
+Generator UI: The prompt field and button will appear within a modal window that is a prime example of liquid glassmorphism, floating over the desaturated background like a pane of subtly distorted, wet glass.
+Privacy Mode / Theatrical Presentation: When the generated image is displayed, it is a total screen takeover. All UI elements, including the system status bar, fade out completely.
+Haptic & Audio Feedback:
+During intimate scenes, haptic feedback should be used sparingly but effectively to represent touch or a heartbeat, using very subtle and soft patterns.
+6. Relationship Constellation
+Design Philosophy: Relationship history shouldn't be a log file; it should be a beautiful, interactive tapestry of shared memories.
+
+UX Flow:
+Accessed via the Monarch's Aura, presenting a personal 3D starfield.
+The user can freely pan, rotate, and zoom. Each star is a key memory.
+Tapping a star causes it to flare and reveal a small summary card.
+UI & Visual Specifications:
+Memory Cards: When a memory card appears, its background will be liquid glassmorphism, slightly blurring and tinting the starfield visible behind it, with thin, flowing borders of light.
+Interconnected Lines: Faint, glowing lines of light will form between related stars, visually mapping the journey.
+Brightness: The overall ambient glow of the entire constellation serves as the "affection meter."
+Haptic & Audio Feedback:
+Tapping a star emits a single, clear, high-pitched musical note and a light haptic tap.
+7. Commerce & Progression
+Design Philosophy: Acquiring items should be an immersive activity, not a transactional menu. We will reframe "shops" as "destinations."
+
+UX Flow:
+There is no "Shop" button. The user must use the World Map to travel to a commercial location.
+The Spatial View becomes a first-person perspective of Browse shelves.
+Tapping an item brings up a detailed 3D view for inspection.
+UI & Visual Specifications:
+Item Inspection Panels: The pop-up panels for item details and purchase confirmation will use liquid glassmorphism, keeping the interface clean while maintaining the immersive background context.
+Haptic & Audio Feedback:
+A satisfying "cha-ching" sound (stylized and modern) and a solid haptic tap confirm a purchase.
+8. World Navigation
+Design Philosophy: Locations are not just skins; they are context. Where you are dictates who is there and what you can do, making travel a meaningful choice.
+
+UX Flow:
+Accessed via the "World Map" rune. The map is a stylized, glowing projection of Seoul.
+Tapping a location node shows a preview and travel option.
+Selecting "Travel" initiates a smooth, fast transition into the new Spatial View.
+Haptic & Audio Feedback:
+The "Travel" transition is accompanied by a short, sharp whoosh sound and a quick haptic swipe effect.
+9. AI-Driven Narrative
+Design Philosophy: The AI is not a chatbot; it is the Dungeon Master and the emotional core of Cha Hae-In. Its intelligence should be demonstrated, not explained.
+
+User Experience of AI:
+Memory: The user will perceive the AI's memory when Cha Hae-In references a specific past event unprompted.
+Emotional Intelligence: Her demeanor and responses will shift based on the user's consistent behavior.
+Contextual Awareness: The "Thought Prompts" will change drastically based on location, time, and recent activities.
+UI & Visual Specifications:
+There is no UI for the AI itself. Its presence is felt exclusively through the quality and relevance of the interactions.
+10. Technical Features (UX Translation)
+Design Philosophy: Technology should be invisible, enabling the experience without ever calling attention to itself.
+
+Voice & Image Generation: When waiting for AI generation, the user must never see a generic loading spinner. Use in-world animations like a "thinking" pose or a "swirling vortex" of energy.
+Gesture Controls: Tap for direct selection. Long Press & Drag for powerful system actions. Swipe Down is a universal "dismiss" gesture.
+Persistent State: The user never manually saves. The app re-opens exactly where they left off.
+Offline Capability: The app is functional for pre-loaded content. Actions requiring AI will feature a small icon (e.g., a "cloud with a slash" rendered in a liquid glass style), with a tooltip on tap: "A connection is needed to reach Cha Hae-In."
+11. The Dungeon Raid - A Shared Combat Experience
+Design Philosophy: Combat is an intense, collaborative activity. Every action must be framed as a shared experience that directly strengthens the bond.
+
+Entry Point: Raids are initiated via Gates on the World Map, requiring a conversational agreement with Cha Hae-In.
+Core Gameplay View: A 2.5D side-scrolling view with dark, atmospheric environments. Health is represented by glowing auras at characters' feet.
+Player Input ("Monarch's Command"): Gesture-based controls. Tap to move/attack. Swipe Up for launchers. Long Press for charged AoE skills. Summons are commanded by dragging their icons from a small radial menu onto the battlefield.
+Cha Hae-In's Role ("Synergy System"): She fights with competent AI. A Synergy Gauge fills as they fight together, unlocking a spectacular, cinematic Team-Up Attack button. This button will have a pronounced liquid energy effect, swirling beneath a glass-like surface.
+The Aftermath: No "VICTORY" screen. The end of combat transitions to a special Spatial View for a unique dialogue scene. Loot is absorbed as motes of light.
+12. Equipment Management - The Monarch's Armory
+Design Philosophy: Equipment is a physical manifestation of the Monarch's power. The interface should be a cinematic, tactile experience.
+
+Access Point: Accessed via a "View Armory" button within the "Character Stats" section of the Monarch's Aura.
+The Armory View: The interface is a full 3D model of Sung Jin-Woo in an ethereal space. Equipment slots are glowing nodes on the model. The inventory is a horizontal carousel of 3D item models.
+UI Style: All informational panels, buttons, and stat displays within the Armory will utilize liquid glassmorphism to create a clean, futuristic, and cohesive feel.
+Equipping an Item: The user drags an item from the carousel and drops it onto the 3D model. This triggers a flash of light and instantly updates the model.
+Upgrading & Crafting: Handled in a "Shadow Forge" where the user "feeds" materials to a floating 3D item, culminating in a dramatic upgrade animation.
+Gifting Equipment to Cha Hae-In: The user can gift her equipment via the "Give a Gift" activity. She may then choose to use it in the next raid, often commenting on it in the "Aftermath" scene, creating a powerful and satisfying relationship loop.
