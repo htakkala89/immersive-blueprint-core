@@ -324,6 +324,39 @@ export default function SoloLeveling() {
       effects: { mana: 30 },
       usableInCombat: true,
       value: 150
+    },
+    {
+      id: 'energy_drink',
+      name: 'Hunter Energy Drink',
+      type: 'consumable',
+      rarity: 'common',
+      quantity: 8,
+      description: 'Restores 25 Energy instantly',
+      effects: { energy: 25 },
+      usableInCombat: false,
+      value: 80
+    },
+    {
+      id: 'high_energy_potion',
+      name: 'High-Grade Energy Potion',
+      type: 'consumable',
+      rarity: 'rare',
+      quantity: 3,
+      description: 'Restores 50 Energy instantly',
+      effects: { energy: 50 },
+      usableInCombat: false,
+      value: 300
+    },
+    {
+      id: 'stamina_pills',
+      name: 'Stamina Enhancement Pills',
+      type: 'consumable',
+      rarity: 'epic',
+      quantity: 2,
+      description: 'Fully restores Energy and provides +10 Energy bonus for 1 hour',
+      effects: { energy: 100, energyBonus: 10, duration: 3600 },
+      usableInCombat: false,
+      value: 1000
     }
   ]);
   const [showCombatTactics, setShowCombatTactics] = useState(false);
