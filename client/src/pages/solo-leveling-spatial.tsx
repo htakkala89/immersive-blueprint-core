@@ -330,7 +330,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const currentLocationData = worldLocations[currentLocation];
+  const currentLocationData = worldLocations[playerLocation];
 
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
@@ -346,7 +346,7 @@ export default function SoloLevelingSpatial() {
           message,
           gameState,
           context: {
-            location: currentLocation,
+            location: playerLocation,
             timeOfDay,
             weather,
             activity: currentLocationData.chaActivity,
@@ -902,7 +902,7 @@ export default function SoloLevelingSpatial() {
             { icon: User, label: 'Armory', color: 'text-purple-300', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
             { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
             { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
-            { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { console.log('World map'); setMonarchAuraVisible(false); } },
+            { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
