@@ -424,6 +424,79 @@ export default function SoloLeveling() {
     return { experienceGained, goldGained, obtainedItems };
   };
 
+  const handleUnifiedShopPurchase = (item: ShopItem) => {
+    if (playerGold < item.price) {
+      return;
+    }
+
+    // Deduct gold
+    setPlayerGold(prev => prev - item.price);
+
+    if (item.type === 'equipment') {
+      // Add to available equipment
+      const newEquipment: Equipment = {
+        id: item.id,
+        name: item.name,
+        type: item.category === 'weapons' ? 'weapon' : 'armor',
+        slot: item.category === 'weapons' ? 'weapon' : 'chest',
+        rarity: item.rarity,
+        stats: item.stats || {},
+        description: item.description,
+        requirements: item.requirements
+      };
+      setAvailableEquipment((prev: Equipment[]) => [...prev, newEquipment]);
+      
+      // Auto-equip if weapon and no weapon equipped
+      if (item.category === 'weapons' && !playerEquippedGear.weapon) {
+        setPlayerEquippedGear(prev => ({ ...prev, weapon: newEquipment }));
+      }
+    } else if (item.type === 'gift') {
+      // Apply gift effects
+      if (item.affectionGain && item.affectionGain > 0) {
+        setGameState(prev => ({ ...prev, affection: prev.affection + item.affectionGain! }));
+      }
+      if (item.intimacyGain && item.intimacyGain > 0) {
+        setGameState(prev => ({ ...prev, intimacyLevel: (prev.intimacyLevel || 0) + item.intimacyGain! }));
+      }
+      
+      // Add to inventory as gift item
+      setPlayerInventory(prev => [...prev, {
+        id: item.id,
+        name: item.name,
+        type: 'gift',
+        rarity: item.rarity,
+        quantity: 1,
+        description: item.description,
+        value: item.price,
+        usableInCombat: false
+      }]);
+      
+      // Show Cha Hae-In's reaction
+      if (item.chaHaeInReaction) {
+        setTimeout(() => {
+          addChatMessage('Cha Hae-In', item.chaHaeInReaction!);
+        }, 1000);
+      }
+    } else if (item.type === 'consumable') {
+      // Add to inventory
+      setPlayerInventory(prev => [...prev, {
+        id: item.id,
+        name: item.name,
+        type: 'consumable',
+        rarity: item.rarity,
+        quantity: 1,
+        description: item.description,
+        value: item.price,
+        usableInCombat: true,
+        effects: {
+          healingPower: item.healingPower,
+          manaRestore: item.manaRestore,
+          buffDuration: item.buffDuration
+        }
+      }]);
+    }
+  };
+
   const characterProgression = useCharacterProgression('solo-leveling-session');
   const { playVoice, stopVoice, isPlaying, currentSpeaker } = useVoice();
   const { generateStoryNarration, isPlaying: isNarrationPlaying, stopNarration } = useStoryNarration();
@@ -3798,22 +3871,13 @@ export default function SoloLeveling() {
                     💖
                   </button>
 
-                  {/* Equipment System Button */}
+                  {/* Unified Marketplace Button */}
                   <button 
-                    onClick={() => setShowEquipmentSystem(true)}
-                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-blue-500/50 transition-all border border-blue-400/30 shadow-lg"
-                    title="Equipment & Gear"
+                    onClick={() => setShowUnifiedShop(true)}
+                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-green-500/50 transition-all border border-green-400/30 shadow-lg"
+                    title="Hunter's Marketplace - Weapons, Armor, Gifts & More"
                   >
-                    ⚔️
-                  </button>
-
-                  {/* Gift System Button */}
-                  <button 
-                    onClick={() => setShowGiftSystem(true)}
-                    className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-purple-500/50 transition-all border border-purple-400/30 shadow-lg"
-                    title="Gifts for Cha Hae-In"
-                  >
-                    🎁
+                    🏪
                   </button>
 
 
@@ -4705,6 +4769,17 @@ export default function SoloLeveling() {
         currentResponse={intimateActivityResponse}
         intimacyLevel={intimacyLevel}
         affectionLevel={gameState.affection * 20}
+      />
+
+      {/* Unified Shop */}
+      <UnifiedShop
+        isVisible={showUnifiedShop}
+        onClose={() => setShowUnifiedShop(false)}
+        playerGold={playerGold}
+        playerLevel={gameState.level}
+        currentAffection={gameState.affection}
+        currentIntimacy={intimacyLevel}
+        onPurchase={handleUnifiedShopPurchase}
       />
     </div>
   );
