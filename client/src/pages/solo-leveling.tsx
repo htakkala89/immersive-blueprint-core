@@ -331,7 +331,7 @@ export default function SoloLeveling() {
   const [showCharacterProfile, setShowCharacterProfile] = useState(false);
   const [showGiftSystem, setShowGiftSystem] = useState(false);
   const [showGiftGiving, setShowGiftGiving] = useState(false);
-  const [selectedGift, setSelectedGift] = useState<ShopItem | null>(null);
+  const [selectedGift, setSelectedGift] = useState<any>(null);
   const [achievements, setAchievements] = useState<any[]>([]);
   const [showUnifiedShop, setShowUnifiedShop] = useState(false);
   const [playerEquippedGear, setPlayerEquippedGear] = useState<EquippedGear>({});
@@ -729,7 +729,7 @@ export default function SoloLeveling() {
   const { playVoice, stopVoice, isPlaying, currentSpeaker } = useVoice();
 
   // Function to present a gift to Cha Hae-In
-  const presentGiftToChaHaeIn = async (gift: ShopItem) => {
+  const presentGiftToChaHaeIn = async (gift: any) => {
     if (!gift) return;
 
     // Generate Cha Hae-In's reaction based on the gift
