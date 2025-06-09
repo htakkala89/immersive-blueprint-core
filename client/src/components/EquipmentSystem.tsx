@@ -8,6 +8,7 @@ export interface Equipment {
   id: string;
   name: string;
   description: string;
+  type: 'weapon' | 'armor' | 'accessory' | 'consumable';
   slot: 'weapon' | 'helmet' | 'chest' | 'legs' | 'boots' | 'ring' | 'necklace';
   rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
   stats: {

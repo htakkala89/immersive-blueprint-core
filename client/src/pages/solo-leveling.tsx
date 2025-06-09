@@ -333,12 +333,13 @@ export default function SoloLeveling() {
       rarity: 'mythic',
       stats: {
         attack: 250,
-        critRate: 25,
-        critDamage: 50,
+        criticalRate: 25,
+        criticalDamage: 50,
         speed: 15
       },
       description: 'Ancient daggers forged in the depths of hell. They hunger for battle and grow stronger with each kill.',
-      requirements: { level: 1 }
+      requirements: { level: 1 },
+      value: 50000
     },
     {
       id: 'shadow_cloak',
@@ -1467,7 +1468,7 @@ export default function SoloLeveling() {
         { text: "Tell her she's perfect", detail: "Complete acceptance", type: 'perfect_acceptance' },
         { text: "Share what you see in her", detail: "Detailed appreciation", type: 'detailed_appreciation' }
       ],
-      leadsTo: { perfect_acceptance: 'PERFECT_MOMENT', detailed_appreciation: 'DEEP_APPRECIATION' }
+      leadsTo: { perfect_acceptance: 'ROMANTIC_MOMENT', detailed_appreciation: 'ROMANTIC_MOMENT' }
     },
     'INTIMATE_MOMENT': {
       prompt: "Jin-Woo and Cha Hae-In sharing intense eye contact. Deep emotional connection, anime style.",
