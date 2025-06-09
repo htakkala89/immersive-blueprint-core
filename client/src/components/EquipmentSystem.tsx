@@ -245,13 +245,13 @@ export function EquipmentSystem({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-h-96 overflow-y-auto">
-              {availableEquipment.map(item => {
+              {selectedTab === 'inventory' && availableEquipment.map(item => {
                 const canEquip = (!item.requirements?.level || playerLevel >= item.requirements.level);
                 const isEquipped = Object.values(equippedGear).some(equipped => equipped?.id === item.id);
 
                 return (
                   <Card key={item.id} className="bg-slate-800/50 border-slate-600">
-                    <CardContent className="p-4">
+                    <CardContent className="p-3 sm:p-4">
                       <div className="flex items-center gap-2 mb-2">
                         {getSlotIcon(item.slot)}
                         <Badge className={`${getRarityColor(item.rarity)} text-white text-xs`}>
@@ -290,6 +290,52 @@ export function EquipmentSystem({
                   </Card>
                 );
               })}
+              
+              {selectedTab === 'equipped' && Object.values(equippedGear).filter(Boolean).map(item => (
+                <Card key={item!.id} className="bg-slate-800/50 border-slate-600">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      {getSlotIcon(item!.slot)}
+                      <Badge className={`${getRarityColor(item!.rarity)} text-white text-xs`}>
+                        {item!.rarity}
+                      </Badge>
+                    </div>
+                    
+                    <h4 className="text-white font-medium mb-1 text-sm sm:text-base">{item!.name}</h4>
+                    <p className="text-slate-300 text-xs sm:text-sm mb-3">{item!.description}</p>
+                    
+                    <div className="space-y-1 mb-3">
+                      {Object.entries(item!.stats).map(([stat, value]) => (
+                        <div key={stat} className="flex justify-between text-xs sm:text-sm">
+                          <span className="text-slate-400 capitalize">{stat.replace(/([A-Z])/g, ' $1')}</span>
+                          <span className="text-green-400">+{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <Button
+                      onClick={() => onUnequip(item!.slot)}
+                      size="sm"
+                      className="w-full text-xs sm:text-sm"
+                      variant="outline"
+                    >
+                      Unequip
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {selectedTab === 'equipped' && Object.values(equippedGear).filter(Boolean).length === 0 && (
+                <div className="col-span-full text-center text-slate-400 py-8">
+                  No equipment currently equipped
+                </div>
+              )}
+              
+              {selectedTab === 'inventory' && availableEquipment.length === 0 && (
+                <div className="col-span-full text-center text-slate-400 py-8">
+                  No equipment available in inventory
+                </div>
+              )}
             </div>
           </div>
         </div>

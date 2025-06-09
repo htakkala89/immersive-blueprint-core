@@ -242,17 +242,18 @@ export function GiftSystem({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-pink-900/90 to-purple-900/90 border border-pink-500/30 rounded-xl w-full max-w-6xl h-5/6 overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-pink-500/30">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Gift className="w-6 h-6 text-pink-400" />
-            Gift Shop for Cha Hae-In
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-gradient-to-br from-pink-900/90 to-purple-900/90 border border-pink-500/30 rounded-xl w-full max-w-6xl h-full sm:h-5/6 overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between p-3 sm:p-6 border-b border-pink-500/30 shrink-0">
+          <h2 className="text-lg sm:text-2xl font-bold text-white flex items-center gap-2">
+            <Gift className="w-4 h-4 sm:w-6 sm:h-6 text-pink-400" />
+            <span className="hidden sm:inline">Gift Shop for Cha Hae-In</span>
+            <span className="sm:hidden">Gift Shop</span>
           </h2>
-          <div className="flex items-center gap-4">
-            <div className="text-white">
-              <ShoppingBag className="w-5 h-5 inline mr-2" />
-              Gold: {playerGold}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="text-white text-sm sm:text-base">
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              {playerGold}
             </div>
             <Button onClick={onClose} variant="ghost" size="sm" className="text-white hover:bg-pink-500/20">
               ×
@@ -260,35 +261,35 @@ export function GiftSystem({
           </div>
         </div>
 
-        <div className="flex h-full">
+        <div className="flex flex-col lg:flex-row h-full overflow-hidden">
           {/* Category Filter */}
-          <div className="w-1/4 p-6 border-r border-pink-500/30">
-            <h3 className="text-lg font-semibold text-white mb-4">Categories</h3>
-            <div className="space-y-2">
+          <div className="w-full lg:w-1/4 p-3 sm:p-6 lg:border-r border-pink-500/30 overflow-y-auto">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Categories</h3>
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:space-y-2 lg:grid-cols-none">
               {categories.map(category => (
                 <Button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
                   variant={selectedCategory === category ? "default" : "ghost"}
-                  className="w-full justify-start text-white"
+                  className="w-full justify-start text-white text-xs sm:text-sm lg:text-base"
                 >
                   {getCategoryIcon(category)}
-                  <span className="ml-2 capitalize">{category}</span>
+                  <span className="ml-1 sm:ml-2 capitalize">{category}</span>
                 </Button>
               ))}
             </div>
 
             {/* Current Relationship Status */}
-            <Card className="mt-6 bg-gradient-to-r from-pink-900/50 to-purple-900/50 border-pink-500/30">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-white text-sm">Relationship Status</CardTitle>
+            <Card className="mt-3 sm:mt-6 bg-gradient-to-r from-pink-900/50 to-purple-900/50 border-pink-500/30">
+              <CardHeader className="pb-2 sm:pb-3">
+                <CardTitle className="text-white text-xs sm:text-sm">Relationship Status</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between text-sm">
+              <CardContent className="space-y-1 sm:space-y-2">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-pink-300">Affection</span>
                   <span className="text-white">{currentAffection}/100</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-purple-300">Intimacy</span>
                   <span className="text-white">{currentIntimacy}/100</span>
                 </div>
@@ -297,7 +298,7 @@ export function GiftSystem({
           </div>
 
           {/* Gift Catalog */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-3 sm:p-6 overflow-y-auto">
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
               {filteredGifts.map(gift => {
                 const canAfford = playerGold >= gift.price;
