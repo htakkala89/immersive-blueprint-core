@@ -850,15 +850,7 @@ export default function SoloLevelingSpatial() {
                 </motion.div>
               </div>
               
-              {/* Close Dialogue */}
-              <motion.button
-                className="absolute top-4 right-4 w-8 h-8 bg-slate-700/50 hover:bg-slate-600/50 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors"
-                onClick={() => setDialogueActive(false)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                ×
-              </motion.button>
+
             </div>
           </motion.div>
         )}
