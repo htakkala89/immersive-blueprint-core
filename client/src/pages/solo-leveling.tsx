@@ -465,6 +465,20 @@ export default function SoloLeveling() {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [chatInput]);
 
+  // Auto-generate scene images for real-time immersion
+  useEffect(() => {
+    if (currentStory.narration) {
+      generateSceneImage();
+    }
+  }, [currentStory.narration]);
+
+  // Auto-generate when game state changes significantly
+  useEffect(() => {
+    if (gameState.currentScene && currentStory.narration) {
+      generateSceneImage();
+    }
+  }, [gameState.currentScene, gameState.affection]);
+
   // Auto-generate initial scene image
   useEffect(() => {
     if (!currentImage) {

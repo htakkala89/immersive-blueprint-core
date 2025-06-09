@@ -448,8 +448,8 @@ function createSoloLevelingPrompt(gameState: GameState): string {
   const baseStyle = "Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel, Korean manhwa illustration, dramatic shadows, cinematic lighting, high contrast";
   
   // Determine scene type based on current narration and story path
-  const narration = gameState.narration.toLowerCase();
-  const storyPath = gameState.storyPath?.toLowerCase() || '';
+  const narration = (gameState.narration || '').toLowerCase();
+  const storyPath = (gameState.storyPath || '').toLowerCase();
   
   // Detect who is speaking in the current scene
   const chaHaeInSpeaking = narration.includes("cha hae-in says") || narration.includes("cha responds") || 

@@ -79,25 +79,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const gameState = await storage.processChoice(sessionId, choice);
       
       // Generate AI image for the new scene with fallback
+      let imageUrl = null;
       try {
-        let imageUrl = null;
-        try {
-          imageUrl = await generateSceneImage(gameState);
-        } catch (error) {
-          console.error("AI image generation failed, using fallback:", error);
+        imageUrl = await generateSceneImage(gameState);
+        if (!imageUrl) {
           imageUrl = getSceneImage(gameState);
         }
         
         if (imageUrl) {
-          await storage.updateGameState(sessionId, {
+          const updatedGameState = await storage.updateGameState(sessionId, {
             sceneData: { ...gameState.sceneData, imageUrl }
           });
+          return res.json({ ...updatedGameState, imageUrl });
         }
       } catch (error) {
         console.error("Scene image generation error:", error);
+        // Use fallback image
+        imageUrl = getSceneImage(gameState);
       }
       
-      res.json(gameState);
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
@@ -157,13 +158,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Prompt or gameState is required" });
       }
       
-      // If gameState is provided, use it directly
+      // If gameState is provided, use it directly with proper structure
       if (gameState) {
-        const imageUrl = await generateSceneImage(gameState);
+        const enhancedGameState = {
+          ...gameState,
+          narration: gameState.narration || "Shadow Monarch in Solo Leveling universe",
+          currentScene: gameState.currentScene || "romantic",
+          storyPath: gameState.storyPath || "romance_path",
+          level: gameState.level || 1,
+          affectionLevel: gameState.affectionLevel || 50
+        };
+        const imageUrl = await generateSceneImage(enhancedGameState);
         return res.json({ imageUrl });
       }
 
-      // Create a mock GameState object for the image generator
+      // Create a complete GameState object for the image generator
       const mockGameState = {
         id: 1,
         sessionId: "solo-leveling",
