@@ -461,7 +461,17 @@ export function WorldMap({
             exit={{ opacity: 0, scale: 0.9, y: 50 }}
             className="absolute bottom-6 left-6 right-6 max-w-lg mx-auto z-10"
           >
-            <div className="liquid-glass p-6 rounded-2xl border border-purple-400/30">
+            <div className="liquid-glass p-6 rounded-2xl border border-purple-400/30 relative">
+              {/* Close Button */}
+              <Button
+                onClick={() => setSelectedLocation(null)}
+                variant="ghost"
+                size="sm"
+                className="absolute top-2 right-2 z-[10001] text-white hover:bg-white/10 w-8 h-8 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+
               {/* Location Image */}
               <div className="w-full h-32 bg-gradient-to-r from-purple-600/30 to-blue-600/30 rounded-lg mb-4 flex items-center justify-center">
                 <span className="text-3xl">🏢</span>
