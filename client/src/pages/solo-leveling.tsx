@@ -1007,7 +1007,7 @@ export default function SoloLeveling() {
         { text: "Celebrate with Hae-In", detail: "Share this moment together", type: 'celebrate_together' },
         { text: "Return to Daily Life Hub", detail: "Head back home", type: 'return_hub' }
       ],
-      leadsTo: { celebrate_together: 'ROMANTIC_CELEBRATION', return_hub: 'DAILY_LIFE_HUB' }
+      leadsTo: { celebrate_together: 'ROMANTIC_MOMENT', return_hub: 'DAILY_LIFE_HUB' }
     },
     'PROTECTIVE_ROUTE': {
       prompt: "Jin-Woo showing concern for Cha Hae-In's safety. Protective gesture, anime style.",
@@ -1415,7 +1415,7 @@ export default function SoloLeveling() {
         { text: "Prepare for boss fight", detail: "Ready for final challenge", type: 'boss_preparation' },
         { text: "Celebrate the teamwork", detail: "Acknowledge the success", type: 'celebrate_teamwork' }
       ],
-      leadsTo: { boss_preparation: 'BOSS_APPROACH', celebrate_teamwork: 'TEAMWORK_MOMENT' }
+      leadsTo: { boss_preparation: 'BOSS_APPROACH', celebrate_teamwork: 'VICTORY_TOGETHER' }
     },
     'CARING_TACTICS': {
       prompt: "Jin-Woo frequently checking on Cha Hae-In during tactical separation. Caring strategy, anime style.",
@@ -1428,7 +1428,7 @@ export default function SoloLeveling() {
         { text: "Admit your feelings", detail: "Open up emotionally", type: 'admit_feelings' },
         { text: "Rejoin her side", detail: "Stay together", type: 'rejoin_formation' }
       ],
-      leadsTo: { admit_feelings: 'DUNGEON_CONFESSION', rejoin_formation: 'PROTECTIVE_DUNGEON' }
+      leadsTo: { admit_feelings: 'CONFESSION', rejoin_formation: 'PROTECTIVE_DUNGEON' }
     },
     'INSPIRATION_MOMENT': {
       prompt: "Mutual inspiration between Jin-Woo and Cha Hae-In. Shared admiration, anime style.",
@@ -1441,7 +1441,7 @@ export default function SoloLeveling() {
         { text: "Face the boss together", detail: "United front", type: 'united_boss_fight' },
         { text: "Share a meaningful look", detail: "Silent connection", type: 'meaningful_connection' }
       ],
-      leadsTo: { united_boss_fight: 'BOSS_APPROACH', meaningful_connection: 'SILENT_BOND' }
+      leadsTo: { united_boss_fight: 'BOSS_APPROACH', meaningful_connection: 'ROMANTIC_MOMENT' }
     },
     'MUTUAL_VULNERABILITY': {
       prompt: "Jin-Woo and Cha Hae-In sharing their deepest struggles. Emotional intimacy, anime style.",
@@ -1454,7 +1454,7 @@ export default function SoloLeveling() {
         { text: "Promise to support each other", detail: "Mutual commitment", type: 'mutual_support' },
         { text: "Take her hand", detail: "Physical comfort", type: 'take_hand' }
       ],
-      leadsTo: { mutual_support: 'SUPPORT_PROMISE', take_hand: 'HAND_HOLDING' }
+      leadsTo: { mutual_support: 'ROMANTIC_MOMENT', take_hand: 'HAND_HOLDING' }
     },
     'GROWTH_RECOGNITION': {
       prompt: "Jin-Woo recognizing Cha Hae-In's personal growth. Encouragement and support, anime style.",
@@ -1493,7 +1493,7 @@ export default function SoloLeveling() {
         { text: "Plan more dates", detail: "Build the relationship", type: 'plan_more_dates' },
         { text: "Head to the gate", detail: "Continue the mission together", type: 'mission_as_couple' }
       ],
-      leadsTo: { plan_more_dates: 'RELATIONSHIP_BUILDING', mission_as_couple: 'COUPLE_MISSION' }
+      leadsTo: { plan_more_dates: 'DAILY_LIFE_HUB', mission_as_couple: 'GATE_ENTRANCE' }
     },
     'DATE_PLANNING': {
       prompt: "Jin-Woo and Cha Hae-In planning their first official date. Romantic anticipation, anime style.",
