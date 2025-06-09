@@ -328,6 +328,49 @@ export default function SoloLeveling() {
     chest: STARTING_EQUIPMENT.find(e => e.id === 'shadow_cloak')
   });
   const [availableEquipment, setAvailableEquipment] = useState<Equipment[]>(STARTING_EQUIPMENT);
+
+  // Calculate total combat stats including equipment bonuses
+  const calculateTotalStats = () => {
+    const baseStats = gameState.stats;
+    const equipmentStats = {
+      attack: 0,
+      defense: 0,
+      health: 0,
+      mana: 0,
+      strength: 0,
+      agility: 0,
+      intelligence: 0,
+      vitality: 0
+    };
+
+    // Sum up all equipped gear stats
+    Object.values(playerEquippedGear).forEach(equipment => {
+      if (equipment) {
+        equipmentStats.attack += equipment.stats.attack || 0;
+        equipmentStats.defense += equipment.stats.defense || 0;
+        equipmentStats.health += equipment.stats.health || 0;
+        equipmentStats.mana += equipment.stats.mana || 0;
+        equipmentStats.strength += equipment.stats.attack || 0;
+        equipmentStats.agility += equipment.stats.speed || 0;
+        equipmentStats.intelligence += equipment.stats.mana || 0;
+        equipmentStats.vitality += equipment.stats.health || 0;
+      }
+    });
+
+    return {
+      totalAttack: baseStats.strength + equipmentStats.attack,
+      totalDefense: baseStats.vitality + equipmentStats.defense,
+      totalHealth: gameState.maxHealth + equipmentStats.health,
+      totalMana: gameState.maxMana + equipmentStats.mana,
+      totalStrength: baseStats.strength + equipmentStats.strength,
+      totalAgility: baseStats.agility + equipmentStats.agility,
+      totalIntelligence: baseStats.intelligence + equipmentStats.intelligence,
+      totalVitality: baseStats.vitality + equipmentStats.vitality,
+      equipmentBonuses: equipmentStats
+    };
+  };
+
+  const totalStats = calculateTotalStats();
   const [intimacyLevel, setIntimacyLevel] = useState(10);
   const [playerEnergy, setPlayerEnergy] = useState(100);
   const [showIntimateActivity, setShowIntimateActivity] = useState(false);
@@ -4484,7 +4527,18 @@ export default function SoloLeveling() {
             }
           }}
           playerLevel={gameState.level}
-          playerStats={gameState}
+          playerStats={{
+            ...gameState,
+            stats: {
+              ...gameState.stats,
+              strength: totalStats.totalStrength,
+              agility: totalStats.totalAgility,
+              intelligence: totalStats.totalIntelligence,
+              vitality: totalStats.totalVitality
+            },
+            attack: totalStats.totalAttack,
+            defense: totalStats.totalDefense
+          }}
           enemy={currentCombatEnemy}
         />
       )}

@@ -45,6 +45,19 @@ interface EquipmentSystemProps {
   availableEquipment: Equipment[];
   onEquip: (equipment: Equipment) => void;
   onUnequip: (slot: string) => void;
+  playerStats?: {
+    level: number;
+    health: number;
+    maxHealth: number;
+    mana: number;
+    maxMana: number;
+    stats: {
+      strength: number;
+      agility: number;
+      intelligence: number;
+      vitality: number;
+    };
+  };
 }
 
 const STARTING_EQUIPMENT: Equipment[] = [
@@ -86,7 +99,8 @@ export function EquipmentSystem({
   equippedGear,
   availableEquipment,
   onEquip,
-  onUnequip
+  onUnequip,
+  totalStats
 }: EquipmentSystemProps) {
   const [selectedTab, setSelectedTab] = useState<'equipped' | 'inventory'>('equipped');
 
@@ -116,31 +130,15 @@ export function EquipmentSystem({
     }
   };
 
-  const calculateTotalStats = () => {
-    const stats = {
-      attack: 0,
-      defense: 0,
-      health: 0,
-      mana: 0,
-      speed: 0,
-      critRate: 0,
-      critDamage: 0
-    };
-
-    Object.values(equippedGear).forEach(item => {
-      if (item) {
-        Object.entries(item.stats).forEach(([stat, value]) => {
-          if (value && stat in stats && typeof value === 'number') {
-            (stats as any)[stat] += value;
-          }
-        });
-      }
-    });
-
-    return stats;
+  const equipmentBonuses = {
+    attack: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.attack || 0), 0),
+    defense: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.defense || 0), 0),
+    health: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.health || 0), 0),
+    mana: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.mana || 0), 0),
+    speed: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.speed || 0), 0),
+    critRate: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.critRate || 0), 0),
+    critDamage: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.critDamage || 0), 0)
   };
-
-  const totalStats = calculateTotalStats();
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
