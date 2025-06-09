@@ -6530,6 +6530,130 @@ export default function SoloLeveling() {
 
 
 
+      {/* Energy Replenishment Modal */}
+      {showEnergyReplenishment && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center">
+          <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 border border-blue-400/30 rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                ⚡ Energy Replenishment
+              </h2>
+              <button 
+                onClick={() => setShowEnergyReplenishment(false)}
+                className="text-white/60 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Current Energy Status */}
+            <div className="bg-black/20 rounded-lg p-4 mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-white/80">Current Energy</span>
+                <span className="text-yellow-400 font-bold">{playerEnergy}/{maxPlayerEnergy}</span>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-3">
+                <div 
+                  className={`h-3 rounded-full transition-all duration-500 energy-bar ${
+                    playerEnergy < 30 ? 'bg-red-500' : 
+                    playerEnergy < 60 ? 'bg-yellow-500' : 'bg-green-500'
+                  }`}
+                  style={{ width: `${(playerEnergy / maxPlayerEnergy) * 100}%` }}
+                />
+              </div>
+              <div className="text-xs text-white/60 mt-1">
+                Energy regenerates {energyRegenRate} point per minute automatically
+              </div>
+            </div>
+
+            {/* Rest Options */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* Full Rest */}
+              <div className="bg-black/20 rounded-lg p-4 border border-green-400/30">
+                <h3 className="text-lg font-semibold text-green-400 mb-2 flex items-center gap-2">
+                  🛏️ Full Rest
+                </h3>
+                <p className="text-white/80 text-sm mb-3">
+                  Take a complete rest to fully restore your energy. Perfect for when you need maximum energy.
+                </p>
+                <button
+                  onClick={restForEnergy}
+                  className="w-full bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded-lg transition-all"
+                >
+                  Rest (Restore to {maxPlayerEnergy})
+                </button>
+              </div>
+
+              {/* Meditation */}
+              <div className="bg-black/20 rounded-lg p-4 border border-blue-400/30">
+                <h3 className="text-lg font-semibold text-blue-400 mb-2 flex items-center gap-2">
+                  🧘 Meditation
+                </h3>
+                <p className="text-white/80 text-sm mb-3">
+                  Focus your mind to restore energy through meditation. Quick partial recovery.
+                </p>
+                <button
+                  onClick={meditateForEnergy}
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg transition-all"
+                >
+                  Meditate (+30 Energy)
+                </button>
+              </div>
+            </div>
+
+            {/* Energy Items */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-yellow-400 mb-3 flex items-center gap-2">
+                🧪 Energy Items
+              </h3>
+              <div className="grid grid-cols-1 gap-3">
+                {playerInventory
+                  .filter(item => item.effects?.energy && item.quantity > 0)
+                  .map(item => (
+                    <div key={item.id} className="bg-black/20 rounded-lg p-3 flex items-center justify-between border border-yellow-400/20">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${
+                          item.rarity === 'epic' ? 'bg-purple-500' :
+                          item.rarity === 'rare' ? 'bg-blue-500' : 'bg-green-500'
+                        }`} />
+                        <div>
+                          <div className="text-white font-medium">{item.name}</div>
+                          <div className="text-white/60 text-sm">+{item.effects.energy} Energy • Qty: {item.quantity}</div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => useEnergyItem(item.id)}
+                        className="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-1 rounded transition-all text-sm"
+                      >
+                        Use
+                      </button>
+                    </div>
+                  ))}
+                {playerInventory.filter(item => item.effects?.energy && item.quantity > 0).length === 0 && (
+                  <div className="text-white/60 text-center py-4">
+                    No energy items available. Visit the marketplace to purchase energy drinks and potions.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Energy Tips */}
+            <div className="bg-black/20 rounded-lg p-4 border border-purple-400/30">
+              <h3 className="text-lg font-semibold text-purple-400 mb-2 flex items-center gap-2">
+                💡 Energy Tips
+              </h3>
+              <ul className="text-white/80 text-sm space-y-1">
+                <li>• Energy automatically regenerates 1 point per minute</li>
+                <li>• Visit the marketplace to buy energy drinks and potions</li>
+                <li>• Different activities consume different amounts of energy</li>
+                <li>• Rest fully restores energy but meditation provides quick partial recovery</li>
+                <li>• Monitor your energy before engaging in intensive activities</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Raid System Modal */}
       <RaidSystem
         isVisible={showRaidSystem}

@@ -44,6 +44,7 @@ interface ShopItem {
   // Consumable effects
   healingPower?: number;
   manaRestore?: number;
+  energyRestore?: number;
   buffDuration?: number;
   
   requirements?: {
@@ -339,6 +340,40 @@ const SHOP_INVENTORY: ShopItem[] = [
     rarity: 'common',
     icon: '💙',
     manaRestore: 150
+  },
+  {
+    id: 'energy_drink',
+    name: 'Hunter Energy Drink',
+    description: 'Restores 25 Energy instantly. Perfect for quick recovery.',
+    price: 80,
+    category: 'consumables',
+    type: 'consumable',
+    rarity: 'common',
+    icon: '⚡',
+    energyRestore: 25
+  },
+  {
+    id: 'high_energy_potion',
+    name: 'High-Grade Energy Potion',
+    description: 'Restores 50 Energy instantly. Premium energy restoration.',
+    price: 300,
+    category: 'consumables',
+    type: 'consumable',
+    rarity: 'rare',
+    icon: '🔋',
+    energyRestore: 50
+  },
+  {
+    id: 'stamina_pills',
+    name: 'Stamina Enhancement Pills',
+    description: 'Fully restores Energy and provides +10 Energy bonus for 1 hour.',
+    price: 1000,
+    category: 'consumables',
+    type: 'consumable',
+    rarity: 'epic',
+    icon: '💊',
+    energyRestore: 100,
+    buffDuration: 3600
   },
   {
     id: 'strength_elixir',
