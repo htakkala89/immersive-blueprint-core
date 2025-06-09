@@ -411,14 +411,18 @@ export default function CharacterProfile({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 p-4 flex items-center justify-center gap-2 text-sm font-medium transition-all ${
+              className={`flex-1 min-w-0 p-3 flex flex-col items-center justify-center gap-1 text-xs font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-blue-600/30 text-white border-b-2 border-blue-400'
                   : 'text-gray-300 hover:text-white hover:bg-white/5'
               }`}
             >
-              <span className="text-lg">{tab.icon}</span>
-              {tab.label}
+              <span className="text-base">{tab.icon}</span>
+              <span className="text-xs truncate w-full text-center leading-tight">
+                {tab.id === 'achievements' ? 'Awards' : 
+                 tab.id === 'equipment' ? 'Gear' :
+                 tab.id === 'overview' ? 'Info' : tab.label}
+              </span>
             </button>
           ))}
         </div>
