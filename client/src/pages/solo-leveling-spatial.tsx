@@ -500,7 +500,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const handleLocationTravel = (location: { id: string; name: string }) => {
+  const handleLocationTravel = (location: any) => {
     setPlayerLocation(location.id);
     setShowWorldMap(false);
     setCurrentDialogue('');
