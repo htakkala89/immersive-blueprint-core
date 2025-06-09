@@ -299,10 +299,10 @@ export default function SoloLeveling() {
   };
 
   const handlePurchase = (item: any) => {
-    if (gameState.gold >= item.price) {
+    if ((gameState.gold || 0) >= item.price) {
       setGameState(prev => ({
         ...prev,
-        gold: prev.gold - item.price,
+        gold: (prev.gold || 0) - item.price,
         inventory: [...prev.inventory, item]
       }));
     }
@@ -648,7 +648,6 @@ export default function SoloLeveling() {
         onAction={(action) => console.log('Action:', action)}
         intimacyLevel={gameState.intimacyLevel || 1}
         affectionLevel={gameState.affection}
-        gameState={gameState}
         onImageGenerate={(prompt) => {
           fetch('/api/generate-intimate-image', {
             method: 'POST',
@@ -675,10 +674,18 @@ export default function SoloLeveling() {
       />
 
       <EnergyReplenishmentModal
-        isOpen={showEnergyModal}
+        isVisible={showEnergyModal}
         onClose={() => setShowEnergyModal(false)}
-        gameState={gameState}
-        setGameState={setGameState}
+        currentEnergy={gameState.energy || 0}
+        maxEnergy={gameState.maxEnergy || 100}
+        playerGold={gameState.gold || 0}
+        onEnergyRestore={(amount, cost) => {
+          setGameState(prev => ({
+            ...prev,
+            energy: Math.min((prev.energy || 0) + amount, prev.maxEnergy || 100),
+            gold: (prev.gold || 0) - cost
+          }));
+        }}
       />
     </div>
   );
