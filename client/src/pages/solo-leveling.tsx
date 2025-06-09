@@ -374,13 +374,36 @@ export default function SoloLeveling() {
 
   // Function to trigger affection sparkle effect with sound
   const triggerAffectionSparkle = () => {
+    console.log('Triggering affection sparkle effect!');
     setAffectionButtonSparkle(true);
     
-    // Play sparkle sound effect
-    const audio = new Audio();
-    audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhAjaOuvPLfCgG';
-    audio.volume = 0.3;
-    audio.play().catch(() => {}); // Ignore audio errors
+    // Create and play a magical chime sound
+    const createMagicalChime = () => {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Create a magical ascending chime
+      oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+      oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+      oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+      
+      oscillator.type = 'sine';
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    };
+    
+    try {
+      createMagicalChime();
+    } catch (error) {
+      console.log('Audio creation failed, using fallback');
+    }
     
     // Reset sparkle after animation
     setTimeout(() => {
@@ -3113,6 +3136,8 @@ export default function SoloLeveling() {
           responseText.includes(keyword)
         ) || hasRudeBehavior;
         
+        console.log('Affection check:', { hasAffectionIncrease, hasAffectionDecrease, responseText: responseText.substring(0, 100) });
+        
         // Auto-generate negative emotion images for visual feedback
         const negativeEmotionPatterns = [
           /\*.*(?:looks away|averts her gaze|turns away|steps back|crosses arms).*\*/gi,
@@ -3160,6 +3185,7 @@ export default function SoloLeveling() {
           }, 500);
         } else if (hasAffectionIncrease && gameState.affection < 5) {
           const previousAffection = gameState.affection;
+          console.log('Affection increasing! Triggering sparkle effect');
           setGameState(prev => ({ 
             ...prev, 
             affection: Math.min(5, prev.affection + 1) 
@@ -3937,8 +3963,12 @@ export default function SoloLeveling() {
                   {/* Relationship System Button */}
                   <button 
                     onClick={() => setShowRelationshipSystem(true)}
+                    onDoubleClick={() => {
+                      console.log('Manual sparkle trigger test');
+                      triggerAffectionSparkle();
+                    }}
                     className={`w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-pink-500/50 transition-all border border-pink-400/30 shadow-lg ${affectionButtonSparkle ? 'sparkle-effect' : ''}`}
-                    title="Relationship Status"
+                    title="Relationship Status (Double-click to test sparkle)"
                   >
                     💖
                   </button>
