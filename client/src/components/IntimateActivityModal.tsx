@@ -13,6 +13,7 @@ interface IntimateActivityModalProps {
   currentResponse?: string;
   intimacyLevel: number;
   affectionLevel: number;
+  generatedImage?: string;
 }
 
 const getActivityData = (activityType: string) => {
@@ -75,7 +76,8 @@ export function IntimateActivityModal({
   onImageGenerate,
   currentResponse,
   intimacyLevel,
-  affectionLevel
+  affectionLevel,
+  generatedImage
 }: IntimateActivityModalProps) {
   const [customAction, setCustomAction] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -169,6 +171,19 @@ export function IntimateActivityModal({
         <div className="flex h-full">
           {/* Main Content Area */}
           <div className="flex-1 p-6 overflow-y-auto">
+            {/* Generated Image Display */}
+            {generatedImage && (
+              <Card className="mb-6 bg-black/30 border-pink-500/30">
+                <CardContent className="p-4">
+                  <img 
+                    src={generatedImage} 
+                    alt="Generated scene" 
+                    className="w-full h-64 object-cover rounded-lg"
+                  />
+                </CardContent>
+              </Card>
+            )}
+
             {/* Current Scene Narration */}
             <Card className="mb-6 bg-black/30 border-pink-500/30">
               <CardContent className="p-4">

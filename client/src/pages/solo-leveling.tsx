@@ -78,6 +78,8 @@ export default function SoloLeveling() {
   const [audioMuted, setAudioMuted] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<string>('');
+  const [intimateResponse, setIntimateResponse] = useState<string>('');
 
   // Current story content
   const currentStory = {
@@ -335,14 +337,59 @@ export default function SoloLeveling() {
           setShowDailyLifeHub(true);
         }}
         activityType={activeActivity as any}
-        onAction={(action: string) => {
+        onAction={async (action: string, isCustom?: boolean) => {
           console.log('Action:', action);
+          try {
+            const response = await fetch('/api/intimate-action', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                gameState,
+                action,
+                activityType: activeActivity,
+                isCustom
+              })
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              setIntimateResponse(data.response || '');
+              if (data.imageUrl) {
+                setGeneratedImage(data.imageUrl);
+              }
+            }
+          } catch (error) {
+            console.error('Intimate action error:', error);
+          }
         }}
-        onImageGenerate={(prompt: string) => {
+        onImageGenerate={async (prompt: string) => {
           console.log('Generating image:', prompt);
+          try {
+            const response = await fetch('/api/generate-intimate-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                prompt,
+                activityId: activeActivity,
+                relationshipStatus: 'married',
+                intimacyLevel: gameState.intimacyLevel || 0
+              })
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.imageUrl) {
+                setGeneratedImage(data.imageUrl);
+              }
+            }
+          } catch (error) {
+            console.error('Image generation error:', error);
+          }
         }}
         intimacyLevel={gameState.intimacyLevel || 0}
         affectionLevel={gameState.affection}
+        generatedImage={generatedImage}
+        currentResponse={intimateResponse}
       />
 
       <UnifiedShop
