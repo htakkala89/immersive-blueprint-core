@@ -427,12 +427,12 @@ export default function SoloLevelingSpatial() {
       
       {/* Monarch's Aura Eye - Testing */}
       <motion.button
-        className="fixed top-6 right-6 w-12 h-12 liquid-glass rounded-full flex items-center justify-center z-50"
+        className="fixed top-6 right-6 w-12 h-12 bg-purple-600/80 backdrop-blur-lg border border-purple-400/50 rounded-full flex items-center justify-center z-50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setMonarchAuraVisible(true)}
       >
-        <Eye className="w-6 h-6 text-purple-400" />
+        <Eye className="w-6 h-6 text-white" />
       </motion.button>
       
       {/* Spatial View - The Living Diorama */}
