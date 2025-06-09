@@ -330,6 +330,8 @@ export default function SoloLeveling() {
   const [showEquipmentSystem, setShowEquipmentSystem] = useState(false);
   const [showCharacterProfile, setShowCharacterProfile] = useState(false);
   const [showGiftSystem, setShowGiftSystem] = useState(false);
+  const [showGiftGiving, setShowGiftGiving] = useState(false);
+  const [selectedGift, setSelectedGift] = useState<ShopItem | null>(null);
   const [achievements, setAchievements] = useState<any[]>([]);
   const [showUnifiedShop, setShowUnifiedShop] = useState(false);
   const [playerEquippedGear, setPlayerEquippedGear] = useState<EquippedGear>({});
@@ -5822,7 +5824,11 @@ export default function SoloLeveling() {
                                   </span>
                                   {!autoPlayVoice && (
                                     <button
-                                      onClick={() => playVoice(msg.text, msg.sender === 'Cha Hae-In' ? 'cha-hae-in' : 'system')}
+                                      onClick={() => {
+                                        if (!audioMuted) {
+                                          playVoice(msg.text, msg.sender === 'Cha Hae-In' ? 'cha-hae-in' : 'system', audioMuted);
+                                        }
+                                      }}
                                       className="w-6 h-6 rounded-full flex items-center justify-center transition-all bg-white/10 hover:bg-white/20"
                                       title="Play voice"
                                     >
