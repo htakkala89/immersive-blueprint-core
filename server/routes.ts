@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateSceneImage, generateIntimateActivityImage } from "./imageGenerator";
+import { generateSceneImage, generateIntimateActivityImage, resetMatureImageProtection } from "./imageGenerator";
 import { voiceService } from "./voiceService";
 import { getSceneImage } from "./preGeneratedImages";
 import { log } from "./vite";
@@ -435,6 +435,17 @@ Remember: Be dynamic, show personality, ask engaging questions back, reference y
     } catch (error) {
       console.error(`Failed to generate story narration: ${error}`);
       res.status(500).json({ error: "Failed to generate story narration" });
+    }
+  });
+
+  // Reset mature image protection when user exits intimate activities
+  app.post("/api/reset-mature-protection", async (req, res) => {
+    try {
+      resetMatureImageProtection();
+      res.json({ success: true, message: "Mature image protection reset" });
+    } catch (error) {
+      console.error('Failed to reset mature protection:', error);
+      res.status(500).json({ error: "Failed to reset protection" });
     }
   });
 

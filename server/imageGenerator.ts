@@ -19,6 +19,27 @@ let currentMatureImageActive = false;
 let matureImageTimestamp = 0;
 const MATURE_IMAGE_PROTECTION_TIME = 30 * 1000; // 30 seconds protection
 
+function createContextualIntimatePrompt(gameState: GameState): string {
+  const activitySettings = {
+    shower_together: "Luxurious bathroom with glass shower, steam rising, soft lighting, Jin-Woo and Cha Hae-In sharing intimate shower moment, romantic atmosphere",
+    cuddle_together: "Cozy bedroom with soft lighting, comfortable bed with silky sheets, Jin-Woo and Cha Hae-In cuddling intimately, warm romantic glow",
+    bedroom_intimacy: "Romantic bedroom with candles, rose petals scattered on silk sheets, Jin-Woo and Cha Hae-In in intimate embrace, emotional connection",
+    make_love: "Private romantic sanctuary, Jin-Woo and Cha Hae-In in ultimate intimate moment, soft candlelight, deep emotional connection, tasteful romantic scene"
+  };
+
+  const setting = activitySettings[gameState.currentScene as keyof typeof activitySettings] || 
+    "Jin-Woo and Cha Hae-In in intimate romantic moment, soft lighting, emotional connection";
+  
+  return `${setting}, beautiful anime art style, Solo Leveling aesthetic, tasteful romantic artwork, emotional intimacy focus, Korean manhwa style characters, Jin-Woo with black hair, Cha Hae-In with golden blonde hair, mature romantic content`;
+}
+
+// Function to reset mature image protection when user exits intimate activities
+export function resetMatureImageProtection(): void {
+  currentMatureImageActive = false;
+  matureImageTimestamp = 0;
+  console.log('🔓 Mature image protection reset');
+}
+
 // Content classification for mature scene detection
 function isMatureContent(prompt: string, activityId?: string): boolean {
   const promptLower = prompt.toLowerCase();
@@ -384,6 +405,11 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
         
         const imageUrl = response.data?.[0]?.url;
         if (imageUrl) {
+          // Track mature content images to prevent chat overlays
+          if (useMatureGenerator) {
+            currentMatureImageActive = true;
+            matureImageTimestamp = Date.now();
+          }
           console.log('✅ OpenAI generated fallback image successfully');
           return imageUrl;
         }
@@ -713,19 +739,7 @@ function createIntimatePrompt(activityId: string, relationshipStatus: string, in
   }
 }
 
-function createContextualIntimatePrompt(gameState: GameState): string {
-  const activitySettings = {
-    shower_together: "Luxurious bathroom with glass shower, steam rising, soft lighting, Jin-Woo and Cha Hae-In sharing intimate shower moment, romantic atmosphere",
-    cuddle_together: "Cozy bedroom with soft lighting, comfortable bed with silky sheets, Jin-Woo and Cha Hae-In cuddling intimately, warm romantic glow",
-    bedroom_intimacy: "Romantic bedroom with candles, rose petals scattered on silk sheets, Jin-Woo and Cha Hae-In in intimate embrace, emotional connection",
-    make_love: "Private romantic sanctuary, Jin-Woo and Cha Hae-In in ultimate intimate moment, soft candlelight, deep emotional connection, tasteful romantic scene"
-  };
 
-  const setting = activitySettings[gameState.currentScene as keyof typeof activitySettings] || 
-    "Jin-Woo and Cha Hae-In in intimate romantic moment, soft lighting, emotional connection";
-  
-  return `${setting}, beautiful anime art style, Solo Leveling aesthetic, tasteful romantic artwork, emotional intimacy focus, Korean manhwa style characters, Jin-Woo with black hair, Cha Hae-In with golden blonde hair, mature romantic content`;
-}
 
 function createMatureSoloLevelingPrompt(gameState: GameState): string {
   const baseStyle = "Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel, Korean manhwa illustration, dramatic shadows, cinematic lighting, high contrast";
