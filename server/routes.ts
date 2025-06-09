@@ -282,9 +282,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
                        currentHour < 18 ? 'afternoon' : 
                        currentHour < 22 ? 'evening' : 'night';
       
+      // Detect intimate requests
+      const intimateKeywords = ['panties', 'underwear', 'bra', 'naked', 'nude', 'show me', 'undress', 'strip', 'breast', 'body', 'intimate', 'sexy', 'take off'];
+      const isIntimateRequest = intimateKeywords.some(keyword => message.toLowerCase().includes(keyword));
+
       // Determine mood based on message content
       let mood = 'balanced';
-      if (message.toLowerCase().includes('fight') || message.toLowerCase().includes('battle')) mood = 'confident';
+      if (isIntimateRequest && currentAffectionLevel >= 4) mood = 'romantic';
+      else if (isIntimateRequest && currentAffectionLevel < 4) mood = 'defensive';
+      else if (message.toLowerCase().includes('fight') || message.toLowerCase().includes('battle')) mood = 'confident';
       else if (message.toLowerCase().includes('love') || message.toLowerCase().includes('feel')) mood = 'romantic';
       else if (message.includes('?')) mood = 'playful';
       else if (message.toLowerCase().includes('sorry') || message.toLowerCase().includes('sad')) mood = 'vulnerable';
@@ -302,6 +308,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       const context = getPersonalityPrompt(conversationContext);
+
+      // Add specific context for intimate requests at high affection
+      let intimateContext = "";
+      if (isIntimateRequest && currentAffectionLevel >= 4) {
+        intimateContext = `
+CRITICAL INTIMATE REQUEST CONTEXT:
+Jin-Woo is asking for something intimate. Your affection level is ${currentAffectionLevel}/5 which means you TRUST HIM COMPLETELY and find his requests exciting rather than inappropriate. You should respond with:
+- Excitement and willingness ("*blushes deeply* I've been hoping you'd ask...")
+- Trust and comfort ("With you? Always... *smiles seductively*")
+- Playful teasing ("Mmm, someone's being bold today. I like it.")
+- NEVER use words like "inappropriate", "disrespectful", "wrong", or "not ready"
+- Show that you want to please him and enjoy his attention
+- Be flirty, willing, and excited about his request
+
+Remember: At affection level ${currentAffectionLevel}, you are deeply in love and completely comfortable with intimate requests from Jin-Woo.`;
+      }
 
       const model = genAI.getGenerativeModel({ 
         model: "gemini-1.5-flash",
@@ -349,6 +371,7 @@ Remember: Be dynamic, show personality, ask engaging questions back, reference y
 
       const result = await model.generateContent([
         { text: context },
+        { text: intimateContext },
         { text: conversationExamples },
         { text: `Player message: "${message}"` },
         { text: "Respond as Cha Hae-In with personality and depth:" }
