@@ -100,7 +100,7 @@ export function EquipmentSystem({
   availableEquipment,
   onEquip,
   onUnequip,
-  totalStats
+  playerStats
 }: EquipmentSystemProps) {
   const [selectedTab, setSelectedTab] = useState<'equipped' | 'inventory'>('equipped');
 
@@ -139,6 +139,13 @@ export function EquipmentSystem({
     critRate: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.critRate || 0), 0),
     critDamage: Object.values(equippedGear).reduce((sum, item) => sum + (item?.stats.critDamage || 0), 0)
   };
+
+  const totalCombatStats = playerStats ? {
+    totalAttack: (playerStats.stats.strength || 0) + equipmentBonuses.attack,
+    totalDefense: (playerStats.stats.vitality || 0) + equipmentBonuses.defense,
+    totalHealth: playerStats.maxHealth + equipmentBonuses.health,
+    totalMana: playerStats.maxMana + equipmentBonuses.mana
+  } : null;
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
@@ -205,20 +212,64 @@ export function EquipmentSystem({
             </div>
 
             {/* Total Stats */}
-            <Card className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 border-purple-500/30">
+            {totalCombatStats && (
+              <Card className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 border-purple-500/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5" />
+                    Total Combat Stats
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-300">Attack Power</span>
+                    <span className="text-red-400 font-medium">{totalCombatStats.totalAttack}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-300">Defense</span>
+                    <span className="text-blue-400 font-medium">{totalCombatStats.totalDefense}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-300">Max Health</span>
+                    <span className="text-green-400 font-medium">{totalCombatStats.totalHealth}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-300">Max Mana</span>
+                    <span className="text-purple-400 font-medium">{totalCombatStats.totalMana}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Equipment Bonuses */}
+            <Card className="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-500/30 mt-4">
               <CardHeader className="pb-3">
                 <CardTitle className="text-white flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
-                  Total Combat Stats
+                  Equipment Bonuses
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {Object.entries(totalStats).map(([stat, value]) => (
-                  <div key={stat} className="flex justify-between text-sm">
-                    <span className="text-slate-300 capitalize">{stat.replace(/([A-Z])/g, ' $1')}</span>
-                    <span className="text-white font-medium">+{value}</span>
-                  </div>
-                ))}
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Attack Bonus</span>
+                  <span className="text-green-400 font-medium">+{equipmentBonuses.attack}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Defense Bonus</span>
+                  <span className="text-green-400 font-medium">+{equipmentBonuses.defense}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Health Bonus</span>
+                  <span className="text-green-400 font-medium">+{equipmentBonuses.health}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Mana Bonus</span>
+                  <span className="text-green-400 font-medium">+{equipmentBonuses.mana}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Speed Bonus</span>
+                  <span className="text-green-400 font-medium">+{equipmentBonuses.speed}</span>
+                </div>
               </CardContent>
             </Card>
           </div>
