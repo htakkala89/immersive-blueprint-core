@@ -732,72 +732,49 @@ export default function SoloLevelingSpatial() {
         )}
       </AnimatePresence>
       
-      {/* Monarch's Aura - Radial Menu */}
+      {/* Monarch's Aura - Simple Dropdown Menu */}
       <AnimatePresence>
         {monarchAuraVisible && (
           <motion.div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setMonarchAuraVisible(false)}
+            className="fixed top-20 right-6 w-48 liquid-glass-enhanced rounded-xl p-2 z-[9998]"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 200 }}
           >
-            <motion.div
-              className="absolute w-80 h-80"
-              style={{
-                top: 0,
-                right: 0,
-                transformOrigin: '24px 24px'
-              }}
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: 180 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-            >
-              {/* Central Crown */}
-              <div className="absolute w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center" style={{ top: '24px', right: '24px', transform: 'translate(50%, -50%)' }}>
-                <Crown className="w-8 h-8 text-white" />
-              </div>
-              
-              {/* Radial Menu Items */}
-              {[
-                { icon: User, label: 'Armory', angle: 0, color: 'from-purple-600 to-purple-800', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
-                { icon: Sword, label: 'Raid', angle: 60, color: 'from-red-600 to-red-800', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
-                { icon: Star, label: 'Quests', angle: 120, color: 'from-green-600 to-green-800', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
-                { icon: MapPin, label: 'World Map', angle: 180, color: 'from-blue-600 to-blue-800', onClick: () => console.log('World map') },
-                { icon: Heart, label: 'Constellation', angle: 240, color: 'from-pink-600 to-pink-800', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
-                { icon: Gift, label: 'Daily Life', angle: 300, color: 'from-yellow-600 to-yellow-800', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
-              ].map((item, index) => {
-                const radius = 120;
-                const radian = (item.angle * Math.PI) / 180;
-                const x = Math.cos(radian) * radius;
-                const y = Math.sin(radian) * radius;
-                
-                return (
-                  <motion.button
-                    key={item.label}
-                    className={`absolute w-20 h-20 liquid-glass-flowing rounded-full flex flex-col items-center justify-center text-white transition-all`}
-                    style={{
-                      right: `${24 - x}px`,
-                      top: `${24 + y}px`,
-                      transform: 'translate(50%, -50%)'
-                    }}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={item.onClick}
-                  >
-                    <item.icon className="w-6 h-6 mb-1" />
-                    <span className="text-xs font-medium">{item.label}</span>
-                  </motion.button>
-                );
-              })}
-            </motion.div>
+            {[
+              { icon: User, label: 'Armory', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
+              { icon: Sword, label: 'Raid', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
+              { icon: Star, label: 'Quests', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
+              { icon: MapPin, label: 'World Map', onClick: () => console.log('World map') },
+              { icon: Heart, label: 'Constellation', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
+              { icon: Gift, label: 'Daily Life', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
+            ].map((item, index) => (
+              <motion.button
+                key={item.label}
+                className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/10 transition-all"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={item.onClick}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="text-sm font-medium">{item.label}</span>
+              </motion.button>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Click outside to close */}
+      {monarchAuraVisible && (
+        <div 
+          className="fixed inset-0 z-[9997]" 
+          onClick={() => setMonarchAuraVisible(false)}
+        />
+      )}
       
 
 
