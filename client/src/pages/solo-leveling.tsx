@@ -501,6 +501,8 @@ export default function SoloLeveling() {
 
   const totalStats = calculateTotalStats();
 
+
+
   // Function to trigger affection sparkle effect with sound
   const triggerAffectionSparkle = () => {
     console.log('Triggering affection sparkle effect!');
@@ -540,7 +542,11 @@ export default function SoloLeveling() {
     }, 2000);
   };
   const [intimacyLevel, setIntimacyLevel] = useState(10);
-  const [playerEnergy, setPlayerEnergy] = useState(100);
+  const [playerEnergy, setPlayerEnergy] = useState(85);
+  const [maxPlayerEnergy, setMaxPlayerEnergy] = useState(100);
+  const [energyRegenRate, setEnergyRegenRate] = useState(1);
+  const [lastEnergyRegen, setLastEnergyRegen] = useState(Date.now());
+  const [showEnergyReplenishment, setShowEnergyReplenishment] = useState(false);
   const [showIntimateActivity, setShowIntimateActivity] = useState(false);
   const [currentIntimateActivity, setCurrentIntimateActivity] = useState<string | null>(null);
   const [intimateActivityResponse, setIntimateActivityResponse] = useState<string>('');
@@ -760,6 +766,65 @@ export default function SoloLeveling() {
 
   const characterProgression = useCharacterProgression('solo-leveling-session');
   const { playVoice, stopVoice, isPlaying, currentSpeaker } = useVoice();
+
+  // Energy Management System
+  const useEnergyItem = (itemId: string) => {
+    const item = playerInventory.find(invItem => invItem.id === itemId);
+    if (!item || item.quantity <= 0) return;
+
+    const energyRestore = item.effects.energy || 0;
+    const newEnergy = Math.min(maxPlayerEnergy, playerEnergy + energyRestore);
+    
+    setPlayerEnergy(newEnergy);
+    setPlayerInventory(prev => prev.map(invItem => 
+      invItem.id === itemId 
+        ? { ...invItem, quantity: invItem.quantity - 1 }
+        : invItem
+    ));
+
+    // Show energy restoration effect
+    const energyBar = document.querySelector('.energy-bar');
+    if (energyBar) {
+      energyBar.classList.add('energy-restored');
+      setTimeout(() => energyBar.classList.remove('energy-restored'), 1000);
+    }
+  };
+
+  const restForEnergy = () => {
+    setPlayerEnergy(maxPlayerEnergy);
+    setShowEnergyReplenishment(false);
+    
+    // Add rest animation effect
+    const energyBar = document.querySelector('.energy-bar');
+    if (energyBar) {
+      energyBar.classList.add('full-rest');
+      setTimeout(() => energyBar.classList.remove('full-rest'), 2000);
+    }
+  };
+
+  const meditateForEnergy = () => {
+    const meditationRestore = Math.min(maxPlayerEnergy, playerEnergy + 30);
+    setPlayerEnergy(meditationRestore);
+    setShowEnergyReplenishment(false);
+  };
+
+  // Time-based energy regeneration
+  useEffect(() => {
+    const energyRegenInterval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastEnergyRegen;
+      const minutesPassed = timeDiff / (1000 * 60);
+      
+      if (minutesPassed >= 1 && playerEnergy < maxPlayerEnergy) {
+        const regenAmount = Math.floor(minutesPassed) * energyRegenRate;
+        const newEnergy = Math.min(maxPlayerEnergy, playerEnergy + regenAmount);
+        setPlayerEnergy(newEnergy);
+        setLastEnergyRegen(now);
+      }
+    }, 60000);
+
+    return () => clearInterval(energyRegenInterval);
+  }, [playerEnergy, maxPlayerEnergy, energyRegenRate, lastEnergyRegen]);
 
   // Function to present a gift to Cha Hae-In
   const presentGiftToChaHaeIn = async (gift: any) => {
@@ -5859,6 +5924,15 @@ export default function SoloLeveling() {
                     title="Hunter Marketplace - Weapons, Armor, Gifts & More"
                   >
                     🏪
+                  </button>
+
+                  {/* Energy Replenishment Button */}
+                  <button 
+                    onClick={() => setShowEnergyReplenishment(true)}
+                    className={`w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-yellow-500/50 transition-all border border-yellow-400/30 shadow-lg ${playerEnergy < 30 ? 'animate-pulse border-red-400/50' : ''}`}
+                    title={`Energy: ${playerEnergy}/${maxPlayerEnergy} - Rest & Recovery`}
+                  >
+                    ⚡
                   </button>
 
 
