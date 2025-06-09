@@ -154,39 +154,52 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     });
   }
 
-  // Add intimate activities for higher relationship levels
-  if (stats.relationshipStatus === 'married' || stats.intimacyLevel >= 3) {
-    baseActivities.push(
-      {
-        id: 'cuddle_together',
-        title: 'Cuddle Time',
-        description: 'Relaxing intimate moments together',
-        icon: '💕',
-        energyCost: 15,
-        affectionReward: 20,
-        available: true
-      },
-      {
-        id: 'shower_together',
-        title: 'Shower Together',
-        description: 'Intimate shower time (18+)',
-        icon: '🚿',
-        energyCost: 20,
-        affectionReward: 25,
-        available: stats.intimacyLevel >= 4
-      }
-    );
+  // Add intimate activities based on affection and intimacy levels
+  if (stats.affectionLevel >= 60 && stats.intimacyLevel >= 30) {
+    baseActivities.push({
+      id: 'cuddle_together',
+      title: 'Cuddle Time',
+      description: 'Relaxing intimate moments together',
+      icon: '💕',
+      energyCost: 15,
+      affectionReward: 15,
+      available: true
+    });
   }
 
-  if (stats.relationshipStatus === 'married') {
+  if (stats.affectionLevel >= 70 && stats.intimacyLevel >= 40) {
+    baseActivities.push({
+      id: 'shower_together',
+      title: 'Shower Together',
+      description: 'Intimate shower time (18+)',
+      icon: '🚿',
+      energyCost: 20,
+      affectionReward: 20,
+      available: true
+    });
+  }
+
+  if (stats.affectionLevel >= 80 && stats.intimacyLevel >= 50) {
+    baseActivities.push({
+      id: 'bedroom_intimacy',
+      title: 'Bedroom Time',
+      description: 'Private intimate moments (18+)',
+      icon: '🛏️',
+      energyCost: 25,
+      affectionReward: 25,
+      available: true
+    });
+  }
+
+  if (stats.affectionLevel >= 90 && stats.intimacyLevel >= 70) {
     baseActivities.push({
       id: 'make_love',
       title: 'Make Love',
-      description: 'Ultimate intimacy as married couple (18+)',
+      description: 'Ultimate intimacy together (18+)',
       icon: '❤️',
       energyCost: 40,
       affectionReward: 50,
-      available: stats.intimacyLevel >= 5
+      available: true
     });
   }
 

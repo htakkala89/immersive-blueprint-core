@@ -18,6 +18,7 @@ import { InventorySystem } from "@/components/InventorySystem";
 import { CombatTactics } from "@/components/CombatTactics";
 import { EquipmentSystem, STARTING_EQUIPMENT, type Equipment, type EquippedGear } from "@/components/EquipmentSystem";
 import { GiftSystem, type GiftItem } from "@/components/GiftSystem";
+import { IntimateActivityModal } from "@/components/IntimateActivityModal";
 import type { GameState as GameStateType } from "@shared/schema";
 
 interface GameState {
