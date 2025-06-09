@@ -88,36 +88,36 @@ export default function SoloLevelingSpatial() {
   const [isLongPressing, setIsLongPressing] = useState(false);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const handleMonarchAuraGesture = (e: React.TouchEvent | React.MouseEvent) => {
+  const handleGestureActivation = (e: React.TouchEvent | React.MouseEvent) => {
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
     
-    // Only activate in top 80px of screen
+    // Only activate in top 80px of screen for Monarch's Aura gesture
     if (clientY <= 80) {
       setIsLongPressing(true);
       
-      // Start long press timer
+      // Start long press timer (500ms)
       longPressTimer.current = setTimeout(() => {
-        // After 500ms, show visual feedback
         if (document.body) {
           document.body.style.background = 'linear-gradient(to bottom, rgba(147, 51, 234, 0.3), transparent)';
         }
       }, 500);
 
-      // Add drag listener
-      const handleDrag = (dragEvent: TouchEvent | MouseEvent) => {
+      // Add drag listener for gesture completion
+      const handleDragMove = (dragEvent: TouchEvent | MouseEvent) => {
         const dragY = 'touches' in dragEvent ? (dragEvent as TouchEvent).touches[0].clientY : (dragEvent as MouseEvent).clientY;
         const deltaY = dragY - clientY;
         
+        // If dragged down more than 100px, activate Monarch's Aura
         if (deltaY > 100 && isLongPressing) {
           setMonarchAuraVisible(true);
           if (document.body) {
             document.body.style.background = '';
           }
-          cleanup();
+          cleanupGesture();
         }
       };
 
-      const cleanup = () => {
+      const cleanupGesture = () => {
         setIsLongPressing(false);
         if (document.body) {
           document.body.style.background = '';
@@ -125,16 +125,16 @@ export default function SoloLevelingSpatial() {
         if (longPressTimer.current) {
           clearTimeout(longPressTimer.current);
         }
-        document.removeEventListener('touchmove', handleDrag);
-        document.removeEventListener('mousemove', handleDrag);
-        document.removeEventListener('touchend', cleanup);
-        document.removeEventListener('mouseup', cleanup);
+        document.removeEventListener('touchmove', handleDragMove);
+        document.removeEventListener('mousemove', handleDragMove);
+        document.removeEventListener('touchend', cleanupGesture);
+        document.removeEventListener('mouseup', cleanupGesture);
       };
 
-      document.addEventListener('touchmove', handleDrag);
-      document.addEventListener('mousemove', handleDrag);
-      document.addEventListener('touchend', cleanup);
-      document.addEventListener('mouseup', cleanup);
+      document.addEventListener('touchmove', handleDragMove);
+      document.addEventListener('mousemove', handleDragMove);
+      document.addEventListener('touchend', cleanupGesture);
+      document.addEventListener('mouseup', cleanupGesture);
     }
   };
 
@@ -385,8 +385,8 @@ export default function SoloLevelingSpatial() {
       <motion.div
         ref={spatialViewRef}
         className="relative w-full h-full"
-        onTouchStart={handleMonarchAuraGesture}
-        onMouseDown={handleMonarchAuraGesture}
+        onTouchStart={handleGestureActivation}
+        onMouseDown={handleGestureActivation}
       >
         
         {/* Background Sky Layer */}
@@ -496,6 +496,26 @@ export default function SoloLevelingSpatial() {
           </motion.div>
         ))}
         
+        {/* Gesture Hint - Monarch's Aura */}
+        <AnimatePresence>
+          {!monarchAuraVisible && (
+            <motion.div
+              className="absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 0.6, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ delay: 2 }}
+            >
+              <motion.div
+                className="w-1 h-8 bg-gradient-to-b from-purple-400 to-transparent rounded-full"
+                animate={{ scaleY: [1, 1.5, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <span className="text-xs text-white/60 mt-1">Long press & drag down</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Location Info Overlay */}
         <motion.div
           className="absolute top-6 left-6 liquid-glass px-6 py-4"
@@ -725,21 +745,33 @@ export default function SoloLevelingSpatial() {
         )}
       </AnimatePresence>
       
-      {/* World Navigation Gesture Area */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-        {Object.entries(worldLocations).map(([locationId, location]) => (
-          <motion.button
-            key={locationId}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              currentLocation === locationId 
-                ? 'bg-purple-400' 
-                : 'bg-white/30 hover:bg-white/50'
-            }`}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.8 }}
-            onClick={() => setCurrentLocation(locationId)}
-          />
-        ))}
+      {/* Navigation Menu - Spatial Interface */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+        <div className="liquid-glass-nav-bar px-4 py-2">
+          <div className="flex items-center gap-1">
+            {Object.entries(worldLocations).map(([locationId, location]) => (
+              <motion.button
+                key={locationId}
+                className={`liquid-glass-nav-item px-4 py-3 flex flex-col items-center gap-1 min-w-[60px] ${
+                  currentLocation === locationId ? 'active' : ''
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setCurrentLocation(locationId)}
+              >
+                <div className="w-5 h-5 flex items-center justify-center">
+                  {locationId === 'hunter_association' && <Building className="w-4 h-4 text-white/80" />}
+                  {locationId === 'coffee_shop' && <Coffee className="w-4 h-4 text-white/80" />}
+                  {locationId === 'training_facility' && <Dumbbell className="w-4 h-4 text-white/80" />}
+                  {locationId === 'cha_apartment' && <Home className="w-4 h-4 text-white/80" />}
+                </div>
+                <span className="text-xs text-white/70 font-medium">
+                  {location.name.split(' ')[0]}
+                </span>
+              </motion.button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Feature Modals */}
