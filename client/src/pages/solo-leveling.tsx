@@ -5011,18 +5011,15 @@ export default function SoloLeveling() {
                     )}
                     {speechToTextEnabled && (
                       <button
-                        onMouseDown={startRecording}
-                        onMouseUp={stopRecording}
-                        onTouchStart={startRecording}
-                        onTouchEnd={stopRecording}
+                        onClick={isRecording ? stopRecording : startRecording}
                         className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all backdrop-blur-xl border border-white/20 shadow-lg touch-manipulation mr-2 ${
                           isRecording 
                             ? 'bg-red-600/90 hover:bg-red-500/90 animate-pulse' 
                             : 'bg-blue-600/90 hover:bg-blue-500/90'
                         }`}
-                        title={isRecording ? 'Recording... (Release to send)' : 'Hold to speak'}
+                        title={isRecording ? 'Tap to stop recording' : 'Tap to start recording'}
                       >
-                        🎤
+                        {isRecording ? '⏹️' : '🎤'}
                       </button>
                     )}
                     <button
