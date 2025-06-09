@@ -89,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (imageUrl) {
           const updatedGameState = await storage.updateGameState(sessionId, {
-            sceneData: { ...gameState.sceneData, imageUrl }
+            sceneData: { ...gameState.sceneData, imageUrl, runes: [], particles: [] }
           });
           return res.json({ ...updatedGameState, imageUrl });
         }
