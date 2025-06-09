@@ -4347,7 +4347,7 @@ export default function SoloLeveling() {
 
 
                 {/* Vertical Toolbar */}
-                <div className="absolute top-16 right-3 z-40 flex flex-col gap-2">
+                <div className="absolute top-16 right-3 z-50 flex flex-col gap-2" style={{ pointerEvents: 'auto' }}>
                   {/* Chat Toggle Button */}
                   <button
                     onClick={() => setChatPinned(!chatPinned)}
@@ -4442,13 +4442,17 @@ export default function SoloLeveling() {
 
                   {/* Relationship System Button */}
                   <button 
-                    onClick={() => setShowRelationshipSystem(true)}
+                    onClick={() => {
+                      console.log('Relationship Store button clicked');
+                      setShowRelationshipSystem(true);
+                    }}
                     onDoubleClick={() => {
                       console.log('Manual sparkle trigger test');
                       triggerAffectionSparkle();
                     }}
                     className={`w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-pink-500/50 transition-all border border-pink-400/30 shadow-lg ${affectionButtonSparkle ? 'sparkle-effect' : ''}`}
                     title="Relationship Status (Double-click to test sparkle)"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     💖
                   </button>
@@ -4466,9 +4470,13 @@ export default function SoloLeveling() {
 
                   {/* Developer Controls Button */}
                   <button 
-                    onClick={() => setShowDevControls(!showDevControls)}
+                    onClick={() => {
+                      console.log('Developer Controls button clicked');
+                      setShowDevControls(!showDevControls);
+                    }}
                     className="w-10 h-10 glassmorphism rounded-full flex items-center justify-center text-white hover:bg-purple-500/50 transition-all border border-purple-400/30 shadow-lg"
                     title="Developer Controls"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     ⚙️
                   </button>
