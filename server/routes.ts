@@ -389,7 +389,7 @@ MANDATORY: Each response must be completely unique and never repeated. Show emot
       const result = await model.generateContent([
         { text: context },
         { text: intimateContext },
-        { text: conversationExamples },
+        { text: responseVariety },
         { text: `Player message: "${message}"` },
         { text: "Respond as Cha Hae-In with personality and depth:" }
       ]);

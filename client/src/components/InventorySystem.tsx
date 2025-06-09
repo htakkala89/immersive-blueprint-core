@@ -23,6 +23,38 @@ interface InventoryItem {
   value: number;
 }
 
+interface Equipment {
+  id: string;
+  name: string;
+  type: 'weapon' | 'armor' | 'accessory';
+  slot: 'weapon' | 'helmet' | 'chest' | 'legs' | 'boots' | 'ring' | 'necklace';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
+  stats: {
+    attack?: number;
+    defense?: number;
+    health?: number;
+    mana?: number;
+    speed?: number;
+    critRate?: number;
+    critDamage?: number;
+  };
+  description: string;
+  requirements?: {
+    level?: number;
+    strength?: number;
+  };
+}
+
+interface EquippedGear {
+  weapon?: Equipment;
+  helmet?: Equipment;
+  chest?: Equipment;
+  legs?: Equipment;
+  boots?: Equipment;
+  ring?: Equipment;
+  necklace?: Equipment;
+}
+
 interface InventorySystemProps {
   isVisible: boolean;
   onClose: () => void;
@@ -30,6 +62,8 @@ interface InventorySystemProps {
   onItemUse: (item: InventoryItem) => void;
   inCombat?: boolean;
   playerGold: number;
+  equippedGear?: EquippedGear;
+  availableEquipment?: Equipment[];
 }
 
 const INITIAL_INVENTORY: InventoryItem[] = [
