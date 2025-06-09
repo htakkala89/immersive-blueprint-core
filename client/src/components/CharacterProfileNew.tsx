@@ -691,41 +691,109 @@ export default function CharacterProfile({
                       </div>
                       {equippedGear?.weapon && (
                         <div className="text-xs text-gray-400">
-                          Attack: +{equippedGear.weapon.effects?.attack || 0}
+                          Attack: +{equippedGear.weapon.stats?.attack || 0}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* Armor Slot */}
+                  {/* Chest Armor Slot */}
                   <div className="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg border border-white/10">
                     <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
                       <Shield size={24} className="text-gray-300" />
                     </div>
                     <div className="flex-1">
                       <div className="text-white font-medium">
-                        {equippedGear?.armor?.name || 'No Armor Equipped'}
+                        {equippedGear?.chest?.name || 'No Chest Armor Equipped'}
                       </div>
-                      {equippedGear?.armor && (
+                      {equippedGear?.chest && (
                         <div className="text-xs text-gray-400">
-                          Defense: +{equippedGear.armor.effects?.defense || 0}
+                          Defense: +{equippedGear.chest.stats?.defense || 0}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* Accessory Slot */}
+                  {/* Helmet Slot */}
+                  <div className="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg border border-white/10">
+                    <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
+                      <Crown size={24} className="text-gray-300" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-white font-medium">
+                        {equippedGear?.helmet?.name || 'No Helmet Equipped'}
+                      </div>
+                      {equippedGear?.helmet && (
+                        <div className="text-xs text-gray-400">
+                          Defense: +{equippedGear.helmet.stats?.defense || 0}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Legs Slot */}
+                  <div className="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg border border-white/10">
+                    <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
+                      <Shield size={24} className="text-gray-300" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-white font-medium">
+                        {equippedGear?.legs?.name || 'No Leg Armor Equipped'}
+                      </div>
+                      {equippedGear?.legs && (
+                        <div className="text-xs text-gray-400">
+                          Defense: +{equippedGear.legs.stats?.defense || 0}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Boots Slot */}
+                  <div className="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg border border-white/10">
+                    <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
+                      <Shield size={24} className="text-gray-300" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-white font-medium">
+                        {equippedGear?.boots?.name || 'No Boots Equipped'}
+                      </div>
+                      {equippedGear?.boots && (
+                        <div className="text-xs text-gray-400">
+                          Speed: +{equippedGear.boots.stats?.speed || 0}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Ring Slot */}
                   <div className="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg border border-white/10">
                     <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
                       <Star size={24} className="text-gray-300" />
                     </div>
                     <div className="flex-1">
                       <div className="text-white font-medium">
-                        {equippedGear?.accessory?.name || 'No Accessory Equipped'}
+                        {equippedGear?.ring?.name || 'No Ring Equipped'}
                       </div>
-                      {equippedGear?.accessory && (
+                      {equippedGear?.ring && (
                         <div className="text-xs text-gray-400">
-                          Bonus: +{equippedGear.accessory.effects?.mana || 0} Mana
+                          Mana: +{equippedGear.ring.stats?.mana || 0}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Necklace Slot */}
+                  <div className="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg border border-white/10">
+                    <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
+                      <Star size={24} className="text-yellow-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-white font-medium">
+                        {equippedGear?.necklace?.name || 'No Necklace Equipped'}
+                      </div>
+                      {equippedGear?.necklace && (
+                        <div className="text-xs text-gray-400">
+                          Health: +{equippedGear.necklace.stats?.health || 0}
                         </div>
                       )}
                     </div>
@@ -743,36 +811,85 @@ export default function CharacterProfile({
                   <div className="flex justify-between items-center p-2 bg-gray-700/30 rounded">
                     <span className="text-gray-300">Total Attack</span>
                     <span className="text-green-400 font-bold">
-                      +{(equippedGear?.weapon?.effects?.attack || 0) + 
-                        (equippedGear?.armor?.effects?.attack || 0)}
+                      +{(equippedGear?.weapon?.stats?.attack || 0) + 
+                        (equippedGear?.chest?.stats?.attack || 0) +
+                        (equippedGear?.helmet?.stats?.attack || 0) +
+                        (equippedGear?.legs?.stats?.attack || 0) +
+                        (equippedGear?.boots?.stats?.attack || 0) +
+                        (equippedGear?.ring?.stats?.attack || 0) +
+                        (equippedGear?.necklace?.stats?.attack || 0)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-700/30 rounded">
                     <span className="text-gray-300">Total Defense</span>
                     <span className="text-blue-400 font-bold">
-                      +{(equippedGear?.armor?.effects?.defense || 0) + 
-                        (equippedGear?.accessory?.effects?.defense || 0)}
+                      +{(equippedGear?.weapon?.stats?.defense || 0) + 
+                        (equippedGear?.chest?.stats?.defense || 0) +
+                        (equippedGear?.helmet?.stats?.defense || 0) +
+                        (equippedGear?.legs?.stats?.defense || 0) +
+                        (equippedGear?.boots?.stats?.defense || 0) +
+                        (equippedGear?.ring?.stats?.defense || 0) +
+                        (equippedGear?.necklace?.stats?.defense || 0)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-700/30 rounded">
                     <span className="text-gray-300">Total Health</span>
                     <span className="text-red-400 font-bold">
-                      +{(equippedGear?.armor?.effects?.health || 0) + 
-                        (equippedGear?.accessory?.effects?.health || 0)}
+                      +{(equippedGear?.weapon?.stats?.health || 0) + 
+                        (equippedGear?.chest?.stats?.health || 0) +
+                        (equippedGear?.helmet?.stats?.health || 0) +
+                        (equippedGear?.legs?.stats?.health || 0) +
+                        (equippedGear?.boots?.stats?.health || 0) +
+                        (equippedGear?.ring?.stats?.health || 0) +
+                        (equippedGear?.necklace?.stats?.health || 0)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-700/30 rounded">
                     <span className="text-gray-300">Total Mana</span>
                     <span className="text-purple-400 font-bold">
-                      +{(equippedGear?.weapon?.effects?.mana || 0) + 
-                        (equippedGear?.accessory?.effects?.mana || 0)}
+                      +{(equippedGear?.weapon?.stats?.mana || 0) + 
+                        (equippedGear?.chest?.stats?.mana || 0) +
+                        (equippedGear?.helmet?.stats?.mana || 0) +
+                        (equippedGear?.legs?.stats?.mana || 0) +
+                        (equippedGear?.boots?.stats?.mana || 0) +
+                        (equippedGear?.ring?.stats?.mana || 0) +
+                        (equippedGear?.necklace?.stats?.mana || 0)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-700/30 rounded">
                     <span className="text-gray-300">Total Speed</span>
                     <span className="text-yellow-400 font-bold">
-                      +{(equippedGear?.weapon?.effects?.speed || 0) + 
-                        (equippedGear?.armor?.effects?.speed || 0)}
+                      +{(equippedGear?.weapon?.stats?.speed || 0) + 
+                        (equippedGear?.chest?.stats?.speed || 0) +
+                        (equippedGear?.helmet?.stats?.speed || 0) +
+                        (equippedGear?.legs?.stats?.speed || 0) +
+                        (equippedGear?.boots?.stats?.speed || 0) +
+                        (equippedGear?.ring?.stats?.speed || 0) +
+                        (equippedGear?.necklace?.stats?.speed || 0)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-gray-700/30 rounded">
+                    <span className="text-gray-300">Critical Rate</span>
+                    <span className="text-orange-400 font-bold">
+                      +{(equippedGear?.weapon?.stats?.criticalRate || 0) + 
+                        (equippedGear?.chest?.stats?.criticalRate || 0) +
+                        (equippedGear?.helmet?.stats?.criticalRate || 0) +
+                        (equippedGear?.legs?.stats?.criticalRate || 0) +
+                        (equippedGear?.boots?.stats?.criticalRate || 0) +
+                        (equippedGear?.ring?.stats?.criticalRate || 0) +
+                        (equippedGear?.necklace?.stats?.criticalRate || 0)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-gray-700/30 rounded">
+                    <span className="text-gray-300">Critical Damage</span>
+                    <span className="text-red-500 font-bold">
+                      +{(equippedGear?.weapon?.stats?.criticalDamage || 0) + 
+                        (equippedGear?.chest?.stats?.criticalDamage || 0) +
+                        (equippedGear?.helmet?.stats?.criticalDamage || 0) +
+                        (equippedGear?.legs?.stats?.criticalDamage || 0) +
+                        (equippedGear?.boots?.stats?.criticalDamage || 0) +
+                        (equippedGear?.ring?.stats?.criticalDamage || 0) +
+                        (equippedGear?.necklace?.stats?.criticalDamage || 0)}%
                     </span>
                   </div>
                 </div>
