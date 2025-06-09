@@ -2335,6 +2335,142 @@ export default function SoloLeveling() {
       ],
       leadsTo: { mutual_revelation: 'MUTUAL_DISCOVERY', know_all_you: 'DEEP_CONNECTION', makes_happy: 'HAPPINESS_SHARED' }
     },
+    'FAVORITE_DUNGEONS': {
+      prompt: "Cha Hae-In sharing her favorite dungeons with Jin-Woo. Enthusiastic discussion, anime style.",
+      narration: "She lights up as she talks about her favorite dungeon experiences.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "There's this beautiful ice dungeon in the mountains. The way the light reflects off the crystals..." },
+        { sender: 'player', text: "You sound like you really love exploring. Tell me more." },
+        { sender: 'Cha Hae-In', text: "And there's an ancient forest dungeon that feels almost peaceful. Would you... like to see it sometime?" }
+      ],
+      choices: [
+        { text: "I'd love to explore with you", detail: "Accept invitation", type: 'love_explore' },
+        { text: "Show me your favorite spot", detail: "Personal request", type: 'show_favorite' },
+        { text: "We could make new memories there", detail: "Future focus", type: 'new_memories' }
+      ],
+      leadsTo: { love_explore: 'EXPLORATION_PARTNERSHIP', show_favorite: 'PERSONAL_SHARING', new_memories: 'MEMORY_MAKING' }
+    },
+    'EXPLORATION_PARTNERSHIP': {
+      prompt: "Jin-Woo and Cha Hae-In planning their dungeon exploration partnership. Adventure planning, anime style.",
+      narration: "Your shared love of adventure creates a natural partnership between you.",
+      chat: [
+        { sender: 'player', text: "I'd love to explore dungeons with you. We could discover new places together." },
+        { sender: 'Cha Hae-In', text: "Really? That sounds wonderful! I know so many hidden dungeons others have never seen." },
+        { sender: 'Cha Hae-In', text: "With your shadows and my senses, we'd make the perfect exploration team." }
+      ],
+      choices: [
+        { text: "When do we start?", detail: "Eager to begin", type: 'when_start' },
+        { text: "Perfect partnership", detail: "Acknowledge compatibility", type: 'perfect_partnership' },
+        { text: "Show me the way", detail: "Follow her lead", type: 'show_way' }
+      ],
+      leadsTo: { when_start: 'ADVENTURE_BEGINS', perfect_partnership: 'PARTNERSHIP_BOND', show_way: 'GUIDED_EXPLORATION' }
+    },
+    'ADVENTURE_BEGINS': {
+      prompt: "Jin-Woo and Cha Hae-In starting their first adventure together. Beginning of partnership, anime style.",
+      narration: "Your first adventure together marks the beginning of something special.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Are you ready? This dungeon is one of my favorites." },
+        { sender: 'player', text: "With you leading the way? I'm ready for anything." },
+        { sender: 'Cha Hae-In', text: "Then let's go make some memories together!" }
+      ],
+      choices: [
+        { text: "Lead the way", detail: "Follow her guidance", type: 'follow_lead' },
+        { text: "Stay close to me", detail: "Protective stance", type: 'stay_close' },
+        { text: "This feels right", detail: "Express contentment", type: 'feels_right' }
+      ],
+      leadsTo: { follow_lead: 'GUIDED_EXPLORATION', stay_close: 'PROTECTIVE_ADVENTURE', feels_right: 'NATURAL_PARTNERSHIP' }
+    },
+    'GUIDED_EXPLORATION': {
+      prompt: "Cha Hae-In guiding Jin-Woo through her favorite dungeon. Shared adventure, anime style.",
+      narration: "She guides you through the dungeon with expertise and grace.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "Watch your step here. The crystals can be slippery." },
+        { sender: 'player', text: "You know this place like the back of your hand." },
+        { sender: 'Cha Hae-In', text: "I've spent so many hours here. It's like... my secret sanctuary." }
+      ],
+      choices: [
+        { text: "Thank you for sharing it with me", detail: "Express gratitude", type: 'thank_sharing' },
+        { text: "I understand why you love it", detail: "Appreciation", type: 'understand_love' },
+        { text: "Now it's our sanctuary", detail: "Claim shared space", type: 'our_sanctuary' }
+      ],
+      leadsTo: { thank_sharing: 'GRATEFUL_MOMENT', understand_love: 'SHARED_APPRECIATION', our_sanctuary: 'CLAIMED_SPACE' }
+    },
+    'PERSONAL_SHARING': {
+      prompt: "Cha Hae-In showing Jin-Woo her most personal favorite spot. Intimate sharing, anime style.",
+      narration: "She brings you to a place that clearly means a lot to her.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "This is... this is where I come when I need to think." },
+        { sender: 'player', text: "It's beautiful. Thank you for trusting me with this." },
+        { sender: 'Cha Hae-In', text: "I've never brought anyone here before. You're the first." }
+      ],
+      choices: [
+        { text: "I'm honored", detail: "Express honor", type: 'honored' },
+        { text: "I'll treasure this moment", detail: "Promise to remember", type: 'treasure_moment' },
+        { text: "What do you think about here?", detail: "Ask about her thoughts", type: 'what_think' }
+      ],
+      leadsTo: { honored: 'HONORED_TRUST', treasure_moment: 'TREASURED_MEMORY', what_think: 'THOUGHT_SHARING' }
+    },
+    'MEMORY_MAKING': {
+      prompt: "Jin-Woo and Cha Hae-In focusing on creating new memories together. Future building, anime style.",
+      narration: "You both focus on the future memories you'll create together.",
+      chat: [
+        { sender: 'player', text: "Every moment with you becomes a treasured memory." },
+        { sender: 'Cha Hae-In', text: "I want to fill this place with happy memories of us together." },
+        { sender: 'Cha Hae-In', text: "Years from now, when we come back here, we'll remember this conversation." }
+      ],
+      choices: [
+        { text: "And many more to come", detail: "Promise future together", type: 'many_more' },
+        { text: "I'll never forget this", detail: "Cement the memory", type: 'never_forget' },
+        { text: "Kiss her gently", detail: "Create romantic memory", type: 'gentle_kiss' }
+      ],
+      leadsTo: { many_more: 'FUTURE_PROMISE', never_forget: 'UNFORGETTABLE_MOMENT', gentle_kiss: 'ROMANTIC_MEMORY' }
+    },
+    'UNDERSTANDING_BOND': {
+      prompt: "Jin-Woo and Cha Hae-In sharing perfect understanding. Deep connection, anime style.",
+      narration: "Your perfect understanding of each other creates an unbreakable bond.",
+      chat: [
+        { sender: 'player', text: "It's like you can read my thoughts sometimes." },
+        { sender: 'Cha Hae-In', text: "And you always know exactly what I'm feeling. It's... magical." },
+        { sender: 'Cha Hae-In', text: "I've never felt so understood by anyone before." }
+      ],
+      choices: [
+        { text: "We're perfectly matched", detail: "Acknowledge compatibility", type: 'perfectly_matched' },
+        { text: "This connection is special", detail: "Recognize uniqueness", type: 'special_connection' },
+        { text: "I understand you completely", detail: "Express deep understanding", type: 'complete_understanding' }
+      ],
+      leadsTo: { perfectly_matched: 'PERFECT_MATCH', special_connection: 'SPECIAL_BOND', complete_understanding: 'DEEP_UNDERSTANDING' }
+    },
+    'GENTLE_MOMENT': {
+      prompt: "Jin-Woo being gentle with Cha Hae-In after teasing. Tender care, anime style.",
+      narration: "You shift to gentleness, showing your caring side.",
+      chat: [
+        { sender: 'player', text: "I'm sorry if I went too far. I just love seeing you smile." },
+        { sender: 'Cha Hae-In', text: "*touches his face gently* No, don't apologize. I... I like this side of you." },
+        { sender: 'Cha Hae-In', text: "You make me feel things I've never felt before." }
+      ],
+      choices: [
+        { text: "What kinds of things?", detail: "Curious about feelings", type: 'what_feelings' },
+        { text: "You make me feel the same", detail: "Mutual feelings", type: 'same_feelings' },
+        { text: "I want to make you happy", detail: "Express intent", type: 'make_happy' }
+      ],
+      leadsTo: { what_feelings: 'FEELING_EXPLORATION', same_feelings: 'MUTUAL_FEELINGS', make_happy: 'HAPPINESS_FOCUS' }
+    },
+    'HEART_CONFESSION': {
+      prompt: "Cha Hae-In confessing her racing heart to Jin-Woo. Emotional vulnerability, anime style.",
+      narration: "She admits her physical reaction to your closeness.",
+      chat: [
+        { sender: 'Cha Hae-In', text: "*places hand over heart* It's... it's beating so fast when you're near me." },
+        { sender: 'player', text: "Mine too. Every time I see you." },
+        { sender: 'Cha Hae-In', text: "What is this feeling, Jin-Woo? It's overwhelming but... wonderful." }
+      ],
+      choices: [
+        { text: "It's love", detail: "Direct confession", type: 'its_love' },
+        { text: "You're falling for me", detail: "Acknowledge her feelings", type: 'falling_for_me' },
+        { text: "Let your heart guide you", detail: "Encourage following feelings", type: 'follow_heart' }
+      ],
+      leadsTo: { its_love: 'LOVE_CONFESSION', falling_for_me: 'FALLING_REALIZATION', follow_heart: 'HEART_GUIDANCE' }
+    },
+
     'TENDER_EMBRACE': {
       prompt: "Jin-Woo and Cha Hae-In sharing a tender embrace. Emotional intimacy, anime style.",
       narration: "She melts into your arms, and for a moment, the world feels perfect.",
@@ -4101,6 +4237,51 @@ export default function SoloLeveling() {
     } else {
       console.log('No matching choice found in story navigation, using fallback handling');
       console.log('Available choice types in leadsTo:', Object.keys(currentStory?.leadsTo || {}));
+      
+      // Enhanced fallback system for missing scenes
+      const fallbackScenes: Record<string, string> = {
+        // Romantic scenes
+        'PERFECT_MATCH': 'ROMANTIC_MOMENT',
+        'SPECIAL_BOND': 'ROMANTIC_MOMENT', 
+        'DEEP_UNDERSTANDING': 'UNDERSTANDING_MOMENT',
+        'FEELING_EXPLORATION': 'FEELINGS_REVEALED',
+        'MUTUAL_FEELINGS': 'ROMANTIC_MOMENT',
+        'HAPPINESS_FOCUS': 'ROMANTIC_MOMENT',
+        'LOVE_CONFESSION': 'CONFESSION',
+        'FALLING_REALIZATION': 'CONFESSION_RESPONSE',
+        'HEART_GUIDANCE': 'ROMANTIC_MOMENT',
+        'EYE_CONTACT_MOMENT': 'ROMANTIC_MOMENT',
+        'ROMANTIC_MEMORY': 'ROMANTIC_MOMENT',
+        'UNFORGETTABLE_MOMENT': 'SPECIAL_MOMENT',
+        'HOPEFUL_MOMENT': 'ROMANTIC_MOMENT',
+        'PROTECTED_ADVENTURE': 'PROTECTIVE_ROUTE',
+        'NATURAL_PARTNERSHIP': 'PARTNERSHIP_BOND',
+        'GRATEFUL_MOMENT': 'SPECIAL_MOMENT',
+        'SHARED_APPRECIATION': 'UNDERSTANDING_MOMENT',
+        'CLAIMED_SPACE': 'SPECIAL_MOMENT',
+        'HONORED_TRUST': 'TRUST_ROUTE',
+        'TREASURED_MEMORY': 'SPECIAL_MOMENT',
+        'THOUGHT_SHARING': 'PAST_SHARING',
+        'MUTUAL_DISCOVERY': 'MUTUAL_OPENING',
+        'DEEP_CONNECTION': 'DEEP_CONFESSION',
+        'HAPPINESS_SHARED': 'ROMANTIC_MOMENT'
+      };
+      
+      // Try fallback mapping first
+      const nextScene = currentStory?.leadsTo?.[choice.type];
+      if (nextScene && (fallbackScenes as any)[nextScene] && story[(fallbackScenes as any)[nextScene]]) {
+        console.log('Using fallback mapping:', nextScene, '->', (fallbackScenes as any)[nextScene]);
+        const fallbackStory = story[(fallbackScenes as any)[nextScene]];
+        setGameState(prev => ({ ...prev, currentScene: (fallbackScenes as any)[nextScene] }));
+        addChatMessage('player', choice.text);
+        fallbackStory.chat.forEach((msg, index) => {
+          setTimeout(() => {
+            addChatMessage(msg.sender, msg.text);
+          }, index * 150);
+        });
+        generateSceneImage(fallbackStory.prompt);
+        return;
+      }
       
       // Fallback: try to find a scene that matches the choice text or type
       if (choice.text.toLowerCase().includes('future') || choice.type.includes('future') || choice.type.includes('plan')) {
