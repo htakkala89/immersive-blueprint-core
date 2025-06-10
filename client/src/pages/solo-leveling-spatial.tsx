@@ -99,6 +99,8 @@ export default function SoloLevelingSpatial() {
   const [emotionalImage, setEmotionalImage] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
+  const [scheduledActivities, setScheduledActivities] = useState<any[]>([]);
+  const [showActivityNotification, setShowActivityNotification] = useState(false);
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
@@ -580,6 +582,16 @@ export default function SoloLevelingSpatial() {
         // Generate new avatar image when AI changes expression
         if (newExpression !== chaHaeInExpression) {
           generateAvatarForExpression(newExpression);
+        }
+      }
+      
+      // Update scheduled activities if new ones were created
+      if (data.gameState?.scheduledActivities) {
+        const newActivities = data.gameState.scheduledActivities;
+        if (newActivities.length > scheduledActivities.length) {
+          setScheduledActivities(newActivities);
+          setShowActivityNotification(true);
+          setTimeout(() => setShowActivityNotification(false), 5000);
         }
       }
       
@@ -1106,6 +1118,42 @@ export default function SoloLevelingSpatial() {
         </AnimatePresence>
       </motion.div>
       
+      {/* Activity Scheduled Notification */}
+      <AnimatePresence>
+        {showActivityNotification && (
+          <motion.div
+            className="fixed top-6 right-6 z-50 p-4 rounded-lg max-w-sm"
+            style={{
+              backdropFilter: 'blur(60px) saturate(200%)',
+              background: `
+                linear-gradient(135deg, 
+                  rgba(16, 185, 129, 0.9) 0%, 
+                  rgba(5, 150, 105, 0.8) 100%
+                )
+              `,
+              border: '1px solid rgba(16, 185, 129, 0.6)',
+              boxShadow: '0 20px 40px rgba(16, 185, 129, 0.3)'
+            }}
+            initial={{ opacity: 0, x: 100, scale: 0.8 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 100, scale: 0.8 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                <span className="text-white text-lg">✓</span>
+              </div>
+              <div>
+                <h3 className="text-white font-medium text-sm">Activity Scheduled!</h3>
+                <p className="text-white/80 text-xs">
+                  {scheduledActivities.length > 0 && scheduledActivities[scheduledActivities.length - 1]?.title}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Dialogue System - Enhanced Glassmorphism */}
       <AnimatePresence>
         {dialogueActive && (
