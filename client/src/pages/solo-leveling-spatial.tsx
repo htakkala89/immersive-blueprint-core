@@ -788,63 +788,8 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
-        {/* AI-Generated Character Image - Perspective-Based Scaling */}
-        {currentLocationData.chaHaeInPresent && emotionalImage && (
-          <motion.div
-            className="absolute cursor-pointer z-20 group"
-            style={{
-              left: `${currentLocationData.chaPosition.x}%`,
-              top: `${currentLocationData.chaPosition.y}%`,
-              transform: 'translate(-50%, -100%)', // Bottom-aligned for natural positioning
-              ...getCharacterDimensions(currentLocationData.chaPosition, playerLocation)
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleChaHaeInInteraction}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            {/* Character Portrait with Perspective Scaling */}
-            <div className="relative w-full h-full">
-              <img 
-                src={emotionalImage} 
-                alt="Cha Hae-In"
-                className="w-full h-full object-cover object-top rounded-lg shadow-xl"
-                style={{
-                  filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.3))'
-                }}
-              />
-              
-              {/* Soft Interactive Glow */}
-              <motion.div
-                className="absolute inset-0 rounded-lg"
-                style={{
-                  background: 'radial-gradient(circle at center, rgba(251, 191, 36, 0.1) 0%, transparent 60%)',
-                  boxShadow: '0 0 20px rgba(251, 191, 36, 0.2)'
-                }}
-                animate={{
-                  opacity: [0.3, 0.6, 0.3]
-                }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
-              
-              {/* Hover Context - Activity Info */}
-              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
-                <div className="bg-black/90 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-amber-400/30 shadow-xl">
-                  <div className="text-center">
-                    <div className="font-medium text-amber-300">Cha Hae-In</div>
-                    <div className="text-gray-300 text-xs mt-1">{currentLocationData.chaActivity}</div>
-                    <div className="text-amber-200 text-xs mt-1 font-medium">Tap to interact</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Fallback Presence Indicator - Only if no character image */}
-        {currentLocationData.chaHaeInPresent && !emotionalImage && (
+        {/* Cha Hae-In Presence Indicator - Golden Glowing Dot */}
+        {currentLocationData.chaHaeInPresent && (
           <motion.div
             className="absolute cursor-pointer z-20 group"
             style={{
@@ -908,13 +853,26 @@ export default function SoloLevelingSpatial() {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeOut" }}
               />
               
-              {/* Hover Context - Only on Hover */}
-              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
-                <div className="bg-black/90 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-amber-400/30 shadow-xl">
+              {/* Always Visible Presence Label */}
+              <motion.div
+                className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 pointer-events-none z-30 whitespace-nowrap"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+              >
+                <div className="bg-black/80 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-amber-400/40 shadow-xl">
                   <div className="text-center">
                     <div className="font-medium text-amber-300">Cha Hae-In</div>
                     <div className="text-gray-300 text-xs mt-1">{currentLocationData.chaActivity}</div>
-                    <div className="text-amber-200 text-xs mt-1 font-medium">Tap to interact</div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Enhanced Hover Context */}
+              <div className="absolute -bottom-24 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
+                <div className="bg-amber-900/90 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-lg border border-amber-400/50 shadow-xl">
+                  <div className="text-center">
+                    <div className="text-amber-200 text-xs font-medium">Tap to interact</div>
                   </div>
                 </div>
               </div>
