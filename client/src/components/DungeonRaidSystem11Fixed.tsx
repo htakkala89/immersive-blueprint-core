@@ -945,12 +945,12 @@ export function DungeonRaidSystem11({
             </div>
           </div>
 
-          {/* Close Button (Top-Right Corner) */}
+          {/* Close Button (Top-Left Corner - Moved to avoid overlap) */}
           <Button
             onClick={onClose}
             variant="ghost"
             size="sm"
-            className="absolute top-4 right-4 text-slate-400 hover:text-white z-50"
+            className="absolute top-4 left-4 text-slate-400 hover:text-white z-[100] bg-black/30 backdrop-blur-sm rounded-full p-2"
           >
             <X className="w-5 h-5" />
           </Button>
