@@ -229,19 +229,7 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
     
     console.log('🎨 Generating image based on chat reaction...');
     
-    // Try NovelAI first for character emotion scenes
-    try {
-      const novelAIResult = await generateWithNovelAI(emotionPrompt);
-      if (novelAIResult) {
-        lastImageGeneration = now;
-        console.log('✅ NovelAI generated chat scene successfully');
-        return novelAIResult;
-      }
-    } catch (novelError) {
-      console.log('⚠️ NovelAI failed for chat scene:', String(novelError));
-    }
-    
-    // Fallback to Google Imagen
+    // Try Google Imagen first for character emotion scenes
     try {
       const googleResult = await generateWithGoogleImagen(emotionPrompt);
       if (googleResult) {
@@ -251,6 +239,18 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
       }
     } catch (googleError) {
       console.log('⚠️ Google Imagen failed for chat scene:', String(googleError));
+    }
+    
+    // Fallback to NovelAI
+    try {
+      const novelAIResult = await generateWithNovelAI(emotionPrompt);
+      if (novelAIResult) {
+        lastImageGeneration = now;
+        console.log('✅ NovelAI generated chat scene successfully');
+        return novelAIResult;
+      }
+    } catch (novelError) {
+      console.log('⚠️ NovelAI failed for chat scene:', String(novelError));
     }
     
     // Final fallback to OpenAI
