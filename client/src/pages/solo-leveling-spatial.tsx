@@ -145,6 +145,23 @@ export default function SoloLevelingSpatial() {
         requirements: {
           level: 15
         },
+        objectives: [
+          {
+            id: 'enter_gate',
+            description: 'Enter the Red Gate',
+            completed: false
+          },
+          {
+            id: 'clear_monsters',
+            description: 'Defeat all monsters in the dungeon',
+            completed: false
+          },
+          {
+            id: 'collect_loot',
+            description: 'Collect dungeon rewards',
+            completed: false
+          }
+        ],
         timeLimit: 24,
         priority: 'high'
       }
