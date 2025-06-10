@@ -1,0 +1,37 @@
+Location: Cozy Hongdae Cafe
+
+Narrative Purpose: A primary "Casual Outing" location for early-to-mid-game dates. The atmosphere is relaxed, intimate, and perfect for quiet, personal conversations that build the foundational layers of the relationship.
+
+Node 1: [●] Counter
+
+Generated "Thought Prompt": "Order drinks for us."
+
+Final Outcome & Game Logic:
+This interaction is a simple, charming mini-scene that allows the player to show they pay attention to Cha Hae-In's preferences.
+
+Initiation: Tapping the Thought Prompt will open a simple dialogue choice UI. The prompt will be from Sung Jin-Woo's perspective: "What should I get?"
+Choices & Logic: The player is presented with a few options:
+An Americano and a Vanilla Latte.
+Two Iced Americanos.
+Ask her what she would like.
+The AI (System 9) will have a "preference" for Cha Hae-In stored (e.g., she prefers straightforward, less sweet coffee like an Americano). Choosing correctly without asking results in a slightly better outcome.
+Resolution: After a choice is made, a descriptive text panel appears.
+(If correct choice): *You order an Iced Americano for her without having to ask. She notices and gives you a small, genuinely impressed smile.*
+(If you ask her): *She smiles and says, "An Iced Americano would be perfect, thank you."*
+System Integration:
+A small amount of Gold is deducted from the Economy (System 14): [ - ₩12,000 ].
+A small but guaranteed Affection gain is applied, which contributes to the Relationship Constellation (System 6). Choosing her preferred drink correctly provides a bonus.
+Node 2: [●] Window Seat
+
+Generated "Thought Prompt": "Suggest we take the window seat."
+
+Final Outcome & Game Logic:
+This node is the primary narrative trigger for this location. Its purpose is to start a deeper, more meaningful conversation.
+
+Initiation: Tapping the Thought Prompt triggers a descriptive text panel that sets the scene: *You both settle into the comfortable seats by the large window, the quiet murmur of the cafe creating a peaceful atmosphere around you.*
+Unlocking New Dialogue: This action immediately refreshes the Dynamic "Thought Prompts" at the bottom of the screen. The generic prompts are replaced with new ones specific to this context.
+New Prompts Example: "Ask what's on her mind.", "Comment on how peaceful it is here.", "Bring up the last raid we did together."
+The Conversation: This launches a unique conversational branch. The AI (System 9) is now primed to have a more reflective and personal conversation, leading to higher quality interactions than a standard chat.
+System Integration:
+This action costs a small amount of "Energy" as it constitutes a dedicated "scene."
+It provides the opportunity for a significant Affection gain and has a very high chance of creating a new, golden Memory Star in the Relationship Constellation (System 6) based on how well the ensuing conversation goes.

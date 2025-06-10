@@ -6,7 +6,7 @@ import {
   Heart, Crown, Zap, Coins, User, Sword, Star, 
   Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
   MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
-  ShoppingCart, Calendar, Battery, Award, Package, X
+  ShoppingCart, Calendar, Battery, Award, Package, X, Brain
 } from 'lucide-react';
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
@@ -2230,7 +2230,8 @@ export default function SoloLevelingSpatial() {
             { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
-            { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } }
+            { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
+            { icon: Brain, label: 'Story Progress', color: 'text-purple-300', onClick: () => { setShowNarrativeProgression(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
             <button
               key={item.label}
@@ -2558,6 +2559,13 @@ export default function SoloLevelingSpatial() {
         onClose={() => setShowCommunicator(false)}
         onQuestAccept={handleQuestAccept}
         onNewMessage={handleNewMessage}
+      />
+
+      {/* System 9: AI Narrative Engine - Story Progression Display */}
+      <NarrativeProgressionSystem9
+        playerId={gameState.playerId || 'default_player'}
+        isVisible={showNarrativeProgression}
+        onClose={() => setShowNarrativeProgression(false)}
       />
 
       {/* Simple Receptionist Dialogue Box - Liquid Glassmorphism */}
