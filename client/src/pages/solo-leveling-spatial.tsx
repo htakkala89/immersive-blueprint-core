@@ -588,6 +588,12 @@ export default function SoloLevelingSpatial() {
         }
       }
       
+      // Update thought prompts dynamically based on conversation context
+      if (data.thoughtPrompts && Array.isArray(data.thoughtPrompts)) {
+        console.log('🎭 Received dynamic prompts:', data.thoughtPrompts);
+        setThoughtPrompts(data.thoughtPrompts);
+      }
+      
       // Update scheduled activities if new ones were created
       if (data.gameState?.scheduledActivities) {
         const newActivities = data.gameState.scheduledActivities;

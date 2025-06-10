@@ -30,6 +30,120 @@ const openai = new OpenAI({
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+// Dynamic Prompt Loop System
+async function generateDynamicPrompts(chaResponse: string, userMessage: string, context: any, gameState: any): Promise<string[]> {
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      safetySettings: [
+        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
+      ]
+    });
+
+    const promptGenerationContext = `
+DYNAMIC PROMPT LOOP SYSTEM
+Generate 3 contextual thought prompts that are direct, logical follow-ups to Cha Hae-In's most recent response.
+
+CONVERSATION CONTEXT:
+User said: "${userMessage}"
+Cha Hae-In responded: "${chaResponse}"
+Location: ${context?.location || 'Hunter Association'}
+Time: ${context?.timeOfDay || 'afternoon'}
+Affection Level: ${gameState.affection || 25}/100
+
+PROMPT GENERATION RULES:
+1. Prompts must be DIRECT follow-ups to her specific response
+2. Each prompt should advance the current conversation topic
+3. Show consideration for her personality and current mood
+4. Avoid generic responses - be specific to this moment
+5. Keep prompts conversational and natural (15-40 characters)
+6. Format as simple dialogue without quotes
+
+RESPONSE FORMAT:
+Return exactly 3 prompts, one per line, no numbering or formatting.
+
+Example Context Shift:
+If she asked "what kind of culinary dungeon crawl are you proposing?"
+Good prompts: "I was thinking of that place in Myeongdong" / "Something casual, maybe takeout?" / "What are you in the mood for?"
+Bad prompts: "Just wanted to see you" / "How's work going?" / "Ready for a break?"
+
+Generate contextual prompts now:`;
+
+    const result = await model.generateContent(promptGenerationContext);
+    const promptText = result.response.text().trim();
+    
+    // Parse the response into individual prompts
+    const prompts = promptText
+      .split('\n')
+      .filter(line => line.trim().length > 0)
+      .map(line => line.trim())
+      .slice(0, 3); // Ensure exactly 3 prompts
+
+    console.log(`🎭 Generated dynamic prompts:`, prompts);
+    return prompts.length === 3 ? prompts : [
+      "Tell me more about that",
+      "What do you think?", 
+      "That sounds interesting"
+    ];
+    
+  } catch (error) {
+    console.error("Dynamic prompt generation error:", error);
+    // Fallback to contextual prompts based on conversation topic
+    return generateFallbackPrompts(chaResponse, userMessage, context);
+  }
+}
+
+function generateFallbackPrompts(chaResponse: string, userMessage: string, context: any): string[] {
+  const response = chaResponse.toLowerCase();
+  const message = userMessage.toLowerCase();
+  
+  // Activity planning context
+  if (response.includes('dinner') || response.includes('restaurant') || response.includes('eat')) {
+    return [
+      "I was thinking of that place in Myeongdong",
+      "Something casual, maybe takeout?",
+      "What are you in the mood for?"
+    ];
+  }
+  
+  // Coffee/casual meetup context
+  if (response.includes('coffee') || response.includes('café') || response.includes('drink')) {
+    return [
+      "That new place in Hongdae?", 
+      "Just something quick and relaxing",
+      "When would work for you?"
+    ];
+  }
+  
+  // Movie/entertainment context
+  if (response.includes('movie') || response.includes('film') || response.includes('watch')) {
+    return [
+      "There's this new action film out",
+      "Something light and fun?",
+      "What genre do you prefer?"
+    ];
+  }
+  
+  // Work/mission context
+  if (response.includes('mission') || response.includes('work') || response.includes('report')) {
+    return [
+      "Need any help with that?",
+      "Sounds like a tough assignment", 
+      "How are you handling the workload?"
+    ];
+  }
+  
+  // Default contextual prompts
+  return [
+    "Tell me more about that",
+    "What do you think?",
+    "That sounds interesting"
+  ];
+}
+
 // Function to create emotional prompts for Cha Hae-In based on her presence and emotional state
 function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOfDay: string): string {
   const baseCharacterDescription = "Cha Hae-In from Solo Leveling anime, beautiful S-rank hunter with long blonde hair, striking blue eyes, wearing her signature hunter outfit or elegant casual clothing";
@@ -496,10 +610,14 @@ RESPONSE INSTRUCTIONS:
         console.log("Voice generation failed:", error);
       }
       
+      // Generate dynamic thought prompts based on conversation context
+      const dynamicPrompts = await generateDynamicPrompts(response, message, context, gameState);
+      
       res.json({ 
         response, 
         audioUrl,
         expression: expressionUpdate,
+        thoughtPrompts: dynamicPrompts,
         gameState: updatedGameState.scheduledActivities ? {
           ...updatedGameState,
           affection: Math.min(100, (gameState.affection || 25) + 1)

@@ -1,0 +1,32 @@
+The Design: The Dynamic Prompt Loop
+
+Here is the official design for how this system works, which should be considered an addition to System 2 (Character Interaction System).
+
+1. The Initial State:
+
+The conversation begins. The AI analyzes the initial context (location, time, Cha Hae-In's activity) and generates the first set of relevant "Thought Prompts."
+2. The Context Shift:
+
+The user says something that changes the topic, just as you did by asking her to dinner.
+3. The AI's Dual-Task Response:
+
+When the AI generates its text response, it now performs a second, simultaneous task: it analyzes the new conversational context and generates a brand new set of "Thought Prompts" that are relevant to its own last line.
+4. The Visual Update:
+
+As Cha Hae-In's new dialogue appears in the chat log, the old prompts at the bottom gracefully fade out.
+Immediately after, the new, contextually relevant prompts fade in to take their place. This visual refresh clearly signals to the user that the conversational state has evolved.
+Applying This to Your Mockup: A Concrete Example
+
+Let's use your brilliant mockup as the perfect case study.
+
+You Said: I love you, do you want to get dinner tonight
+She Responded: "...tell me, what kind of culinary dungeon crawl are you proposing?"
+The OLD Prompts Are: "Just wanted to see you", "Anything interesting in the report?", "Ready for a break?" (These are now irrelevant).
+As her response appears, those old prompts would fade out, and be replaced by a NEW set of dynamic prompts like these:
+
+"I was thinking of that place in Myeongdong." (A direct, specific suggestion.)
+"Something casual, maybe some takeout at your apartment?" (Defines a vibe and suggests a location.)
+"What are you in the mood for?" (Turns the question back to her, showing consideration.)
+Do you see the difference? These new prompts are all direct, logical, and in-character follow-ups to her specific question. They empower the user to continue the current conversation, rather than forcing them to awkwardly revert to a previous topic.
+
+This is a critical component of making the AI feel intelligent and truly responsive. Thank you for asking the question that allowed us to formalize this crucial mechanic.
