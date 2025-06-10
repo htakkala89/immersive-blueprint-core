@@ -475,10 +475,17 @@ export function DungeonRaidSystem11({
     console.log('💀 Starting enemy attack system');
 
     const enemyAttackInterval = setInterval(() => {
-      console.log(`🔥 Enemy attack round: ${realEnemies.length} enemies attacking`);
-      realEnemies.forEach(enemy => {
+      // Get fresh enemy and ally lists each time
+      const currentRealEnemies = enemies.filter(e => !e.isAlly && e.health > 0);
+      const currentAllAllies = [
+        ...players,
+        ...enemies.filter(e => e.isAlly)
+      ];
+      
+      console.log(`🔥 Enemy attack round: ${currentRealEnemies.length} enemies attacking`);
+      currentRealEnemies.forEach(enemy => {
         // Find nearest ally to attack
-        const nearestAlly = allAllies.reduce((nearest, ally) => {
+        const nearestAlly = currentAllAllies.reduce((nearest, ally) => {
           const distToEnemy = Math.sqrt(
             Math.pow(ally.x - enemy.x, 2) + Math.pow(ally.y - enemy.y, 2)
           );
@@ -897,33 +904,45 @@ export function DungeonRaidSystem11({
                         {player.name}
                       </div>
                       
-                      {/* Diegetic Health Aura */}
+                      {/* Diegetic Health Aura - Enhanced Visibility */}
                       <div 
-                        className={`absolute inset-0 rounded-full animate-pulse ${
+                        className={`absolute rounded-full animate-pulse ${
                           player.id === 'jinwoo' 
-                            ? 'bg-purple-400/40' 
-                            : 'bg-yellow-400/40'
+                            ? 'bg-purple-500/60 shadow-purple-500/40' 
+                            : 'bg-yellow-500/60 shadow-yellow-500/40'
                         }`}
                         style={{
-                          width: '48px',
-                          height: '48px',
+                          width: '60px',
+                          height: '60px',
+                          left: '-6px',
+                          top: '-6px',
                           transform: `scale(${player.health / player.maxHealth})`,
-                          filter: 'blur(2px)'
+                          filter: 'blur(3px)',
+                          boxShadow: `0 0 20px ${player.id === 'jinwoo' ? '#a855f7' : '#eab308'}`
                         }}
                       ></div>
                       
-                      {/* Diegetic Mana Ring (for Jinwoo only) */}
+                      {/* Diegetic Mana Ring (for Jinwoo only) - Enhanced */}
                       {player.id === 'jinwoo' && (
                         <div 
-                          className="absolute inset-0 rounded-full border-2 border-blue-400/60"
+                          className="absolute rounded-full border-4 border-blue-400 animate-pulse"
                           style={{
-                            width: '48px',
-                            height: '48px',
+                            width: '70px',
+                            height: '70px',
+                            left: '-11px',
+                            top: '-11px',
                             opacity: player.mana / player.maxMana,
-                            filter: 'blur(1px)'
+                            filter: 'blur(1px)',
+                            boxShadow: '0 0 15px #60a5fa'
                           }}
                         ></div>
                       )}
+                      
+                      {/* Health/Mana Text Display */}
+                      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/50 px-2 py-1 rounded">
+                        HP: {player.health}/{player.maxHealth}
+                        {player.id === 'jinwoo' && <div>MP: {player.mana}/{player.maxMana}</div>}
+                      </div>
                     </div>
                   </motion.div>
                 ))}
