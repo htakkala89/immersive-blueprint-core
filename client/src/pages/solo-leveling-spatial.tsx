@@ -379,6 +379,11 @@ export default function SoloLevelingSpatial() {
   
   const [showConstellation, setShowConstellation] = useState(false);
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
+  
+  // Debug logging for dungeon raid state
+  useEffect(() => {
+    console.log('🎯 DUNGEON RAID STATE CHANGED:', showDungeonRaid);
+  }, [showDungeonRaid]);
   const [showArmory, setShowArmory] = useState(false);
   const [activeActivity, setActiveActivity] = useState<string | null>(null);
 
@@ -1802,14 +1807,16 @@ export default function SoloLevelingSpatial() {
             }
             
             // Handle different node types with specific logic
+            console.log('🔍 SWITCH STATEMENT - Processing nodeId:', nodeId);
             switch (nodeId) {
               case 'red_gate_entrance':
                 // Enter the Red Gate dungeon for quest completion
-                console.log('🚪 RED GATE ENTRANCE TRIGGERED - Opening dungeon raid');
+                console.log('🚪 RED GATE ENTRANCE CASE MATCHED - Opening dungeon raid');
                 console.log('Current showDungeonRaid state:', showDungeonRaid);
                 alert('Red Gate clicked! Opening dungeon...');
                 setShowDungeonRaid(true);
                 console.log('Dungeon raid state set to true');
+                console.log('🎯 Red Gate case executed successfully');
                 break;
               case 'jewelry_counter':
               case 'designer_apparel':
