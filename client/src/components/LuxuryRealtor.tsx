@@ -86,176 +86,146 @@ export default function LuxuryRealtor({
     return luxury === 'penthouse' ? <Crown className="w-6 h-6" /> : <Building2 className="w-6 h-6" />;
   };
 
-  if (!isVisible) return null;
-
   return (
     <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+      {isVisible && (
         <motion.div
-          className="relative w-full max-w-6xl h-full max-h-[90vh] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 rounded-2xl overflow-hidden"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          style={{
-            backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
-          {/* Realtor Header */}
-          <div className="absolute top-0 left-0 right-0 p-6 bg-gradient-to-b from-black/70 to-transparent z-20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Seoul Luxury Realty</h1>
-                <p className="text-white/80">Exclusive properties for the discerning hunter</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="bg-black/50 backdrop-blur-md px-4 py-2 rounded-lg">
-                  <span className="text-yellow-400 font-bold">₩{currentGold.toLocaleString()}</span>
+          <motion.div
+            className="relative w-full max-w-6xl h-full max-h-[90vh] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 rounded-2xl overflow-hidden"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            style={{
+              backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
+            {/* Realtor Header */}
+            <div className="absolute top-0 left-0 right-0 p-6 bg-gradient-to-b from-black/70 to-transparent z-20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-white mb-2">Seoul Luxury Realty</h1>
+                  <p className="text-white/80">Exclusive properties for the discerning hunter</p>
                 </div>
-                <Button
-                  onClick={onClose}
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/20"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
+                <div className="flex items-center gap-4">
+                  <div className="bg-black/50 backdrop-blur-md px-4 py-2 rounded-lg">
+                    <span className="text-yellow-400 font-bold">₩{currentGold.toLocaleString()}</span>
+                  </div>
+                  <Button
+                    onClick={onClose}
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/20"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Premium Office Environment */}
-          <div className="relative w-full h-full pt-24 pb-6 px-6">
-            <div className="relative w-full h-full bg-gradient-to-b from-slate-50/90 to-slate-100/90 dark:from-slate-800/90 dark:to-slate-900/90 rounded-xl backdrop-blur-sm border border-white/20">
-              
-              {/* Property Listings Display */}
-              {PROPERTY_LISTINGS.map((property) => (
-                <motion.div
-                  key={property.id}
-                  className="absolute cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
-                  style={{
-                    left: `${property.position.x}%`,
-                    top: `${property.position.y}%`
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handlePropertyClick(property)}
-                  onHoverStart={() => setHoveredProperty(property.id)}
-                  onHoverEnd={() => setHoveredProperty(null)}
-                >
-                  {/* Property Card */}
-                  <div className={`relative w-48 h-32 bg-gradient-to-br ${getTierGradient(property.tier)} rounded-lg p-1 shadow-2xl`}>
-                    <div className="w-full h-full bg-white/95 dark:bg-slate-800/95 rounded-md flex flex-col items-center justify-center backdrop-blur-sm p-3">
-                      {getLuxuryIcon(property.luxury)}
-                      <h4 className="text-sm font-bold text-center mt-2">{property.name}</h4>
-                      <div className="flex items-center gap-1 mt-1">
-                        <MapPin className="w-3 h-3 text-gray-500" />
-                        <span className="text-xs text-gray-600">{property.squareMeters}m²</span>
-                      </div>
+            {/* Premium Office Environment */}
+            <div className="relative w-full h-full pt-24 pb-6 px-6 overflow-hidden">
+              <div className="relative w-full h-full bg-gradient-to-b from-slate-50/90 to-slate-100/90 dark:from-slate-800/90 dark:to-slate-900/90 rounded-xl backdrop-blur-sm border border-white/20 p-8">
+                
+                {/* Property Listings Grid Layout */}
+                <div className="flex flex-col h-full">
+                  {/* Office Ambiance Header */}
+                  <div className="text-center mb-6">
+                    <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg inline-block">
+                      <p className="text-slate-600 dark:text-slate-300 text-sm italic">
+                        "Discover Seoul's most exclusive residential properties"
+                      </p>
                     </div>
-                    
-                    {/* Tier Badge */}
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center border-2 border-white">
-                      <span className="text-white text-xs font-bold">{property.tier}</span>
-                    </div>
-
-                    {/* Luxury Indicator */}
-                    {property.luxury === 'penthouse' && (
-                      <div className="absolute -top-1 -left-1 w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
-                        <Star className="w-3 h-3 text-white" />
-                      </div>
-                    )}
                   </div>
 
-                  {/* Detailed Hover Card */}
-                  <AnimatePresence>
-                    {hoveredProperty === property.id && (
+                  {/* Property Cards Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1 max-w-4xl mx-auto">
+                    {PROPERTY_LISTINGS.map((property) => (
                       <motion.div
-                        className="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 w-80 bg-black/95 backdrop-blur-md rounded-xl p-6 text-white text-sm z-30 border border-white/20"
-                        initial={{ opacity: 0, y: -20, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                        key={property.id}
+                        className="relative bg-white/80 dark:bg-slate-800/80 rounded-2xl p-6 cursor-pointer backdrop-blur-sm border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300"
+                        whileHover={{ scale: 1.02, y: -4 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handlePropertyClick(property)}
+                        onHoverStart={() => setHoveredProperty(property.id)}
+                        onHoverEnd={() => setHoveredProperty(null)}
                       >
-                        <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-bold text-lg">{property.name}</h4>
-                          <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-2 py-1 rounded text-xs">
-                            Tier {property.tier}
+                        {/* Property Visual Card */}
+                        <div className={`relative w-full h-40 bg-gradient-to-br ${getTierGradient(property.tier)} rounded-lg p-1 shadow-2xl mb-4`}>
+                          <div className="w-full h-full bg-white/95 dark:bg-slate-800/95 rounded-md flex flex-col items-center justify-center backdrop-blur-sm p-4">
+                            {getLuxuryIcon(property.luxury)}
+                            <h4 className="text-lg font-bold text-center mt-3 text-slate-800 dark:text-slate-200">{property.name}</h4>
+                            <div className="flex items-center gap-2 mt-2">
+                              <MapPin className="w-4 h-4 text-gray-500" />
+                              <span className="text-sm text-gray-600">{property.squareMeters}m²</span>
+                            </div>
                           </div>
-                        </div>
-                        
-                        <p className="text-gray-300 mb-3 text-sm">{property.description}</p>
-                        
-                        <div className="mb-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <MapPin className="w-4 h-4 text-blue-400" />
-                            <span className="text-blue-300">{property.location}</span>
+                          
+                          {/* Tier Badge */}
+                          <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
+                            <span className="text-white text-sm font-bold">{property.tier}</span>
                           </div>
-                          <div className="text-xs text-gray-400">
-                            {property.squareMeters}m² • {property.features.length} premium features
-                          </div>
+
+                          {/* Luxury Indicator */}
+                          {property.luxury === 'penthouse' && (
+                            <div className="absolute -top-2 -left-2 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                              <Star className="w-4 h-4 text-white" />
+                            </div>
+                          )}
                         </div>
 
-                        <div className="mb-4">
-                          <h5 className="text-xs font-semibold text-gray-300 mb-2">Features:</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {property.features.map((feature, index) => (
-                              <div key={index} className="text-xs text-gray-400 flex items-center">
-                                <div className="w-1 h-1 bg-blue-400 rounded-full mr-2" />
-                                {feature}
-                              </div>
-                            ))}
+                        {/* Property Details */}
+                        <div className="space-y-3">
+                          <p className="text-slate-600 dark:text-slate-300 text-sm">{property.description}</p>
+                          
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-blue-400" />
+                            <span className="text-blue-600 dark:text-blue-300 text-sm">{property.location}</span>
                           </div>
-                        </div>
-                        
-                        <div className="border-t border-white/20 pt-3">
-                          <div className="text-right">
-                            <div className="text-yellow-400 font-bold text-xl">
-                              ₩{property.price.toLocaleString()}
+
+                          <div className="border-t border-slate-200 dark:border-slate-600 pt-3">
+                            <div className="text-right">
+                              <div className="text-yellow-600 dark:text-yellow-400 font-bold text-xl">
+                                ₩{property.price.toLocaleString()}
+                              </div>
+                              <div className="text-slate-500 dark:text-slate-400 text-xs">Click to view details</div>
                             </div>
-                            <div className="text-gray-400 text-xs">Click to view details</div>
                           </div>
                         </div>
                       </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
+                    ))}
+                  </div>
 
-              {/* Office Ambiance */}
-              <div className="absolute top-4 left-4 right-4 text-center">
-                <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg inline-block">
-                  <p className="text-slate-600 dark:text-slate-300 text-sm italic">
-                    "Discover Seoul's most exclusive residential properties"
-                  </p>
-                </div>
-              </div>
-
-              {/* Professional Office Elements */}
-              <div className="absolute bottom-4 left-4">
-                <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-lg">
-                  <p className="text-slate-700 dark:text-slate-300 text-xs">
-                    Licensed Real Estate Professional
-                  </p>
+                  {/* Professional Footer */}
+                  <div className="mt-6 text-center">
+                    <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-lg inline-block">
+                      <p className="text-slate-700 dark:text-slate-300 text-xs">
+                        Licensed Real Estate Professional
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Property Inspection Modal */}
-          <ItemInspectionView
-            item={selectedProperty as any}
-            currentGold={currentGold}
-            onPurchase={(item) => handlePurchase(item as PropertyListing)}
-            onClose={() => setSelectedProperty(null)}
-          />
+            {/* Property Inspection Modal */}
+            {selectedProperty && (
+              <ItemInspectionView
+                item={selectedProperty as any}
+                currentGold={currentGold}
+                onPurchase={(item) => handlePurchase(item as PropertyListing)}
+                onClose={() => setSelectedProperty(null)}
+              />
+            )}
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
 }
