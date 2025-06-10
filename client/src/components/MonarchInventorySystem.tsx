@@ -249,7 +249,7 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
               <h3 className="text-white font-semibold mb-4">
                 Items ({filteredItems.length})
               </h3>
-              <div className="grid grid-cols-6 gap-4 max-h-[calc(100vh-200px)] overflow-y-auto character-scrollbar">
+              <div className="grid grid-cols-8 gap-2 max-h-[calc(100vh-200px)] overflow-y-auto character-scrollbar">
                 <AnimatePresence mode="wait">
                   <motion.div 
                     key={activeFilter}
@@ -263,7 +263,7 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                       <motion.button
                         key={item.id}
                         onClick={() => handleItemSelect(item)}
-                        className={`aspect-square p-4 rounded-xl border-2 relative group ${getRarityColor(item.rarity)} ${
+                        className={`aspect-square p-2 rounded-lg border-2 relative group ${getRarityColor(item.rarity)} ${
                           selectedItem?.id === item.id ? 'ring-2 ring-purple-400' : ''
                         }`}
                         initial={{ opacity: 0, y: 20 }}
@@ -276,8 +276,8 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <div className="text-5xl mb-2">{item.icon}</div>
-                        <div className="absolute bottom-2 right-2 bg-slate-800/90 text-white text-xs px-1.5 py-0.5 rounded">
+                        <div className="text-2xl">{item.icon}</div>
+                        <div className="absolute bottom-1 right-1 bg-slate-800/90 text-white text-xs px-1 py-0.5 rounded">
                           {item.quantity > 1 ? `x${item.quantity}` : ''}
                         </div>
                       </motion.button>
