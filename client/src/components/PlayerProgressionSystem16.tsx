@@ -439,9 +439,12 @@ export function PlayerProgressionSystem16({
                 )}
 
                 {/* Core Stats */}
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-                  <h3 className="text-xl font-bold text-white mb-6">Core Stats</h3>
-                  <div className="space-y-4">
+                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 flex flex-col min-h-0 flex-1 overflow-hidden">
+                  <div className="p-6 pb-4">
+                    <h3 className="text-xl font-bold text-white">Core Stats</h3>
+                  </div>
+                  <div className="flex-1 px-6 pb-6 overflow-y-auto character-scrollbar">
+                    <div className="space-y-4">
                     {Object.entries(playerData.stats).map(([statKey, value]) => {
                       const IconComponent = getStatIcon(statKey as keyof CoreStats);
                       const colorClass = getStatColor(statKey as keyof CoreStats);
@@ -490,6 +493,7 @@ export function PlayerProgressionSystem16({
                         </div>
                       );
                     })}
+                    </div>
                   </div>
                 </div>
               </div>
