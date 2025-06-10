@@ -616,38 +616,8 @@ class NarrativeEngine {
 
   // Enhanced contextual response generation
   private generateContextualResponses(context: NarrativeContext, chaState?: CharacterEmotionalState, situation?: string): string[] {
-    const baseResponses = this.generateSuggestedResponses(context, chaState);
-    const location = situation ? this.extractLocationFromSituation(situation) : 'unknown';
-    
-    // Add location-specific response options
-    const locationResponses = {
-      'hunter_association': [
-        'Ask about her latest mission',
-        'Discuss hunter techniques',
-        'Suggest training together'
-      ],
-      'chahaein_apartment': [
-        'Express how comfortable you feel here',
-        'Ask about her personal life',
-        'Suggest staying the night'
-      ],
-      'hongdae_cafe': [
-        'Order something to share',
-        'Ask about her favorite places',
-        'Suggest exploring the area together'
-      ],
-      'myeongdong_restaurant': [
-        'Compliment the food choice',
-        'Share a personal story',
-        'Plan future dates together'
-      ]
-    };
-
-    const contextualResponses = locationResponses[location as keyof typeof locationResponses] || [];
-    
-    // Combine base responses with contextual ones, removing duplicates
-    const allResponses = [...baseResponses, ...contextualResponses];
-    return Array.from(new Set(allResponses)).slice(0, 1); // Limit to 1 unique response to allow 4 total prompts
+    // Return empty array to rely solely on dynamic prompts and ensure 4 total limit
+    return [];
   }
 
   // Utility methods for context extraction
