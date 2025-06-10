@@ -62,7 +62,15 @@ export function DungeonRaidSystem11({
   playerLevel, 
   affectionLevel 
 }: RaidProps) {
-  const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'victory' | 'defeat'>('prep');
+  const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'victory' | 'defeat' | 'room_clear'>('prep');
+  const [currentRoom, setCurrentRoom] = useState(3);
+  const [currentWave, setCurrentWave] = useState(1);
+  const [roomExits, setRoomExits] = useState<Array<{
+    id: string;
+    direction: 'forward' | 'treasure' | 'boss';
+    position: { x: number; y: number };
+    glowing: boolean;
+  }>>([]);
   const [synergyGauge, setSynergyGauge] = useState(0);
   const [teamUpReady, setTeamUpReady] = useState(false);
   const [combatLog, setCombatLog] = useState<string[]>([]);
@@ -811,6 +819,92 @@ export function DungeonRaidSystem11({
     }
   }, [isVisible, gamePhase]);
 
+  // Check for enemy defeat and room progression
+  useEffect(() => {
+    if (gamePhase === 'combat' && enemies.length > 0) {
+      const allEnemiesDefeated = enemies.every(enemy => enemy.health <= 0);
+      
+      if (allEnemiesDefeated && currentRoom === 3 && currentWave === 1) {
+        // Room 3 (Arena Chamber) has multi-wave combat
+        setCurrentWave(2);
+        const waveEnemies = [
+          {
+            id: 'wave2_orc_1',
+            name: 'Berserker Orc',
+            health: 110,
+            maxHealth: 110,
+            x: 450,
+            y: 310,
+            type: 'orc_warrior' as const
+          },
+          {
+            id: 'wave2_beast_1',
+            name: 'Alpha Shadow Beast',
+            health: 80,
+            maxHealth: 80,
+            x: 620,
+            y: 290,
+            type: 'shadow_beast' as const
+          }
+        ];
+        setEnemies(waveEnemies);
+        addToCombatLog("Cha Hae-In: 'More enemies incoming! Second wave!'");
+      } else if (allEnemiesDefeated && (currentRoom !== 3 || currentWave === 2)) {
+        // All enemies defeated, room clear
+        setGamePhase('room_clear');
+        generateRoomExits();
+        addToCombatLog("Room cleared! Exit portals are materializing...");
+      }
+    }
+  }, [enemies, gamePhase, currentRoom, currentWave]);
+
+  // Generate room exits
+  const generateRoomExits = () => {
+    const exits = [{
+      id: 'forward',
+      direction: 'forward' as const,
+      position: { x: 700, y: 200 },
+      glowing: true
+    }];
+    setRoomExits(exits);
+  };
+
+  // Handle exit choice to progress to next room
+  const handleExitChoice = (exitId: string) => {
+    const exit = roomExits.find(e => e.id === exitId);
+    if (!exit) return;
+    
+    if (exit.direction === 'forward') {
+      setCurrentRoom(prev => prev + 1);
+      setCurrentWave(1);
+      setGamePhase('combat');
+      setRoomExits([]);
+      
+      if (currentRoom >= 7) {
+        // Dungeon complete
+        setGamePhase('victory');
+        onRaidComplete(true, [
+          { id: 'shadow_essence', name: 'Shadow Essence', description: 'Pure shadow energy', icon: '⚫', type: 'material', quantity: 3, value: 1000000, rarity: 'legendary' }
+        ]);
+      } else {
+        // Generate new enemies for next room
+        const newEnemies = [
+          {
+            id: 'room_enemy_1',
+            name: 'Shadow Guardian',
+            health: 90,
+            maxHealth: 90,
+            x: 500,
+            y: 300,
+            type: 'shadow_beast' as const
+          }
+        ];
+        setEnemies(newEnemies);
+        addToCombatLog(`Advancing to Room ${currentRoom}...`);
+      }
+    }
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -1338,6 +1432,111 @@ export function DungeonRaidSystem11({
                 </motion.div>
               ))}
             </div>
+          </div>
+        </>
+      )}
+
+      {/* Room Clear State - Glowing Exit Portals */}
+      {gamePhase === 'room_clear' && (
+        <>
+          <motion.div 
+            ref={battlefieldRef}
+            className="absolute inset-x-4 top-4 bottom-32 overflow-hidden rounded-lg border border-purple-500/30"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-900/90 via-gray-900/80 to-red-900/90" />
+            
+            {/* Room Progress Display */}
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 backdrop-blur-md bg-black/70 rounded-lg px-4 py-2 border border-purple-500/40">
+              <div className="text-center">
+                <div className="text-white font-bold">Room {currentRoom}/7 - Cleared!</div>
+                <div className="text-purple-300 text-sm">Choose your path forward</div>
+              </div>
+            </div>
+            
+            {/* Exit Portals */}
+            {roomExits.map(exit => (
+              <motion.div
+                key={exit.id}
+                className="absolute cursor-pointer"
+                style={{ left: exit.position.x, top: exit.position.y }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                onClick={() => handleExitChoice(exit.id)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                {/* Glowing Portal Base */}
+                <motion.div
+                  className="w-16 h-16 rounded-full relative"
+                  animate={{
+                    boxShadow: [
+                      "0 0 20px rgba(147, 51, 234, 0.6)",
+                      "0 0 40px rgba(147, 51, 234, 0.8)",
+                      "0 0 20px rgba(147, 51, 234, 0.6)"
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {/* Portal Ring */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-amber-500 p-1">
+                    <div className="w-full h-full rounded-full bg-black/80 flex items-center justify-center">
+                      <div className="text-2xl">
+                        {exit.direction === 'forward' && '→'}
+                        {exit.direction === 'treasure' && '💎'}
+                        {exit.direction === 'boss' && '👑'}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Energy Particles */}
+                  <div className="absolute inset-0">
+                    {[...Array(6)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute w-1 h-1 bg-purple-400 rounded-full"
+                        style={{
+                          left: '50%',
+                          top: '50%',
+                        }}
+                        animate={{
+                          x: [0, Math.cos(i * 60 * Math.PI / 180) * 30],
+                          y: [0, Math.sin(i * 60 * Math.PI / 180) * 30],
+                          opacity: [1, 0],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: i * 0.2,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+                
+                {/* Portal Label */}
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+                  <div className="bg-black/70 text-purple-300 px-2 py-1 rounded text-xs">
+                    {exit.direction === 'forward' && 'Next Room'}
+                    {exit.direction === 'treasure' && 'Treasure'}
+                    {exit.direction === 'boss' && 'Boss Arena'}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+          
+          {/* Room Clear Message */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="backdrop-blur-md bg-black/70 rounded-lg px-6 py-3 border border-purple-500/40"
+            >
+              <div className="text-purple-300 text-sm">
+                "Well done, Jin-Woo! Ready for the next challenge?" - Cha Hae-In
+              </div>
+            </motion.div>
           </div>
         </>
       )}
