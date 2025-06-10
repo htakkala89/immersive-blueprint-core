@@ -779,6 +779,38 @@ export function DungeonRaidSystem11({
     return () => clearInterval(interval);
   }, []);
 
+  // Game initialization with puzzle mechanics
+  useEffect(() => {
+    if (isVisible && gamePhase === 'prep') {
+      setTimeout(() => {
+        setGamePhase('combat');
+        addToCombatLog("Combat begins! Use skills strategically!");
+        
+        // 30% chance to spawn puzzle runes in combat
+        if (Math.random() < 0.3) {
+          setTimeout(() => {
+            initializePuzzleRunes();
+            addToCombatLog("Ancient runes detected! Solve the puzzle for bonus synergy!");
+          }, 5000);
+        }
+      }, 2000);
+    }
+    
+    if (!isVisible) {
+      // Reset all systems when closing
+      setGamePhase('prep');
+      setCombatLog([]);
+      setSynergyGauge(0);
+      setTeamUpReady(false);
+      setCommandMode(false);
+      setLootDrops([]);
+      setTrapAlert(null);
+      setBossStruggle(null);
+      setPuzzleRunes([]);
+      setSynergyChimeReady(false);
+    }
+  }, [isVisible, gamePhase]);
+
   if (!isVisible) return null;
 
   return (
