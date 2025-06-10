@@ -1264,6 +1264,13 @@ export default function SoloLevelingSpatial() {
 
   const handlePropertyPurchase = (property: any) => {
     const currentGold = gameState.gold || 0;
+    console.log('Property purchase attempt:', {
+      propertyName: property.name,
+      propertyPrice: property.price,
+      currentGold: currentGold,
+      canAfford: currentGold >= property.price
+    });
+    
     if (currentGold >= property.price) {
       setGameState(prev => ({
         ...prev,
@@ -1648,6 +1655,12 @@ export default function SoloLevelingSpatial() {
                 100
               </button>
             </div>
+          </div>
+
+          {/* Gold Display */}
+          <div className="mb-3">
+            <div className="text-xs text-gray-300 mb-1">Gold: ₩{(gameState.gold || 0).toLocaleString()}</div>
+            <div className="text-xs text-yellow-300 mb-1">Type: {typeof gameState.gold} | Raw: {gameState.gold}</div>
           </div>
 
           {/* Story Progress Controls */}

@@ -113,6 +113,16 @@ export default function ItemInspectionView({
   if (!item) return null;
 
   const canAfford = currentGold >= item.price;
+  
+  // Debug logging for purchase validation
+  console.log('ItemInspectionView purchase validation:', {
+    itemName: item.name,
+    itemPrice: item.price,
+    itemPriceType: typeof item.price,
+    currentGold: currentGold,
+    currentGoldType: typeof currentGold,
+    canAfford: canAfford
+  });
 
   return (
     <AnimatePresence>
