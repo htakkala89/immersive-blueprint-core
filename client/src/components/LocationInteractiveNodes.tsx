@@ -765,6 +765,23 @@ export function LocationInteractiveNodes({
       return true; // Always available for testing
     }
     
+    // For apartment nodes, show only the appropriate tier
+    if (locationId === 'player_apartment' && node.requirements) {
+      const currentTier = playerStats.apartmentTier;
+      
+      // Tier 1 nodes (no requirements) - only show if tier 1
+      if (!node.requirements.length && currentTier === 1) return true;
+      
+      // Tier 2 nodes - only show if exactly tier 2
+      if (node.requirements.includes('apartment_tier_2') && currentTier === 2) return true;
+      
+      // Tier 3 nodes - only show if exactly tier 3
+      if (node.requirements.includes('apartment_tier_3') && currentTier === 3) return true;
+      
+      // Hide apartment nodes that don't match current tier
+      if (node.requirements.some(req => req.includes('apartment_tier'))) return false;
+    }
+    
     if (!node.requirements) return true;
 
     return node.requirements.every(req => {
