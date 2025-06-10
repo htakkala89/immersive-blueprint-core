@@ -295,17 +295,25 @@ export default function WorldMap({
 
   return (
     <div className="fixed inset-0 z-[9999] flex">
-      {/* Enhanced Liquid Glassmorphism Background */}
+      {/* Enhanced Liquid Glassmorphism Background - Full Coverage */}
       <div 
         className="absolute inset-0 cursor-pointer"
         onClick={onClose}
         style={{
           backdropFilter: 'blur(120px) saturate(300%)',
           background: `
-            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%),
-            linear-gradient(to bottom right, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1))
+            linear-gradient(135deg, 
+              rgba(0, 0, 0, 0.85) 0%, 
+              rgba(30, 41, 59, 0.8) 15%,
+              rgba(139, 92, 246, 0.25) 30%,
+              rgba(30, 41, 59, 0.75) 45%,
+              rgba(59, 130, 246, 0.2) 60%,
+              rgba(30, 41, 59, 0.8) 75%,
+              rgba(0, 0, 0, 0.85) 100%
+            ),
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 60%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 60%),
+            radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.18) 0%, transparent 60%)
           `
         }}
       />
