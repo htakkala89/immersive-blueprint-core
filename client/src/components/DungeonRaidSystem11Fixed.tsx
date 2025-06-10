@@ -1484,7 +1484,7 @@ export function DungeonRaidSystem11({
               onClick={() => setShowInventory(true)}
               variant="ghost"
               size="sm"
-              className="absolute top-4 right-4 text-slate-400 hover:text-white z-[90] bg-black/30 backdrop-blur-sm rounded-full p-2"
+              className="absolute top-4 right-20 text-slate-400 hover:text-white z-[90] bg-black/30 backdrop-blur-sm rounded-full p-2"
             >
               <Package className="w-5 h-5" />
             </Button>
@@ -1493,12 +1493,12 @@ export function DungeonRaidSystem11({
           {/* Inventory Overlay */}
           {showInventory && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-[95] bg-black/80 backdrop-blur-sm flex items-center justify-center"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-[95]"
             >
-              <div className="bg-slate-900/95 border border-purple-500/30 rounded-2xl p-6 max-w-md w-full mx-4">
+              <div className="bg-slate-900/95 border border-purple-500/30 rounded-2xl p-6 w-80 shadow-2xl backdrop-blur-xl">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-white text-xl font-bold">Combat Items</h3>
                   <Button
