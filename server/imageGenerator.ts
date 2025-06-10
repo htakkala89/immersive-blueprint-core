@@ -591,31 +591,40 @@ function createLocationPrompt(location: string, timeOfDay: string): string {
   
   const lighting = lightingMap[timeOfDay as keyof typeof lightingMap] || lightingMap.afternoon;
   
-  // Location-specific environment descriptions (NO CHARACTERS)
+  // Location-specific environment descriptions with proper indoor/outdoor distinction
   const locationPrompts = {
-    hunter_association: `Korean Hunter Association headquarters interior, modern glass and steel architecture, professional government building, large meeting halls with holographic displays, high-tech equipment, polished marble floors, official atmosphere, ${lighting}`,
+    // INDOOR LOCATIONS - Detailed interior spaces
+    hunter_association: `INDOOR SCENE: Korean Hunter Association headquarters interior, spacious modern lobby with marble floors, floor-to-ceiling glass windows, reception desk, holographic mission displays, high-tech equipment stations, professional government building atmosphere, polished surfaces, ${lighting}`,
     
-    gangnam_tower: `Modern Gangnam business district skyscraper interior, floor-to-ceiling windows with Seoul cityscape view, sleek corporate office space, conference rooms, contemporary Korean architecture, ${lighting}`,
+    luxury_department_store: `INDOOR SCENE: Ultra-luxury department store interior in Gangnam Seoul, pristine glass display cases with designer jewelry, elegant mannequins in haute couture, polished white marble floors, crystal chandeliers, boutique sections, upscale retail atmosphere, ${lighting}`,
     
-    hongdae_cafe: `Cozy Korean artisan coffee house interior, wooden furniture, local artwork on walls, large windows, specialty coffee equipment, warm inviting atmosphere, indie café aesthetic, ${lighting}`,
+    gangnam_furnishings: `INDOOR SCENE: Premium furniture showroom interior, modern living room displays with designer sofas, bedroom sets with luxury bedding, contemporary home décor, polished concrete floors, sophisticated lighting, high-end furniture store atmosphere, ${lighting}`,
     
-    luxury_department_store: `masterpiece, best quality, manhwa art style, sharp focus, detailed illustration — the interior of an ultra-modern, luxury department store in Gangnam, Seoul. The scene is empty of people. The focus is on the environment: beautiful glass display cases containing glowing jewelry, elegant mannequins wearing designer dresses, polished marble floors, and soft, warm recessed lighting. The mood is quiet, opulent, and exclusive, ${lighting}`,
+    luxury_realtor: `INDOOR SCENE: Exclusive real estate office interior, modern reception area, architectural model displays, floor-to-ceiling windows with city views, sleek conference tables, property brochures, professional luxury office atmosphere, ${lighting}`,
     
-    hongdae_club: `Underground music venue interior, stage with sound equipment, dim atmospheric lighting, modern club design, Korean nightlife scene, entertainment district aesthetic, ${lighting}`,
+    hongdae_cafe: `INDOOR SCENE: Cozy Korean coffee shop interior, wooden tables and chairs, exposed brick walls, barista counter with espresso machines, local artwork displays, large street-facing windows, warm indie café atmosphere, ${lighting}`,
     
-    myeongdong_restaurant: `Traditional Korean restaurant interior, private dining rooms, elegant wooden furniture, traditional decorative elements, garden views, refined dining atmosphere, ${lighting}`,
+    myeongdong_restaurant: `INDOOR SCENE: Elegant Korean restaurant interior, private dining rooms with traditional wooden tables, paper screen dividers, decorative Korean elements, warm ambient lighting, refined dining atmosphere, ${lighting}`,
     
-    myeongdong_shopping: `Bustling Korean shopping district street view, modern storefronts, fashion boutiques, street vendors, urban commercial area, crowds of shoppers, ${lighting}`,
+    training_facility: `INDOOR SCENE: Modern hunter training facility interior, large gymnasium with combat mats, weapon racks along walls, training dummies, exercise equipment, high ceilings, professional sports facility atmosphere, ${lighting}`,
     
-    itaewon_market: `International marketplace interior, diverse vendor stalls, global goods, multicultural atmosphere, busy trading environment, eclectic mix of products, ${lighting}`,
+    chahaein_apartment: `INDOOR SCENE: Modern Korean apartment interior, comfortable living room with city view windows, contemporary furniture, kitchen area, personal decorations, cozy home atmosphere, ${lighting}`,
     
-    training_facility: `State-of-the-art combat training center, gymnasium with specialized equipment, training dummies, weapon racks, modern sports facility, professional athlete training environment, ${lighting}`,
+    player_apartment: `INDOOR SCENE: Modest Korean apartment interior, simple living space with basic furniture, small kitchen, personal belongings, starter apartment atmosphere, ${lighting}`,
     
-    chahaein_apartment: `Modern Korean apartment interior, comfortable living space, city view through large windows, contemporary furniture, personal touches, cozy home atmosphere, ${lighting}`,
+    // OUTDOOR LOCATIONS - External environments and landscapes
+    hangang_park: `OUTDOOR SCENE: Seoul Hangang River park landscape, wide walking paths along the riverbank, modern city skyline in background, green grass areas, park benches, recreational outdoor environment, ${lighting}`,
     
-    hangang_park: `Seoul Hangang River park landscape, walking paths along the water, city skyline in background, peaceful riverside setting, recreational park environment, ${lighting}`,
+    namsan_tower: `OUTDOOR SCENE: N Seoul Tower exterior on Namsan mountain, observation deck with panoramic Seoul city views, love lock fence, tourists viewing area, iconic tower structure against sky, ${lighting}`,
     
-    namsan_tower: `N Seoul Tower observation deck interior and city panorama, sweeping views of Seoul, romantic viewpoint, tourist attraction setting, iconic tower atmosphere, ${lighting}`
+    // MIXED INDOOR/OUTDOOR - Spaces with both elements
+    gangnam_district: `OUTDOOR SCENE: Gangnam business district street view, modern skyscrapers, luxury shopping areas, wide sidewalks, urban Seoul atmosphere, ${lighting}`,
+    
+    hongdae_district: `OUTDOOR SCENE: Hongdae entertainment district street, trendy shops and cafés, young crowd areas, artistic murals, vibrant youth culture neighborhood, ${lighting}`,
+    
+    jung_district: `OUTDOOR SCENE: Jung-gu historic district in Seoul, traditional and modern architecture mix, shopping streets, cultural landmarks, central Seoul atmosphere, ${lighting}`,
+    
+    yeongdeungpo_district: `OUTDOOR SCENE: Yeongdeungpo business district, government buildings, wide avenues, official district atmosphere, ${lighting}`
   };
   
   const locationPrompt = locationPrompts[location as keyof typeof locationPrompts] || 
