@@ -1290,14 +1290,11 @@ export default function SoloLevelingSpatial() {
       setShowLuxuryRealtor(false);
       console.log(`Purchased ${property.name} - Apartment upgraded to Tier ${property.tier}`);
       
-      // Show success notification
-      handleEnvironmentalInteraction({
-        id: 'property_purchase',
-        action: `Property acquired! You now own ${property.name}. Apartment tier upgraded to ${property.tier}. New intimate spaces and activities unlocked.`,
-        name: 'Real Estate Investment',
-        x: 50,
-        y: 50
-      });
+      // Show success notification - simple toast message
+      console.log(`✅ Property Purchase Complete: ${property.name} acquired for ₩${property.price.toLocaleString()}`);
+      
+      // You could add a toast notification here instead of handleEnvironmentalInteraction
+      // to avoid triggering the intimate activity system
     }
   };
 
