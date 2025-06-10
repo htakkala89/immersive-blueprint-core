@@ -37,7 +37,13 @@ export async function getGoogleAccessToken(): Promise<string | null> {
       return null;
     }
 
-    const serviceAccount: ServiceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+    const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
+      console.log('Google service account key is undefined or empty');
+      return null;
+    }
+
+    const serviceAccount: ServiceAccountKey = JSON.parse(serviceAccountString);
     const scopes = ['https://www.googleapis.com/auth/cloud-platform'];
     
     // Create JWT assertion
@@ -74,7 +80,13 @@ export function getProjectId(): string | null {
       return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
     }
     
-    const serviceAccount: ServiceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+    const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
+      console.log('Google service account key is undefined or empty in getProjectId');
+      return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
+    }
+    
+    const serviceAccount: ServiceAccountKey = JSON.parse(serviceAccountString);
     return serviceAccount.project_id;
   } catch (error) {
     console.error('Error getting project ID:', error);
