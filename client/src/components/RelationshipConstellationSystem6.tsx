@@ -56,7 +56,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 3',
       type: 'social',
       keyQuote: "This is nice... just talking like normal people for once.",
-      position: { x: -120, y: 80, z: -50 },
+      position: { x: -80, y: 60, z: 0 },
       brightness: 0.7,
       unlocked: affectionLevel >= 5
     },
@@ -66,7 +66,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 7',
       type: 'social',
       keyQuote: "The city lights look beautiful from here... almost as beautiful as this moment.",
-      position: { x: 100, y: -60, z: 30 },
+      position: { x: 80, y: -60, z: 0 },
       brightness: 0.9,
       unlocked: affectionLevel >= 10
     },
@@ -76,7 +76,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 12',
       type: 'achievement',
       keyQuote: "We make a good team. I feel like I can trust you with my life.",
-      position: { x: -80, y: -120, z: 80 },
+      position: { x: -60, y: -80, z: 0 },
       brightness: 1.0,
       unlocked: affectionLevel >= 15
     },
@@ -86,7 +86,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 18',
       type: 'social',
       keyQuote: "Well... at least we have takeout. And each other's company.",
-      position: { x: 150, y: 100, z: -80 },
+      position: { x: 120, y: 80, z: 0 },
       brightness: 0.8,
       unlocked: affectionLevel >= 20
     },
@@ -96,7 +96,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 25',
       type: 'intimacy',
       keyQuote: "I've been waiting for this moment... I never want it to end.",
-      position: { x: -50, y: 150, z: 60 },
+      position: { x: -40, y: 120, z: 0 },
       brightness: 1.2,
       unlocked: affectionLevel >= 25
     },
@@ -106,7 +106,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 32',
       type: 'social',
       keyQuote: "I don't care what we're watching. I just want to be close to you.",
-      position: { x: 80, y: -80, z: -100 },
+      position: { x: 60, y: -120, z: 0 },
       brightness: 0.9,
       unlocked: affectionLevel >= 30
     },
@@ -116,7 +116,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 40',
       type: 'achievement',
       keyQuote: "We did it! Together, we're unstoppable!",
-      position: { x: -150, y: -50, z: 120 },
+      position: { x: -120, y: -40, z: 0 },
       brightness: 1.5,
       unlocked: affectionLevel >= 35
     },
@@ -126,7 +126,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 48',
       type: 'intimacy',
       keyQuote: "Being with you like this... it feels like home.",
-      position: { x: 120, y: 80, z: -120 },
+      position: { x: 100, y: 60, z: 0 },
       brightness: 1.3,
       unlocked: affectionLevel >= 40
     },
@@ -136,7 +136,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       date: 'Day 49',
       type: 'intimacy',
       keyQuote: "Good morning, my love. Every day with you is a gift.",
-      position: { x: -100, y: 120, z: -60 },
+      position: { x: -80, y: 100, z: 0 },
       brightness: 1.4,
       unlocked: affectionLevel >= 45
     }

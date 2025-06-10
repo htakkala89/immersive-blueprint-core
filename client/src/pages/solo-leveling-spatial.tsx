@@ -2045,7 +2045,7 @@ export default function SoloLevelingSpatial() {
       <RelationshipConstellationSystem6
         isVisible={showConstellation}
         onClose={() => setShowConstellation(false)}
-        affectionLevel={gameState.affection * 10} // Convert 0-10 scale to 0-100
+        affectionLevel={Math.min(100, gameState.affection * 10)} // Convert 0-10 scale to 0-100, cap at 100%
         memories={[]} // Additional custom memories can be added here
         onMemorySelect={(memory) => {
           console.log('Viewing memory:', memory.title);
