@@ -1874,8 +1874,7 @@ export default function SoloLevelingSpatial() {
       <WealthDisplay
         currentGold={gameState.gold || 0}
         isVisible={showUnifiedShop || showHunterMarket || playerLocation === 'luxury_realtor'}
-        showTransactionHistory={showHunterMarket}
-        recentTransactions={recentTransactions}
+        context={showHunterMarket ? 'market' : showUnifiedShop ? 'vendor' : 'hidden'}
       />
 
       <WorldMap

@@ -1,0 +1,57 @@
+System 14: The In-Game Economy - UI/UX Specifications
+
+Design Philosophy: The presentation of wealth and rewards must feel as premium and immersive as the rest of the experience. We will avoid static, spreadsheet-like tables and instead use fluid animations and contextual displays to make earning and spending money feel satisfying and diegetic.
+
+1. The Post-Raid Rewards UI: "The Spoils of War"
+
+This sequence triggers automatically in the "Aftermath" scene (System 11) after the post-combat dialogue concludes.
+
+UX Flow & Animation:
+
+Gold Reward: Golden, shimmering motes of light stream from the location of the final defeated enemy. They fly across the screen and absorb into the player's conceptual position (bottom-center of the screen). As they absorb, a minimalist text counter appears, glows, and then gracefully fades out after 2-3 seconds.
+Text Example: + ₩2,500,000
+Resource Rewards: Immediately following the Gold, large, high-quality icons of the valuable resources earned (e.g., Mana Crystal, Monster Core) appear in the center of the screen. They hover for a moment, then shrink and fly towards the top-right corner, visually indicating they've been added to the player's inventory/system. A small counter (x3) appears next to the icon as it flies.
+UI Specs:
+
+Icons: Resources must have distinct, high-quality icons that look valuable (e.g., a sharp, glowing blue crystal; a dark, pulsating organic core).
+Font: All text counters use the established UI font, rendered in a golden-yellow color.
+2. The Quest Completion Notification: "The Wire Transfer"
+
+This appears anywhere in the world upon completing a quest for the Hunter's Association.
+
+UX Flow & Animation:
+
+A sleek panel slides down smoothly from the top of the screen, pausing in the upper-third. It remains for 3-4 seconds before automatically sliding back up. It does not require user dismissal.
+UI Specs:
+
+Panel Style: A liquid glassmorphism panel, consistent with our established aesthetic. It will have the Hunter Association's logo subtly watermarked in the background.
+Content Layout:
+Header: TRANSACTION COMPLETE (in a bold, clean font).
+Icon: A glowing Won symbol (₩) or a checkmark (✓).
+Body Text: The amount, displayed prominently (e.g., ₩25,000,000).
+Footer Text: A smaller line for context ("Source: Korean Hunter's Association").
+3. The Vendor Interface: "The Hunter Market"
+
+This UI appears after traveling to the Hunter Market and engaging a specific vendor NPC.
+
+UX Flow:
+
+Tapping a vendor opens the dialogue UI with a special, glowing "Trade" button.
+Tapping "Trade" transitions the dialogue panel into a full-screen, two-paned vendor interface.
+UI Specs:
+
+Layout: A clean, two-column layout.
+Left Column (Your Inventory): A scrollable list of only your sellable items. Each list item contains the item's icon, name, quantity you own (x5), and individual sell price (₩5,000,000 ea.).
+Right Column (Sell List): Initially empty. Tapping items on the left adds them to this list. The user can adjust the quantity to sell.
+Footer: A summary panel at the bottom shows the "Total Sale Value" which updates in real-time. A large, prominent "Confirm Sale" button finalizes the transaction.
+Style: The entire interface, including the item lists and buttons, adheres to the liquid glassmorphism style.
+4. The Currency Display: Contextual & Discreet
+
+We will not have a persistent Gold counter on the screen at all times.
+
+UI Element: A simple, elegant text element in the top-right corner of the screen.
+Example: ₩ 2,458,910,330
+Display Logic: This element is only visible when the user is in a view where money is directly relevant:
+Inside any vendor or shop interface (Hunter Market, Realtor, etc.).
+When viewing their inventory through the Monarch's Aura.
+It is never visible during the main Spatial View, dialogue, or cutscenes, ensuring maximum immersion.
