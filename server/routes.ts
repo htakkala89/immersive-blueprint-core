@@ -299,45 +299,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🎭 Generating emotional scene for Cha Hae-In: ${emotion} at ${location} during ${timeOfDay}`);
 
-      if (!openaiClient) {
-        console.error("OpenAI client not initialized - API key missing");
-        return res.status(500).json({ error: "Image generation service unavailable" });
-      }
-
       // Create emotional prompt for Cha Hae-In
       const emotionalPrompt = createChaHaeInEmotionalPrompt(emotion as string, location as string, timeOfDay as string);
       
-      try {
-        const response = await openaiClient.images.generate({
-          model: "dall-e-3",
-          prompt: emotionalPrompt,
-          n: 1,
-          size: "1024x1024",
-          quality: "hd",
-          style: "vivid"
-        });
-
-        const imageUrl = response.data?.[0]?.url;
-        if (imageUrl) {
-          // Convert to base64 for consistent handling
-          const imageResponse = await fetch(imageUrl);
-          const imageBuffer = await imageResponse.arrayBuffer();
-          const base64Image = Buffer.from(imageBuffer).toString('base64');
-          const dataUrl = `data:image/png;base64,${base64Image}`;
-          
-          console.log(`✅ Generated emotional scene successfully`);
-          res.json({ imageUrl: dataUrl });
-        } else {
-          console.error("No image URL returned from OpenAI");
-          res.status(500).json({ error: "Failed to generate emotional scene" });
-        }
-      } catch (openaiError: any) {
-        console.error("OpenAI API error:", openaiError.message);
-        res.status(500).json({ error: "Image generation failed" });
+      // Use Google Imagen for character generation
+      const { generateChatSceneImage } = await import("./imageGenerator");
+      const imageUrl = await generateChatSceneImage(emotionalPrompt, "character_portrait");
+      
+      if (imageUrl) {
+        console.log(`✅ Generated emotional scene successfully`);
+        res.json({ imageUrl });
+      } else {
+        console.error("No image URL returned from Google Imagen");
+        res.status(500).json({ error: "Failed to generate emotional scene" });
       }
-    } catch (error) {
-      console.error(`Failed to generate emotional scene: ${error}`);
-      res.status(500).json({ error: "Failed to generate emotional scene" });
+    } catch (error: any) {
+      console.error("Google Imagen API error:", error.message);
+      res.status(500).json({ error: "Image generation failed" });
     }
   });
 
