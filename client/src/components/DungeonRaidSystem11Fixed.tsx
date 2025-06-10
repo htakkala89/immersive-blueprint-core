@@ -71,6 +71,14 @@ export function DungeonRaidSystem11({
   const [cameraShake, setCameraShake] = useState(false);
   const [monarchRuneOpen, setMonarchRuneOpen] = useState(false);
   const [commandMode, setCommandMode] = useState(false);
+  const [damageNumbers, setDamageNumbers] = useState<Array<{
+    id: string;
+    damage: number;
+    x: number;
+    y: number;
+    timestamp: number;
+  }>>([]);
+  const [skillCooldowns, setSkillCooldowns] = useState<Record<string, number>>({});
   
   const battlefieldRef = useRef<HTMLDivElement>(null);
 
@@ -171,10 +179,73 @@ export function DungeonRaidSystem11({
 
   const executeSkill = (skillId: string) => {
     const skill = skills.find(s => s.id === skillId);
-    if (!skill || skill.currentCooldown > 0) return;
+    if (!skill || skillCooldowns[skillId] > 0) return;
     
-    // Execute skill logic here
-    console.log(`Executing skill: ${skill.name}`);
+    // Calculate damage based on skill type
+    let baseDamage = 0;
+    switch (skill.id) {
+      case 'mutilate':
+        baseDamage = 25 + Math.floor(Math.random() * 15); // 25-40 damage
+        break;
+      case 'violent_slash':
+        baseDamage = 35 + Math.floor(Math.random() * 20); // 35-55 damage
+        break;
+      case 'dominators_touch':
+        baseDamage = 50 + Math.floor(Math.random() * 25); // 50-75 damage
+        break;
+      case 'shadow_exchange':
+        baseDamage = 30 + Math.floor(Math.random() * 20); // 30-50 damage
+        break;
+    }
+
+    // Apply damage to all enemies and show damage numbers
+    setEnemies(prev => prev.map(enemy => {
+      const newHealth = Math.max(0, enemy.health - baseDamage);
+      
+      // Add floating damage number
+      const damageId = `damage-${Date.now()}-${Math.random()}`;
+      setDamageNumbers(prevDamage => [...prevDamage, {
+        id: damageId,
+        damage: baseDamage,
+        x: enemy.x,
+        y: enemy.y - 20,
+        timestamp: Date.now()
+      }]);
+
+      // Remove damage number after animation
+      setTimeout(() => {
+        setDamageNumbers(prevDamage => prevDamage.filter(d => d.id !== damageId));
+      }, 1500);
+
+      return { ...enemy, health: newHealth };
+    }));
+
+    // Consume mana
+    setPlayers(prev => prev.map(player => 
+      player.id === 'jinwoo' 
+        ? { ...player, mana: Math.max(0, player.mana - skill.manaCost) }
+        : player
+    ));
+
+    // Start cooldown
+    setSkillCooldowns(prev => ({ ...prev, [skillId]: skill.cooldown }));
+
+    // Handle cooldown countdown
+    const cooldownInterval = setInterval(() => {
+      setSkillCooldowns(prev => {
+        const newCooldown = Math.max(0, prev[skillId] - 100);
+        if (newCooldown === 0) {
+          clearInterval(cooldownInterval);
+        }
+        return { ...prev, [skillId]: newCooldown };
+      });
+    }, 100);
+
+    // Screen shake effect
+    setScreenShake(true);
+    setTimeout(() => setScreenShake(false), 200);
+
+    console.log(`Executing skill: ${skill.name} for ${baseDamage} damage`);
   };
 
   const summonShadowSoldier = (shadowId: string) => {
@@ -354,9 +425,9 @@ export function DungeonRaidSystem11({
                       {/* Enemy Avatar */}
                       <div className="w-10 h-10 bg-red-600 rounded-full border-2 border-red-400"></div>
                       
-                      {/* Enemy Name */}
+                      {/* Enemy Name & Health */}
                       <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-white whitespace-nowrap">
-                        {enemy.name}
+                        {enemy.name} ({enemy.health}/{enemy.maxHealth})
                       </div>
                       
                       {/* Crimson Health Aura */}
@@ -372,6 +443,23 @@ export function DungeonRaidSystem11({
                     </div>
                   </motion.div>
                 ))}
+
+                {/* Floating Damage Numbers */}
+                <AnimatePresence>
+                  {damageNumbers.map(damage => (
+                    <motion.div
+                      key={damage.id}
+                      className="absolute text-yellow-400 font-bold text-lg pointer-events-none z-50"
+                      style={{ left: damage.x, top: damage.y }}
+                      initial={{ opacity: 1, y: 0, scale: 0.5 }}
+                      animate={{ opacity: 0, y: -50, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 1.5 }}
+                    >
+                      -{damage.damage}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             )}
           </div>
@@ -380,27 +468,47 @@ export function DungeonRaidSystem11({
           {gamePhase === 'combat' && (
             <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
               <div className="flex justify-center gap-3 py-2 px-4 bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl">
-                {skills.map((skill, index) => (
-                  <motion.button
-                    key={skill.id}
-                    onClick={() => executeSkill(skill.id)}
-                    className={`relative w-16 h-16 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${
-                      skill.currentCooldown > 0
-                        ? 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
-                        : 'border-purple-500/50 bg-purple-500/20 hover:bg-purple-500/30 hover:border-purple-400 cursor-pointer'
-                    }`}
-                    whileHover={{ scale: skill.currentCooldown > 0 ? 1 : 1.05 }}
-                    whileTap={{ scale: skill.currentCooldown > 0 ? 1 : 0.95 }}
-                  >
-                    <skill.icon className={`w-6 h-6 ${
-                      skill.currentCooldown > 0 ? 'text-slate-500' : 'text-purple-300'
-                    }`} />
-                    
-                    <div className="absolute -top-2 -left-2 w-5 h-5 bg-slate-700 border border-slate-500 rounded-full flex items-center justify-center text-xs text-slate-300">
-                      {index + 1}
-                    </div>
-                  </motion.button>
-                ))}
+                {skills.map((skill, index) => {
+                  const currentCooldown = skillCooldowns[skill.id] || 0;
+                  const isOnCooldown = currentCooldown > 0;
+                  const cooldownProgress = isOnCooldown ? (currentCooldown / skill.cooldown) * 100 : 0;
+                  
+                  return (
+                    <motion.button
+                      key={skill.id}
+                      onClick={() => executeSkill(skill.id)}
+                      className={`relative w-16 h-16 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${
+                        isOnCooldown
+                          ? 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
+                          : 'border-purple-500/50 bg-purple-500/20 hover:bg-purple-500/30 hover:border-purple-400 cursor-pointer'
+                      }`}
+                      whileHover={{ scale: isOnCooldown ? 1 : 1.05 }}
+                      whileTap={{ scale: isOnCooldown ? 1 : 0.95 }}
+                    >
+                      <skill.icon className={`w-6 h-6 ${
+                        isOnCooldown ? 'text-slate-500' : 'text-purple-300'
+                      }`} />
+                      
+                      {/* Cooldown Overlay */}
+                      {isOnCooldown && (
+                        <div 
+                          className="absolute inset-0 bg-slate-900/70 rounded-xl flex items-center justify-center"
+                          style={{
+                            background: `conic-gradient(from 0deg, transparent ${100-cooldownProgress}%, rgba(0,0,0,0.8) ${100-cooldownProgress}%)`
+                          }}
+                        >
+                          <div className="text-xs text-white font-bold">
+                            {Math.ceil(currentCooldown / 1000)}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="absolute -top-2 -left-2 w-5 h-5 bg-slate-700 border border-slate-500 rounded-full flex items-center justify-center text-xs text-slate-300">
+                        {index + 1}
+                      </div>
+                    </motion.button>
+                  );
+                })}
 
                 {/* Monarch Rune Button */}
                 <motion.button
