@@ -661,7 +661,7 @@ export function DungeonRaidSystem11({
           }
         });
       });
-    }, 1000); // Check for trap damage every second
+    }, 500); // Check for trap damage every 0.5 seconds for better responsiveness
 
     return () => clearInterval(damageInterval);
   }, [battlefieldTraps, players, enemies]);
@@ -747,8 +747,8 @@ export function DungeonRaidSystem11({
             </div>
           </div>
 
-          {/* Synergy Gauge (Top-Right) */}
-          <div className="absolute top-16 right-4">
+          {/* Synergy Gauge (Top-Right, Moved Down) */}
+          <div className="absolute top-32 right-4">
             <div className="relative w-18 h-18">
               <svg className="w-18 h-18 transform -rotate-90" viewBox="0 0 72 72">
                 <circle
