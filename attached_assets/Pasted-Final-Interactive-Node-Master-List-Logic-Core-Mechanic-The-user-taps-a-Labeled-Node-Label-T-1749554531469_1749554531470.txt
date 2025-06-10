@@ -1,0 +1,96 @@
+Final Interactive Node Master List & Logic
+
+Core Mechanic: The user taps a Labeled Node [●] Label. This generates a "Thought Prompt". Tapping the prompt triggers the Final Outcome.
+
+Gangnam District (Luxury Shopping & Business)
+
+Location: Luxury Department Store
+
+Node: [●] Jewelry Counter
+Thought Prompt: "Browse the jewelry collection."
+Outcome & Game Logic: Opens the Item Inspection View (System 7), displaying a featured necklace. The UI allows the user to cycle through all available jewelry gifts for purchase. Connects to the Economy System (14) for the transaction.
+Node: [●] Designer Apparel
+Thought Prompt: "Look at the designer clothing."
+Outcome & Game Logic: Opens the Item Inspection View for a featured designer dress, with the ability to cycle through other clothing-related gifts.
+Node: [●] Luxury Confections
+Thought Prompt: "See the artisan chocolates."
+Outcome & Game Logic: Opens the Item Inspection View for a premium chocolate box, with the ability to cycle through other confectionary gifts.
+Location: Gangnam Modern Furnishings
+
+Node: [●] Living Room Collection
+Thought Prompt: "Look at the sofas and tables."
+Outcome & Game Logic: Opens the Item Inspection View for a featured sofa. The user can cycle through all available living room furniture. Connects to System 13 (Living Space) upon purchase.
+Node: [●] Bedroom Collection
+Thought Prompt: "Browse the bedroom sets."
+Outcome & Game Logic: Opens the Item Inspection View for a featured bed frame, allowing the user to cycle through bedroom furniture.
+Location: Luxury Realtor
+
+Node: [●] Reception Desk
+Thought Prompt: "Speak with the realtor."
+Outcome & Game Logic: Initiates a dialogue scene with the Realtor NPC who presents the available properties for sale.
+Node: [●] Architectural Models
+Thought Prompt: "Examine the property listings."
+Outcome & Game Logic: Opens a special UI panel showing the detailed listing for the Tier 2 or Tier 3 apartment, including the exterior image, amenities, price, and the final [Purchase] button.
+Hongdae District (Youth Culture & Entertainment)
+
+Location: Cozy Hongdae Cafe
+
+Node: [●] Counter
+Thought Prompt: "Order drinks for us."
+Outcome & Game Logic: Initiates a short dialogue choice asking Cha Hae-In what she'd like. A correct choice grants a small affection boost for System 6.
+Node: [●] Window Seat
+Thought Prompt: "Suggest we take the window seat."
+Outcome & Game Logic: A text description appears: *You both settle into the comfortable seats, watching the city go by.* This unlocks unique, context-specific conversation topics for the scene.
+Location: Hangang River Park
+
+Node: [●] Park Bench
+Thought Prompt: "Suggest sitting for a while."
+Outcome & Game Logic: Triggers a unique, heartfelt conversational scene branch with Cha Hae-In about relaxing and their journey so far.
+Node: [●] Food Vendor Cart
+Thought Prompt: "Want to get some street food?"
+Outcome & Game Logic: A short scene plays where they buy and share food. Costs a small amount of Gold (System 14) and grants a small affection boost (System 6).
+Jung District (Historic Center & Dining)
+
+Location: Myeongdong Fine Dining
+
+Node: [●] View the Menu
+Thought Prompt: "Let's look at the menu."
+Outcome & Game Logic: Opens a beautiful menu UI. The player and Cha Hae-In can comment on different dishes, leading to a choice that influences the dialogue of the dinner date scene.
+Node: [●] Speak with the Sommelier
+Thought Prompt: "Ask the sommelier for a recommendation."
+Outcome & Game Logic: A short dialogue with an NPC who recommends a wine. Choosing to order it costs Gold but provides a larger affection boost for the date.
+Location: N Seoul Tower
+
+Node: [●] Observation Deck
+Thought Prompt: "Let's look at the view."
+Outcome & Game Logic: The UI fades away for a "cinematic mode," showing the panoramic city view while romantic music plays and a special conversation unfolds.
+Node: [●] The Wall of Locks
+Thought Prompt: "Should we add our own lock?"
+Outcome & Game Logic: Triggers a key relationship scene. If the player has a "Padlock" item (purchasable at a store), they can add it to the wall together. This creates a unique, high-value Memory Star in the Relationship Constellation (System 6).
+Yeongdeungpo District (Hunter Association HQ)
+
+Location: Hunter Association HQ
+
+Node: [●] Mission Board
+Thought Prompt: "Check the board for new gate alerts."
+Outcome & Game Logic: Opens a read-only UI panel listing high-rank gates around the world for world-building and lore.
+Node: [●] Receptionist
+Thought Prompt: "Ask the receptionist for any rumors."
+Outcome & Game Logic: Initiates a brief dialogue with a Guild employee NPC who provides a rotating gameplay hint or rumor.
+Location: Elite Training Center
+
+Node: [●] Sparring Ring
+Thought Prompt: "Challenge Hae-In to a light spar."
+Outcome & Game Logic: Acts as a shortcut to initiate the "Sparring Session" activity from the Daily Life Hub (System 4) if all conditions are met.
+Node: [●] Combat Analytics Monitor
+Thought Prompt: "Review our last raid."
+Outcome & Game Logic: Opens a UI panel with stylized stats from the last completed dungeon. Triggers the "Review Raid Footage" buff.
+Personal Spaces (Private & Intimate)
+
+Location: Your Apartment / Cha Hae-In's Apartment
+Node: [●] Bed
+Thought Prompt: "Rest for a while."
+Outcome & Game Logic: Triggers the "restore energy" function. Time advances, energy is refilled, and the location's lighting updates.
+Node: [●] Balcony (Requires Tier 2+ Apartment)
+Thought Prompt: "Step out onto the balcony."
+Outcome & Game Logic: Transitions the player to the unique "Balcony" Spatial View, which has its own nodes and unlocks different conversation topics.
