@@ -948,10 +948,19 @@ export default function SoloLevelingSpatial() {
         
 
 
+        {/* Debug: Always show test indicator */}
+        <div className="fixed top-40 left-4 bg-red-600 text-white p-2 rounded z-50 text-xs">
+          <div>Should show Cha: {(chaHaeInCurrentLocation === playerLocation) ? 'YES' : 'NO'}</div>
+          <div>Location: {playerLocation}</div>
+          <div>Time: {timeOfDay}</div>
+          <div>Cha at: {chaHaeInCurrentLocation || 'None'}</div>
+          <div>Affection: {gameState.affection}</div>
+        </div>
+
         {/* Cha Hae-In Presence Indicator - Golden Breathing Node */}
-        {(currentLocationData.chaHaeInPresent || (playerLocation === 'hunter_association' && timeOfDay === 'afternoon')) && (
+        {(chaHaeInCurrentLocation === playerLocation) && (
           <motion.div
-            className="absolute cursor-pointer z-20 group"
+            className="absolute cursor-pointer z-40 group"
             style={{
               left: `${currentLocationData.chaPosition.x}%`,
               top: `${currentLocationData.chaPosition.y}%`,
