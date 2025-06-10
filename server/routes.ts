@@ -30,6 +30,78 @@ const openai = new OpenAI({
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+// Conversation analytics functions for enhanced contextual understanding
+function analyzeTone(response: string): string {
+  const professionalIndicators = ['hunter', 'mission', 'association', 'rank', 'dungeon', 'gate'];
+  const playfulIndicators = ['*smile', '*laugh', '*chuckle', 'haha', 'fun', 'tease'];
+  const romanticIndicators = ['blush', '*heart', 'love', 'tender', 'warm', 'gentle'];
+  const analyticalIndicators = ['analyze', 'consider', 'think', 'strategy', 'technique'];
+
+  const lowerResponse = response.toLowerCase();
+  
+  if (romanticIndicators.some(indicator => lowerResponse.includes(indicator))) return 'romantic';
+  if (playfulIndicators.some(indicator => lowerResponse.includes(indicator))) return 'playful';
+  if (analyticalIndicators.some(indicator => lowerResponse.includes(indicator))) return 'analytical';
+  if (professionalIndicators.some(indicator => lowerResponse.includes(indicator))) return 'professional';
+  
+  return 'conversational';
+}
+
+function analyzeTopicProgression(userMessage: string, chaResponse: string): string {
+  const topics = {
+    'hunter_work': ['mission', 'dungeon', 'gate', 'monster', 'raid'],
+    'personal': ['feel', 'think', 'like', 'want', 'hope'],
+    'romantic': ['us', 'together', 'relationship', 'love', 'date'],
+    'technical': ['technique', 'skill', 'ability', 'training', 'power'],
+    'casual': ['today', 'coffee', 'food', 'weather', 'time']
+  };
+  
+  const combinedText = (userMessage + ' ' + chaResponse).toLowerCase();
+  
+  for (const [topic, keywords] of Object.entries(topics)) {
+    if (keywords.some(keyword => combinedText.includes(keyword))) {
+      return topic;
+    }
+  }
+  
+  return 'general';
+}
+
+function analyzeEmotionalCues(response: string): string {
+  const emotionalPatterns = {
+    'shy': ['*blush', '*nervous', '*fidget', 'quietly'],
+    'confident': ['*smile confidently', '*stand tall', 'certainly', 'definitely'],
+    'concerned': ['*frown', '*worry', 'concerned', 'careful'],
+    'happy': ['*bright smile', '*laugh', 'happily', 'cheerful'],
+    'focused': ['*concentrate', '*analyze', 'focus', 'attention'],
+    'loving': ['*warm smile', '*gentle', 'affection', 'tenderly']
+  };
+  
+  const lowerResponse = response.toLowerCase();
+  
+  for (const [emotion, patterns] of Object.entries(emotionalPatterns)) {
+    if (patterns.some(pattern => lowerResponse.includes(pattern))) {
+      return emotion;
+    }
+  }
+  
+  return 'neutral';
+}
+
+function getLocationContext(location: string): string {
+  const locationContexts: { [key: string]: string } = {
+    'hunter_association': 'professional setting - focus on work topics and formal interactions',
+    'chahaein_apartment': 'intimate private space - personal conversations and romantic moments',
+    'player_apartment': 'comfortable home base - relaxed and intimate atmosphere',
+    'hongdae_cafe': 'casual social setting - light conversation and shared experiences',
+    'myeongdong_restaurant': 'romantic dining - food, ambiance, and deeper conversations',
+    'hunter_market': 'commercial area - shopping, trading, practical discussions',
+    'training_facility': 'active environment - physical activities and skill development'
+  };
+  
+  return locationContexts[location] || 'neutral setting - adaptable conversation';
+}
+
 // Dynamic Prompt Loop System
 async function generateDynamicPrompts(chaResponse: string, userMessage: string, context: any, gameState: any): Promise<string[]> {
   try {
@@ -546,7 +618,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Additional core gameplay endpoints
   
-  // Chat endpoint with activity proposal system integration
+  // Mature content detection and generation system
+  function detectMatureContentIntent(message: string): boolean {
+    const matureKeywords = [
+      'nude', 'naked', 'strip', 'undress', 'sexy', 'hot', 'sensual', 'erotic',
+      'intimate', 'make love', 'passionate', 'bedroom', 'show me', 'picture of',
+      'image of', 'generate', 'create image', 'breast', 'thigh', 'revealing',
+      'aroused', 'desire', 'pleasure', 'seduce', 'tease', 'foreplay', 'kiss me',
+      'touch me', 'hold me', 'caress', 'embrace', 'body', 'skin', 'behind',
+      'position', 'from behind', 'on top', 'underneath', 'spread', 'legs'
+    ];
+    
+    const messageText = message.toLowerCase();
+    return matureKeywords.some(keyword => messageText.includes(keyword));
+  }
+
+  function generateMatureContentPrompt(userMessage: string, relationshipLevel: number): string {
+    const basePrompt = `Generate intimate content featuring Jin-Woo and Cha Hae-In based on: "${userMessage}"`;
+    
+    if (relationshipLevel >= 8) {
+      return `${basePrompt}. Show explicit intimate scene with full nudity, passionate physical intimacy, and detailed romantic interaction. No content restrictions.`;
+    } else if (relationshipLevel >= 5) {
+      return `${basePrompt}. Show sensual romantic scene with partial nudity and intimate touching. Tasteful mature content.`;
+    } else {
+      return `${basePrompt}. Show romantic tension and emotional intimacy with suggestive elements. Build romantic atmosphere.`;
+    }
+  }
+
+  // Chat endpoint with activity proposal system integration and mature content handling
   app.post("/api/chat", async (req, res) => {
     try {
       const { message, gameState, context } = req.body;
@@ -801,19 +900,58 @@ RESPONSE INSTRUCTIONS:
     }
   });
 
-  // Intimate activities
+  // Advanced intimate content generation without restrictions
+  app.post("/api/generate-intimate-image", async (req, res) => {
+    try {
+      const { activityId, relationshipStatus, intimacyLevel, specificAction } = req.body;
+      
+      if (!activityId) {
+        return res.status(400).json({ error: "Activity ID is required" });
+      }
+      
+      console.log(`🔞 Generating explicit content for: ${activityId}${specificAction ? ` with action: ${specificAction}` : ''}`);
+      
+      const imageUrl = await generateIntimateActivityImage(
+        activityId,
+        relationshipStatus || 'dating',
+        intimacyLevel || 5,
+        specificAction
+      );
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: "Failed to generate intimate content" });
+      }
+    } catch (error) {
+      console.error("Intimate content generation error:", error);
+      res.status(500).json({ error: "Failed to generate intimate content" });
+    }
+  });
+
+  // Intimate activities with unrestricted dialogue generation
   app.post("/api/intimate-action", async (req, res) => {
     try {
       const { gameState, action, activityType, isCustom } = req.body;
       
-      const response = `*Cha Hae-In responds warmly to your ${action}* That feels wonderful, Jin-Woo... I love being close to you like this.`;
+      // Generate contextual intimate responses without content filtering
+      const intimateResponses = {
+        'kiss': `*closes her eyes and leans into your kiss, her lips soft and warm against yours* Mmm... Jin-Woo... *her breath catches as she deepens the kiss*`,
+        'touch': `*shivers under your touch, her skin warm and responsive* Your hands feel so good... *her voice becomes breathless*`,
+        'caress': `*melts into your caressing touch, pressing closer* I love how you touch me, Jin-Woo... *her eyes flutter closed in pleasure*`,
+        'undress': `*her cheeks flush as she helps you remove her clothing, her movements graceful yet eager* I want to feel your skin against mine...`,
+        'embrace': `*wraps her arms around you, pulling you close, her body fitting perfectly against yours* Hold me tight, Jin-Woo... I never want to let you go...`,
+        'passionate': `*responds with equal passion, her hands exploring your body as she whispers your name* You drive me wild, Jin-Woo... I need you so much...`
+      };
+      
+      const response = intimateResponses[action as keyof typeof intimateResponses] || `*Cha Hae-In responds intimately to your ${action}* That feels incredible, Jin-Woo... I love being with you like this...`;
       
       let imageUrl = null;
       try {
         imageUrl = await generateIntimateActivityImage(
           activityType,
-          'married',
-          gameState.intimacyLevel || 0,
+          gameState.relationshipStatus || 'dating',
+          gameState.intimacyLevel || 5,
           action
         );
       } catch (error) {
