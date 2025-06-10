@@ -212,33 +212,41 @@ export function DungeonRaidSystem11({
 
   // Room completion detection
   useEffect(() => {
-    if (gamePhase === 'combat') {
+    if (gamePhase === 'combat' && enemies.length > 0) {
       const aliveEnemies = enemies.filter(e => !e.isAlly && e.health > 0);
       
-      if (aliveEnemies.length === 0 && enemies.length > 0) {
-        console.log(`🏆 Room ${currentRoom} cleared!`);
+      if (aliveEnemies.length === 0) {
+        console.log(`Room ${currentRoom} cleared!`);
         
         if (currentRoom === totalRooms) {
           // Dungeon complete
           setGamePhase('complete');
           setTimeout(() => {
-            onRaidComplete(true, [
-              { type: 'gold', amount: 5000 },
-              { type: 'experience', amount: 1000 }
-            ]);
+            try {
+              onRaidComplete(true, [
+                { type: 'gold', amount: 5000 },
+                { type: 'experience', amount: 1000 }
+              ]);
+            } catch (error) {
+              console.error('Error completing raid:', error);
+            }
           }, 2000);
         } else {
           // Move to next room
           setGamePhase('room_clear');
           setTimeout(() => {
-            const exits = [{
-              id: currentRoom === totalRooms - 1 ? 'boss_chamber' : 'next_room',
-              direction: currentRoom === totalRooms - 1 ? 'boss' as const : 'forward' as const,
-              position: { x: 400, y: 300 },
-              glowing: true,
-              label: currentRoom === totalRooms - 1 ? 'Enter Boss Chamber' : 'Continue Forward'
-            }];
-            setRoomExits(exits);
+            try {
+              const exits = [{
+                id: currentRoom === totalRooms - 1 ? 'boss_chamber' : 'next_room',
+                direction: currentRoom === totalRooms - 1 ? 'boss' as const : 'forward' as const,
+                position: { x: 400, y: 300 },
+                glowing: true,
+                label: currentRoom === totalRooms - 1 ? 'Enter Boss Chamber' : 'Continue Forward'
+              }];
+              setRoomExits(exits);
+            } catch (error) {
+              console.error('Error setting room exits:', error);
+            }
           }, 1500);
         }
       }
@@ -247,27 +255,37 @@ export function DungeonRaidSystem11({
 
   // Handle room progression
   const handleExitSelect = (exitId: string) => {
-    const nextRoom = currentRoom + 1;
-    setCurrentRoom(nextRoom);
-    
-    // Reset room state
-    setRoomExits([]);
-    setSkillCooldowns({});
-    setBattlefieldTraps([]);
-    setDamageNumbers([]);
-    
-    // Generate new enemies for the next room
-    const newEnemies = generateRoomEnemies(nextRoom, nextRoom <= 2 ? 1 : nextRoom <= 5 ? 2 : 3);
-    setEnemies(newEnemies);
-    
-    // Set appropriate phase
-    if (nextRoom === totalRooms) {
-      setGamePhase('boss_antechamber');
-    } else {
+    try {
+      const nextRoom = currentRoom + 1;
+      setCurrentRoom(nextRoom);
+      
+      // Reset room state safely
+      setRoomExits([]);
+      setSkillCooldowns({});
+      setBattlefieldTraps([]);
+      setDamageNumbers([]);
+      
+      // Generate new enemies for the next room
+      const actNumber = nextRoom <= 2 ? 1 : nextRoom <= 5 ? 2 : 3;
+      const newEnemies = generateRoomEnemies(nextRoom, actNumber);
+      
+      if (newEnemies && newEnemies.length > 0) {
+        setEnemies(newEnemies);
+      }
+      
+      // Set appropriate phase
+      if (nextRoom === totalRooms) {
+        setGamePhase('boss_antechamber');
+      } else {
+        setGamePhase('combat');
+      }
+      
+      console.log(`Entering Room ${nextRoom}/${totalRooms}`);
+    } catch (error) {
+      console.error('Error during room progression:', error);
+      // Fallback to combat phase if something goes wrong
       setGamePhase('combat');
     }
-    
-    console.log(`🚪 Entering Room ${nextRoom}/${totalRooms}`);
   };
 
   const [skills] = useState<Skill[]>([
