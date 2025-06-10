@@ -12,6 +12,21 @@ interface InteractiveNode {
   outcome: string;
   gameLogic: string;
   requirements?: string[];
+  spatialRelationships?: {
+    proximity?: string[]; // Other nodes that influence this one when nearby
+    excludes?: string[]; // Nodes that cannot be active simultaneously
+    enhances?: string[]; // Nodes that become more powerful when this is active
+  };
+  environmentalStates?: {
+    weather?: string[]; // Weather conditions that affect this node
+    timeOfDay?: string[]; // Times when this node is most active
+    storyFlags?: string[]; // Story progress that modifies this node
+  };
+  memoryTriggers?: {
+    firstTime?: string; // Special behavior on first interaction
+    repeated?: string; // Different behavior on subsequent visits
+    withCharacter?: string; // Special behavior when character is present
+  };
 }
 
 interface LocationNodesProps {
@@ -21,6 +36,13 @@ interface LocationNodesProps {
     affection: number;
     gold: number;
     apartmentTier: number;
+  };
+  environmentalContext?: {
+    weather: string;
+    timeOfDay: string;
+    storyFlags: string[];
+    visitHistory: Record<string, number>; // nodeId -> visit count
+    chaHaeInPresent: boolean;
   };
 }
 
@@ -333,11 +355,135 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
   ]
 };
 
-export function LocationInteractiveNodes({ locationId, onNodeInteraction, playerStats }: LocationNodesProps) {
+export function LocationInteractiveNodes({ 
+  locationId, 
+  onNodeInteraction, 
+  playerStats, 
+  environmentalContext 
+}: LocationNodesProps) {
   const [selectedNode, setSelectedNode] = useState<InteractiveNode | null>(null);
   const [showThoughtPrompt, setShowThoughtPrompt] = useState(false);
+  const [nearbyNodes, setNearbyNodes] = useState<string[]>([]);
 
-  const nodes = LOCATION_NODES[locationId] || [];
+  const baseNodes = LOCATION_NODES[locationId] || [];
+  
+  // System 3: Environmental State Management - Filter nodes based on context
+  const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
+    if (!environmentalContext) return baseNodes;
+    
+    return baseNodes.filter(node => {
+      // Weather-based availability
+      if (node.environmentalStates?.weather && 
+          !node.environmentalStates.weather.includes(environmentalContext.weather)) {
+        return false;
+      }
+      
+      // Time-based availability
+      if (node.environmentalStates?.timeOfDay && 
+          !node.environmentalStates.timeOfDay.includes(environmentalContext.timeOfDay)) {
+        return false;
+      }
+      
+      // Story flag requirements
+      if (node.environmentalStates?.storyFlags && 
+          !node.environmentalStates.storyFlags.some(flag => 
+            environmentalContext.storyFlags.includes(flag))) {
+        return false;
+      }
+      
+      return true;
+    });
+  };
+
+  const nodes = getEnvironmentallyAvailableNodes();
+
+  // System 3: Spatial Relationship Calculator
+  const calculateNodeProximity = (node1: InteractiveNode, node2: InteractiveNode): number => {
+    const dx = node1.position.x - node2.position.x;
+    const dy = node1.position.y - node2.position.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const getNodeSpatialState = (node: InteractiveNode): {
+    isEnhanced: boolean;
+    isExcluded: boolean;
+    proximityBonuses: string[];
+  } => {
+    let isEnhanced = false;
+    let isExcluded = false;
+    const proximityBonuses: string[] = [];
+
+    // Check spatial relationships with other nodes
+    if (node.spatialRelationships) {
+      for (const otherNode of nodes) {
+        if (otherNode.id === node.id) continue;
+        
+        const distance = calculateNodeProximity(node, otherNode);
+        const isNearby = distance < 25; // Within 25% screen distance
+        
+        // Enhancement from nearby nodes
+        if (isNearby && node.spatialRelationships.enhances?.includes(otherNode.id)) {
+          isEnhanced = true;
+          proximityBonuses.push(otherNode.id);
+        }
+        
+        // Exclusion from conflicting nodes
+        if (node.spatialRelationships.excludes?.includes(otherNode.id)) {
+          isExcluded = true;
+        }
+      }
+    }
+
+    return { isEnhanced, isExcluded, proximityBonuses };
+  };
+
+  const getNodeMemoryState = (node: InteractiveNode): {
+    thoughtPrompt: string;
+    outcome: string;
+    isFirstTime: boolean;
+  } => {
+    if (!environmentalContext?.visitHistory || !node.memoryTriggers) {
+      return {
+        thoughtPrompt: node.thoughtPrompt,
+        outcome: node.outcome,
+        isFirstTime: true
+      };
+    }
+
+    const visitCount = environmentalContext.visitHistory[node.id] || 0;
+    const isFirstTime = visitCount === 0;
+    
+    // Use memory-based prompts if available
+    if (isFirstTime && node.memoryTriggers.firstTime) {
+      return {
+        thoughtPrompt: node.memoryTriggers.firstTime,
+        outcome: node.outcome + " (First time experiencing this.)",
+        isFirstTime: true
+      };
+    }
+    
+    if (!isFirstTime && node.memoryTriggers.repeated) {
+      return {
+        thoughtPrompt: node.memoryTriggers.repeated,
+        outcome: node.outcome + " (Familiar place, new perspective.)",
+        isFirstTime: false
+      };
+    }
+    
+    if (environmentalContext.chaHaeInPresent && node.memoryTriggers.withCharacter) {
+      return {
+        thoughtPrompt: node.memoryTriggers.withCharacter,
+        outcome: node.outcome + " (Sharing this moment with Cha Hae-In.)",
+        isFirstTime
+      };
+    }
+
+    return {
+      thoughtPrompt: node.thoughtPrompt,
+      outcome: node.outcome,
+      isFirstTime
+    };
+  };
 
   const handleNodeClick = (node: InteractiveNode) => {
     // Check requirements
@@ -353,13 +499,21 @@ export function LocationInteractiveNodes({ locationId, onNodeInteraction, player
       }
     }
 
+    // Check spatial exclusions
+    const spatialState = getNodeSpatialState(node);
+    if (spatialState.isExcluded) {
+      return; // Node is blocked by conflicting nearby node
+    }
+
     setSelectedNode(node);
     setShowThoughtPrompt(true);
   };
 
   const handleThoughtPromptClick = () => {
     if (selectedNode) {
-      onNodeInteraction(selectedNode.id, selectedNode.thoughtPrompt, selectedNode.outcome);
+      // Use memory-enhanced prompts and outcomes
+      const memoryState = getNodeMemoryState(selectedNode);
+      onNodeInteraction(selectedNode.id, memoryState.thoughtPrompt, memoryState.outcome);
       setShowThoughtPrompt(false);
       setSelectedNode(null);
     }
