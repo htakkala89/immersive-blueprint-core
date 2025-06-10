@@ -74,6 +74,8 @@ interface GameState {
   unspentStatPoints?: number;
   unspentSkillPoints?: number;
   storyProgress?: number;
+  // System 4: Daily Life Hub - Unlocked Activities
+  unlockedActivities?: string[];
 }
 
 interface WorldLocation {
@@ -168,7 +170,8 @@ export default function SoloLevelingSpatial() {
       sense: 12
     },
     unspentStatPoints: 5,
-    unspentSkillPoints: 3
+    unspentSkillPoints: 3,
+    unlockedActivities: []
   });
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('afternoon');
@@ -2191,6 +2194,103 @@ export default function SoloLevelingSpatial() {
                   y: 50
                 });
                 break;
+              // Penthouse Gateway Nodes - Tier 3 Luxury Experience
+              case 'penthouse_living_room_couch':
+                // Gateway: Relaxation unlock for Daily Life Hub
+                setGameState(prev => ({
+                  ...prev,
+                  unlockedActivities: [
+                    ...(prev.unlockedActivities || []),
+                    'cuddle_and_watch_movie',
+                    'deep_conversation_couch',
+                    'romantic_movie_night'
+                  ]
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'penthouse_relaxation',
+                  action: '*You settle onto the luxurious sofa together, the city lights creating a perfect ambiance. The comfort of your success and her presence fills the space with warmth.*',
+                  name: 'Penthouse Living Room',
+                  x: 45,
+                  y: 55
+                });
+                console.log('Penthouse relaxation state activated - New activities unlocked in Day Planner');
+                break;
+
+              case 'floor_to_ceiling_window':
+                // Gateway: Cinematic observation mode
+                setCinematicMode(true);
+                handleEnvironmentalInteraction({
+                  id: 'penthouse_view',
+                  action: '*From up here, the entire city looks like a constellation at your feet. All the struggles, all the fights... they led to this moment of peace. You stand together, masters of your domain.*',
+                  name: 'Top of the World',
+                  x: 80,
+                  y: 35
+                });
+                console.log('Penthouse cinematic mode - Ultimate city view experience');
+                break;
+
+              case 'master_suite_door':
+                // Gateway: Unlock highest tier intimate activities
+                setGameState(prev => ({
+                  ...prev,
+                  unlockedActivities: [
+                    ...(prev.unlockedActivities || []),
+                    'master_suite_intimacy',
+                    'infinity_pool_romance',
+                    'master_rain_shower',
+                    'spend_the_night_together',
+                    'penthouse_morning_together'
+                  ]
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'master_suite_gateway',
+                  action: '*You suggest heading to the master suite. This is a major step - a space of ultimate privacy and intimacy. New intimate activities are now available in your Day Planner.*',
+                  name: 'Master Suite Gateway',
+                  x: 20,
+                  y: 30
+                });
+                setShowActivityNotification(true);
+                setTimeout(() => setShowActivityNotification(false), 4000);
+                console.log('Master suite gateway activated - Highest tier intimate activities unlocked');
+                break;
+
+              case 'wine_cellar_access':
+                // Gateway: Add vintage wine to inventory
+                setGameState(prev => ({
+                  ...prev,
+                  inventory: [
+                    ...(prev.inventory || []),
+                    {
+                      id: 'vintage_wine',
+                      name: 'Vintage Wine',
+                      description: 'An exceptional bottle from your private collection',
+                      type: 'romantic_item',
+                      rarity: 'legendary'
+                    }
+                  ],
+                  unlockedActivities: [
+                    ...(prev.unlockedActivities || []),
+                    'share_vintage_wine',
+                    'wine_tasting_together',
+                    'romantic_wine_evening'
+                  ]
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'wine_cellar',
+                  action: '*You retrieve a bottle of vintage wine. The rich history and craftsmanship in this bottle reflects your journey to the top. Perfect for sharing intimate moments.*',
+                  name: 'Wine Cellar',
+                  x: 20,
+                  y: 70
+                });
+                console.log('Vintage wine added to inventory - Romantic activities unlocked');
+                break;
+
+              case 'private_elevator_exit':
+                // Gateway: Open World Map for travel
+                setShowWorldMap(true);
+                console.log('Private elevator activated - Opening world map for travel');
+                break;
+
               case 'vanity_table':
               case 'bookshelf':
               case 'bed':

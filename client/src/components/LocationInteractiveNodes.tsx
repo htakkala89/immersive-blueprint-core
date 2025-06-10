@@ -131,14 +131,14 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       gameLogic: 'intimate_gateway_unlock',
       requirements: ['apartment_tier_2']
     },
-    // Tier 3 - Hannam-dong Penthouse (5 nodes) - Ultimate luxury gateway approach
+    // Tier 3 - Hannam-dong Penthouse (5 nodes) - Official luxury gateway design
     {
       id: 'penthouse_living_room_couch',
       label: 'Living Room Couch',
       icon: Sofa,
       position: { x: 45, y: 55 },
       thoughtPrompt: 'Suggest relaxing on the sofa together',
-      outcome: 'Initiates high-level "relaxing at home" state. Can unlock "Cuddle and watch a movie" activity in Daily Life Hub.',
+      outcome: 'Initiates high-level "relaxing at home" state. Unlocks "Cuddle and watch a movie" activity in Daily Life Hub.',
       gameLogic: 'penthouse_relaxation_unlock',
       requirements: ['apartment_tier_3']
     },
@@ -148,7 +148,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       icon: Eye,
       position: { x: 80, y: 35 },
       thoughtPrompt: 'Admire the view from the top of the world',
-      outcome: 'Triggers cinematic observation scene. From up here, the entire city looks like a constellation at your feet.',
+      outcome: 'Triggers cinematic observation scene. *From up here, the entire city looks like a constellation at your feet. All the struggles, all the fights... they led to this moment of peace.*',
       gameLogic: 'penthouse_cinematic_mode',
       requirements: ['apartment_tier_3']
     },
@@ -158,17 +158,17 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       icon: Bed,
       position: { x: 20, y: 30 },
       thoughtPrompt: 'Suggest heading to the master suite',
-      outcome: 'Major narrative step signifying intent for privacy. Unlocks highest tier intimate activity cards in Day Planner.',
+      outcome: 'Major narrative step signifying intent for privacy and intimacy. New intimate activities are now available in your Day Planner.',
       gameLogic: 'master_suite_gateway_unlock',
       requirements: ['apartment_tier_3']
     },
     {
-      id: 'wine_cellar_door',
+      id: 'wine_cellar_access',
       label: 'Wine Cellar',
       icon: ChefHat,
       position: { x: 20, y: 70 },
       thoughtPrompt: 'Open the wine cellar',
-      outcome: 'You retrieve a bottle of vintage wine. Adds "Vintage Wine" item to inventory for romantic activities.',
+      outcome: '*You retrieve a bottle of vintage wine.* Adds "Vintage Wine" item to inventory for romantic activities.',
       gameLogic: 'wine_cellar_inventory_add',
       requirements: ['apartment_tier_3']
     },

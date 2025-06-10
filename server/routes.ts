@@ -780,10 +780,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const conversationContext = {
           affectionLevel: Math.floor((characterState?.affectionLevel || 25) / 20),
           currentScene: characterState?.location || 'hunter_association',
-          timeOfDay: context?.timeOfDay || 'afternoon',
+          timeOfDay: (context?.timeOfDay || 'afternoon') as 'morning' | 'afternoon' | 'evening' | 'night',
           recentActivity: characterState?.activity,
-          mood: 'focused',
-          userBehavior: 'positive'
+          mood: 'focused' as 'focused' | 'romantic' | 'playful' | 'confident' | 'vulnerable' | 'disappointed' | 'hurt' | 'defensive',
+          userBehavior: 'positive' as 'positive' | 'neutral' | 'rude' | 'mean'
         };
 
         const personalityPrompt = getPersonalityPrompt(conversationContext);
@@ -817,10 +817,11 @@ Respond naturally as if you're texting Jin-Woo back:`;
 
         const result = await model.generateContent(fullPrompt);
         const response = result.response.text();
+        const updatedGameState = { ...gameState };
 
         return res.json({
           response: response.trim(),
-          gameState: updatedGameState || gameState,
+          gameState: updatedGameState,
           expression: 'focused'
         });
       }
