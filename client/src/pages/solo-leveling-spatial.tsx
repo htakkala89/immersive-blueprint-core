@@ -13,7 +13,7 @@ import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
-import { RelationshipConstellation } from '@/components/RelationshipConstellation';
+import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
 import { DungeonRaidSystem11Fixed as DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import WorldMap from '@/components/WorldMap';
@@ -2042,14 +2042,14 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      <RelationshipConstellation
+      <RelationshipConstellationSystem6
         isVisible={showConstellation}
         onClose={() => setShowConstellation(false)}
-        affectionLevel={gameState.affection}
-        memories={[]}
+        affectionLevel={gameState.affection * 10} // Convert 0-10 scale to 0-100
+        memories={[]} // Additional custom memories can be added here
         onMemorySelect={(memory) => {
-          console.log('Reliving memory:', memory.title);
-          setShowConstellation(false);
+          console.log('Viewing memory:', memory.title);
+          // Could trigger scene replay or dialogue here
         }}
       />
 
