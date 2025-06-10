@@ -78,19 +78,6 @@ export function DungeonRaidSystem11({
     timestamp: number;
   }[]>([]);
   const [screenFlash, setScreenFlash] = useState<string | null>(null);
-  
-  // Refs for accessing current state in intervals
-  const enemiesRef = useRef(enemies);
-  const playersRef = useRef(players);
-  
-  // Update refs when state changes
-  useEffect(() => {
-    enemiesRef.current = enemies;
-  }, [enemies]);
-  
-  useEffect(() => {
-    playersRef.current = players;
-  }, [players]);
   const [monarchRuneOpen, setMonarchRuneOpen] = useState(false);
   const [commandMode, setCommandMode] = useState(false);
   const [damageNumbers, setDamageNumbers] = useState<Array<{
@@ -167,6 +154,16 @@ export function DungeonRaidSystem11({
       type: 'shadow_soldier'
     }
   ]);
+
+  // Refs for accessing current state in intervals
+  const enemiesRef = useRef(enemies);
+  const playersRef = useRef(players);
+  
+  // Update refs when state changes
+  useEffect(() => {
+    enemiesRef.current = enemies;
+    playersRef.current = players;
+  }, [enemies, players]);
 
   const [skills] = useState<Skill[]>([
     {
@@ -740,14 +737,6 @@ export function DungeonRaidSystem11({
   useEffect(() => {
     battlefieldTrapsRef.current = battlefieldTraps;
   }, [battlefieldTraps]);
-
-  useEffect(() => {
-    playersRef.current = players;
-  }, [players]);
-
-  useEffect(() => {
-    enemiesRef.current = enemies;
-  }, [enemies]);
 
   // Trap damage detection
   useEffect(() => {
