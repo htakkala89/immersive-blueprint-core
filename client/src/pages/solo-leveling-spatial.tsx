@@ -1351,6 +1351,8 @@ export default function SoloLevelingSpatial() {
         }
         return prev;
       });
+      // Close quest log and open world map for quest tracking
+      setShowQuestLog(false);
       setShowWorldMap(true);
     } else {
       console.log(`Quest ${questId} not found in active quests`);

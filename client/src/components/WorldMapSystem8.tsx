@@ -275,6 +275,13 @@ export function WorldMapSystem8({
 
   const handleLocationSelect = (location: LocationNode) => {
     if (location.state === 'locked') return;
+    
+    // If this is a quest location, navigate directly without confirmation for streamlined quest flow
+    if (location.state === 'quest' && activeQuests.includes(location.id)) {
+      onLocationSelect(location.id);
+      return;
+    }
+    
     setSelectedLocation(location);
     fetchLocationImage(location.id);
   };
