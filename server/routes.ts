@@ -367,7 +367,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat endpoint with proper AI integration
   app.post("/api/chat", async (req, res) => {
     try {
-      const { gameState, userMessage, context } = req.body;
+      const { message, gameState, context } = req.body;
+      
+      // Import personality system
+      const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
       
       const model = genAI.getGenerativeModel({ 
         model: "gemini-1.5-flash",
@@ -379,13 +382,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ]
       });
 
-      const prompt = `You are Cha Hae-In from Solo Leveling. You're in love with Sung Jin-Woo. 
-      Current affection: ${gameState.affection}/100, intimacy: ${gameState.intimacyLevel || 0}/100.
-      Respond to: "${userMessage}"
-      Be romantic, caring, and reference your shared adventures. Keep response under 100 words.`;
+      // Create conversation context for personality system
+      const conversationContext = {
+        affectionLevel: Math.floor((gameState.affection || 25) / 20), // Convert 0-100 to 0-5 scale
+        currentScene: context?.location || 'hunter_association',
+        timeOfDay: (context?.timeOfDay || 'afternoon') as 'morning' | 'afternoon' | 'evening' | 'night',
+        recentActivity: context?.activity,
+        mood: 'focused' as 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic' | 'disappointed' | 'hurt' | 'defensive',
+        userBehavior: 'positive' as 'positive' | 'neutral' | 'rude' | 'mean'
+      };
+
+      const personalityPrompt = getPersonalityPrompt(conversationContext);
       
-      const result = await model.generateContent(prompt);
+      const fullPrompt = `${personalityPrompt}
+
+CURRENT SITUATION:
+- Location: ${context?.location || 'Hunter Association'}
+- Time: ${context?.timeOfDay || 'afternoon'}
+- Activity: ${context?.activity || 'working on reports'}
+- Weather: ${context?.weather || 'clear'}
+
+Jin-Woo just said: "${message}"
+
+RESPONSE INSTRUCTIONS:
+- Respond naturally as Cha Hae-In in character
+- Reference the current location and situation
+- Show appropriate emotional reactions based on affection level
+- Keep response conversational and under 100 words
+- Use "Jin-Woo" when addressing him directly
+- Show your hunter expertise when relevant
+- Express growing feelings if affection is high enough`;
+      
+      const result = await model.generateContent(fullPrompt);
       const response = result.response.text();
+      
+      // Determine emotional state for avatar update
+      let newExpression = 'focused';
+      if (response.toLowerCase().includes('smile') || response.toLowerCase().includes('happy')) {
+        newExpression = 'welcoming';
+      } else if (response.toLowerCase().includes('blush') || response.toLowerCase().includes('heart')) {
+        newExpression = 'romantic';
+      }
       
       let audioUrl = null;
       try {
@@ -400,7 +437,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ 
         response, 
         audioUrl,
-        gameStateUpdate: { affection: Math.min(100, gameState.affection + 1) }
+        expression: newExpression,
+        gameState: {
+          ...gameState,
+          affection: Math.min(100, (gameState.affection || 25) + 1)
+        }
       });
     } catch (error) {
       console.error("Chat error:", error);

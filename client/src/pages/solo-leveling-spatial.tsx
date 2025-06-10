@@ -565,8 +565,14 @@ export default function SoloLevelingSpatial() {
         timestamp: new Date()
       }]);
       
+      // Update game state if provided
       if (data.gameState) {
         setGameState(data.gameState);
+      }
+      
+      // Update Cha Hae-In's expression based on response
+      if (data.expression) {
+        setChaHaeInExpression(data.expression);
       }
       
       // Check if narrative lens should appear (intimate content)
