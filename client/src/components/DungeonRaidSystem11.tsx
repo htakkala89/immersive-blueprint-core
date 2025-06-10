@@ -47,18 +47,6 @@ interface Skill {
   flashRed?: boolean;
 }
 
-interface ShadowSoldier {
-  id: string;
-  name: string;
-  type: 'tank' | 'assassin' | 'mage';
-  manaCost: number;
-  isActive: boolean;
-  x: number;
-  y: number;
-  health: number;
-  maxHealth: number;
-}
-
 interface RaidProps {
   isVisible: boolean;
   onClose: () => void;
@@ -67,7 +55,7 @@ interface RaidProps {
   affectionLevel: number;
 }
 
-export function DungeonRaid({ 
+export function DungeonRaidSystem11({ 
   isVisible, 
   onClose, 
   onRaidComplete, 
@@ -77,7 +65,6 @@ export function DungeonRaid({
   const [gamePhase, setGamePhase] = useState<'preparation' | 'combat' | 'victory' | 'defeat'>('preparation');
   const [synergyGauge, setSynergyGauge] = useState(0);
   const [teamUpReady, setTeamUpReady] = useState(false);
-  const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [combatLog, setCombatLog] = useState<string[]>([]);
   const [commandMode, setCommandMode] = useState(false);
   const [cameraShake, setCameraShake] = useState(false);
@@ -87,12 +74,6 @@ export function DungeonRaid({
     x: number;
     y: number;
     isCritical: boolean;
-  }>>([]);
-  const [lootDrops, setLootDrops] = useState<Array<{
-    id: string;
-    amount: number;
-    x: number;
-    y: number;
   }>>([]);
   
   // Touch-based skill system - 4 slot action bar
@@ -134,43 +115,6 @@ export function DungeonRaid({
       manaCost: 50,
       type: 'special',
       currentCooldown: 0
-    }
-  ]);
-  
-  // Shadow soldier system
-  const [shadowSoldiers, setShadowSoldiers] = useState<ShadowSoldier[]>([
-    {
-      id: 'igris',
-      name: 'Igris',
-      type: 'tank',
-      manaCost: 30,
-      isActive: false,
-      x: 0,
-      y: 0,
-      health: 120,
-      maxHealth: 120
-    },
-    {
-      id: 'iron',
-      name: 'Iron',
-      type: 'assassin',
-      manaCost: 25,
-      isActive: false,
-      x: 0,
-      y: 0,
-      health: 80,
-      maxHealth: 80
-    },
-    {
-      id: 'tank',
-      name: 'Tank',
-      type: 'mage',
-      manaCost: 35,
-      isActive: false,
-      x: 0,
-      y: 0,
-      health: 100,
-      maxHealth: 100
     }
   ]);
   
@@ -343,6 +287,11 @@ export function DungeonRaid({
     if (isCritical) {
       triggerCameraShake();
     }
+    
+    // Check for victory
+    if (enemies.every(e => e.health <= 0)) {
+      setTimeout(() => setGamePhase('victory'), 1000);
+    }
   };
 
   const executeSkill = (skill: Skill) => {
@@ -457,10 +406,6 @@ export function DungeonRaid({
 
   const commandShadowSoldiers = (x: number, y: number) => {
     addToCombatLog(`Shadow soldiers commanded to focus attack`);
-    
-    setShadowSoldiers(prev => prev.map(soldier => 
-      soldier.isActive ? { ...soldier, x: x + Math.random() * 40 - 20, y: y + Math.random() * 40 - 20 } : soldier
-    ));
   };
 
   const showDamageNumber = (damage: number, x: number, y: number, isCritical: boolean) => {
@@ -502,8 +447,18 @@ export function DungeonRaid({
     setSynergyGauge(0);
     setTeamUpReady(false);
     triggerCameraShake();
+    
+    // Check for victory
+    if (enemies.every(e => e.health <= 0)) {
+      setTimeout(() => setGamePhase('victory'), 1000);
+    }
   };
 
+  const addToCombatLog = (message: string) => {
+    setCombatLog(prev => [...prev.slice(-4), message]);
+  };
+
+  // Synergy and cooldown systems
   useEffect(() => {
     if (synergyGauge >= 100 && !teamUpReady) {
       setTeamUpReady(true);
@@ -511,88 +466,29 @@ export function DungeonRaid({
     }
   }, [synergyGauge]);
 
-  const addToCombatLog = (message: string) => {
-    setCombatLog(prev => [...prev.slice(-4), message]);
-  };
+  // Cooldown timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSkills(prev => prev.map(skill => ({
+        ...skill,
+        currentCooldown: Math.max(0, skill.currentCooldown - 100)
+      })));
+    }, 100);
 
-  const executePlayerAction = (action: string, targetX?: number, targetY?: number) => {
-    setSelectedAction(action);
-    
-    switch (action) {
-      case 'move':
-        if (targetX && targetY) {
-          setPlayers(prev => prev.map(p => 
-            p.id === 'jinwoo' ? { ...p, x: targetX, y: targetY } : p
-          ));
-          addToCombatLog("Jin-Woo moves into position");
-        }
-        break;
-        
-      case 'attack':
-        const damage = 25 + Math.floor(Math.random() * 15);
-        setEnemies(prev => prev.map(e => 
-          e.id === 'shadow1' ? { ...e, health: Math.max(0, e.health - damage) } : e
-        ));
-        setSynergyGauge(prev => Math.min(100, prev + 15));
-        addToCombatLog(`Jin-Woo deals ${damage} damage!`);
-        break;
-        
-      case 'skill':
-        const skillDamage = 40 + Math.floor(Math.random() * 20);
-        setEnemies(prev => prev.map(e => ({ ...e, health: Math.max(0, e.health - skillDamage) })));
-        setSynergyGauge(prev => Math.min(100, prev + 25));
-        addToCombatLog(`Shadow Slam deals ${skillDamage} AoE damage!`);
-        break;
-        
-      case 'teamup':
-        if (teamUpReady) {
-          const massiveDamage = 80 + Math.floor(Math.random() * 30);
-          setEnemies(prev => prev.map(e => ({ ...e, health: Math.max(0, e.health - massiveDamage) })));
-          setSynergyGauge(0);
-          setTeamUpReady(false);
-          addToCombatLog(`MONARCH'S WRATH! Jin-Woo and Hae-In deal ${massiveDamage} devastating damage!`);
-        }
-        break;
-    }
+    return () => clearInterval(interval);
+  }, []);
 
-    // Cha Hae-In AI turn
-    setTimeout(() => {
-      const haeInDamage = 20 + Math.floor(Math.random() * 12);
-      setEnemies(prev => prev.map((e, i) => 
-        i === 0 ? { ...e, health: Math.max(0, e.health - haeInDamage) } : e
-      ));
-      setSynergyGauge(prev => Math.min(100, prev + 10));
-      addToCombatLog(`Hae-In strikes with perfect precision for ${haeInDamage} damage!`);
-      
-      // Check for victory
-      setTimeout(() => {
-        setEnemies(current => {
-          const allDefeated = current.every(e => e.health <= 0);
-          if (allDefeated && gamePhase === 'combat') {
-            setGamePhase('victory');
-            onRaidComplete(true, [
-              { name: 'Shadow Core', rarity: 'rare', value: 500 },
-              { name: 'Experience Crystals', amount: playerLevel * 50 }
-            ]);
-          }
-          return current;
-        });
-      }, 500);
+  // Mana regeneration
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlayers(prev => prev.map(player => ({
+        ...player,
+        mana: Math.min(player.maxMana, player.mana + 1)
+      })));
     }, 1000);
-  };
 
-  const handleBattlefieldClick = (e: React.MouseEvent) => {
-    if (!battlefieldRef.current) return;
-    
-    const rect = battlefieldRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    if (selectedAction === 'move') {
-      executePlayerAction('move', x, y);
-      setSelectedAction(null);
-    }
-  };
+    return () => clearInterval(interval);
+  }, []);
 
   if (!isVisible) return null;
 
@@ -608,7 +504,7 @@ export function DungeonRaid({
       
       {/* UI Header */}
       <div className="relative z-10 p-4 flex justify-between items-start">
-        <div className="liquid-glass p-3">
+        <div className="backdrop-blur-md bg-black/40 rounded-lg p-3 border border-purple-500/30">
           <h2 className="text-xl font-bold text-white mb-2">Shadow Dungeon Raid</h2>
           <div className="flex gap-4 text-sm">
             <span className="text-red-400">Difficulty: B-Rank</span>
@@ -716,12 +612,19 @@ export function DungeonRaid({
                 
                 {/* Mana Ring - Blue ring around health aura */}
                 {player.id === 'jinwoo' && (
-                  <motion.div
-                    className="absolute inset-0 w-12 h-12 rounded-full border-2 border-blue-400"
-                    style={{
-                      clipPath: `polygon(0% 0%, ${(player.mana / player.maxMana) * 100}% 0%, ${(player.mana / player.maxMana) * 100}% 100%, 0% 100%)`
-                    }}
-                  />
+                  <svg className="absolute inset-0 w-12 h-12" viewBox="0 0 50 50">
+                    <circle
+                      cx="25"
+                      cy="25"
+                      r="22"
+                      fill="none"
+                      stroke="#60a5fa"
+                      strokeWidth="2"
+                      strokeDasharray={`${(player.mana / player.maxMana) * 138} 138`}
+                      strokeDashoffset="0"
+                      transform="rotate(-90 25 25)"
+                    />
+                  </svg>
                 )}
                 
                 {/* Player Character */}
@@ -730,20 +633,6 @@ export function DungeonRaid({
                 } border-2 border-white z-10`}>
                   {player.id === 'jinwoo' ? <Crown className="w-6 h-6 text-white" /> : <Sword className="w-6 h-6 text-white" />}
                 </div>
-                
-                {/* Status Effects */}
-                {player.statusEffects?.map((effect, index) => (
-                  <motion.div
-                    key={`${effect.type}-${index}`}
-                    className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  >
-                    <span className="text-xs">
-                      {effect.type === 'stun' ? '💫' : effect.type === 'poison' ? '🟢' : '🔥'}
-                    </span>
-                  </motion.div>
-                ))}
               </motion.div>
             ))}
 
@@ -784,35 +673,6 @@ export function DungeonRaid({
                     animate={{ width: `${(enemy.health / enemy.maxHealth) * 100}%` }}
                   />
                 </div>
-                
-                {/* Status Effects */}
-                {enemy.statusEffects?.map((effect, index) => (
-                  <motion.div
-                    key={`${effect.type}-${index}`}
-                    className="absolute -top-2 -right-2 w-3 h-3 rounded-full bg-yellow-400"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <span className="text-xs">
-                      {effect.type === 'stun' ? '💫' : effect.type === 'poison' ? '🟢' : '🔥'}
-                    </span>
-                  </motion.div>
-                ))}
-              </motion.div>
-            ))}
-
-            {/* Active Shadow Soldiers */}
-            {shadowSoldiers.filter(s => s.isActive).map(soldier => (
-              <motion.div
-                key={soldier.id}
-                className="absolute w-8 h-8 rounded-full bg-gray-700 border border-purple-400 flex items-center justify-center"
-                style={{ left: soldier.x - 16, top: soldier.y - 16 }}
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <span className="text-purple-300 text-xs">
-                  {soldier.type === 'tank' ? '🛡️' : soldier.type === 'assassin' ? '🗡️' : '🔮'}
-                </span>
               </motion.div>
             ))}
 
@@ -835,28 +695,6 @@ export function DungeonRaid({
                   transition={{ duration: 1.5 }}
                 >
                   {damage.damage}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-
-            {/* Loot Drops */}
-            <AnimatePresence>
-              {lootDrops.map(loot => (
-                <motion.div
-                  key={loot.id}
-                  className="absolute pointer-events-none"
-                  style={{ left: loot.x, top: loot.y }}
-                  initial={{ opacity: 1, scale: 0 }}
-                  animate={{ 
-                    opacity: 1, 
-                    scale: 1,
-                    x: [0, 10, 20, 30],
-                    y: [0, -5, -10, -15]
-                  }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  transition={{ duration: 2 }}
-                >
-                  <span className="text-yellow-400 text-sm">₩{loot.amount}</span>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -1068,5 +906,6 @@ export function DungeonRaid({
           </div>
         </motion.div>
       )}
+    </motion.div>
   );
 }
