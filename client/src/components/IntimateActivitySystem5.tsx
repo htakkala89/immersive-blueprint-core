@@ -484,7 +484,7 @@ export function IntimateActivitySystem5({
                 <div className="mb-6">
                   <label className="text-white/80 text-sm mb-2 block">Scene Description</label>
                   <Textarea
-                    value={narrativeLens.userPrompt}
+                    value={narrativeLens.userPrompt || ''}
                     onChange={(e) => setNarrativeLens(prev => ({ ...prev, userPrompt: e.target.value }))}
                     className="w-full bg-white/10 border border-white/20 text-white placeholder-white/60 rounded-xl p-4 min-h-[120px]"
                     placeholder="Describe the intimate scene you'd like to visualize..."
@@ -512,7 +512,7 @@ export function IntimateActivitySystem5({
                 {/* Generate Button */}
                 <Button
                   onClick={generateIntimateImage}
-                  disabled={!narrativeLens.userPrompt.trim() || narrativeLens.isGenerating}
+                  disabled={!narrativeLens.userPrompt?.trim() || narrativeLens.isGenerating}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
                   {narrativeLens.isGenerating ? (
