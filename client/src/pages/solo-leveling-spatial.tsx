@@ -14,7 +14,7 @@ import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellation } from '@/components/RelationshipConstellation';
-import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11';
+import { DungeonRaidSystem11Fixed as DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import WorldMap from '@/components/WorldMap';
 import WealthDisplay from '@/components/WealthDisplay';

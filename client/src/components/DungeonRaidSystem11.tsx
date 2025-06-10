@@ -885,10 +885,10 @@ export function DungeonRaidSystem11({
       {/* Combat Phase */}
       {gamePhase === 'combat' && (
         <>
-          {/* Battlefield with Camera Shake */}
+          {/* 2.5D Side-Scrolling Combat Arena */}
           <motion.div 
             ref={battlefieldRef}
-            className="absolute inset-x-4 top-4 bottom-32 bg-gradient-to-r from-gray-800/80 to-red-900/80 rounded-lg border border-red-500/30 overflow-hidden cursor-crosshair"
+            className="absolute inset-x-4 top-4 bottom-32 overflow-hidden cursor-crosshair rounded-lg border border-purple-500/30"
             onClick={handleBattlefieldTap}
             animate={cameraShake ? { 
               x: [0, -2, 2, -2, 2, 0],
@@ -896,6 +896,37 @@ export function DungeonRaidSystem11({
             } : {}}
             transition={{ duration: 0.2 }}
           >
+            {/* Gothic Cathedral/Cavern Background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-900/90 via-gray-900/80 to-red-900/90" />
+            
+            {/* Stone Pattern Overlay */}
+            <div className="absolute inset-0 opacity-30">
+              <div className="w-full h-full bg-repeat" style={{
+                backgroundImage: `repeating-linear-gradient(
+                  90deg,
+                  transparent,
+                  transparent 40px,
+                  rgba(100, 100, 100, 0.1) 40px,
+                  rgba(100, 100, 100, 0.1) 42px
+                ),
+                repeating-linear-gradient(
+                  0deg,
+                  transparent,
+                  transparent 30px,
+                  rgba(100, 100, 100, 0.1) 30px,
+                  rgba(100, 100, 100, 0.1) 32px
+                )`
+              }} />
+            </div>
+            
+            {/* Atmospheric Pillars */}
+            <div className="absolute left-8 top-4 bottom-8 w-12 bg-gradient-to-b from-gray-700/60 to-gray-900/40 rounded opacity-60" />
+            <div className="absolute right-8 top-4 bottom-8 w-12 bg-gradient-to-b from-gray-700/60 to-gray-900/40 rounded opacity-60" />
+            
+            {/* Ground Line */}
+            <div className="absolute bottom-8 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+            
+            {/* Character Models with Health Auras */}
             {/* Players with Health/Mana Auras */}
             {players.map(player => (
               <motion.div
