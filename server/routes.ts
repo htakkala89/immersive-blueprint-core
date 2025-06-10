@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage, generateAvatarExpressionImage } from "./imageGenerator";
+import { ActivityProposalSystem } from "./activityProposalSystem";
 import { getCachedLocationImage, cacheLocationImage, preloadLocationImages, getCacheStats } from "./imagePreloader";
 import { getSceneImage } from "./preGeneratedImages";
 import { voiceService } from "./voiceService";
@@ -251,7 +252,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           vitality: 10,
           sense: 10
         },
-        skills: []
+        skills: [],
+        scheduledActivities: []
       };
 
       // Use the existing dual-generator system

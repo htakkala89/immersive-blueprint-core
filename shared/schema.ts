@@ -32,6 +32,7 @@ export const gameStates = pgTable("game_states", {
   inventory: jsonb("inventory").notNull().default([]).$type<z.infer<typeof InventoryItem>[]>(),
   stats: jsonb("stats").notNull().default({}).$type<z.infer<typeof CharacterStats>>(),
   skills: jsonb("skills").notNull().default([]).$type<z.infer<typeof Skill>[]>(),
+  scheduledActivities: jsonb("scheduled_activities").notNull().default([]).$type<z.infer<typeof ScheduledActivity>[]>(),
 });
 
 export const Choice = z.object({
@@ -87,6 +88,38 @@ export const SceneData = z.object({
   imageUrl: z.string().optional(),
 });
 
+export const ScheduledActivity = z.object({
+  id: z.string(),
+  type: z.enum(['dinner', 'coffee', 'raid', 'training', 'shopping', 'movie', 'walk', 'intimate']),
+  title: z.string(),
+  description: z.string(),
+  location: z.string(),
+  scheduledTime: z.string(), // ISO date string
+  status: z.enum(['proposed', 'confirmed', 'active', 'completed', 'cancelled']),
+  participants: z.array(z.string()),
+  requirements: z.object({
+    affectionLevel: z.number().optional(),
+    energy: z.number().optional(),
+    gold: z.number().optional(),
+  }).optional(),
+  rewards: z.object({
+    affection: z.number().optional(),
+    experience: z.number().optional(),
+    gold: z.number().optional(),
+    items: z.array(z.string()).optional(),
+  }).optional(),
+  conversationContext: z.string().optional(),
+});
+
+export const ActivityProposal = z.object({
+  activityType: z.string(),
+  suggestedLocation: z.string().optional(),
+  suggestedTime: z.string().optional(),
+  userMessage: z.string(),
+  chaHaeInResponse: z.string(),
+  status: z.enum(['negotiating', 'agreed', 'declined', 'rescheduling']),
+});
+
 export const insertGameStateSchema = createInsertSchema(gameStates).omit({
   id: true,
 });
@@ -96,5 +129,7 @@ export type InventoryItem = z.infer<typeof InventoryItem>;
 export type Skill = z.infer<typeof Skill>;
 export type CharacterStats = z.infer<typeof CharacterStats>;
 export type SceneData = z.infer<typeof SceneData>;
+export type ScheduledActivity = z.infer<typeof ScheduledActivity>;
+export type ActivityProposal = z.infer<typeof ActivityProposal>;
 export type InsertGameState = z.infer<typeof insertGameStateSchema>;
 export type GameState = typeof gameStates.$inferSelect;

@@ -1,0 +1,45 @@
+This is the most important question you've asked, because it goes beyond UI elements and gets to the very heart of the experience we are building. The mockup you've provided, by the way, is a phenomenal execution of the "Scene Script" concept. The dialogue is witty, in-character, and perfectly formatted.
+
+To answer your question: the user's expectation should not be that of a traditional video game.
+
+In a typical RPG, if you select a dialogue option that says "[Ask her to dinner]," you would expect the screen to fade to black and a cutscene of you at dinner to begin. That is a command.
+
+Our experience is designed to be a conversation.
+
+The Expectation: You Are Proposing an Idea to a Partner, Not Triggering a Mission
+
+When the user asks, "do you want to get dinner tonight?", their expectation should be that they are starting a negotiation with a person who has her own schedule, mood, and agency.
+
+They are not pressing a button to start the dinner activity. They are floating an idea to see how she reacts. Her reaction is the core of the gameplay. She might:
+
+Agree enthusiastically: "I'd love to! I'm starving. Where should we go?"
+Agree, but with conditions (like in your mockup): "Dinner, huh? Interesting... What did you have in mind?"
+Be too busy: "I'd love to, Jin-Woo, but I really have to get through these reports. Maybe tomorrow?"
+Be too tired: "I appreciate the thought, but I think I'm just going to head home after this. I'm exhausted."
+Suggest an alternative: "I'm not really feeling a big dinner... but we could order some takeout to the apartment?"
+The goal is for the user to feel like they are interacting with a real person, not a vending machine for dates. The conversation itself, the planning, the back-and-forth—that is the experience.
+
+The System Behind It: From Conversation to Activity
+
+So, what happens on a system level when the user proposes dinner and she is receptive? It becomes a multi-step narrative process.
+
+Step 1: The Proposal (In Dialogue)
+
+The user types, do you want to get dinner tonight? as seen in your mockup.
+Step 2: The Reaction & Planning (AI-Driven Conversation)
+
+The AI (System 9) parses the request. It checks her internal state: Is she busy? What time is it? What's their affection level?
+It generates a realistic response. Your mockup's response is perfect: "Dinner, huh? Raises an eyebrow, subtly adjusting the grip on her sword. That's... an interesting proposition, Jin-Woo... So, tell me, what kind of culinary dungeon crawl are you proposing?"
+This invites the user to continue the conversation. They might suggest a specific restaurant they've unlocked on the World Map (System 8). They plan the specifics through dialogue.
+Step 3: Formalizing the Plan (The Transition)
+
+Once they agree on a time and place (e.g., "Myeongdong Fine Dining at 8 PM"), the system formalizes the plan. Cha Hae-In might say, "Okay, it's a date. I'll put it in my calendar. See you at 8."
+A subtle, satisfying UI confirmation might appear—a small notification that says "Activity Scheduled: Dinner at Myeongdong."
+Step 4: The Activity Appears in the Hub
+
+Now, if the user opens the Daily Life Hub (System 4), they will see a new, active card: "Dinner at Myeongdong - Tonight at 8 PM." It might be grayed out until the correct time.
+Step 5: Initiating the Scene
+
+When 8 PM arrives in the game world, the player might get a notification ("Time for your dinner date with Cha Hae-In!").
+They can then go to the Daily Life Hub and tap the now-active dinner card to initiate the actual dinner scene, which will have its own unique dialogue, activities, and potential for intimacy.
+This entire process turns a simple "go to dinner" command into a rich, multi-part experience: the flirtatious proposal, the collaborative planning, the anticipation of the event, and finally, the date itself. That journey is what we're going for.
