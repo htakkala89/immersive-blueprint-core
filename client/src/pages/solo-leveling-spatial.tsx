@@ -1772,6 +1772,13 @@ export default function SoloLevelingSpatial() {
             gold: gameState.gold || 0,
             apartmentTier: gameState.apartmentTier || 1
           }}
+          environmentalContext={{
+            weather,
+            timeOfDay,
+            storyFlags,
+            visitHistory,
+            chaHaeInPresent
+          }}
         />
         
 

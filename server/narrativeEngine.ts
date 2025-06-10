@@ -40,6 +40,12 @@ interface NarrativeContext {
   worldEvents: WorldEvent[];
   narrativeTension: number;
   pacing: 'slow' | 'moderate' | 'intense' | 'climactic';
+  longTermMemories: string[];
+  narrativeFlags: Record<string, string>;
+  relationshipMilestones: string[];
+  prevailingMood: string;
+  playerProfile: string;
+  currentChapter: number;
 }
 
 interface WorldEvent {
@@ -58,6 +64,12 @@ class NarrativeEngine {
   private activeArcs: Map<string, StoryArc[]> = new Map();
   private emotionalStates: Map<string, CharacterEmotionalState> = new Map();
   private worldEvents: WorldEvent[] = [];
+  private longTermMemories: Map<string, string[]> = new Map();
+  private narrativeFlags: Map<string, Record<string, string>> = new Map();
+  private relationshipMilestones: Map<string, string[]> = new Map();
+  private prevailingMoods: Map<string, string> = new Map();
+  private playerProfiles: Map<string, string> = new Map();
+  private storyChapters: Map<string, number> = new Map();
 
   constructor() {
     this.initializeBaseNarrative();
@@ -152,10 +164,78 @@ class NarrativeEngine {
 
     this.storyMemories.get(playerId)!.push(fullMemory);
     
+    // Check for long-term memory creation (Memory Star equivalent)
+    this.processLongTermMemory(playerId, fullMemory);
+    
+    // Update player profile based on choices
+    this.updatePlayerProfile(playerId, fullMemory);
+    
     // Trigger narrative analysis
     this.analyzeStoryProgression(playerId, fullMemory);
     
     return memoryId;
+  }
+
+  // Process Long-Term Memory (Memory Star Integration)
+  private processLongTermMemory(playerId: string, memory: StoryMemory) {
+    const longTermTriggers = [
+      'first_kiss', 'confession', 'first_date', 'relationship_milestone',
+      'major_battle', 'emotional_breakthrough', 'intimate_moment',
+      'tragic_event', 'achievement', 'world_changing_event'
+    ];
+
+    const shouldCreateLongTermMemory = longTermTriggers.some(trigger =>
+      memory.storyTags.includes(trigger) || memory.event.toLowerCase().includes(trigger)
+    );
+
+    if (shouldCreateLongTermMemory || memory.emotionalImpact >= 8) {
+      if (!this.longTermMemories.has(playerId)) {
+        this.longTermMemories.set(playerId, []);
+      }
+
+      const longTermMemory = `${memory.event.split(':')[0]}_at_${memory.location}`;
+      this.longTermMemories.get(playerId)!.push(longTermMemory);
+      
+      console.log(`⭐ Long-term memory created: ${longTermMemory}`);
+    }
+  }
+
+  // Update Player Profile (Narrative Flags)
+  private updatePlayerProfile(playerId: string, memory: StoryMemory) {
+    if (!this.narrativeFlags.has(playerId)) {
+      this.narrativeFlags.set(playerId, {});
+    }
+
+    const flags = this.narrativeFlags.get(playerId)!;
+    
+    // Analyze dialogue choices for player personality
+    const empathyKeywords = ['care', 'help', 'understand', 'comfort', 'support', 'gentle'];
+    const pragmaticKeywords = ['efficient', 'practical', 'logical', 'strategic', 'focus', 'mission'];
+    const romanticKeywords = ['love', 'beautiful', 'together', 'heart', 'feelings', 'romantic'];
+    
+    const eventText = memory.event.toLowerCase();
+    
+    let empathyScore = empathyKeywords.filter(word => eventText.includes(word)).length;
+    let pragmaticScore = pragmaticKeywords.filter(word => eventText.includes(word)).length;
+    let romanticScore = romanticKeywords.filter(word => eventText.includes(word)).length;
+
+    // Update cumulative scores
+    flags.empathy_score = (parseInt(flags.empathy_score || '0') + empathyScore).toString();
+    flags.pragmatic_score = (parseInt(flags.pragmatic_score || '0') + pragmaticScore).toString();
+    flags.romantic_score = (parseInt(flags.romantic_score || '0') + romanticScore).toString();
+
+    // Determine dominant player profile
+    const totalEmpathy = parseInt(flags.empathy_score);
+    const totalPragmatic = parseInt(flags.pragmatic_score);
+    const totalRomantic = parseInt(flags.romantic_score);
+
+    if (totalEmpathy > totalPragmatic && totalEmpathy > totalRomantic) {
+      this.playerProfiles.set(playerId, 'empathetic');
+    } else if (totalPragmatic > totalEmpathy && totalPragmatic > totalRomantic) {
+      this.playerProfiles.set(playerId, 'pragmatic');
+    } else if (totalRomantic > 5) {
+      this.playerProfiles.set(playerId, 'romantic');
+    }
   }
 
   // Dynamic story arc progression
@@ -200,10 +280,99 @@ class NarrativeEngine {
     
     if (arc && arc.currentChapter < arc.totalChapters) {
       arc.currentChapter++;
+      this.storyChapters.set(playerId, arc.currentChapter);
       console.log(`📖 Story Arc Advanced: ${arc.title} - Chapter ${arc.currentChapter}`);
       
       // Trigger chapter-specific events
       this.triggerChapterEvents(playerId, arc);
+      
+      // Check for relationship milestone requirements
+      this.evaluateRelationshipMilestones(playerId, arc.currentChapter);
+    }
+  }
+
+  // Relationship Milestone System
+  private evaluateRelationshipMilestones(playerId: string, currentChapter: number) {
+    if (!this.relationshipMilestones.has(playerId)) {
+      this.relationshipMilestones.set(playerId, []);
+    }
+
+    const milestones = this.relationshipMilestones.get(playerId)!;
+    const chapterMilestones = {
+      2: 'first_meaningful_conversation',
+      3: 'casual_meeting_outside_work', 
+      4: 'emotional_vulnerability_shared',
+      5: 'romantic_tension_acknowledged',
+      6: 'physical_intimacy_begun',
+      7: 'exclusive_relationship_status',
+      8: 'deep_emotional_intimacy',
+      9: 'future_planning_together',
+      10: 'complete_trust_established'
+    };
+
+    const milestone = chapterMilestones[currentChapter as keyof typeof chapterMilestones];
+    if (milestone && !milestones.includes(milestone)) {
+      milestones.push(milestone);
+      console.log(`💖 Relationship Milestone Achieved: ${milestone}`);
+      
+      // Update narrative flags for milestone achievements
+      const flags = this.narrativeFlags.get(playerId) || {};
+      flags.relationship_status = milestone;
+      this.narrativeFlags.set(playerId, flags);
+
+      // Trigger world event for major milestones
+      if (currentChapter >= 6) {
+        this.triggerMilestoneWorldEvent(playerId, milestone);
+      }
+    }
+  }
+
+  // Prevailing Mood System
+  setPrevailingMood(playerId: string, mood: string, duration?: number) {
+    this.prevailingMoods.set(playerId, mood);
+    console.log(`🎭 Prevailing mood set: ${mood}`);
+    
+    // Auto-reset mood after duration (if specified)
+    if (duration) {
+      setTimeout(() => {
+        const currentMood = this.prevailingMoods.get(playerId);
+        if (currentMood === mood) {
+          this.prevailingMoods.set(playerId, 'focused');
+          console.log(`🎭 Mood automatically reset to focused`);
+        }
+      }, duration * 60 * 1000); // Convert minutes to milliseconds
+    }
+  }
+
+  // Dynamic Event Trigger System
+  private triggerMilestoneWorldEvent(playerId: string, milestone: string) {
+    const milestoneEvents = {
+      'exclusive_relationship_status': {
+        id: 'relationship_official',
+        type: 'relationship_milestone' as const,
+        title: 'Official Relationship',
+        description: 'Your relationship with Cha Hae-In is now officially recognized',
+        triggerConditions: [`milestone_${milestone}`],
+        consequences: ['new_dialogue_options', 'intimate_activities_unlocked'],
+        isTriggered: true,
+        triggerDate: new Date()
+      },
+      'deep_emotional_intimacy': {
+        id: 'emotional_bond_complete',
+        type: 'personal_growth' as const,
+        title: 'Deep Emotional Bond',
+        description: 'You and Cha Hae-In share complete emotional intimacy',
+        triggerConditions: [`milestone_${milestone}`],
+        consequences: ['advanced_conversations', 'future_planning_unlocked'],
+        isTriggered: true,
+        triggerDate: new Date()
+      }
+    };
+
+    const event = milestoneEvents[milestone as keyof typeof milestoneEvents];
+    if (event && !this.worldEvents.find(e => e.id === event.id)) {
+      this.worldEvents.push(event);
+      console.log(`🌍 Milestone World Event Triggered: ${event.title}`);
     }
   }
 
@@ -339,7 +508,13 @@ class NarrativeEngine {
       emotionalStates: Object.fromEntries(this.emotionalStates),
       worldEvents: this.worldEvents,
       narrativeTension: this.calculateNarrativeTension(playerId),
-      pacing: this.calculateNarrativePacing(playerId)
+      pacing: this.calculateNarrativePacing(playerId),
+      longTermMemories: this.longTermMemories.get(playerId) || [],
+      narrativeFlags: this.narrativeFlags.get(playerId) || {},
+      relationshipMilestones: this.relationshipMilestones.get(playerId) || [],
+      prevailingMood: this.prevailingMoods.get(playerId) || 'focused',
+      playerProfile: this.playerProfiles.get(playerId) || 'neutral',
+      currentChapter: this.storyChapters.get(playerId) || 1
     };
   }
 
@@ -374,15 +549,174 @@ class NarrativeEngine {
     const context = this.getStoryContext(playerId);
     const chaState = this.emotionalStates.get('cha_hae_in');
     
-    const narrativePrompt = this.buildNarrativePrompt(context, currentSituation);
+    // Apply location-based contextual weighting
+    const narrativePrompt = this.buildContextualNarrativePrompt(context, currentSituation);
     const emotionalContext = this.buildEmotionalContext(chaState);
-    const suggestedResponses = this.generateSuggestedResponses(context, chaState);
+    const suggestedResponses = this.generateContextualResponses(context, chaState, currentSituation);
 
     return {
       narrativePrompt,
       emotionalContext,
       suggestedResponses
     };
+  }
+
+  // Location-Based Contextual Story Generation
+  private buildContextualNarrativePrompt(context: NarrativeContext, situation: string): string {
+    const location = this.extractLocationFromSituation(situation);
+    const timeOfDay = this.extractTimeFromSituation(situation);
+    
+    // Base narrative context
+    let prompt = this.buildNarrativePrompt(context, situation);
+    
+    // Apply location-specific narrative weighting
+    const locationWeights = {
+      'hunter_association': {
+        topics: ['combat', 'missions', 'professional_development', 'hunter_politics'],
+        mood: 'professional_focused'
+      },
+      'chahaein_apartment': {
+        topics: ['personal_feelings', 'intimacy', 'future_plans', 'vulnerability'],
+        mood: 'intimate_personal'
+      },
+      'hongdae_cafe': {
+        topics: ['casual_conversation', 'hobbies', 'relaxation', 'getting_to_know'],
+        mood: 'relaxed_friendly'
+      },
+      'myeongdong_restaurant': {
+        topics: ['sharing_meals', 'cultural_experiences', 'romantic_atmosphere'],
+        mood: 'romantic_warm'
+      }
+    };
+
+    const locationData = locationWeights[location as keyof typeof locationWeights];
+    if (locationData) {
+      prompt += ` LOCATION_CONTEXT: Currently at ${location}. Conversation topics should be weighted towards: ${locationData.topics.join(', ')}. Emotional tone: ${locationData.mood}.`;
+    }
+
+    // Apply time-based contextual modifications
+    if (timeOfDay === 'night' && (location === 'chahaein_apartment' || location === 'player_apartment')) {
+      prompt += ` TIME_CONTEXT: Evening/night setting encourages more intimate, personal conversations and emotional vulnerability.`;
+    }
+
+    // Apply prevailing mood influence
+    const prevailingMood = context.prevailingMood;
+    if (prevailingMood !== 'focused') {
+      prompt += ` MOOD_CONTEXT: Cha Hae-In's current prevailing mood is ${prevailingMood}. This affects her receptiveness and conversation style.`;
+    }
+
+    // Apply player profile influence
+    const playerProfile = context.playerProfile;
+    if (playerProfile !== 'neutral') {
+      prompt += ` PLAYER_PROFILE: Based on past interactions, player tends to be ${playerProfile}. Adjust Cha Hae-In's responses accordingly.`;
+    }
+
+    return prompt;
+  }
+
+  // Enhanced contextual response generation
+  private generateContextualResponses(context: NarrativeContext, chaState?: CharacterEmotionalState, situation?: string): string[] {
+    const baseResponses = this.generateSuggestedResponses(context, chaState);
+    const location = situation ? this.extractLocationFromSituation(situation) : 'unknown';
+    
+    // Add location-specific response options
+    const locationResponses = {
+      'hunter_association': [
+        'Ask about her latest mission',
+        'Discuss hunter techniques',
+        'Suggest training together'
+      ],
+      'chahaein_apartment': [
+        'Express how comfortable you feel here',
+        'Ask about her personal life',
+        'Suggest staying the night'
+      ],
+      'hongdae_cafe': [
+        'Order something to share',
+        'Ask about her favorite places',
+        'Suggest exploring the area together'
+      ],
+      'myeongdong_restaurant': [
+        'Compliment the food choice',
+        'Share a personal story',
+        'Plan future dates together'
+      ]
+    };
+
+    const contextualResponses = locationResponses[location as keyof typeof locationResponses] || [];
+    
+    // Combine base responses with contextual ones, removing duplicates
+    const allResponses = [...baseResponses, ...contextualResponses];
+    return Array.from(new Set(allResponses)).slice(0, 6); // Limit to 6 unique responses
+  }
+
+  // Utility methods for context extraction
+  private extractLocationFromSituation(situation: string): string {
+    const locationKeywords = {
+      'hunter_association': ['association', 'office', 'headquarters', 'hq'],
+      'chahaein_apartment': ['apartment', 'home', 'her place'],
+      'hongdae_cafe': ['cafe', 'coffee', 'hongdae'],
+      'myeongdong_restaurant': ['restaurant', 'dining', 'myeongdong']
+    };
+
+    for (const [location, keywords] of Object.entries(locationKeywords)) {
+      if (keywords.some(keyword => situation.toLowerCase().includes(keyword))) {
+        return location;
+      }
+    }
+    return 'unknown';
+  }
+
+  private extractTimeFromSituation(situation: string): string {
+    const timeKeywords = {
+      'morning': ['morning', 'breakfast', 'early'],
+      'afternoon': ['afternoon', 'lunch', 'day'],
+      'evening': ['evening', 'dinner', 'sunset'],
+      'night': ['night', 'late', 'midnight', 'dark']
+    };
+
+    for (const [time, keywords] of Object.entries(timeKeywords)) {
+      if (keywords.some(keyword => situation.toLowerCase().includes(keyword))) {
+        return time;
+      }
+    }
+    return 'unknown';
+  }
+
+  // Multi-Character Story Thread Management
+  initializeSubStoryline(playerId: string, characterId: string, storylineId: string) {
+    const flags = this.narrativeFlags.get(playerId) || {};
+    flags[`substory_${characterId}_${storylineId}`] = 'active';
+    this.narrativeFlags.set(playerId, flags);
+    
+    console.log(`📚 Sub-storyline initialized: ${characterId} - ${storylineId}`);
+  }
+
+  progressSubStoryline(playerId: string, characterId: string, storylineId: string, progressLevel: number) {
+    const flags = this.narrativeFlags.get(playerId) || {};
+    flags[`substory_${characterId}_${storylineId}_progress`] = progressLevel.toString();
+    this.narrativeFlags.set(playerId, flags);
+    
+    console.log(`📚 Sub-storyline progressed: ${characterId} - ${storylineId} (Level ${progressLevel})`);
+  }
+
+  // Public methods for external access
+  public setPlayerProfile(playerId: string, profile: string) {
+    this.playerProfiles.set(playerId, profile);
+  }
+
+  public addRelationshipMilestone(playerId: string, milestone: string) {
+    if (!this.relationshipMilestones.has(playerId)) {
+      this.relationshipMilestones.set(playerId, []);
+    }
+    this.relationshipMilestones.get(playerId)!.push(milestone);
+  }
+
+  public addNarrativeFlag(playerId: string, key: string, value: string) {
+    if (!this.narrativeFlags.has(playerId)) {
+      this.narrativeFlags.set(playerId, {});
+    }
+    this.narrativeFlags.get(playerId)![key] = value;
   }
 
   private buildNarrativePrompt(context: NarrativeContext, situation: string): string {
