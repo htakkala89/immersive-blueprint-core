@@ -703,50 +703,131 @@ export function DungeonRaidSystem11Fixed({
         </motion.div>
       )}
 
-      {/* Corner Synergy Gauge */}
-      <div className="absolute top-16 right-4 z-20">
+      {/* Dynamic Synergy Gauge - Corner to Center */}
+      <motion.div 
+        className={`absolute z-30 ${teamUpReady ? 'top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2' : 'top-16 right-4'}`}
+        initial={false}
+        animate={teamUpReady ? {
+          scale: [1, 2.5],
+          x: teamUpReady ? [0, -200] : [0, 0],
+          y: teamUpReady ? [0, 100] : [0, 0]
+        } : {
+          scale: 1,
+          x: 0,
+          y: 0
+        }}
+        transition={{ duration: 1.2, ease: "easeInOut" }}
+      >
         <motion.div
-          className="w-16 h-16"
+          className={teamUpReady ? "w-32 h-32" : "w-16 h-16"}
           animate={teamUpReady ? {
-            scale: [1, 1.3, 1],
-            x: [-200, 0],
-            y: [100, 0]
+            filter: [
+              "drop-shadow(0 0 20px rgba(147, 51, 234, 0.8))",
+              "drop-shadow(0 0 40px rgba(251, 191, 36, 0.8))",
+              "drop-shadow(0 0 20px rgba(147, 51, 234, 0.8))"
+            ]
           } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 2, repeat: teamUpReady ? Infinity : 0 }}
         >
           <svg viewBox="0 0 64 64" className="w-full h-full transform -rotate-90">
+            {/* Background ring */}
             <circle
               cx="32"
               cy="32"
               r="28"
               fill="none"
               stroke="rgba(147, 51, 234, 0.3)"
-              strokeWidth="6"
+              strokeWidth={teamUpReady ? "4" : "6"}
             />
+            
+            {/* Progress ring */}
             <motion.circle
               cx="32"
               cy="32"
               r="28"
               fill="none"
               stroke="url(#synergyGradient)"
-              strokeWidth="6"
+              strokeWidth={teamUpReady ? "4" : "6"}
               strokeLinecap="round"
               strokeDasharray={176}
               strokeDashoffset={176 - (synergyGauge / 100) * 176}
               transition={{ duration: 0.3 }}
             />
+            
+            {/* Outer glow ring when ready */}
+            {teamUpReady && (
+              <motion.circle
+                cx="32"
+                cy="32"
+                r="30"
+                fill="none"
+                stroke="url(#glowGradient)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeDasharray={188}
+                strokeDashoffset={0}
+                animate={{
+                  strokeDashoffset: [0, -188],
+                  opacity: [0.8, 0.3, 0.8]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+            )}
+            
             <defs>
               <linearGradient id="synergyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#9333ea" />
                 <stop offset="100%" stopColor="#fbbf24" />
               </linearGradient>
+              <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#9333ea" stopOpacity="0.4" />
+              </radialGradient>
             </defs>
           </svg>
+          
+          {/* Center content */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">{Math.floor(synergyGauge)}%</span>
+            {teamUpReady ? (
+              <motion.button
+                className="bg-gradient-to-r from-purple-600 to-amber-500 text-white font-bold py-2 px-4 rounded-full shadow-lg border-2 border-white/30"
+                onClick={() => {
+                  // Execute team-up attack
+                  setEnemies(prev => prev.map(e => ({
+                    ...e,
+                    health: Math.max(0, e.health - 200)
+                  })));
+                  
+                  enemies.forEach(enemy => {
+                    showDamageNumber(200, enemy.x, enemy.y, true);
+                  });
+                  
+                  addToCombatLog("Jin-Woo and Cha Hae-In execute devastating Team-Up Attack!");
+                  setSynergyGauge(0);
+                  setTeamUpReady(false);
+                  triggerCameraShake();
+                  
+                  // Check for victory
+                  if (enemies.every(e => e.health <= 0)) {
+                    setTimeout(() => setGamePhase('victory'), 1000);
+                  }
+                }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  <span className="text-sm">TEAM-UP</span>
+                </div>
+              </motion.button>
+            ) : (
+              <span className="text-white text-xs font-bold">{Math.floor(synergyGauge)}%</span>
+            )}
           </div>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* System 11 Touch-Based Action Bar - 4 Slots */}
       <div className="absolute bottom-4 left-4 right-4">
