@@ -1049,7 +1049,67 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+  // System 7 Commerce - Purchase Handlers
+  const handleLuxuryPurchase = (item: any) => {
+    const currentGold = gameState.gold || 0;
+    if (currentGold >= item.price) {
+      setGameState(prev => ({
+        ...prev,
+        gold: (prev.gold || 0) - item.price,
+        affection: prev.affection + item.affectionBonus
+      }));
+      
+      setRecentTransactions(prev => [...prev, {
+        id: Date.now().toString(),
+        type: 'loss',
+        amount: item.price,
+        description: `Purchased ${item.name}`,
+        timestamp: new Date().toISOString()
+      }]);
+      
+      console.log(`Purchased ${item.name} for ₩${item.price.toLocaleString()}`);
+    }
+  };
 
+  const handleFurniturePurchase = (item: any) => {
+    const currentGold = gameState.gold || 0;
+    if (currentGold >= item.price) {
+      setGameState(prev => ({
+        ...prev,
+        gold: (prev.gold || 0) - item.price
+      }));
+      
+      setRecentTransactions(prev => [...prev, {
+        id: Date.now().toString(),
+        type: 'loss',
+        amount: item.price,
+        description: `Purchased ${item.name}`,
+        timestamp: new Date().toISOString()
+      }]);
+      
+      console.log(`Purchased ${item.name} for ₩${item.price.toLocaleString()}`);
+    }
+  };
+
+  const handlePropertyPurchase = (property: any) => {
+    const currentGold = gameState.gold || 0;
+    if (currentGold >= property.price) {
+      setGameState(prev => ({
+        ...prev,
+        gold: (prev.gold || 0) - property.price
+      }));
+      
+      setRecentTransactions(prev => [...prev, {
+        id: Date.now().toString(),
+        type: 'loss',
+        amount: property.price,
+        description: `Purchased ${property.name}`,
+        timestamp: new Date().toISOString()
+      }]);
+      
+      console.log(`Purchased ${property.name} for ₩${property.price.toLocaleString()}`);
+    }
+  };
 
   const generateSceneImage = async () => {
     try {
@@ -2049,6 +2109,31 @@ export default function SoloLevelingSpatial() {
         playerLevel={gameState.level}
         onAcceptQuest={handleAcceptQuest}
         activeQuests={activeQuests}
+      />
+
+      {/* System 7 Commerce Store Modals */}
+      <LuxuryDepartmentStore
+        isVisible={showLuxuryDepartmentStore}
+        onClose={() => setShowLuxuryDepartmentStore(false)}
+        currentGold={gameState.gold || 0}
+        onPurchase={handleLuxuryPurchase}
+        backgroundImage={currentLocationData.backgroundImage}
+      />
+
+      <GangnamFurnishings
+        isVisible={showGangnamFurnishings}
+        onClose={() => setShowGangnamFurnishings(false)}
+        currentGold={gameState.gold || 0}
+        onPurchase={handleFurniturePurchase}
+        backgroundImage={currentLocationData.backgroundImage}
+      />
+
+      <LuxuryRealtor
+        isVisible={showLuxuryRealtor}
+        onClose={() => setShowLuxuryRealtor(false)}
+        currentGold={gameState.gold || 0}
+        onPurchase={handlePropertyPurchase}
+        backgroundImage={currentLocationData.backgroundImage}
       />
     </div>
   );

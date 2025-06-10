@@ -333,12 +333,69 @@ export default function LuxuryDepartmentStore({
           </div>
 
           {/* Item Inspection Modal */}
-          <ItemInspectionView
-            item={selectedItem}
-            currentGold={currentGold}
-            onPurchase={handlePurchase}
-            onClose={() => setSelectedItem(null)}
-          />
+          {selectedItem && (
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+              <div className="relative w-full max-w-4xl h-full max-h-[80vh] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 rounded-2xl overflow-hidden">
+                <button
+                  onClick={() => setSelectedItem(null)}
+                  className="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white z-10"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                
+                <div className="flex h-full">
+                  <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800">
+                    <div className="w-80 h-80 bg-white/20 rounded-lg flex items-center justify-center">
+                      <motion.div
+                        className={`w-32 h-32 bg-gradient-to-br ${getRarityColor(selectedItem.rarity)} rounded-full flex items-center justify-center shadow-2xl`}
+                        animate={{ rotateY: 360 }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Diamond className="w-16 h-16 text-white" />
+                      </motion.div>
+                    </div>
+                  </div>
+                  
+                  <div className="w-96 p-8 bg-white/90 dark:bg-slate-800/90 flex flex-col">
+                    <div className="flex-1">
+                      <h2 className="text-3xl font-bold mb-4">{selectedItem.name}</h2>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6 italic">"{selectedItem.flavorText}"</p>
+                      <p className="text-gray-700 dark:text-gray-200 mb-8">{selectedItem.description}</p>
+                      
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-semibold">Price:</span>
+                          <span className="text-2xl font-bold text-yellow-600">₩{selectedItem.price.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-semibold">Affection Bonus:</span>
+                          <span className="text-xl font-bold text-pink-600 flex items-center gap-2">
+                            <Heart className="w-5 h-5" />
+                            +{selectedItem.affectionBonus}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-semibold">Rarity:</span>
+                          <span className={`px-3 py-1 rounded-lg text-white bg-gradient-to-r ${getRarityColor(selectedItem.rarity)}`}>
+                            {selectedItem.rarity}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      onClick={() => handlePurchase(selectedItem)}
+                      disabled={currentGold < selectedItem.price}
+                      className="w-full py-4 text-lg font-bold"
+                      size="lg"
+                    >
+                      {currentGold >= selectedItem.price ? 'Purchase' : 'Insufficient Funds'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>
