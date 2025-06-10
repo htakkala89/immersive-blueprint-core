@@ -439,12 +439,12 @@ export function PlayerProgressionSystem16({
                 )}
 
                 {/* Core Stats */}
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
+                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50">
                   <div className="p-6 pb-4">
                     <h3 className="text-xl font-bold text-white">Core Stats</h3>
                   </div>
-                  <div className="px-6 pb-6 max-h-80 overflow-y-auto character-scrollbar">
-                    <div className="space-y-4">
+                  <div className="px-6 pb-6 max-h-96 overflow-y-auto character-scrollbar">
+                    <div className="space-y-3">
                     {Object.entries(playerData.stats).map(([statKey, value]) => {
                       const IconComponent = getStatIcon(statKey as keyof CoreStats);
                       const colorClass = getStatColor(statKey as keyof CoreStats);
