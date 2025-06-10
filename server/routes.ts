@@ -416,12 +416,33 @@ RESPONSE INSTRUCTIONS:
       const result = await model.generateContent(fullPrompt);
       const response = result.response.text();
       
-      // Determine emotional state for avatar update
+      // Advanced emotion detection for avatar updates
       let newExpression = 'focused';
-      if (response.toLowerCase().includes('smile') || response.toLowerCase().includes('happy')) {
-        newExpression = 'welcoming';
-      } else if (response.toLowerCase().includes('blush') || response.toLowerCase().includes('heart')) {
+      const responseText = response.toLowerCase();
+      
+      // Romantic expressions
+      if (responseText.includes('blush') || responseText.includes('heart') || responseText.includes('love') || responseText.includes('feelings')) {
         newExpression = 'romantic';
+      }
+      // Happy/welcoming expressions
+      else if (responseText.includes('smile') || responseText.includes('happy') || responseText.includes('glad') || responseText.includes('wonderful')) {
+        newExpression = 'welcoming';
+      }
+      // Surprised expressions
+      else if (responseText.includes('surprised') || responseText.includes('unexpected') || responseText.includes('wow') || responseText.includes('really?')) {
+        newExpression = 'surprised';
+      }
+      // Amused expressions
+      else if (responseText.includes('laugh') || responseText.includes('funny') || responseText.includes('amusing') || responseText.includes('tease')) {
+        newExpression = 'amused';
+      }
+      // Contemplative expressions
+      else if (responseText.includes('think') || responseText.includes('consider') || responseText.includes('wonder') || responseText.includes('hmm')) {
+        newExpression = 'contemplative';
+      }
+      // Concerned expressions
+      else if (responseText.includes('worry') || responseText.includes('concern') || responseText.includes('careful') || responseText.includes('danger')) {
+        newExpression = 'concerned';
       }
       
       let audioUrl = null;

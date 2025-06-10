@@ -94,7 +94,7 @@ export default function SoloLevelingSpatial() {
   const [isLongPressing, setIsLongPressing] = useState(false);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const [isFocusMode, setIsFocusMode] = useState(false);
-  const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy'>('focused');
+  const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy' | 'romantic' | 'surprised' | 'contemplative' | 'amused' | 'concerned'>('focused');
   const [showLivingPortrait, setShowLivingPortrait] = useState(false);
   const [emotionalImage, setEmotionalImage] = useState<string | null>(null);
 
@@ -593,6 +593,25 @@ export default function SoloLevelingSpatial() {
       conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
     }
   }, [conversationHistory]);
+
+  // Real-time expression updates during typing
+  const updateExpressionBasedOnInput = (input: string) => {
+    const inputLower = input.toLowerCase();
+    
+    if (inputLower.includes('love') || inputLower.includes('beautiful') || inputLower.includes('kiss')) {
+      setChaHaeInExpression('romantic');
+    } else if (inputLower.includes('funny') || inputLower.includes('joke') || inputLower.includes('laugh')) {
+      setChaHaeInExpression('amused');
+    } else if (inputLower.includes('worried') || inputLower.includes('danger') || inputLower.includes('careful')) {
+      setChaHaeInExpression('concerned');
+    } else if (inputLower.includes('think') || inputLower.includes('wonder') || inputLower.includes('question')) {
+      setChaHaeInExpression('contemplative');
+    } else if (input.trim().length > 0) {
+      setChaHaeInExpression('welcoming');
+    } else {
+      setChaHaeInExpression('focused');
+    }
+  };
 
   const handleLocationTravel = (location: any) => {
     setPlayerLocation(location.id);
@@ -1117,15 +1136,28 @@ export default function SoloLevelingSpatial() {
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
                     <div className="w-20 h-24 relative">
-                      {/* Emotional Portrait Image */}
+                      {/* Emotional Portrait Image - Enhanced with Expression-Based Animations */}
                       <motion.div 
-                        className="absolute inset-0 rounded-xl overflow-hidden border-2 border-pink-300/30 shadow-2xl"
+                        className="absolute inset-0 rounded-xl overflow-hidden border-2 shadow-2xl"
                         animate={{
-                          boxShadow: chaHaeInExpression === 'welcoming' 
-                            ? '0 0 20px rgba(236, 72, 153, 0.4)' 
-                            : '0 0 10px rgba(236, 72, 153, 0.2)'
+                          borderColor: chaHaeInExpression === 'romantic' ? 'rgba(236, 72, 153, 0.6)' :
+                                      chaHaeInExpression === 'welcoming' ? 'rgba(16, 185, 129, 0.6)' :
+                                      chaHaeInExpression === 'surprised' ? 'rgba(245, 158, 11, 0.6)' :
+                                      chaHaeInExpression === 'amused' ? 'rgba(6, 182, 212, 0.6)' :
+                                      chaHaeInExpression === 'contemplative' ? 'rgba(99, 102, 241, 0.6)' :
+                                      chaHaeInExpression === 'concerned' ? 'rgba(239, 68, 68, 0.6)' :
+                                      'rgba(139, 92, 246, 0.4)',
+                          boxShadow: chaHaeInExpression === 'romantic' ? '0 0 25px rgba(236, 72, 153, 0.5)' :
+                                    chaHaeInExpression === 'welcoming' ? '0 0 20px rgba(16, 185, 129, 0.4)' :
+                                    chaHaeInExpression === 'surprised' ? '0 0 20px rgba(245, 158, 11, 0.4)' :
+                                    chaHaeInExpression === 'amused' ? '0 0 20px rgba(6, 182, 212, 0.4)' :
+                                    chaHaeInExpression === 'contemplative' ? '0 0 20px rgba(99, 102, 241, 0.4)' :
+                                    chaHaeInExpression === 'concerned' ? '0 0 20px rgba(239, 68, 68, 0.4)' :
+                                    '0 0 15px rgba(139, 92, 246, 0.3)',
+                          scale: chaHaeInExpression === 'surprised' ? 1.02 :
+                                chaHaeInExpression === 'romantic' ? 1.01 : 1
                         }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
                       >
                         {emotionalImage ? (
                           <img 
@@ -1148,18 +1180,28 @@ export default function SoloLevelingSpatial() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
                       </motion.div>
                       
-                      {/* Expression Indicator */}
+                      {/* Expression Indicator - Enhanced with More Emotions */}
                       <motion.div 
                         className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-800 flex items-center justify-center text-xs"
                         animate={{
-                          backgroundColor: chaHaeInExpression === 'welcoming' ? '#ec4899' : 
-                                          chaHaeInExpression === 'focused' ? '#8b5cf6' : '#06b6d4'
+                          backgroundColor: chaHaeInExpression === 'romantic' ? '#ec4899' :
+                                          chaHaeInExpression === 'welcoming' ? '#10b981' : 
+                                          chaHaeInExpression === 'surprised' ? '#f59e0b' :
+                                          chaHaeInExpression === 'amused' ? '#06b6d4' :
+                                          chaHaeInExpression === 'contemplative' ? '#6366f1' :
+                                          chaHaeInExpression === 'concerned' ? '#ef4444' :
+                                          chaHaeInExpression === 'focused' ? '#8b5cf6' : '#64748b'
                         }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
                       >
-                        <span className="text-white">
-                          {chaHaeInExpression === 'welcoming' ? '💕' : 
-                           chaHaeInExpression === 'focused' ? '🎯' : '😌'}
+                        <span className="text-white text-xs">
+                          {chaHaeInExpression === 'romantic' ? '💕' : 
+                           chaHaeInExpression === 'welcoming' ? '😊' :
+                           chaHaeInExpression === 'surprised' ? '😲' :
+                           chaHaeInExpression === 'amused' ? '😄' :
+                           chaHaeInExpression === 'contemplative' ? '🤔' :
+                           chaHaeInExpression === 'concerned' ? '😟' :
+                           chaHaeInExpression === 'focused' ? '🎯' : '😐'}
                         </span>
                       </motion.div>
                     </div>
@@ -1276,7 +1318,10 @@ export default function SoloLevelingSpatial() {
                 >
                   <input
                     value={playerInput}
-                    onChange={(e) => setPlayerInput(e.target.value)}
+                    onChange={(e) => {
+                      setPlayerInput(e.target.value);
+                      updateExpressionBasedOnInput(e.target.value);
+                    }}
                     placeholder="Speak from the heart..."
                     className="flex-1 text-white placeholder:text-slate-400 rounded-lg px-3 py-2 text-sm border-0 outline-none"
                     style={{
