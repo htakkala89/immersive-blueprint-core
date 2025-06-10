@@ -43,34 +43,43 @@ async function generateDynamicPrompts(chaResponse: string, userMessage: string, 
       ]
     });
 
+    // Advanced conversation analytics for contextual understanding
+    const conversationTone = analyzeTone(chaResponse);
+    const topicFlow = analyzeTopicProgression(userMessage, chaResponse);
+    const emotionalState = analyzeEmotionalCues(chaResponse);
+    const locationContext = getLocationContext(context?.location);
+    
     const promptGenerationContext = `
-DYNAMIC PROMPT LOOP SYSTEM
-Generate 3 contextual thought prompts that are direct, logical follow-ups to Cha Hae-In's most recent response.
+ADVANCED DYNAMIC PROMPT LOOP SYSTEM
+Generate 3 contextual thought prompts using deep conversation analytics.
 
-CONVERSATION CONTEXT:
+CONVERSATION ANALYSIS:
 User said: "${userMessage}"
 Cha Hae-In responded: "${chaResponse}"
-Location: ${context?.location || 'Hunter Association'}
-Time: ${context?.timeOfDay || 'afternoon'}
-Affection Level: ${gameState.affection || 25}/100
 
-PROMPT GENERATION RULES:
-1. Prompts must be DIRECT follow-ups to her specific response
-2. Each prompt should advance the current conversation topic
-3. Show consideration for her personality and current mood
-4. Avoid generic responses - be specific to this moment
-5. Keep prompts conversational and natural (15-40 characters)
-6. Format as simple dialogue without quotes
+CONTEXTUAL ANALYTICS:
+- Conversation Tone: ${conversationTone}
+- Topic Flow: ${topicFlow}
+- Emotional State: ${emotionalState}
+- Location Context: ${locationContext}
+- Time: ${context?.timeOfDay || 'afternoon'}
+- Relationship Level: ${gameState.affection || 25}/100
 
-RESPONSE FORMAT:
-Return exactly 3 prompts, one per line, no numbering or formatting.
+ADVANCED PROMPT RULES:
+1. Match her conversational energy and emotional state
+2. Build on topic momentum from her response
+3. Consider location-appropriate dialogue options
+4. Reflect relationship intimacy level
+5. Maintain Solo Leveling character authenticity
+6. Create natural conversation bridges
 
-Example Context Shift:
-If she asked "what kind of culinary dungeon crawl are you proposing?"
-Good prompts: "I was thinking of that place in Myeongdong" / "Something casual, maybe takeout?" / "What are you in the mood for?"
-Bad prompts: "Just wanted to see you" / "How's work going?" / "Ready for a break?"
+RESPONSE STRATEGIES:
+- If she's professional: Focus on hunter topics, missions, techniques
+- If she's playful: Match her energy with light conversation
+- If she's romantic: Acknowledge emotional moments appropriately
+- If she's analytical: Engage with technical hunter discussions
 
-Generate contextual prompts now:`;
+Generate 3 contextually perfect prompts:`;
 
     const result = await model.generateContent(promptGenerationContext);
     const promptText = result.response.text().trim();

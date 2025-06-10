@@ -375,22 +375,6 @@ export default function SoloLevelingSpatial() {
   };
   
   const worldLocations = {
-    // Player's Personal Space
-    player_apartment: {
-      id: 'player_apartment',
-      name: 'Your Apartment',
-      description: 'Your modest but comfortable home base in Seoul',
-      backgroundImage: '/api/scenes/player_apartment.jpg',
-      chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
-      chaActivity: 'relaxing on your couch, looking comfortable in your space',
-      chaPosition: { x: 40, y: 55 },
-      chaExpression: 'loving' as const,
-      interactiveElements: [
-        { id: 'couch', name: 'Living Room Couch', position: { x: 45, y: 60 }, action: 'Sit together' },
-        { id: 'kitchen', name: 'Kitchen Counter', position: { x: 70, y: 40 }, action: 'Prepare something together' },
-        { id: 'bedroom_door', name: 'Bedroom', position: { x: 20, y: 30 }, action: 'Private space' }
-      ]
-    },
 
     // Gangnam District - Business & Hunter Association
     hunter_association: {
@@ -487,6 +471,24 @@ export default function SoloLevelingSpatial() {
       ]
     },
 
+    // Player's Personal Space
+    player_apartment: {
+      id: 'player_apartment',
+      name: 'Your Apartment',
+      description: 'Your modest but comfortable home base in Seoul',
+      backgroundImage: '/api/scenes/player_apartment.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
+      chaActivity: 'relaxing on your couch, looking comfortable in your space',
+      chaPosition: { x: 40, y: 55 },
+      chaExpression: 'loving' as const,
+      interactiveElements: [
+        { id: 'bedroom', name: 'Bedroom', position: { x: 20, y: 30 }, action: 'Lead her to the bedroom' },
+        { id: 'couch_intimate', name: 'Living Room Couch', position: { x: 45, y: 60 }, action: 'Make love on the couch' },
+        { id: 'kitchen_counter', name: 'Kitchen Counter', position: { x: 70, y: 40 }, action: 'Intimate kitchen encounter' },
+        { id: 'shower_room', name: 'Bathroom', position: { x: 80, y: 25 }, action: 'Shower together' }
+      ]
+    },
+
     // Itaewon District - International & Diverse
     itaewon_market: {
       id: 'itaewon_market',
@@ -564,9 +566,10 @@ export default function SoloLevelingSpatial() {
       chaPosition: { x: 40, y: 55 },
       chaExpression: 'loving' as const,
       interactiveElements: [
-        { id: 'couch', name: 'Comfortable Couch', position: { x: 45, y: 60 }, action: 'Sit together' },
-        { id: 'kitchen', name: 'Modern Kitchen', position: { x: 75, y: 40 }, action: 'Offer to cook together' },
-        { id: 'balcony', name: 'City View Balcony', position: { x: 20, y: 30 }, action: 'Step out for fresh air' }
+        { id: 'couch', name: 'Comfortable Couch', position: { x: 45, y: 60 }, action: 'Cuddle together on the couch' },
+        { id: 'bedroom_door', name: 'Bedroom', position: { x: 80, y: 25 }, action: 'Suggest moving to the bedroom' },
+        { id: 'kitchen', name: 'Modern Kitchen', position: { x: 75, y: 40 }, action: 'Cook together intimately' },
+        { id: 'shower', name: 'Private Bathroom', position: { x: 20, y: 35 }, action: 'Share a romantic shower' }
       ]
     },
 
@@ -882,6 +885,49 @@ export default function SoloLevelingSpatial() {
           interactionPoint.id === 'alchemist') {
         setSelectedVendor(interactionPoint.id);
         setShowHunterMarketVendors(true);
+        return;
+      }
+    }
+    
+    // Handle intimate spatial interactions at romantic locations
+    if (playerLocation === 'chahaein_apartment') {
+      if (interactionPoint.id === 'bedroom_door') {
+        setActiveActivity('bedroom_intimacy');
+        setShowIntimateModal(true);
+        return;
+      }
+      if (interactionPoint.id === 'shower') {
+        setActiveActivity('shower_together');
+        setShowIntimateModal(true);
+        return;
+      }
+      if (interactionPoint.id === 'couch') {
+        setActiveActivity('cuddle_together');
+        setShowIntimateModal(true);
+        return;
+      }
+    }
+    
+    // Handle intimate spatial interactions at player apartment
+    if (playerLocation === 'player_apartment') {
+      if (interactionPoint.id === 'bedroom') {
+        setActiveActivity('make_love');
+        setShowIntimateModal(true);
+        return;
+      }
+      if (interactionPoint.id === 'shower_room') {
+        setActiveActivity('shower_together');
+        setShowIntimateModal(true);
+        return;
+      }
+      if (interactionPoint.id === 'couch_intimate') {
+        setActiveActivity('cuddle_together');
+        setShowIntimateModal(true);
+        return;
+      }
+      if (interactionPoint.id === 'kitchen_counter') {
+        setActiveActivity('bedroom_intimacy');
+        setShowIntimateModal(true);
         return;
       }
     }
