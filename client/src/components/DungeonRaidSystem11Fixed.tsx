@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { X, Sword, Zap, Target, Crown, Users } from 'lucide-react';
+import { X, Sword, Zap, Target, Crown, Users, Package } from 'lucide-react';
 
 interface Enemy {
   id: string;
@@ -104,6 +104,12 @@ export function DungeonRaidSystem11({
     glowing: boolean;
     label: string;
   }>>([]);
+  const [playerInventory, setPlayerInventory] = useState([
+    { id: 'health_potion', name: 'Health Potion', icon: '🧪', quantity: 5, healAmount: 200 },
+    { id: 'mana_potion', name: 'Mana Potion', icon: '💙', quantity: 3, manaAmount: 150 },
+    { id: 'energy_drink', name: 'Energy Drink', icon: '⚡', quantity: 2, healAmount: 100 }
+  ]);
+  const [showInventory, setShowInventory] = useState(false);
   
   const battlefieldRef = useRef<HTMLDivElement>(null);
 
@@ -286,6 +292,43 @@ export function DungeonRaidSystem11({
       // Fallback to combat phase if something goes wrong
       setGamePhase('combat');
     }
+  };
+
+  // Handle consumable item usage
+  const useConsumableItem = (itemId: string) => {
+    const item = playerInventory.find(inv => inv.id === itemId);
+    if (!item || item.quantity <= 0) return;
+
+    setPlayers(prevPlayers => prevPlayers.map(player => {
+      if (item.healAmount) {
+        const newHealth = Math.min(player.maxHealth, player.health + item.healAmount);
+        console.log(`${player.name} used ${item.name} - healed for ${newHealth - player.health} HP`);
+        return { ...player, health: newHealth };
+      }
+      if (item.manaAmount) {
+        const newMana = Math.min(player.maxMana, player.mana + item.manaAmount);
+        console.log(`${player.name} used ${item.name} - restored ${newMana - player.mana} MP`);
+        return { ...player, mana: newMana };
+      }
+      return player;
+    }));
+
+    // Reduce item quantity
+    setPlayerInventory(prev => prev.map(inv => 
+      inv.id === itemId ? { ...inv, quantity: inv.quantity - 1 } : inv
+    ));
+
+    // Visual feedback
+    setDamageNumbers(prev => [...prev, {
+      id: `heal-${Date.now()}`,
+      damage: item.healAmount || item.manaAmount || 0,
+      x: 300,
+      y: 300,
+      timestamp: Date.now(),
+      isHealing: true
+    }]);
+
+    setShowInventory(false);
   };
 
   const [skills] = useState<Skill[]>([
@@ -1434,6 +1477,75 @@ export function DungeonRaidSystem11({
               </motion.div>
             )}
           </div>
+
+          {/* Inventory Button (Top-Right) */}
+          {gamePhase === 'combat' && (
+            <Button
+              onClick={() => setShowInventory(true)}
+              variant="ghost"
+              size="sm"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white z-[90] bg-black/30 backdrop-blur-sm rounded-full p-2"
+            >
+              <Package className="w-5 h-5" />
+            </Button>
+          )}
+
+          {/* Inventory Overlay */}
+          {showInventory && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-[95] bg-black/80 backdrop-blur-sm flex items-center justify-center"
+            >
+              <div className="bg-slate-900/95 border border-purple-500/30 rounded-2xl p-6 max-w-md w-full mx-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-white text-xl font-bold">Combat Items</h3>
+                  <Button
+                    onClick={() => setShowInventory(false)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/10"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="space-y-3">
+                  {playerInventory.filter(item => item.quantity > 0).map(item => (
+                    <div key={item.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-600/30">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{item.icon}</span>
+                        <div>
+                          <div className="text-white font-medium">{item.name}</div>
+                          <div className="text-slate-400 text-sm">
+                            {item.healAmount && `Heals ${item.healAmount} HP`}
+                            {item.manaAmount && `Restores ${item.manaAmount} MP`}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-slate-300">x{item.quantity}</span>
+                        <Button
+                          onClick={() => useConsumableItem(item.id)}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          Use
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {playerInventory.filter(item => item.quantity > 0).length === 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-slate-400">No consumable items available</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* Action Bar (Bottom-Center) - Fixed Position */}
           {gamePhase === 'combat' && (
