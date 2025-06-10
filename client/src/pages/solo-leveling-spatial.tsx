@@ -574,7 +574,13 @@ export default function SoloLevelingSpatial() {
       
       // Update Cha Hae-In's expression based on response
       if (data.expression) {
-        setChaHaeInExpression(data.expression);
+        const newExpression = data.expression;
+        setChaHaeInExpression(newExpression);
+        
+        // Generate new avatar image when AI changes expression
+        if (newExpression !== chaHaeInExpression) {
+          generateAvatarForExpression(newExpression);
+        }
       }
       
       // Check if narrative lens should appear (intimate content)
@@ -1202,12 +1208,19 @@ export default function SoloLevelingSpatial() {
                         }}
                         transition={{ duration: 0.6, ease: "easeInOut" }}
                       >
-                        {emotionalImage ? (
-                          <img 
-                            src={emotionalImage}
-                            alt="Cha Hae-In"
-                            className="w-full h-full object-cover"
-                          />
+                        {(avatarImage || emotionalImage) ? (
+                          <div className="relative w-full h-full">
+                            <img 
+                              src={(avatarImage || emotionalImage) as string}
+                              alt="Cha Hae-In"
+                              className="w-full h-full object-cover"
+                            />
+                            {isGeneratingAvatar && (
+                              <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                              </div>
+                            )}
+                          </div>
                         ) : (
                           <div className="w-full h-full bg-gradient-to-b from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-pink-300/20 flex items-center justify-center">
                             <div className="text-pink-200 text-center">
