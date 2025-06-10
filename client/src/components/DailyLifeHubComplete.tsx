@@ -442,7 +442,7 @@ export function DailyLifeHubComplete({
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="w-full max-w-6xl mx-4 h-[90vh] bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
+          className="w-full max-w-6xl mx-4 h-[90vh] bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
         >
           {/* Header with Greeting */}
           <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-xl border-b border-white/10 p-6">
@@ -476,7 +476,7 @@ export function DailyLifeHubComplete({
           </div>
 
           {/* Category Filters */}
-          <div className="p-6 border-b border-white/10">
+          <div className="flex-shrink-0 p-6 border-b border-white/10">
             <div className="flex gap-2 overflow-x-auto">
               {ACTIVITY_CATEGORIES.map((category) => (
                 <Button
@@ -496,92 +496,94 @@ export function DailyLifeHubComplete({
             </div>
           </div>
 
-          {/* Activity Cards Grid */}
-          <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredActivities.map((activity) => {
-                const canAfford = playerStats.energy >= activity.energyCost;
-                const isLocked = !activity.available;
-                
-                return (
-                  <motion.div
-                    key={activity.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    whileHover={{ scale: isLocked ? 1 : 1.02 }}
-                    onHoverStart={() => setHoveredActivity(activity.id)}
-                    onHoverEnd={() => setHoveredActivity(null)}
-                    className={`relative bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 cursor-pointer transition-all duration-300 ${
-                      isLocked 
-                        ? 'opacity-50 cursor-not-allowed' 
-                        : canAfford
-                        ? 'hover:bg-white/10 hover:border-purple-400/30 hover:shadow-purple-400/20 hover:shadow-lg'
-                        : 'cursor-not-allowed'
-                    }`}
-                    onClick={() => handleActivitySelect(activity)}
-                  >
-                    {/* Lock Overlay */}
-                    {isLocked && (
-                      <div className="absolute top-4 right-4">
-                        <Lock className="w-5 h-5 text-red-400" />
-                      </div>
-                    )}
+          {/* Activity Cards Grid - Scrollable Area */}
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="h-full p-6 overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
+                {filteredActivities.map((activity) => {
+                  const canAfford = playerStats.energy >= activity.energyCost;
+                  const isLocked = !activity.available;
+                  
+                  return (
+                    <motion.div
+                      key={activity.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      whileHover={{ scale: isLocked ? 1 : 1.02 }}
+                      onHoverStart={() => setHoveredActivity(activity.id)}
+                      onHoverEnd={() => setHoveredActivity(null)}
+                      className={`relative bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 cursor-pointer transition-all duration-300 ${
+                        isLocked 
+                          ? 'opacity-50 cursor-not-allowed' 
+                          : canAfford
+                          ? 'hover:bg-white/10 hover:border-purple-400/30 hover:shadow-purple-400/20 hover:shadow-lg'
+                          : 'cursor-not-allowed'
+                      }`}
+                      onClick={() => handleActivitySelect(activity)}
+                    >
+                      {/* Lock Overlay */}
+                      {isLocked && (
+                        <div className="absolute top-4 right-4">
+                          <Lock className="w-5 h-5 text-red-400" />
+                        </div>
+                      )}
 
-                    {/* Activity Icon */}
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
-                      isLocked 
-                        ? 'bg-gray-600/50 text-gray-400' 
-                        : 'bg-gradient-to-br from-purple-600 to-pink-600 text-white'
-                    }`}>
-                      {activity.icon}
-                    </div>
-
-                    {/* Activity Info */}
-                    <h3 className="text-white font-bold text-lg mb-2">{activity.title}</h3>
-                    <p className="text-white/70 text-sm mb-4 leading-relaxed">{activity.description}</p>
-
-                    {/* Energy Cost */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
-                        canAfford && !isLocked
-                          ? 'bg-purple-600/20 text-purple-300'
-                          : 'bg-red-600/20 text-red-300'
+                      {/* Activity Icon */}
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                        isLocked 
+                          ? 'bg-gray-600/50 text-gray-400' 
+                          : 'bg-gradient-to-br from-purple-600 to-pink-600 text-white'
                       }`}>
-                        <Zap className="w-4 h-4" />
-                        <span className="text-sm font-semibold">-{activity.energyCost}</span>
+                        {activity.icon}
                       </div>
-                    </div>
 
-                    {/* Outcomes */}
-                    {activity.outcomes && (
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {activity.outcomes.map((outcome, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-pink-600/20 text-pink-300 text-xs rounded-full"
-                          >
-                            {outcome}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                      {/* Activity Info */}
+                      <h3 className="text-white font-bold text-lg mb-2">{activity.title}</h3>
+                      <p className="text-white/70 text-sm mb-4 leading-relaxed">{activity.description}</p>
 
-                    {/* Lock Reason */}
-                    {isLocked && activity.lockReason && (
-                      <div className="text-red-400 text-xs bg-red-900/20 rounded-lg p-2 border border-red-600/30">
-                        🔒 {activity.lockReason}
+                      {/* Energy Cost */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+                          canAfford && !isLocked
+                            ? 'bg-purple-600/20 text-purple-300'
+                            : 'bg-red-600/20 text-red-300'
+                        }`}>
+                          <Zap className="w-4 h-4" />
+                          <span className="text-sm font-semibold">-{activity.energyCost}</span>
+                        </div>
                       </div>
-                    )}
 
-                    {/* Insufficient Energy Warning */}
-                    {!isLocked && !canAfford && (
-                      <div className="text-yellow-400 text-xs bg-yellow-900/20 rounded-lg p-2 border border-yellow-600/30">
-                        ⚡ Not enough energy
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
+                      {/* Outcomes */}
+                      {activity.outcomes && (
+                        <div className="flex flex-wrap gap-1 mb-4">
+                          {activity.outcomes.map((outcome, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-pink-600/20 text-pink-300 text-xs rounded-full"
+                            >
+                              {outcome}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Lock Reason */}
+                      {isLocked && activity.lockReason && (
+                        <div className="text-red-400 text-xs bg-red-900/20 rounded-lg p-2 border border-red-600/30">
+                          🔒 {activity.lockReason}
+                        </div>
+                      )}
+
+                      {/* Insufficient Energy Warning */}
+                      {!isLocked && !canAfford && (
+                        <div className="text-yellow-400 text-xs bg-yellow-900/20 rounded-lg p-2 border border-yellow-600/30">
+                          ⚡ Not enough energy
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </motion.div>

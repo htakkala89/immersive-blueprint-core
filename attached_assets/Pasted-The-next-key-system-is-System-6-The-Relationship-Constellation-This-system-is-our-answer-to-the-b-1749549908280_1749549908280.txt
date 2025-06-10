@@ -1,0 +1,57 @@
+The next key system is System 6: The Relationship Constellation.
+
+This system is our answer to the boring "affection bar" found in other games. It is an interactive, poetic, and deeply personal way for the player to see their entire journey with Cha Hae-In unfold, providing powerful feedback for their efforts and strengthening their emotional connection to the story.
+
+System 6: The Relationship Constellation - Complete Design Specification
+
+Part 1: The "Why" - Design Philosophy
+
+Relationship progression should not be about grinding a number to 100. It should be about creating a collection of shared memories. The Relationship Constellation transforms the abstract concept of "affection" into a tangible, beautiful tapestry of the player's unique story. It serves as an interactive diary, allowing the player to reflect on their journey and see the direct results of the time they've invested.
+
+Part 2: The User Journey
+
+The Trigger: The player has just completed a major event—perhaps their first kiss after a date, or a harrowing S-Rank raid they survived together.
+Curiosity: They want to see how this moment impacted their relationship.
+Access: They perform the Monarch's Aura gesture and select the 'Relationship Constellation' rune (the two interconnected stars).
+The View: The screen transitions to the full-screen Constellation View. They see the starfield is glowing a little more brightly than before.
+Discovery: They pan across the starfield and discover a new, brightly shining star that wasn't there before.
+Reflection: They tap on the new star. A "Memory Card" appears, showing them the details of the moment they just created. They smile, feeling a sense of accomplishment and nostalgia.
+Part 3: The Constellation View - UI/UX Specifications
+
+This is the main screen for the system. As a 3D, interactive space, this is a prime candidate for the Unity Engine.
+
+Access: Via the Monarch's Aura (System 3) only.
+Visuals:
+The Starfield: A beautiful, full-screen, interactive 3D space. The background is the deep, dark cosmos, with faint, swirling purple and gold nebulas.
+Overall Glow: The ambient light level of the entire starfield is a direct representation of the current, total "Affection" score. A dim, sparse field signifies a new relationship, while a bright, dense, glowing nebula represents a powerful, unbreakable bond.
+Interaction:
+The player can freely tap and drag to rotate the constellation.
+They can pinch to zoom in on specific stars or zoom out to see the whole picture.
+The Connecting Lines: As the relationship progresses, faint, glowing lines of energy will begin to form between related stars, visually connecting the narrative path from one major milestone to the next.
+Part 4: The "Memory Star" Component
+
+Each star is a unique, collectible memory.
+
+Appearance: Each star is a pulsing point of light. The star's color can denote the type of memory:
+
+Gold: A happy, positive social memory (a great date, a funny conversation).
+Purple: A major achievement as Hunters (defeating a key boss, clearing a high-rank gate).
+Deep Red: A significant milestone in intimacy.
+Interaction: Tapping a star causes it to flare brightly and opens the "Memory Card."
+
+The "Memory Card" UI:
+
+Style: A liquid glassmorphism panel that appears gracefully near the selected star.
+Content:
+Memory Title: A clear title, e.g., "First Kiss at Hangang Park" or "Victory over the Demon King Baran."
+Date: The in-game date the memory occurred.
+Key Image: A small, iconic still image representing the memory. This image would be saved from the scene itself (e.g., the AI-generated image from a Narrative Lens moment, or a key frame from a cinematic).
+Key Quote: The single most important line of dialogue from that scene. ("I was scared... I'm glad you were with me.")
+"Replay Scene" Button: An optional button that allows the user to re-read the full text log of that specific past scene in a simple, scrollable viewer.
+Part 5: Logic and System Integration
+
+This system is the emotional barometer for the entire game.
+
+It is the primary visual output for the hidden "Affection" score.
+New Memory Stars are created as a reward for completing activities from the Daily Life Hub (System 4), giving good gifts via System 7, and clearing major dungeons together in System 11.
+The number of stars or the overall brightness of the constellation can serve as a prerequisite for unlocking higher-tier activities in the Daily Life Hub and Intimate Activity System (System 5).
