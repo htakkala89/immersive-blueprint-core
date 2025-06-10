@@ -276,7 +276,7 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <div className="text-4xl mb-2">{item.icon}</div>
+                        <div className="text-5xl mb-2">{item.icon}</div>
                         <div className="absolute bottom-2 right-2 bg-slate-800/90 text-white text-xs px-1.5 py-0.5 rounded">
                           {item.quantity > 1 ? `x${item.quantity}` : ''}
                         </div>
