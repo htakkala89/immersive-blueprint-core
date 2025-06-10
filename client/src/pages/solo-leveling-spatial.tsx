@@ -1455,59 +1455,102 @@ export default function SoloLevelingSpatial() {
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
       
-      {/* Monarch's Aura Eye - Testing */}
+      {/* Monarch's Aura - Shadow Crown */}
       <motion.button
-        className="fixed top-6 right-6 w-14 h-14 liquid-glass-enhanced rounded-full flex items-center justify-center z-[9999] cursor-pointer"
+        className="fixed top-6 right-6 w-16 h-16 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden"
         style={{ 
           position: 'fixed',
           top: '24px',
           right: '24px',
           zIndex: 9999,
-          pointerEvents: 'auto'
+          pointerEvents: 'auto',
+          background: 'radial-gradient(circle at 30% 30%, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.8) 30%, rgba(30, 27, 75, 0.9) 70%, rgba(0, 0, 0, 0.95) 100%)',
+          border: '2px solid rgba(147, 51, 234, 0.6)',
+          boxShadow: '0 0 30px rgba(147, 51, 234, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3)'
         }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ 
+          scale: 1.1,
+          boxShadow: '0 0 40px rgba(147, 51, 234, 0.7), inset 0 2px 0 rgba(255, 255, 255, 0.3)'
+        }}
+        whileTap={{ scale: 0.95 }}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          console.log('Eye button clicked, current state:', monarchAuraVisible);
+          console.log('Crown button clicked, current state:', monarchAuraVisible);
           const newState = !monarchAuraVisible;
           console.log('Setting new state to:', newState);
           setMonarchAuraVisible(newState);
         }}
       >
-        <svg className="w-8 h-8 text-purple-300 drop-shadow-lg pointer-events-none" viewBox="0 0 32 32" fill="currentColor">
-          {/* Angular Crown Base */}
-          <path d="M4 20 L8 24 L24 24 L28 20 L28 16 L4 16 Z" 
-                fill="currentColor" 
-                opacity="0.8"
+        <svg className="w-11 h-11 text-purple-200 drop-shadow-lg pointer-events-none" viewBox="0 0 48 48" fill="none">
+          {/* Main Crown Structure */}
+          <path 
+            d="M8 32 L12 36 L36 36 L40 32 L40 24 L8 24 Z" 
+            fill="url(#crownGradient)"
+            stroke="rgba(255, 255, 255, 0.3)"
+            strokeWidth="0.5"
           />
-          {/* Sharp Crown Spikes */}
-          <path d="M6 16 L8 8 L10 16 Z" fill="currentColor" />
-          <path d="M11 16 L14 4 L17 16 Z" fill="currentColor" />
-          <path d="M18 16 L20 6 L22 16 Z" fill="currentColor" />
-          <path d="M23 16 L26 10 L28 16 Z" fill="currentColor" />
-          {/* Runic Details */}
-          <line x1="16" y1="8" x2="16" y2="12" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-          <line x1="14" y1="10" x2="18" y2="10" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-          {/* Glowing Effect */}
+          
+          {/* Crown Spikes with Shadow Monarch Style */}
+          <path d="M10 24 L13 8 L16 24 Z" fill="currentColor" opacity="0.95" />
+          <path d="M18 24 L24 4 L30 24 Z" fill="currentColor" />
+          <path d="M32 24 L35 10 L38 24 Z" fill="currentColor" opacity="0.9" />
+          
+          {/* Central Shadow Orb */}
+          <circle cx="24" cy="20" r="4" fill="url(#shadowOrb)" />
+          <circle cx="24" cy="20" r="3" fill="rgba(0, 0, 0, 0.8)" />
+          <circle cx="23" cy="19" r="1" fill="rgba(147, 51, 234, 0.9)" />
+          
+          {/* Side Gems */}
+          <circle cx="16" cy="22" r="2" fill="rgba(147, 51, 234, 0.7)" />
+          <circle cx="32" cy="22" r="2" fill="rgba(147, 51, 234, 0.7)" />
+          
+          {/* Shadow Aura Effect */}
+          <path 
+            d="M12 36 L10 42 L38 42 L36 36" 
+            fill="rgba(0, 0, 0, 0.4)"
+            opacity="0.7"
+          />
+          
+          {/* Crown Details */}
+          <path d="M12 24 L36 24" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="0.4" />
+          <path d="M14 28 L34 28" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="0.3" />
+          
+          {/* Mystical Runes */}
+          <text x="24" y="30" textAnchor="middle" fontSize="4" fill="rgba(147, 51, 234, 0.8)" fontFamily="serif">⚡</text>
+          
+          {/* Gradient Definitions */}
           <defs>
-            <filter id="purpleGlow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <linearGradient id="crownGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(147, 51, 234, 0.9)" />
+              <stop offset="30%" stopColor="rgba(139, 92, 246, 0.8)" />
+              <stop offset="70%" stopColor="rgba(79, 70, 229, 0.7)" />
+              <stop offset="100%" stopColor="rgba(30, 27, 75, 0.8)" />
+            </linearGradient>
+            <radialGradient id="shadowOrb" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(0, 0, 0, 0.9)" />
+              <stop offset="40%" stopColor="rgba(147, 51, 234, 0.6)" />
+              <stop offset="80%" stopColor="rgba(79, 70, 229, 0.4)" />
+              <stop offset="100%" stopColor="rgba(0, 0, 0, 0.9)" />
+            </radialGradient>
+            <filter id="shadowGlow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
               <feMerge> 
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
           </defs>
-          <g filter="url(#purpleGlow)" className="animate-pulse">
-            <path d="M4 20 L8 24 L24 24 L28 20 L28 16 L4 16 Z" 
-                  fill="none" 
-                  stroke="rgba(147, 51, 234, 0.9)" 
-                  strokeWidth="0.8"
-            />
+          
+          {/* Animated Glow Ring */}
+          <g filter="url(#shadowGlow)">
+            <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(147, 51, 234, 0.3)" strokeWidth="0.5" className="animate-pulse" />
           </g>
         </svg>
+        
+        {/* Pulsing Ring Effect */}
+        <div className="absolute inset-0 rounded-full border border-purple-400/20 animate-pulse" />
+        <div className="absolute inset-1 rounded-full border border-purple-300/10 animate-pulse" style={{ animationDelay: '0.5s' }} />
       </motion.button>
       
       {/* Spatial View - The Living Diorama */}
