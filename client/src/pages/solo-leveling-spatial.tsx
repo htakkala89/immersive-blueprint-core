@@ -256,10 +256,12 @@ export default function SoloLevelingSpatial() {
       if (affection >= 70) return 'chahaein_apartment'; // High affection - at her place
       return 'hunter_association'; // Always at work in mornings
     } else if (currentTime === 'afternoon') {
-      return 'hunter_association'; // Always at Hunter Association during work hours
+      if (Math.random() > 0.8 && affection >= 50) return 'hunter_market'; // Occasional market visits
+      return 'hunter_association'; // Usually at Hunter Association during work hours
     } else if (currentTime === 'evening') {
       if (affection >= 60) return 'myeongdong_restaurant'; // Dinner together if close
       if (affection >= 40) return 'hongdae_cafe'; // Casual meetup
+      if (Math.random() > 0.7 && affection >= 70) return 'luxury_realtor'; // Looking at properties together
       return 'hunter_association'; // Still working late
     } else { // night
       if (affection >= 80) return 'player_apartment'; // Very intimate - spends night together
@@ -428,6 +430,39 @@ export default function SoloLevelingSpatial() {
       interactiveElements: [
         { id: 'weapon_stall', name: 'International Weapons', position: { x: 25, y: 45 }, action: 'Examine foreign weaponry' },
         { id: 'technique_scrolls', name: 'Technique Scrolls', position: { x: 70, y: 35 }, action: 'Study combat methods together' }
+      ]
+    },
+
+    // Economic Locations - Hunter Market & Luxury Realtor
+    hunter_market: {
+      id: 'hunter_market',
+      name: 'Hunter Market',
+      description: 'Bustling marketplace where hunters trade rare materials and equipment',
+      backgroundImage: '/api/scenes/hunter_market.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_market',
+      chaActivity: 'browsing rare equipment and chatting with vendors',
+      chaPosition: { x: 35, y: 45 },
+      chaExpression: 'focused' as const,
+      interactiveElements: [
+        { id: 'sell_counter', name: 'Vendor - Sell Items', position: { x: 70, y: 40 }, action: 'Sell valuable resources' },
+        { id: 'equipment_stall', name: 'Equipment Vendor', position: { x: 25, y: 50 }, action: 'Browse hunter gear' },
+        { id: 'rare_materials', name: 'Rare Materials', position: { x: 60, y: 60 }, action: 'Examine exotic items' }
+      ]
+    },
+
+    luxury_realtor: {
+      id: 'luxury_realtor',
+      name: 'Luxury Realtor',
+      description: 'High-end real estate office for successful hunters',
+      backgroundImage: '/api/scenes/luxury_realtor.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'luxury_realtor',
+      chaActivity: 'discussing property investments with an agent',
+      chaPosition: { x: 50, y: 40 },
+      chaExpression: 'focused' as const,
+      interactiveElements: [
+        { id: 'property_listings', name: 'Property Listings', position: { x: 30, y: 35 }, action: 'Browse luxury apartments' },
+        { id: 'consultation_desk', name: 'Real Estate Agent', position: { x: 70, y: 45 }, action: 'Schedule property viewing' },
+        { id: 'investment_portfolio', name: 'Investment Options', position: { x: 40, y: 60 }, action: 'Discuss investment opportunities' }
       ]
     },
 

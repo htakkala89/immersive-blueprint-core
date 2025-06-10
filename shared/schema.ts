@@ -47,8 +47,10 @@ export const InventoryItem = z.object({
   name: z.string(),
   description: z.string(),
   icon: z.string(),
-  type: z.enum(['weapon', 'armor', 'consumable', 'key', 'treasure', 'misc']),
+  type: z.enum(['weapon', 'armor', 'consumable', 'key', 'treasure', 'misc', 'mana_crystal', 'monster_core']),
   quantity: z.number().default(1),
+  value: z.number().optional(), // For sellable items like mana crystals and monster cores
+  rarity: z.enum(['common', 'uncommon', 'rare', 'epic', 'legendary']).optional(),
 });
 
 export const Skill = z.object({
@@ -90,7 +92,7 @@ export const SceneData = z.object({
 
 export const ScheduledActivity = z.object({
   id: z.string(),
-  type: z.enum(['dinner', 'coffee', 'raid', 'training', 'shopping', 'movie', 'walk', 'intimate']),
+  type: z.enum(['dinner', 'coffee', 'raid', 'training', 'shopping', 'movie', 'walk', 'intimate', 'quest', 'dungeon_clear']),
   title: z.string(),
   description: z.string(),
   location: z.string(),
@@ -109,6 +111,44 @@ export const ScheduledActivity = z.object({
     items: z.array(z.string()).optional(),
   }).optional(),
   conversationContext: z.string().optional(),
+});
+
+// Economic System Data Types
+export const Quest = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  location: z.string(),
+  difficulty: z.enum(['E', 'D', 'C', 'B', 'A', 'S']),
+  reward: z.object({
+    gold: z.number(),
+    experience: z.number(),
+    items: z.array(z.string()).optional(),
+  }),
+  requirements: z.object({
+    level: z.number().optional(),
+    completedQuests: z.array(z.string()).optional(),
+  }).optional(),
+  status: z.enum(['available', 'active', 'completed', 'failed']),
+});
+
+export const MarketItem = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  baseValue: z.number(),
+  marketValue: z.number(), // Can fluctuate based on demand
+  category: z.enum(['mana_crystal', 'monster_core', 'equipment', 'consumable']),
+  rarity: z.enum(['common', 'uncommon', 'rare', 'epic', 'legendary']),
+});
+
+export const WealthTransaction = z.object({
+  id: z.string(),
+  type: z.enum(['dungeon_reward', 'quest_completion', 'item_sale', 'purchase', 'gift']),
+  amount: z.number(),
+  description: z.string(),
+  timestamp: z.string(),
+  relatedItems: z.array(z.string()).optional(),
 });
 
 export const ActivityProposal = z.object({
@@ -131,5 +171,8 @@ export type CharacterStats = z.infer<typeof CharacterStats>;
 export type SceneData = z.infer<typeof SceneData>;
 export type ScheduledActivity = z.infer<typeof ScheduledActivity>;
 export type ActivityProposal = z.infer<typeof ActivityProposal>;
+export type Quest = z.infer<typeof Quest>;
+export type MarketItem = z.infer<typeof MarketItem>;
+export type WealthTransaction = z.infer<typeof WealthTransaction>;
 export type InsertGameState = z.infer<typeof insertGameStateSchema>;
 export type GameState = typeof gameStates.$inferSelect;

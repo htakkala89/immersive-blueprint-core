@@ -1,0 +1,49 @@
+System 14: The In-Game Economy - Wealth & Resources
+
+Part 1: The "Why" - Design Philosophy
+
+The economy is designed to directly reflect the reality of being a Hunter in the Solo Leveling universe. Wealth is not arbitrary; it is a direct consequence of risking one's life in dungeons and being rewarded for power and success. Every Gold piece earned should feel like a tangible result of the player's efforts as a top-tier hunter, creating a powerful and satisfying gameplay loop that fuels the narrative and lifestyle progression.
+
+Part 2: The "What" - Currency & Valuable Resources
+
+The economy consists of one primary currency and secondary valuable resources that can be liquidated.
+
+Primary Currency: Gold (₩)
+
+Representation: This is the standard in-game money. To ground the experience in its setting, we should use the South Korean Won symbol (₩).
+Primary Use: Purchasing all "lifestyle" items: gifts, decorations, furniture, high-end food/consumables, and ultimately, the new apartments.
+Valuable Resources: Mana Crystals & Monster Cores
+
+Representation: These are high-value items that drop from powerful monsters. They are not currency themselves, but are the raw materials of the magical world, highly sought after by guilds, governments, and researchers.
+Primary Use: These items have immense value but cannot be spent directly. The player must sell them for Gold at the appropriate location. This creates a realistic "loot selling" loop.
+Part 3: The "How" - The Three Methods of Earning Money
+
+This is the direct answer to your question. Here is how the player accumulates wealth.
+
+Method 1: Dungeon Raids (The Primary & Most Lucrative Source)
+
+This is the core activity of a Hunter. Raids provide wealth in two forms:
+
+Direct Gold Drops: Lesser monsters will drop small amounts of Gold directly. In the post-raid "Aftermath" scene (System 11), this is visualized as motes of golden light being absorbed by the player, with a simple + ₩500,000 counter appearing briefly.
+Resource Harvesting: This is where the real money is made. High-level monsters and especially dungeon bosses will drop valuable resources like Mana Crystals and Monster Cores. These will appear as collectible items in the raid's reward summary.
+The Sell Loop: To convert these valuable resources into cash, the player must travel to the "Hunter Market" location on the World Map (System 8). At the market, they can sell these items to vendors for massive amounts of Gold. This creates a satisfying gameplay loop: Raid a dangerous dungeon -> Collect rare monster parts -> Travel to the Market -> Sell your loot for a huge payday.
+Method 2: Quest Rewards (The Structured Source)
+
+How it Works: The Hunter Association (a location on the World Map) will serve as a quest board. The player can accept formal missions (e.g., "Clear a C-Rank Gate in Hongdae," "Investigate an unusual mana signature," etc.).
+The Reward: Upon completion, the player receives a direct, lump-sum payment. This will be communicated via a sleek, in-world notification panel:
+"Transfer Complete. ₩15,000,000 has been deposited into your account by the Korean Hunter's Association."
+
+This provides a more stable, predictable source of income compared to the variable loot from raids.
+Method 3: Selling Unwanted Items (The Passive Source)
+
+How it Works: As in most RPGs, the player will accumulate gear (System 12) that they no longer need.
+The Process: They can travel to the "Hunter Market" and sell this outdated equipment to other hunters or merchants for a modest amount of Gold. This is a secondary, but useful, income stream.
+Part 4: The User Experience of Wealth (UI)
+
+To maintain immersion, the player's current Gold balance is not persistently displayed on the screen like a typical game HUD.
+
+Contextual Display: The player's total Gold (₩ 1,234,567,890) will appear elegantly in a corner of the screen only when it is relevant:
+When Browse items in any store (System 7).
+When viewing property listings at the "Luxury Realtor" (System 13).
+When viewing their inventory via the Monarch's Aura (System 3).
+This approach ensures the player always has the information they need when making financial decisions, without cluttering the beautiful, immersive Spatial View during narrative moments.

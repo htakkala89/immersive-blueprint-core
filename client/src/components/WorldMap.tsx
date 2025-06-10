@@ -253,6 +253,52 @@ const LOCATIONS: Location[] = [
       evening: 90,
       night: 30
     }
+  },
+  {
+    id: 'hunter_market',
+    name: 'Hunter Market',
+    description: 'A bustling marketplace where hunters trade rare materials, equipment, and magical resources.',
+    x: 50,
+    y: 65,
+    unlocked: true,
+    district: 'dongdaemun',
+    image: '/api/placeholder/400/250',
+    timeOfDayMood: {
+      morning: 'Early vendors setting up stalls with fresh monster cores',
+      afternoon: 'Peak trading hours with hunters selling dungeon loot',
+      evening: 'Quieter but still active with serious collectors',
+      night: 'Black market dealers emerge with rare items'
+    },
+    chaHaeInSchedule: {
+      morning: 10,
+      afternoon: 30,
+      evening: 20,
+      night: 5
+    }
+  },
+  {
+    id: 'luxury_realtor',
+    name: 'Luxury Realtor',
+    description: 'High-end real estate office specializing in premium properties for successful hunters.',
+    x: 75,
+    y: 30,
+    unlocked: false,
+    unlockCondition: 'Accumulate ₩100,000,000 in wealth',
+    requiredStoryProgress: 5,
+    district: 'gangnam',
+    image: '/api/placeholder/400/250',
+    timeOfDayMood: {
+      morning: 'Professional atmosphere with property consultations',
+      afternoon: 'Busy showings of luxury apartments',
+      evening: 'Private viewings for VIP clients',
+      night: 'Closed - by appointment only'
+    },
+    chaHaeInSchedule: {
+      morning: 5,
+      afternoon: 15,
+      evening: 25,
+      night: 0
+    }
   }
 ];
 
