@@ -1892,7 +1892,7 @@ export default function SoloLevelingSpatial() {
       <HunterMarketVendors
         isVisible={showHunterMarketVendors}
         onClose={() => setShowHunterMarketVendors(false)}
-        backgroundImage={locations[playerLocation]?.backgroundImage}
+        backgroundImage={sceneImage || undefined}
         inventory={gameState.inventory || []}
         currentGold={gameState.gold || 0}
         onSellItem={handleSellItem}
