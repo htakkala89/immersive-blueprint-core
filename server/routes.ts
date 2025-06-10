@@ -1354,9 +1354,13 @@ Generate a prompt suitable for manhwa-style art generation:`;
         return res.status(500).json({ error: "NovelAI API not configured" });
       }
 
-      const novelAIPrompt = `masterpiece, best quality, sharp focus, cinematic lighting, webtoon art style, manhwa illustration, ${prompt}, Sung Jin-Woo with black hair, Cha Hae-In with short blonde bob haircut and purple eyes, romantic intimate scene, soft lighting, emotional connection, detailed characters, high quality anime art`;
+      // Use established character descriptions for consistency
+      const chaHaeInDesc = "Cha Hae-In (Korean female, age 23, GOLDEN BLONDE HAIR MANDATORY - NEVER purple/black/brown/dark hair, short blonde bob haircut with straight bangs, purple/violet eyes, beautiful feminine features, pale skin, athletic but graceful build, red and white hunter armor with gold accents OR elegant casual clothing, S-rank hunter from Solo Leveling manhwa)";
+      const jinWooDesc = "Sung Jin-Woo (Korean male, age 24, SHORT BLACK HAIR ONLY - never blonde or purple, sharp angular facial features, dark eyes, athletic build, black hunter outfit with silver details, Shadow Monarch from Solo Leveling manhwa)";
 
-      const negativePrompt = "ugly, deformed, blurry, text, watermark, low quality, bad anatomy, censored, mosaic, bar censor";
+      const novelAIPrompt = `masterpiece, best quality, sharp focus, cinematic lighting, webtoon art style, manhwa illustration, Solo Leveling art style by DUBU, ${prompt}, ${jinWooDesc}, ${chaHaeInDesc}, romantic intimate scene, soft lighting, emotional connection, detailed characters, high quality anime art, Korean manhwa style`;
+
+      const negativePrompt = "ugly, deformed, blurry, text, watermark, low quality, bad anatomy, censored, mosaic, bar censor, purple hair on cha hae-in, dark hair on cha hae-in, black hair on cha hae-in, brown hair on cha hae-in, blonde hair on sung jin-woo, light hair on sung jin-woo, wrong hair colors";
 
       const response = await fetch('https://api.novelai.net/ai/generate-image', {
         method: 'POST',

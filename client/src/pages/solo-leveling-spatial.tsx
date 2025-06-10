@@ -2118,7 +2118,7 @@ export default function SoloLevelingSpatial() {
         }}
         activityId={currentIntimateActivity?.id || ''}
         activityTitle={currentIntimateActivity?.title || ''}
-        backgroundImage={sceneImage}
+        backgroundImage={sceneImage || undefined}
         onSceneComplete={(memory) => {
           // Add memory to constellation system
           console.log('New intimate memory created:', memory);
