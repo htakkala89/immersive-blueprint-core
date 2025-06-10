@@ -199,7 +199,7 @@ export function IntimateActivitySystem5({
     setNarrativeLens(prev => ({ ...prev, isGenerating: true }));
 
     try {
-      const response = await fetch('/api/generate-intimate-image', {
+      const response = await fetch('/api/generate-novelai-intimate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

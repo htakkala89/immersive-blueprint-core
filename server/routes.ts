@@ -1345,6 +1345,58 @@ Generate a prompt suitable for manhwa-style art generation:`;
     }
   });
 
+  // NovelAI Generation for System 5 Narrative Lens
+  app.post("/api/generate-novelai-intimate", async (req, res) => {
+    try {
+      const { prompt, activityId, stylePreset } = req.body;
+      
+      if (!process.env.NOVELAI_API_KEY) {
+        return res.status(500).json({ error: "NovelAI API not configured" });
+      }
+
+      const novelAIPrompt = `masterpiece, best quality, sharp focus, cinematic lighting, webtoon art style, manhwa illustration, ${prompt}, Sung Jin-Woo with black hair, Cha Hae-In with short blonde bob haircut and purple eyes, romantic intimate scene, soft lighting, emotional connection, detailed characters, high quality anime art`;
+
+      const negativePrompt = "ugly, deformed, blurry, text, watermark, low quality, bad anatomy, censored, mosaic, bar censor";
+
+      const response = await fetch('https://api.novelai.net/ai/generate-image', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          input: novelAIPrompt,
+          model: 'nai-diffusion-3',
+          action: 'generate',
+          parameters: {
+            width: 832,
+            height: 1216,
+            scale: 6,
+            sampler: 'k_euler_ancestral',
+            steps: 28,
+            seed: Math.floor(Math.random() * 4294967295),
+            n_samples: 1,
+            ucPreset: 0,
+            uc: negativePrompt
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`NovelAI API error: ${response.status}`);
+      }
+
+      const imageBuffer = await response.arrayBuffer();
+      const base64Image = Buffer.from(imageBuffer).toString('base64');
+      const imageUrl = `data:image/png;base64,${base64Image}`;
+
+      res.json({ imageUrl });
+    } catch (error) {
+      console.error("NovelAI generation error:", error);
+      res.status(500).json({ error: "Failed to generate intimate image with NovelAI" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
