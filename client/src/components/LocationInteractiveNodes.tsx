@@ -323,6 +323,31 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       gameLogic: 'npc_dialogue_hints'
     },
     {
+      id: 'red_gate',
+      label: 'Red Gate',
+      icon: Zap,
+      position: { x: 75, y: 25 },
+      thoughtPrompt: 'Enter the Red Gate',
+      outcome: 'System 11: Touch-Based Combat dungeon raid experience begins',
+      gameLogic: 'dungeon_raid_entrance',
+      requirements: undefined,
+      spatialRelationships: {
+        enhances: undefined,
+        excludes: ['mission_board', 'receptionist'],
+        proximity: undefined
+      },
+      environmentalStates: {
+        weather: ['clear', 'rain', 'cloudy'],
+        timeOfDay: ['morning', 'afternoon', 'evening'],
+        storyFlags: undefined
+      },
+      memoryTriggers: {
+        firstTime: 'Enter the Red Gate - This is an official Hunter Association mission',
+        repeated: 'Enter the Red Gate - Time to complete another raid',
+        withCharacter: 'Enter the Red Gate - Let\'s clear this together, Cha Hae-In'
+      }
+    },
+    {
       id: 'elevator_bank',
       label: 'Elevator Bank',
       icon: Building,
