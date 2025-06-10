@@ -198,6 +198,31 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
         repeated: 'Suggest we take the window seat - our favorite spot in the cafe',
         withCharacter: 'Suggest we take the window seat - somewhere we can talk privately'
       }
+    },
+    {
+      id: 'red_gate_entrance',
+      label: 'Red Gate',
+      icon: Zap,
+      position: { x: 85, y: 85 },
+      thoughtPrompt: 'Enter the Red Gate',
+      outcome: 'System 11: Touch-Based Combat dungeon raid experience begins',
+      gameLogic: 'dungeon_raid_entrance',
+      requirements: undefined,
+      spatialRelationships: {
+        enhances: undefined,
+        excludes: ['counter', 'window_seat'],
+        proximity: undefined
+      },
+      environmentalStates: {
+        weather: ['clear', 'rain', 'cloudy'],
+        timeOfDay: ['morning', 'afternoon', 'evening'],
+        storyFlags: undefined
+      },
+      memoryTriggers: {
+        firstTime: 'Enter the Red Gate - This is my mission',
+        repeated: 'Enter the Red Gate - Time to finish what I started',
+        withCharacter: 'Enter the Red Gate - Let\'s clear this together'
+      }
     }
   ],
 
