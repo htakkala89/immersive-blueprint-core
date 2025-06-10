@@ -1262,6 +1262,38 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+  const handlePropertyPurchase = (property: any) => {
+    const currentGold = gameState.gold || 0;
+    if (currentGold >= property.price) {
+      setGameState(prev => ({
+        ...prev,
+        gold: (prev.gold || 0) - property.price,
+        apartmentTier: property.tier,
+        affection: Math.min(100, prev.affection + 5)
+      }));
+      
+      setRecentTransactions(prev => [...prev, {
+        id: Date.now().toString(),
+        type: 'loss',
+        amount: property.price,
+        description: `Purchased ${property.name}`,
+        timestamp: new Date().toISOString()
+      }]);
+      
+      setShowLuxuryRealtor(false);
+      console.log(`Purchased ${property.name} - Apartment upgraded to Tier ${property.tier}`);
+      
+      // Show success notification
+      handleEnvironmentalInteraction({
+        id: 'property_purchase',
+        action: `Property acquired! You now own ${property.name}. Apartment tier upgraded to ${property.tier}. New intimate spaces and activities unlocked.`,
+        name: 'Real Estate Investment',
+        x: 50,
+        y: 50
+      });
+    }
+  };
+
   const handleFurniturePurchase = (item: any) => {
     const currentGold = gameState.gold || 0;
     if (currentGold >= item.price) {
@@ -1282,25 +1314,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const handlePropertyPurchase = (property: any) => {
-    const currentGold = gameState.gold || 0;
-    if (currentGold >= property.price) {
-      setGameState(prev => ({
-        ...prev,
-        gold: (prev.gold || 0) - property.price
-      }));
-      
-      setRecentTransactions(prev => [...prev, {
-        id: Date.now().toString(),
-        type: 'loss',
-        amount: property.price,
-        description: `Purchased ${property.name}`,
-        timestamp: new Date().toISOString()
-      }]);
-      
-      console.log(`Purchased ${property.name} for ₩${property.price.toLocaleString()}`);
-    }
-  };
+
 
   const generateSceneImage = async () => {
     try {
@@ -2009,7 +2023,8 @@ export default function SoloLevelingSpatial() {
                 break;
               case 'reception_desk':
               case 'architectural_models':
-                setPlayerLocation('luxury_realtor');
+                setShowLuxuryRealtor(true);
+                console.log('Opening luxury realtor property interface');
                 break;
               case 'park_bench':
                 // Major conversational node - high energy cost, high affection gain, memory star
