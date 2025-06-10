@@ -1,0 +1,38 @@
+ystem 12 (Revised Design): The 2D Gear Management Screen
+Design Philosophy: For this version, our philosophy is Maximum Clarity and Speed. The UI should allow players to understand their power, compare gear, and make upgrades with zero friction, all while maintaining our signature aesthetic.
+
+Here is the detailed breakdown, using your mockup as the foundation.
+
+1. The Overall Layout & Header
+The three-column layout is perfect. The header with the "Monarch's Armory" title, subtitle, and buttons is also perfect. No changes are needed here.
+
+2. Left Pane: The "Total Stats" Panel
+This is a great feature you added. It provides immediate, clear feedback on the player's overall power.
+
+UI/UX Refinement: Let's add a small animation to make it feel more dynamic.
+On Stat Change: When the player equips a new item, any numbers in this panel that change (e.g., Attack: 2500 → 3100) should briefly flash a golden color and animate quickly upwards before settling on the new value. This provides a satisfying visual confirmation of a power increase.
+3. Right Pane: The "Available Equipment" List
+The design of the item cards is excellent and should be kept as-is. The interaction model will be tap-to-equip.
+
+UI/UX Refinement (Stat Comparison): This is a critical feature for any RPG.
+On Hover/Focus: When the user hovers over an item in this list (or long-presses on mobile), the currently equipped item in the center pane should glow.
+Tooltip: A small tooltip should appear next to the equipped item showing a direct comparison.
+Example: If you hover over "Dragon Slayer Sword" (+2200 Attack), the tooltip next to your current sword would show: Attack: 1500 → 2200 with a green up-arrow. This allows for quick, informed decisions without needing to do mental math.
+4. Center Pane: The "Monarch's Schematic" (The Paper Doll)
+This is where we will apply the most polish to make it feel less abstract and more like a high-tech status screen.
+
+The Character Representation:
+
+The Fix: Instead of the generic outline and emoji, let's use a stylized, glowing purple line-art silhouette of Sung Jin-Woo's iconic hooded figure. This is more on-brand, looks cooler, and reinforces the character fantasy.
+The Equipment Slots:
+
+Visuals: Each empty slot should be a defined shape (a hexagon is a great, futuristic choice) with a faint icon inside representing the gear type (a helmet icon, a chestplate icon, etc.).
+Equipping Animation: When the player taps an item from the right-hand list, its icon should perform a quick animation. It should fly across the screen and slot into place in the schematic with a satisfying "click" sound effect and a flash of purple light. This makes the action feel tactile.
+Summary: The Final User Flow for This UI
+The user enters the "Monarch's Armory."
+They see their total stats on the left, their "Monarch's Schematic" with currently equipped icons in the center, and their available gear on the right.
+They hover over the "Dragon Slayer Sword" in the right-hand list. A tooltip appears next to their currently equipped sword in the center, showing a stat comparison.
+They tap the "Dragon Slayer Sword" card.
+The sword icon animates from the list, flies across the screen, and slots into the weapon slot in the schematic with a flash and a sound effect.
+The numbers in the "Total Stats" panel on the left instantly flash gold and update to their new, higher values.
+This refined 2D design will provide a fast, clear, and highly satisfying user experience. It perfectly serves our needs for the initial build and stands as a fantastic, polished design on its own, while still leaving the door open for the 3D Cinematic Armory as a future evolution.
