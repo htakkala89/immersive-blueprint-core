@@ -1209,6 +1209,35 @@ export default function SoloLevelingSpatial() {
     return () => clearInterval(interval);
   }, [timeOfDay]);
 
+  // System 15: Notification handlers
+  const handleQuestAccept = (questId: string) => {
+    console.log('Quest accepted:', questId);
+    setNotifications(prev => prev.filter(n => n.id !== questId));
+  };
+
+  const handleNewMessage = (conversationId: string, message: string) => {
+    console.log('New message sent:', conversationId, message);
+  };
+
+  // Simulate asynchronous notifications
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() > 0.98) {
+        const isQuestNotification = Math.random() > 0.7;
+        const newNotification = {
+          id: `notif_${Date.now()}`,
+          type: isQuestNotification ? 'quest' : 'message' as 'quest' | 'message',
+          title: isQuestNotification ? 'New Quest Available' : 'Message from Cha Hae-In',
+          content: isQuestNotification ? 'A-Rank Gate detected in Gangnam' : 'Just thinking of you. Be safe in there.',
+          timestamp: new Date()
+        };
+        setNotifications(prev => [...prev, newNotification]);
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
       
@@ -1951,6 +1980,35 @@ export default function SoloLevelingSpatial() {
           onClick={() => setMonarchAuraVisible(false)}
         />
       )}
+
+      {/* System 15: Notification Banners */}
+      <AnimatePresence>
+        {notifications.map((notification) => (
+          <motion.div
+            key={notification.id}
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4 cursor-pointer"
+            onClick={() => {
+              setShowCommunicator(true);
+              setNotifications(prev => prev.filter(n => n.id !== notification.id));
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex items-start gap-3">
+              <div className={`w-3 h-3 rounded-full mt-1 ${
+                notification.type === 'quest' ? 'bg-yellow-400' : 'bg-pink-400'
+              }`} />
+              <div className="flex-1">
+                <h4 className="text-white font-medium text-sm">{notification.title}</h4>
+                <p className="text-white/70 text-xs mt-1">{notification.content}</p>
+              </div>
+              <MessageCircle className="w-4 h-4 text-white/60" />
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
       
 
 
@@ -2220,6 +2278,14 @@ export default function SoloLevelingSpatial() {
         currentGold={gameState.gold || 0}
         onPurchase={handlePropertyPurchase}
         backgroundImage={currentLocationData.backgroundImage}
+      />
+
+      {/* System 15: Hunter's Communicator */}
+      <HunterCommunicatorSystem15
+        isVisible={showCommunicator}
+        onClose={() => setShowCommunicator(false)}
+        onQuestAccept={handleQuestAccept}
+        onNewMessage={handleNewMessage}
       />
     </div>
   );
