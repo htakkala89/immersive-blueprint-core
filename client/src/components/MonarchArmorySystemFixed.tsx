@@ -57,12 +57,12 @@ const equipmentSlots = {
   boots: { x: 50, y: 60 }
 };
 
-const totalStats = {
-  strength: 847,
-  agility: 423,
-  vitality: 562,
-  intelligence: 298,
-  sense: 156
+const baseStats = {
+  strength: 500,
+  agility: 300,
+  vitality: 400,
+  intelligence: 200,
+  sense: 100
 };
 
 const getRarityBorder = (rarity: string) => {
@@ -97,15 +97,50 @@ const getStatColor = (stat: string) => {
 export function MonarchArmorySystemFixed({ isVisible, onClose }: MonarchArmorySystemProps) {
   const [upgradeMode, setUpgradeMode] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Equipment | null>(null);
+  const [equippedItems, setEquippedItems] = useState<{[key: string]: Equipment}>({});
 
   const handleEquipItem = (item: Equipment, slot: string) => {
     console.log(`Equipping ${item.name} to ${slot} slot`);
+    setEquippedItems(prev => ({
+      ...prev,
+      [slot]: item
+    }));
   };
 
   const handleUpgradeItem = (item: Equipment) => {
     setSelectedItem(item);
     setUpgradeMode(true);
   };
+
+  const handleUnequipItem = (slot: string) => {
+    setEquippedItems(prev => {
+      const newEquipped = { ...prev };
+      delete newEquipped[slot];
+      return newEquipped;
+    });
+  };
+
+  // Calculate total stats including equipped items
+  const calculateTotalStats = () => {
+    const totalStats = { ...baseStats };
+    
+    Object.values(equippedItems).forEach(item => {
+      if (item.stats.attack) totalStats.strength += item.stats.attack;
+      if (item.stats.defense) totalStats.vitality += item.stats.defense;
+      if (item.stats.speed) totalStats.agility += item.stats.speed;
+      if (item.stats.magic) totalStats.intelligence += item.stats.magic;
+    });
+
+    return {
+      strength: totalStats.strength,
+      agility: totalStats.agility,
+      vitality: totalStats.vitality,
+      intelligence: totalStats.intelligence,
+      sense: totalStats.sense
+    };
+  };
+
+  const totalStats = calculateTotalStats();
 
   if (!isVisible) return null;
 
@@ -207,18 +242,41 @@ export function MonarchArmorySystemFixed({ isVisible, onClose }: MonarchArmorySy
                   <div className="text-6xl">🤴</div>
                   
                   {/* Equipment Slots Overlay */}
-                  {Object.entries(equipmentSlots).map(([slot, coords]) => (
-                    <motion.div
-                      key={slot}
-                      className="absolute w-8 h-8 border-2 border-purple-400/50 rounded-lg bg-purple-500/10 cursor-pointer hover:bg-purple-500/20 transition-colors"
-                      style={{
-                        left: `${coords.x}%`,
-                        top: `${coords.y}%`
-                      }}
-                      whileHover={{ scale: 1.1 }}
-                      title={`${slot} slot`}
-                    />
-                  ))}
+                  {Object.entries(equipmentSlots).map(([slot, coords]) => {
+                    const equippedItem = equippedItems[slot];
+                    return (
+                      <motion.div
+                        key={slot}
+                        className={`absolute w-8 h-8 border-2 rounded-lg cursor-pointer transition-colors ${
+                          equippedItem 
+                            ? 'border-amber-400 bg-amber-400/20 hover:bg-amber-400/30' 
+                            : 'border-purple-400/50 bg-purple-500/10 hover:bg-purple-500/20'
+                        }`}
+                        style={{
+                          left: `${coords.x}%`,
+                          top: `${coords.y}%`
+                        }}
+                        whileHover={{ scale: 1.1 }}
+                        title={equippedItem ? `${equippedItem.name} (${slot})` : `${slot} slot`}
+                        onClick={() => {
+                          if (equippedItem) {
+                            handleUnequipItem(slot);
+                          }
+                        }}
+                      >
+                        {equippedItem && (
+                          <motion.div
+                            className="text-lg flex items-center justify-center w-full h-full"
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ type: "spring", stiffness: 200 }}
+                          >
+                            {equippedItem.icon}
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    );
+                  })}
                 </motion.div>
               </div>
               
