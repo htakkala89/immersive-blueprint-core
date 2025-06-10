@@ -12,6 +12,7 @@ import {
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
+import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
@@ -159,6 +160,16 @@ export default function SoloLevelingSpatial() {
     id: string;
     title: string;
   } | null>(null);
+  
+  // System 15: Hunter's Communicator state
+  const [showCommunicator, setShowCommunicator] = useState(false);
+  const [notifications, setNotifications] = useState<Array<{
+    id: string;
+    type: 'message' | 'quest';
+    title: string;
+    content: string;
+    timestamp: Date;
+  }>>([]);
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
@@ -1918,7 +1929,8 @@ export default function SoloLevelingSpatial() {
             { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
             { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
-            { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } }
+            { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
+            { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
             <button
               key={item.label}

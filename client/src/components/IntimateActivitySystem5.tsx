@@ -240,10 +240,49 @@ export function IntimateActivitySystem5({
   };
 
   const getSuggestionPrompts = () => {
+    const lastMessage = messages[messages.length - 1];
+    if (!lastMessage || lastMessage.type === 'user') return [];
+
+    // Generate contextual prompts based on conversation flow
+    const response = lastMessage.content.toLowerCase();
+    
+    if (response.includes('blush') || response.includes('shy')) {
+      return [
+        "*I gently touch your cheek*",
+        "You look beautiful when you blush",
+        "*I move closer to you*"
+      ];
+    }
+    
+    if (response.includes('kiss') || response.includes('lips')) {
+      return [
+        "*I deepen the kiss*",
+        "*My hands find your waist*",
+        "I've wanted this for so long"
+      ];
+    }
+    
+    if (response.includes('close') || response.includes('together')) {
+      return [
+        "*I pull you against me*",
+        "I love feeling you so close",
+        "*I whisper in your ear*"
+      ];
+    }
+    
+    if (response.includes('want') || response.includes('need')) {
+      return [
+        "I want you too",
+        "*I show you how much I care*",
+        "Tell me what you desire"
+      ];
+    }
+
+    // Default intimate prompts
     return [
-      "soft candlelight illuminating their forms",
-      "tender expressions of deep connection",
-      "artistic shadows and warm lighting"
+      "*I caress your face gently*",
+      "You mean everything to me",
+      "*I hold you close*"
     ];
   };
 
@@ -288,9 +327,9 @@ export function IntimateActivitySystem5({
           </div>
         </div>
 
-        {/* Chat Interface */}
+        {/* Chat Interface - Identical to System 2 */}
         <div className="absolute inset-x-6 bottom-6 top-24 flex flex-col">
-          {/* Messages Container */}
+          {/* Messages Container - Same as System 2 Scene Script Format */}
           <div 
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto custom-scrollbar mb-6 space-y-4"
@@ -300,13 +339,21 @@ export function IntimateActivitySystem5({
                 key={message.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start items-start gap-4'}`}
               >
+                {message.type === 'character' && (
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <Heart className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                )}
+                
                 <div
-                  className={`max-w-3xl p-4 rounded-2xl ${
+                  className={`max-w-3xl ${
                     message.type === 'user'
-                      ? 'bg-purple-600/90 text-white ml-12'
-                      : 'bg-black/40 backdrop-blur-xl text-white border border-white/20 mr-12'
+                      ? 'text-right text-white/90 italic' // Scene Script format for user
+                      : 'text-white bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/10' // Standard dialogue for character
                   }`}
                 >
                   <p className="whitespace-pre-wrap leading-relaxed">
@@ -320,20 +367,37 @@ export function IntimateActivitySystem5({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex justify-start"
+                className="flex justify-start items-start gap-4"
               >
-                <div className="bg-black/40 backdrop-blur-xl text-white border border-white/20 rounded-2xl p-4 mr-12">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                    <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                  </div>
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <Heart className="w-8 h-8 text-white" />
+                </div>
+                <div className="bg-black/20 backdrop-blur-sm text-white border border-white/10 rounded-2xl p-4">
+                  <div className="text-white/60 text-sm">Responding...</div>
                 </div>
               </motion.div>
             )}
           </div>
 
-          {/* Input Area */}
+          {/* Dynamic Thought Prompts - Same as System 2 */}
+          {messages.length > 0 && (
+            <div className="mb-4">
+              <div className="flex flex-wrap gap-2 justify-center">
+                {getSuggestionPrompts().map((suggestion, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => setCurrentInput(suggestion)}
+                    variant="ghost"
+                    className="bg-black/30 backdrop-blur-sm text-white/80 hover:bg-white/10 border border-white/20 text-sm px-4 py-2"
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Input Area - Unified Text Input identical to System 2 */}
           <div className="relative">
             <div className="bg-black/40 backdrop-blur-xl rounded-2xl border border-white/20 p-4">
               <div className="flex gap-3 items-end">
@@ -342,28 +406,31 @@ export function IntimateActivitySystem5({
                   value={currentInput}
                   onChange={(e) => setCurrentInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Express your feelings and actions..."
+                  placeholder="Type your actions, dialogue, or thoughts..."
                   className="flex-1 bg-transparent border-none resize-none text-white placeholder-white/60 focus:ring-0 min-h-[60px] max-h-[120px]"
                   rows={3}
                 />
                 
                 <div className="flex gap-2">
-                  {/* Narrative Lens Button */}
+                  {/* Narrative Lens Button - Only appears contextually */}
                   <AnimatePresence>
                     {narrativeLens.isVisible && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
+                        className="relative"
                       >
                         <Button
                           onClick={activateNarrativeLens}
                           variant="ghost"
                           size="icon"
-                          className="text-pink-400 hover:bg-pink-500/20 border border-pink-400/30"
+                          className="text-pink-400 hover:bg-pink-500/20 border border-pink-400/30 relative overflow-hidden"
                         >
                           <Eye className="w-5 h-5" />
+                          <div className="absolute inset-0 bg-pink-400/20 animate-pulse rounded" />
                         </Button>
+                        <div className="absolute -top-2 -right-2 w-3 h-3 bg-pink-500 rounded-full animate-ping" />
                       </motion.div>
                     )}
                   </AnimatePresence>

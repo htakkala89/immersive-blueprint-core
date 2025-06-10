@@ -1,0 +1,43 @@
+Scenario: The user, during an intimate scene with Hunter Cha in System 5, types: "show me your panties."
+
+Here's how the system would handle it:
+
+Text Input and AI Interpretation (Dialogue System):
+
+The user's text is fed directly to the unrestricted AI powering Cha Hae-In's responses.
+The AI interprets this input within the established context of the intimate scene, her current affection level, and the overall tone the player has set.
+Cha Hae-In's Response (Text):
+
+Because we've removed content restrictions in System 5, the AI is free to respond in a way that is consistent with her personality and the established intimacy.
+Possible AI Responses (varied based on context and her "mood"):
+Playful/Teasing: "Oh, Jin-Woo... you're being bold tonight, aren't you? Maybe if you ask nicely..."
+Slightly Embarrassed/Coy: "J-Jin-Woo! Really? Here?" (Potentially followed by an action like glancing around or covering herself slightly).
+Directly Compliant (if the relationship is very far along and the tone is right): "Hehe... you really want to see?" (Potentially followed by a textual description of her actions).
+Setting Boundaries (if the tone or relationship isn't at that level): "Jin-Woo, I... maybe we should take things a little slower." (Even in an unrestricted system, the AI can still respond in character and potentially set soft boundaries based on the established narrative).
+The "Narrative Lens" Opportunity:
+
+Crucially, the AI's textual response is the primary output at this stage.
+If the AI's response indicates a willingness to engage with the user's request (e.g., a playful "maybe"), the Narrative Lens icon (👁️) would likely appear in the UI.
+User Choice: Engaging the "Narrative Lens":
+
+The player then has the choice to tap the Narrative Lens icon. If they do...
+Dynamic Prompt Generation:
+
+Context Parser: The system analyzes the last few lines, including the user's request and Cha Hae-In's response (e.g., "Hehe... you really want to see?").
+Pre-filled Prompt (Main Editor): The AI might pre-fill the prompt editor with something like: "Sung Jin-Woo asks Cha Hae-In to show him her panties in the intimate setting of their bedroom. She seems playfully willing."
+Dynamic Suggestions: The AI would generate suggestion prompts specifically related to this request:
+Detailed close-up.
+Lace and skin.
+Teasing reveal.
+Her playful expression.
+User Editing: The user is now free to edit this prompt, adding any explicit details, descriptions of clothing, specific poses, or camera angles they desire.
+Visualization:
+
+Once the user is satisfied with their prompt, tapping "Visualize" will generate the image based on their explicit instructions, combined with the style foundation and negative prompts.
+Key takeaways:
+
+Text is Primary: The user's direct text input is handled by the AI as part of the ongoing narrative.
+AI Sets the Stage: Cha Hae-In's response (textual) dictates how the scene progresses and whether the Narrative Lens becomes a relevant option.
+Player Agency for Visuals: The explicit visual representation is always initiated by the player through the Narrative Lens. The AI's text creates the opportunity, but the user makes the active choice to generate the image and specifies its content.
+Unrestricted Prompting: Within the Narrative Lens, the user has complete freedom to describe exactly what they want to see, without any content filters. The AI-generated suggestions are designed to guide them toward more detailed and mature prompts.
+This system ensures that the game respects the user's explicit desires within the intimate narrative while still relying on their active choice to generate the visual content. The AI acts as a responsive partner in the text-based roleplay, and the Narrative Lens provides the tool for bringing those desires to visual life with maximum detail and explicitness, guided by both the AI's contextual understanding and the user's unfettered creativity.

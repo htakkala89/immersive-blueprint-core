@@ -1,0 +1,64 @@
+System 15: The Hunter's Communicator - Complete Design Specification
+
+Part 1: The "Why" - Design Philosophy
+
+The Hunter's Communicator is our in-world version of a smartphone. Its purpose is to deepen immersion by making the world feel persistent and interconnected. It allows for asynchronous communication, which makes characters feel like they have their own lives and schedules. It also serves as an elegant, diegetic system for delivering quests and official information without relying on jarring, "gamey" pop-up menus. Every interaction with the Communicator should feel like using a piece of high-tech Hunter-issue equipment.
+
+Part 2: The User Journey
+
+Scenario A: Personal Connection
+
+The player is in the middle of a Dungeon Raid (System 11).
+A discreet notification banner slides down from the top of the screen: [Cha Hae-In]: Just thinking of you. Be safe in there. It slides away after a few seconds without interrupting combat.
+Later, after the raid, the player opens their Communicator to see the full message and type a reply.
+Scenario B: Official Business
+
+The player is relaxing in their Apartment (System 13).
+A different notification chime sounds. The banner reads: [Hunter Association]: New A-Rank Gate detected. Details available.
+The player opens the Communicator, navigates to the "System Alerts" tab, reads the quest briefing, and taps "Accept." A new quest marker (!) now appears on their World Map (System 8).
+Part 3: UI/UX Specifications
+
+A. Access & The Main Icon
+
+Access: The Communicator is accessed exclusively through the Monarch's Aura (System 3).
+Icon: A new rune will be added to the radial menu. The icon should be a stylized message bubble (💬) or a radio signal (📡), glowing with the standard purple energy.
+B. The Main Interface
+
+Style: Tapping the rune opens a full-screen liquid glassmorphism panel.
+Layout: The panel has two large, clear tabs at the top: Messages and System Alerts. The currently selected tab is brighter and has a glowing line underneath it.
+C. The "Messages" Tab
+
+Purpose: This is for all personal, character-to-character communication.
+UI: It looks like a clean, futuristic contacts list. Each conversation is a single list item.
+List Item Contents:
+Portrait: The character's portrait on the left.
+Name: The character's name (e.g., "Cha Hae-In," "Woo Jin-Chul").
+Last Message Preview: A single line showing the last message received.
+Unread Indicator: A glowing purple dot appears on the right if there are unread messages.
+D. The "Chat View" (Asynchronous Conversation)
+
+Trigger: Tapping a conversation in the "Messages" tab opens this view.
+UI/UX: This view uses the exact same "Scene Script" UI as our main Dialogue System (System 2) to maintain consistency.
+Player's sent messages are right-aligned and italicized (no bubble).
+Cha Hae-In's messages are left-aligned next to her portrait.
+Asynchronous Delay: This is key. When the player sends a message, the "Cha Hae-In is responding..." indicator may appear, but her response might arrive seconds, minutes, or even an hour later in game-time, accompanied by a new notification. This makes the conversation feel realistic, as she is responding when she has a free moment.
+E. The "System Alerts" Tab
+
+Purpose: An official inbox for quests, system updates, and important world news.
+UI: It looks like a professional email inbox or memo list. Each entry has a clear title, a sender ("Hunter Association," "System Admin"), and a timestamp.
+Quest Briefing: Tapping on a Quest Offer opens a detailed view with:
+Title: Quest Offer: Clear Red Gate in Hongdae District
+Rank: B-Rank
+Briefing: A full description of the mission.
+Reward: ₩ 35,000,000
+Action Buttons: Large, clear [Accept] and [Decline] buttons at the bottom.
+F. The Notification System
+
+Style: A small, unobtrusive banner that slides down from the top of the screen. It is a narrow liquid glassmorphism panel.
+Behavior: It is non-blocking. It appears over all other views (including combat) for ~5 seconds and then automatically slides back up. It can be tapped to immediately open the relevant message or alert.
+Part 4: Logic and System Integration
+
+The Communicator is accessed via the Monarch's Aura (System 3).
+Its chat interface uses the UI rules established in the Dialogue System (System 2).
+Accepting quests here adds objectives to the player's quest log and places new ! nodes on the World Map (System 8).
+Having positive, asynchronous conversations with Cha Hae-In contributes to the affection score tracked by the Relationship Constellation (System 6).
