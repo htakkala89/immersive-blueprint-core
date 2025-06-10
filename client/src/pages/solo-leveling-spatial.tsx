@@ -127,27 +127,31 @@ export default function SoloLevelingSpatial() {
     energy: 80,
     maxEnergy: 100,
     apartmentTier: 2,
+    storyFlags: {
+      redGateUnlocked: true,
+      dungeonAccessGranted: true,
+      tutorialCompleted: true,
+      firstMissionActive: true
+    },
     activeQuests: [
       {
-        id: 'clear_c_rank_gate',
+        id: 'red_gate_emergency',
         type: 'gate_clearance',
-        title: 'C-Rank Gate Clearance - Hongdae',
-        description: 'A C-rank dungeon has appeared in Hongdae district. Clear it before it breaks and monsters spill into the city.',
+        title: 'Red Gate Emergency - Hunter Association',
+        description: 'A dangerous Red Gate has appeared near the Hunter Association. This is my mission - Time to finish what I started.',
         status: 'accepted',
-        targetLocation: 'hongdae_cafe',
-        difficulty: 'C',
+        targetLocation: 'hunter_association',
+        difficulty: 'S',
         progress: 0,
         rewards: {
-          gold: 15000000,
-          experience: 2500,
-          items: ['mana_crystal_rare', 'monster_core_uncommon']
+          gold: 50000000,
+          experience: 5000,
+          items: ['legendary_core', 'shadow_essence']
         },
-        requirements: {
-          level: 15
-        },
+        requirements: {},
         objectives: [
           {
-            id: 'enter_gate',
+            id: 'enter_red_gate',
             description: 'Enter the Red Gate',
             completed: false
           },
