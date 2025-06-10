@@ -592,8 +592,13 @@ export function DungeonRaidSystem11({
                           return (
                             <motion.button
                               key={shadow.id}
-                              onClick={() => canSummon ? summonShadowSoldier(shadow.id) : null}
-                              className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs ${
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (canSummon) {
+                                  summonShadowSoldier(shadow.id);
+                                }
+                              }}
+                              className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs z-50 ${
                                 canSummon 
                                   ? 'border-purple-400 bg-purple-500/30 hover:bg-purple-500/50 cursor-pointer'
                                   : 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
@@ -603,6 +608,7 @@ export function DungeonRaidSystem11({
                                 top: `calc(50% + ${y}px - 32px)`
                               }}
                               whileHover={{ scale: canSummon ? 1.1 : 1 }}
+                              whileTap={{ scale: canSummon ? 0.9 : 1 }}
                             >
                               <div className="text-white font-bold">{shadow.name}</div>
                               <div className="text-blue-300">{shadow.manaCost}MP</div>
