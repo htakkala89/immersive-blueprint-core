@@ -1250,6 +1250,7 @@ export default function SoloLevelingSpatial() {
               onClick={() => {
                 console.log('Clicked element:', element.id);
                 handleEnvironmentalInteraction({
+                  id: element.id,
                   action: element.action,
                   name: element.name,
                   x: element.position.x,
