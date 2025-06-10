@@ -818,37 +818,30 @@ export function DungeonRaidSystem11({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="fixed inset-0 z-[9999] bg-gradient-to-b from-gray-900 via-red-950 to-black"
+      className="fixed inset-0 z-[9999] bg-gradient-to-b from-gray-900 via-red-950 to-black overflow-hidden"
     >
       {/* Dungeon Atmosphere */}
       <div className="absolute inset-0 bg-[url('/dungeon-bg.jpg')] bg-cover bg-center opacity-30" />
       
-      {/* UI Header - Fixed at top */}
-      <div className="absolute top-0 left-0 right-0 z-20 p-4 flex justify-between items-start bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
-        <div className="backdrop-blur-md bg-black/40 rounded-lg p-3 border border-purple-500/30">
-          <h2 className="text-xl font-bold text-white mb-2">Shadow Dungeon Raid</h2>
-          <div className="flex gap-4 text-sm">
-            <span className="text-red-400">Difficulty: B-Rank</span>
-            <span className="text-purple-400">Floor: 15</span>
+      {/* Minimized Corner UI */}
+      <div className="absolute top-2 left-2 z-30">
+        <div className="backdrop-blur-md bg-black/70 rounded-lg px-2 py-1 border border-purple-500/40 text-xs">
+          <div className="text-white font-bold">Shadow Dungeon</div>
+          <div className="flex gap-2">
+            <span className="text-red-400">B-Rank</span>
+            <span className="text-purple-400">Floor 15</span>
           </div>
         </div>
+      </div>
 
-        {gamePhase === 'prep' && (
-          <Button
-            onClick={() => setGamePhase('combat')}
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
-            Begin Raid
-          </Button>
-        )}
-
+      <div className="absolute top-2 right-2 z-30">
         <Button
           onClick={onClose}
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-white/10 relative z-[10001]"
+          className="text-white hover:bg-red-600/30 bg-black/70 backdrop-blur-md h-8 w-8 p-0"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </Button>
       </div>
 
@@ -895,7 +888,7 @@ export function DungeonRaidSystem11({
           {/* Battlefield with Camera Shake */}
           <motion.div 
             ref={battlefieldRef}
-            className="absolute inset-x-4 top-20 bottom-32 bg-gradient-to-r from-gray-800/80 to-red-900/80 rounded-lg border border-red-500/30 overflow-hidden cursor-crosshair"
+            className="absolute inset-x-4 top-4 bottom-32 bg-gradient-to-r from-gray-800/80 to-red-900/80 rounded-lg border border-red-500/30 overflow-hidden cursor-crosshair"
             onClick={handleBattlefieldTap}
             animate={cameraShake ? { 
               x: [0, -2, 2, -2, 2, 0],
