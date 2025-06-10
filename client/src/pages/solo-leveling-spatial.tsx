@@ -86,6 +86,7 @@ export default function SoloLevelingSpatial() {
     timestamp: Date;
   }>>([]);
   const spatialViewRef = useRef<HTMLDivElement>(null);
+  const conversationScrollRef = useRef<HTMLDivElement>(null);
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -579,6 +580,13 @@ export default function SoloLevelingSpatial() {
       setIsLoading(false);
     }
   };
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    if (conversationScrollRef.current) {
+      conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+    }
+  }, [conversationHistory]);
 
   const handleLocationTravel = (location: any) => {
     setPlayerLocation(location.id);
@@ -1153,7 +1161,10 @@ export default function SoloLevelingSpatial() {
                   
                   <div className="flex-1">
                     {/* Cinematic Script-Style Conversation History */}
-                    <div className="space-y-3 max-h-48 overflow-y-auto">
+                    <div 
+                      ref={conversationScrollRef}
+                      className="space-y-3 max-h-48 overflow-y-auto scroll-smooth"
+                    >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
                           key={index}
