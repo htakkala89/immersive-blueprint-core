@@ -1355,32 +1355,101 @@ export function DungeonRaidSystem11Fixed({
           {/* Ground Line */}
           <div className="absolute bottom-8 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
 
-          {/* Enemy Telegraph Danger Zones */}
-          {enemyTelegraphs.map((telegraph, index) => (
-            <motion.div
-              key={`telegraph-${index}`}
-              className="absolute border-2 border-red-500 bg-red-500/20 rounded z-10"
-              style={{
-                left: telegraph.dangerZone.x,
-                top: telegraph.dangerZone.y,
-                width: telegraph.dangerZone.width,
-                height: telegraph.dangerZone.height
-              }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: [0.3, 0.8, 0.3],
-                scale: [0.8, 1.1, 0.8]
-              }}
-              transition={{
-                duration: 0.5,
-                repeat: Infinity
-              }}
-            >
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red-400 text-xl font-bold">
-                ⚠️
-              </div>
-            </motion.div>
-          ))}
+          {/* Boss Attack Charging Danger Zone - Enhanced for Multi-Phase */}
+          <AnimatePresence>
+            {bossAttackCharging && (
+              <motion.div
+                className="absolute border-4 rounded-lg z-20"
+                style={{
+                  left: bossAttackCharging.dangerZone.x,
+                  top: bossAttackCharging.dangerZone.y,
+                  width: bossAttackCharging.dangerZone.width,
+                  height: bossAttackCharging.dangerZone.height,
+                  background: bossAttackCharging.type === 'devastation' 
+                    ? 'radial-gradient(circle, rgba(220, 38, 38, 0.4) 0%, rgba(185, 28, 28, 0.2) 100%)'
+                    : 'rgba(239, 68, 68, 0.25)',
+                  borderColor: bossAttackCharging.type === 'devastation' ? '#dc2626' : '#ef4444',
+                  borderWidth: bossAttackCharging.type === 'devastation' ? '6px' : '4px'
+                }}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ 
+                  opacity: [0.3, 0.9, 0.3],
+                  scale: [0.9, 1.05, 0.9],
+                  borderColor: bossAttackCharging.type === 'devastation' 
+                    ? ["#dc2626", "#991b1b", "#dc2626"]
+                    : ["#ef4444", "#dc2626", "#ef4444"]
+                }}
+                exit={{ opacity: 0, scale: 0.2 }}
+                transition={{ 
+                  duration: bossAttackCharging.type === 'devastation' ? 1.2 : 0.8,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <motion.div 
+                      className={`font-bold mb-2 ${
+                        bossAttackCharging.type === 'devastation' ? 'text-red-100 text-2xl' : 
+                        bossAttackCharging.type === 'sweep' ? 'text-red-200 text-lg' : 'text-red-300 text-base'
+                      }`}
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 0.6, repeat: Infinity }}
+                    >
+                      {bossAttackCharging.type === 'devastation' ? '💥 DEVASTATION BLAST' :
+                       bossAttackCharging.type === 'sweep' ? '🌪️ SWEEPING STRIKE' : '💢 GROUND SLAM'}
+                    </motion.div>
+                    <div className="text-red-400 text-sm font-bold">EVACUATE IMMEDIATELY!</div>
+                    {bossAttackCharging.type === 'devastation' && (
+                      <div className="text-red-300 text-xs mt-1">ARENA-WIDE ATTACK</div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Pulsing border effect for devastation */}
+                {bossAttackCharging.type === 'devastation' && (
+                  <motion.div
+                    className="absolute inset-0 border-4 border-red-400 rounded-lg"
+                    animate={{ 
+                      scale: [1, 1.02, 1],
+                      opacity: [0.8, 0.3, 0.8]
+                    }}
+                    transition={{ duration: 0.4, repeat: Infinity }}
+                  />
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Standard Enemy Telegraph Danger Zones */}
+          <AnimatePresence>
+            {enemyTelegraphs.map((telegraph, index) => (
+              <motion.div
+                key={`telegraph-${index}`}
+                className="absolute border-2 border-red-500 bg-red-500/20 rounded z-10"
+                style={{
+                  left: telegraph.dangerZone.x,
+                  top: telegraph.dangerZone.y,
+                  width: telegraph.dangerZone.width,
+                  height: telegraph.dangerZone.height
+                }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ 
+                  opacity: [0.3, 0.8, 0.3],
+                  scale: [0.8, 1.1, 0.8]
+                }}
+                exit={{ opacity: 0, scale: 0 }}
+                transition={{
+                  duration: 0.5,
+                  repeat: Infinity
+                }}
+              >
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red-400 text-xl font-bold">
+                  ⚠️
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
           
           {/* Full Character Models with Health Auras */}
           {players.map(player => (
