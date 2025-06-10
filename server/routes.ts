@@ -156,15 +156,43 @@ Generate 3 contextually perfect prompts:`;
     const result = await model.generateContent(promptGenerationContext);
     const promptText = result.response.text().trim();
     
-    // Parse the response into individual prompts
-    const prompts = promptText
-      .split('\n')
-      .filter(line => line.trim().length > 0)
-      .map(line => line.trim())
-      .slice(0, 3); // Ensure exactly 3 prompts
-
-    console.log(`🎭 Generated dynamic prompts:`, prompts);
-    return prompts.length === 3 ? prompts : [
+    // Extract clean prompts from AI response - look for quoted dialogue or action prompts
+    const extractedPrompts: string[] = [];
+    const lines = promptText.split('\n');
+    
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      
+      // Extract text within quotes
+      const quotedMatch = trimmedLine.match(/"([^"]+)"/);
+      if (quotedMatch && quotedMatch[1].length > 5 && quotedMatch[1].length < 80) {
+        extractedPrompts.push(quotedMatch[1]);
+        continue;
+      }
+      
+      // Extract text after ">" prompt markers
+      const promptMatch = trimmedLine.match(/>\s*"?([^"]+)"?/);
+      if (promptMatch && promptMatch[1].length > 5 && promptMatch[1].length < 80) {
+        extractedPrompts.push(promptMatch[1]);
+        continue;
+      }
+      
+      // Skip analysis text and look for clean prompt-like sentences
+      if (trimmedLine.length > 10 && trimmedLine.length < 60 && 
+          !trimmedLine.includes('Prompt') && 
+          !trimmedLine.includes('contextually') &&
+          !trimmedLine.includes('designed') &&
+          !trimmedLine.includes('analysis') &&
+          (trimmedLine.includes('?') || trimmedLine.includes('you') || trimmedLine.includes('me'))) {
+        extractedPrompts.push(trimmedLine);
+      }
+    }
+    
+    // Use only the first 3 clean prompts
+    const cleanPrompts = extractedPrompts.slice(0, 3);
+    
+    console.log(`🎭 Generated dynamic prompts:`, cleanPrompts);
+    return cleanPrompts.length === 3 ? cleanPrompts : [
       "Tell me more about that",
       "What do you think?", 
       "That sounds interesting"
