@@ -133,6 +133,30 @@ export function DungeonRaidSystem11({
   }>>([]);
   const [puzzleSequence, setPuzzleSequence] = useState<number[]>([]);
   const [playerSequence, setPlayerSequence] = useState<number[]>([]);
+
+  // Advanced combat mechanics
+  const [enemyTelegraphs, setEnemyTelegraphs] = useState<Array<{
+    id: string;
+    enemyId: string;
+    type: 'area_attack' | 'charge' | 'ranged';
+    targetArea: { x: number; y: number; radius: number };
+    timeLeft: number;
+    maxTime: number;
+  }>>([]);
+  const [shadowSoldiers, setShadowSoldiers] = useState<Array<{
+    id: string;
+    name: string;
+    type: 'igris' | 'iron' | 'tank';
+    health: number;
+    maxHealth: number;
+    x: number;
+    y: number;
+    isActive: boolean;
+    manaCost: number;
+  }>>([]);
+  const [monarchRuneOpen, setMonarchRuneOpen] = useState(false);
+  const [chaHaeInTarget, setChaHaeInTarget] = useState<string | null>(null);
+  const [chaHaeInMode, setChaHaeInMode] = useState<'offensive' | 'defensive'>('offensive');
   
   // Touch-based skill system - 4 slot action bar
   const [skills, setSkills] = useState<Skill[]>([
@@ -558,6 +582,109 @@ export function DungeonRaidSystem11({
     });
   }, [enemies, teamUpReady]);
 
+  // Cha Hae-In AI coordination system
+  useEffect(() => {
+    if (gamePhase === 'combat' && enemies.length > 0) {
+      const jinwoo = players.find(p => p.id === 'jinwoo');
+      const chaHaeIn = players.find(p => p.id === 'chahaein');
+      
+      if (jinwoo && chaHaeIn) {
+        // Check if Jinwoo is stunned or in danger
+        const isJinwooInDanger = jinwoo.health < jinwoo.maxHealth * 0.3;
+        const aliveEnemies = enemies.filter(e => e.health > 0);
+        
+        if (isJinwooInDanger && aliveEnemies.length > 0) {
+          setChaHaeInMode('defensive');
+          // Cha tries to draw aggro from enemies attacking Jinwoo
+        } else {
+          setChaHaeInMode('offensive');
+          // Find Jinwoo's current target and coordinate
+          const jinwooTarget = aliveEnemies[0]; // Simplified targeting
+          if (jinwooTarget) {
+            setChaHaeInTarget(jinwooTarget.id);
+          }
+        }
+      }
+    }
+  }, [enemies, players, gamePhase]);
+
+  // Enemy AI and telegraph system
+  useEffect(() => {
+    if (gamePhase === 'combat') {
+      const interval = setInterval(() => {
+        const aliveEnemies = enemies.filter(e => e.health > 0);
+        
+        aliveEnemies.forEach(enemy => {
+          // Random chance for enemy to telegraph an attack
+          if (Math.random() > 0.97) { // ~3% chance per 100ms
+            const telegraphId = `telegraph_${Date.now()}_${enemy.id}`;
+            const attackType = Math.random() > 0.5 ? 'area_attack' : 'charge';
+            
+            setEnemyTelegraphs(prev => [...prev, {
+              id: telegraphId,
+              enemyId: enemy.id,
+              type: attackType,
+              targetArea: {
+                x: attackType === 'area_attack' ? enemy.x + 100 : players[0].x,
+                y: attackType === 'area_attack' ? enemy.y : players[0].y,
+                radius: attackType === 'area_attack' ? 50 : 30
+              },
+              timeLeft: 2000,
+              maxTime: 2000
+            }]);
+            
+            // Camera shake when enemy begins telegraph
+            setCameraShake(true);
+            setTimeout(() => setCameraShake(false), 200);
+          }
+        });
+      }, 100);
+      
+      return () => clearInterval(interval);
+    }
+  }, [gamePhase, enemies, players]);
+
+  // Telegraph countdown and execution
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setEnemyTelegraphs(prev => prev.map(telegraph => {
+        const newTimeLeft = telegraph.timeLeft - 100;
+        
+        if (newTimeLeft <= 0) {
+          // Execute the attack
+          const targetArea = telegraph.targetArea;
+          const jinwoo = players.find(p => p.id === 'jinwoo');
+          
+          if (jinwoo) {
+            const distance = Math.sqrt(
+              Math.pow(jinwoo.x - targetArea.x, 2) + 
+              Math.pow(jinwoo.y - targetArea.y, 2)
+            );
+            
+            if (distance <= targetArea.radius) {
+              // Player hit by telegraph attack
+              setPlayers(prevPlayers => prevPlayers.map(p => 
+                p.id === 'jinwoo' 
+                  ? { ...p, health: Math.max(0, p.health - 30) }
+                  : p
+              ));
+              
+              // Screen shake on hit
+              setScreenShake(true);
+              setTimeout(() => setScreenShake(false), 500);
+            }
+          }
+          
+          return null; // Mark for removal
+        }
+        
+        return { ...telegraph, timeLeft: newTimeLeft };
+      }).filter(Boolean) as any[]);
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, [players]);
+
   // Room completion detection
   useEffect(() => {
     if (gamePhase === 'combat' && enemies.length > 0) {
@@ -571,6 +698,9 @@ export function DungeonRaidSystem11({
       
       if (aliveEnemies.length === 0) {
         console.log('🎯 ALL ENEMIES DEFEATED - Processing room advancement...');
+        
+        // Clear telegraphs when room is complete
+        setEnemyTelegraphs([]);
         
         // Check if there are more waves in this room
         if (currentWave < maxWaves) {
@@ -594,7 +724,48 @@ export function DungeonRaidSystem11({
     }
   }, [enemies, gamePhase, currentRoom, currentWave, maxWaves, totalRooms, dungeonAct, generateRoomEnemies, generateRoomExits]);
 
-  // Core touch interaction handlers
+  // Shadow Soldier management
+  const availableShadows = [
+    { id: 'igris', name: 'Igris', type: 'igris' as const, manaCost: 40, health: 150, maxHealth: 150 },
+    { id: 'iron', name: 'Iron', type: 'iron' as const, manaCost: 25, health: 100, maxHealth: 100 },
+    { id: 'tank', name: 'Tank', type: 'tank' as const, manaCost: 60, health: 200, maxHealth: 200 }
+  ];
+
+  const summonShadowSoldier = useCallback((shadowType: string) => {
+    const shadowTemplate = availableShadows.find(s => s.id === shadowType);
+    if (!shadowTemplate) return;
+
+    const jinwoo = players.find(p => p.id === 'jinwoo');
+    if (!jinwoo || jinwoo.mana < shadowTemplate.manaCost) return;
+
+    // Consume mana
+    setPlayers(prev => prev.map(p => 
+      p.id === 'jinwoo' ? { ...p, mana: p.mana - shadowTemplate.manaCost } : p
+    ));
+
+    // Summon shadow at position near Jinwoo
+    const newShadow = {
+      ...shadowTemplate,
+      id: `${shadowType}_${Date.now()}`,
+      x: jinwoo.x + 60,
+      y: jinwoo.y + 20,
+      isActive: true
+    };
+
+    setShadowSoldiers(prev => [...prev, newShadow]);
+    setMonarchRuneOpen(false);
+  }, [players, availableShadows]);
+
+  const commandShadowSoldiers = useCallback((targetX: number, targetY: number) => {
+    // Move all active shadows toward the target position
+    setShadowSoldiers(prev => prev.map(shadow => ({
+      ...shadow,
+      x: targetX + (Math.random() - 0.5) * 40,
+      y: targetY + (Math.random() - 0.5) * 40
+    })));
+  }, []);
+
+  // Enhanced battlefield tap handler with movement and targeting
   const handleBattlefieldTap = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (gamePhase !== 'combat') return;
     
@@ -611,25 +782,168 @@ export function DungeonRaidSystem11({
     });
     
     if (tappedEnemy) {
-      // Execute basic attack
-      const damage = 15 + Math.floor(Math.random() * 10);
-      setEnemies(prev => prev.map(enemy => 
-        enemy.id === tappedEnemy.id 
-          ? { ...enemy, health: Math.max(0, enemy.health - damage) }
-          : enemy
+      // Move Jinwoo toward enemy and execute basic attack
+      setPlayers(prev => prev.map(p => 
+        p.id === 'jinwoo' ? { 
+          ...p, 
+          x: Math.max(50, Math.min(550, tappedEnemy.x - 40)), // Move close but not on top
+          y: Math.max(50, Math.min(350, tappedEnemy.y))
+        } : p
       ));
-      
-      // Add damage number
-      setDamageNumbers(prev => [...prev, {
-        id: `basic_damage_${Date.now()}`,
-        damage,
-        x: tappedEnemy.x,
-        y: tappedEnemy.y - 20,
-        isCritical: false,
-        timestamp: Date.now()
-      }]);
+
+      // Execute basic attack combo
+      setTimeout(() => {
+        const damage = 15 + Math.floor(Math.random() * 10);
+        const isCritical = Math.random() > 0.85;
+        
+        setEnemies(prev => prev.map(enemy => 
+          enemy.id === tappedEnemy.id 
+            ? { ...enemy, health: Math.max(0, enemy.health - (isCritical ? damage * 2 : damage)) }
+            : enemy
+        ));
+        
+        // Add damage number with critical hit styling
+        setDamageNumbers(prev => [...prev, {
+          id: `basic_damage_${Date.now()}`,
+          damage: isCritical ? damage * 2 : damage,
+          x: tappedEnemy.x,
+          y: tappedEnemy.y - 20,
+          isCritical,
+          timestamp: Date.now()
+        }]);
+
+        // Screen shake on critical hit
+        if (isCritical) {
+          setScreenShake(true);
+          setTimeout(() => setScreenShake(false), 200);
+        }
+
+        // Cha Hae-In coordination - follow up on same target
+        if (chaHaeInMode === 'offensive' && tappedEnemy.health > damage) {
+          setTimeout(() => {
+            const chaFollowUpDamage = 12 + Math.floor(Math.random() * 8);
+            setEnemies(prev => prev.map(enemy => 
+              enemy.id === tappedEnemy.id 
+                ? { ...enemy, health: Math.max(0, enemy.health - chaFollowUpDamage) }
+                : enemy
+            ));
+
+            setDamageNumbers(prev => [...prev, {
+              id: `cha_damage_${Date.now()}`,
+              damage: chaFollowUpDamage,
+              x: tappedEnemy.x + 15,
+              y: tappedEnemy.y - 35,
+              isCritical: false,
+              timestamp: Date.now()
+            }]);
+
+            // Build synergy from coordination
+            setSynergyGauge(prev => Math.min(100, prev + 10));
+          }, 400);
+        }
+      }, 300);
+    } else {
+      // Tap on empty ground - move to position
+      if (commandMode) {
+        // Command shadow soldiers to focus on this position
+        commandShadowSoldiers(x, y);
+      } else {
+        // Move Jinwoo to this position
+        setPlayers(prev => prev.map(p => 
+          p.id === 'jinwoo' ? { 
+            ...p, 
+            x: Math.max(50, Math.min(550, x)),
+            y: Math.max(50, Math.min(350, y))
+          } : p
+        ));
+      }
     }
-  }, [gamePhase, enemies]);
+  }, [gamePhase, enemies, commandMode, chaHaeInMode, commandShadowSoldiers]);
+
+  // Trap encounter handler
+  const handleTrapEvasion = useCallback((skillId: string) => {
+    if (!trapAlert || trapAlert.skillRequired !== skillId) {
+      // Wrong skill used - player takes damage
+      setPlayers(prev => prev.map(p => 
+        p.id === 'jinwoo' ? { ...p, health: Math.max(0, p.health - 40) } : p
+      ));
+      setScreenShake(true);
+      setTimeout(() => setScreenShake(false), 500);
+    } else {
+      // Correct skill - successful evasion
+      setTrapAlert(null);
+    }
+  }, [trapAlert]);
+
+  // Puzzle rune interaction
+  const handleRuneTap = useCallback((runeId: string) => {
+    const rune = puzzleRunes.find(r => r.id === runeId);
+    if (!rune) return;
+
+    const newPlayerSequence = [...playerSequence, rune.sequence];
+    setPlayerSequence(newPlayerSequence);
+
+    // Update rune visual state
+    setPuzzleRunes(prev => prev.map(r => 
+      r.id === runeId ? { ...r, isActivated: true, glowing: false } : r
+    ));
+
+    // Check if sequence is correct so far
+    const isCorrectSoFar = newPlayerSequence.every((num, index) => 
+      num === puzzleSequence[index]
+    );
+
+    if (!isCorrectSoFar) {
+      // Wrong sequence - reset with failure feedback
+      setTimeout(() => {
+        setPuzzleRunes(prev => prev.map(r => ({ 
+          ...r, 
+          isActivated: false, 
+          glowing: r.sequence === 1 
+        })));
+        setPlayerSequence([]);
+      }, 1000);
+    } else if (newPlayerSequence.length === puzzleSequence.length) {
+      // Complete sequence correct - advance to combat
+      setTimeout(() => {
+        setGamePhase('combat');
+        setEnemies(generateRoomEnemies(currentRoom, dungeonAct));
+      }, 1000);
+    } else {
+      // Correct so far, continue sequence
+      setTimeout(() => {
+        setPuzzleRunes(prev => prev.map(r => ({
+          ...r,
+          glowing: r.sequence === puzzleSequence[newPlayerSequence.length]
+        })));
+      }, 500);
+    }
+  }, [puzzleRunes, puzzleSequence, playerSequence, currentRoom, dungeonAct, generateRoomEnemies]);
+
+  // Boss struggle mini-game
+  const handleBossStruggleTap = useCallback(() => {
+    if (!bossStruggle) return;
+
+    setBossStruggle(prev => {
+      if (!prev) return null;
+      const newProgress = Math.min(100, prev.progress + 8);
+      const newTapCount = prev.tapCount + 1;
+      
+      if (newProgress >= 100) {
+        // Success - deal massive damage to boss
+        setTimeout(() => {
+          setEnemies(prevEnemies => prevEnemies.map(enemy => 
+            enemy.type === 'boss' 
+              ? { ...enemy, health: Math.max(0, enemy.health - 150) }
+              : enemy
+          ));
+          setBossStruggle(null);
+        }, 500);
+      }
+      
+      return { ...prev, progress: newProgress, tapCount: newTapCount };
+    });
+  }, [bossStruggle]);
 
   const handleSkillTap = useCallback((skillId: string) => {
     console.log('Mouse down on skill:', skillId, skills.find(s => s.id === skillId)?.type);
@@ -883,6 +1197,71 @@ export function DungeonRaidSystem11({
                     ))}
                   </AnimatePresence>
 
+                  {/* Shadow Soldiers */}
+                  {shadowSoldiers.map(soldier => (
+                    <motion.div
+                      key={soldier.id}
+                      className="absolute"
+                      style={{ left: soldier.x, top: soldier.y }}
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                    >
+                      <div className="relative">
+                        <div className={`w-6 h-6 rounded-full border-2 ${
+                          soldier.type === 'igris' ? 'bg-purple-600 border-purple-400' :
+                          soldier.type === 'iron' ? 'bg-gray-600 border-gray-400' :
+                          'bg-blue-600 border-blue-400'
+                        }`}></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-purple-300 whitespace-nowrap">
+                          {soldier.name}
+                        </div>
+                        {/* Health bar */}
+                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-slate-600 rounded">
+                          <div 
+                            className="h-full bg-purple-500 rounded transition-all duration-200"
+                            style={{ width: `${(soldier.health / soldier.maxHealth) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+
+                  {/* Enemy Telegraph Indicators */}
+                  <AnimatePresence>
+                    {enemyTelegraphs.map(telegraph => (
+                      <motion.div
+                        key={telegraph.id}
+                        className="absolute pointer-events-none"
+                        style={{ 
+                          left: telegraph.targetArea.x - telegraph.targetArea.radius,
+                          top: telegraph.targetArea.y - telegraph.targetArea.radius,
+                          width: telegraph.targetArea.radius * 2,
+                          height: telegraph.targetArea.radius * 2
+                        }}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 0.7 }}
+                        exit={{ scale: 1.2, opacity: 0 }}
+                      >
+                        <div 
+                          className="w-full h-full border-4 border-red-500 rounded-full bg-red-500/20 animate-pulse"
+                          style={{
+                            animation: `pulse 0.5s ease-in-out infinite alternate`
+                          }}
+                        >
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-red-400 font-bold text-sm">
+                              {Math.ceil(telegraph.timeLeft / 1000)}
+                            </div>
+                          </div>
+                        </div>
+                        {/* Telegraph type indicator */}
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-400 font-bold">
+                          {telegraph.type === 'area_attack' ? '💥 AOE' : '⚡ CHARGE'}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+
                   {/* Loot Drops */}
                   <AnimatePresence>
                     {lootDrops.map(loot => (
@@ -913,11 +1292,19 @@ export function DungeonRaidSystem11({
                   {skills.map((skill, index) => (
                     <motion.button
                       key={skill.id}
-                      onMouseDown={() => handleSkillTap(skill.id)}
+                      onMouseDown={() => {
+                        if (trapAlert && trapAlert.skillRequired === skill.id) {
+                          handleTrapEvasion(skill.id);
+                        } else {
+                          handleSkillTap(skill.id);
+                        }
+                      }}
                       onMouseUp={() => handleSkillMouseUp(skill.id)}
                       onClick={() => handleSkillClick(skill.id)}
                       className={`relative w-16 h-16 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${
-                        skill.currentCooldown > 0
+                        trapAlert && trapAlert.skillRequired === skill.id
+                          ? 'border-yellow-400 bg-yellow-400/30 animate-bounce'
+                          : skill.currentCooldown > 0
                           ? 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
                           : skill.flashRed
                           ? 'border-red-500 bg-red-500/20 animate-pulse'
@@ -926,7 +1313,9 @@ export function DungeonRaidSystem11({
                       whileHover={{ scale: skill.currentCooldown > 0 ? 1 : 1.05 }}
                       whileTap={{ scale: skill.currentCooldown > 0 ? 1 : 0.95 }}
                       style={{
-                        background: skill.currentCooldown > 0 
+                        background: trapAlert && trapAlert.skillRequired === skill.id
+                          ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.4) 100%)'
+                          : skill.currentCooldown > 0 
                           ? 'linear-gradient(135deg, rgba(71, 85, 105, 0.5) 0%, rgba(51, 65, 85, 0.5) 100%)'
                           : skill.flashRed
                           ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.3) 100%)'
@@ -934,6 +1323,7 @@ export function DungeonRaidSystem11({
                       }}
                     >
                       <skill.icon className={`w-6 h-6 ${
+                        trapAlert && trapAlert.skillRequired === skill.id ? 'text-yellow-300' :
                         skill.currentCooldown > 0 ? 'text-slate-500' : 'text-purple-300'
                       }`} />
                       
@@ -950,9 +1340,104 @@ export function DungeonRaidSystem11({
                       <div className="absolute -top-2 -left-2 w-5 h-5 bg-slate-700 border border-slate-500 rounded-full flex items-center justify-center text-xs text-slate-300">
                         {index + 1}
                       </div>
+
+                      {/* Trap alert indicator */}
+                      {trapAlert && trapAlert.skillRequired === skill.id && (
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-yellow-400 font-bold animate-pulse">
+                          EVADE!
+                        </div>
+                      )}
                     </motion.button>
                   ))}
+
+                  {/* Monarch Rune Button */}
+                  <motion.button
+                    onClick={() => setMonarchRuneOpen(!monarchRuneOpen)}
+                    className={`relative w-16 h-16 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${
+                      commandMode 
+                        ? 'border-purple-400 bg-purple-400/30'
+                        : 'border-purple-500/50 bg-purple-500/20 hover:bg-purple-500/30 hover:border-purple-400'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Crown className="w-6 h-6 text-purple-300" />
+                    {commandMode && (
+                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-purple-300 font-bold">
+                        COMMAND
+                      </div>
+                    )}
+                  </motion.button>
                 </div>
+
+                {/* Monarch Rune Radial Menu */}
+                <AnimatePresence>
+                  {monarchRuneOpen && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute bottom-32 left-1/2 transform -translate-x-1/2"
+                    >
+                      <div className="relative w-48 h-48">
+                        {availableShadows.map((shadow, index) => {
+                          const angle = (index * 120) - 90; // 120 degrees apart, starting from top
+                          const radius = 60;
+                          const x = Math.cos(angle * Math.PI / 180) * radius;
+                          const y = Math.sin(angle * Math.PI / 180) * radius;
+                          const jinwoo = players.find(p => p.id === 'jinwoo');
+                          const canSummon = jinwoo && jinwoo.mana >= shadow.manaCost;
+                          
+                          return (
+                            <motion.button
+                              key={shadow.id}
+                              onClick={() => canSummon ? summonShadowSoldier(shadow.id) : null}
+                              className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs ${
+                                canSummon 
+                                  ? 'border-purple-400 bg-purple-500/30 hover:bg-purple-500/50 cursor-pointer'
+                                  : 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
+                              }`}
+                              style={{
+                                left: `calc(50% + ${x}px - 32px)`,
+                                top: `calc(50% + ${y}px - 32px)`
+                              }}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: index * 0.1 }}
+                              whileHover={canSummon ? { scale: 1.1 } : {}}
+                            >
+                              <div className={`w-6 h-6 rounded-full ${
+                                shadow.type === 'igris' ? 'bg-purple-600' :
+                                shadow.type === 'iron' ? 'bg-gray-600' :
+                                'bg-blue-600'
+                              }`}></div>
+                              <div className="text-xs text-purple-300 mt-1 font-bold">
+                                {shadow.name}
+                              </div>
+                              <div className="text-xs text-blue-300">
+                                {shadow.manaCost}MP
+                              </div>
+                            </motion.button>
+                          );
+                        })}
+                        
+                        {/* Command Mode Toggle */}
+                        <motion.button
+                          onClick={() => setCommandMode(!commandMode)}
+                          className="absolute w-12 h-12 rounded-full border-2 border-yellow-400 bg-yellow-400/20 flex items-center justify-center"
+                          style={{
+                            left: 'calc(50% - 24px)',
+                            top: 'calc(50% - 24px)'
+                          }}
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          <Users className="w-5 h-5 text-yellow-300" />
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Synergy Gauge */}
                 <div className="flex items-center justify-center gap-4 mb-4">
@@ -978,6 +1463,160 @@ export function DungeonRaidSystem11({
                   )}
                 </div>
               </div>
+            )}
+
+            {/* Trap Encounter Phase */}
+            {trapAlert && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute inset-0 bg-red-900/80 backdrop-blur-sm flex items-center justify-center z-50"
+              >
+                <div className="bg-slate-800/90 border-2 border-red-500 rounded-2xl p-8 text-center max-w-md">
+                  <div className="text-6xl mb-4 animate-pulse">⚠️</div>
+                  <h3 className="text-2xl font-bold text-red-400 mb-4">TRAP ACTIVATED!</h3>
+                  <p className="text-slate-300 mb-6">
+                    A deadly mechanism springs to life! Use the correct skill to evade!
+                  </p>
+                  <div className="mb-4">
+                    <div className="text-yellow-400 font-bold text-lg mb-2">
+                      Required Skill: {skills.find(s => s.id === trapAlert.skillRequired)?.name}
+                    </div>
+                    <div className="text-red-400 text-sm">
+                      Time remaining: {Math.ceil(trapAlert.timeLeft / 1000)}s
+                    </div>
+                  </div>
+                  <div className="text-xs text-slate-400">
+                    Tap the glowing skill button to evade!
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Puzzle Phase */}
+            {gamePhase === 'puzzle' && (
+              <div className="flex-1 flex flex-col">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">Ancient Rune Sequence</h3>
+                  <p className="text-slate-300">
+                    "The pattern on the floor must be the key!" - Cha Hae-In
+                  </p>
+                </div>
+                
+                <div className="flex-1 relative bg-slate-700/30 rounded-xl border border-slate-600/50 flex items-center justify-center">
+                  {puzzleRunes.map(rune => (
+                    <motion.button
+                      key={rune.id}
+                      onClick={() => handleRuneTap(rune.id)}
+                      className={`absolute w-16 h-16 rounded-xl border-2 flex items-center justify-center text-2xl font-bold transition-all duration-300 ${
+                        rune.isActivated 
+                          ? 'border-green-400 bg-green-400/30 text-green-300'
+                          : rune.glowing
+                          ? 'border-yellow-400 bg-yellow-400/30 text-yellow-300 animate-pulse'
+                          : 'border-purple-500/50 bg-purple-500/20 text-purple-300 hover:bg-purple-500/30'
+                      }`}
+                      style={{ left: rune.position.x, top: rune.position.y }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      {rune.sequence}
+                    </motion.button>
+                  ))}
+                </div>
+                
+                <div className="text-center mt-4">
+                  <div className="text-sm text-slate-400">
+                    Sequence: {playerSequence.join(' → ')} {playerSequence.length < puzzleSequence.length ? '→ ?' : ''}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Boss Antechamber Phase */}
+            {gamePhase === 'boss_antechamber' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex-1 flex flex-col items-center justify-center"
+              >
+                <div className="text-center mb-8">
+                  <h3 className="text-3xl font-bold text-red-400 mb-4">Boss Chamber Entrance</h3>
+                  <p className="text-slate-300 mb-4">
+                    The air here is thick with mana... You can feel it. The Monarch is just beyond this door.
+                  </p>
+                  <p className="text-red-300 text-sm mb-6">
+                    "Let's end this." - Cha Hae-In
+                  </p>
+                  
+                  {/* Healing Font */}
+                  <div className="bg-blue-500/20 border border-blue-400/50 rounded-xl p-4 mb-6">
+                    <div className="text-blue-300 font-semibold mb-2">Ancient Healing Font</div>
+                    <Button
+                      onClick={() => {
+                        setPlayers(prev => prev.map(p => ({
+                          ...p,
+                          health: p.maxHealth,
+                          mana: p.maxMana
+                        })));
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Restore Health & Mana
+                    </Button>
+                  </div>
+                </div>
+                
+                <Button
+                  onClick={() => {
+                    setGamePhase('combat');
+                    setEnemies(generateRoomEnemies(totalRooms, 3)); // Boss fight
+                  }}
+                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 text-lg"
+                >
+                  Enter Boss Chamber
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Boss Struggle Mini-Game */}
+            {bossStruggle && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute inset-0 bg-purple-900/80 backdrop-blur-sm flex items-center justify-center z-50"
+                onClick={handleBossStruggleTap}
+              >
+                <div className="bg-slate-800/90 border-2 border-purple-500 rounded-2xl p-8 text-center max-w-lg cursor-pointer">
+                  <div className="text-6xl mb-4 animate-bounce">⚔️</div>
+                  <h3 className="text-2xl font-bold text-purple-400 mb-4">SHADOW STRUGGLE!</h3>
+                  <p className="text-slate-300 mb-6">
+                    The boss grapples with overwhelming power! Rapidly tap to break free!
+                  </p>
+                  
+                  {/* Progress Bar */}
+                  <div className="w-full h-6 bg-slate-700 rounded-full overflow-hidden mb-4">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-purple-500 to-purple-600"
+                      style={{ width: `${bossStruggle.progress}%` }}
+                      animate={{ width: `${bossStruggle.progress}%` }}
+                      transition={{ duration: 0.1 }}
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between text-sm">
+                    <div className="text-purple-300">
+                      Progress: {Math.floor(bossStruggle.progress)}%
+                    </div>
+                    <div className="text-red-300">
+                      Time: {Math.ceil(bossStruggle.timeLeft / 1000)}s
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-slate-400 mt-4 animate-pulse">
+                    TAP RAPIDLY TO CONTINUE!
+                  </div>
+                </div>
+              </motion.div>
             )}
 
             {/* Room Clear Phase */}
