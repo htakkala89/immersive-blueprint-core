@@ -685,7 +685,7 @@ export default function SoloLevelingSpatial() {
         {/* Character Presence Indicator - Subtle Blue Dot for Cha Hae-In */}
         {currentLocationData.chaHaeInPresent && (
           <motion.div
-            className="absolute cursor-pointer z-20"
+            className="absolute cursor-pointer z-20 group"
             style={{
               left: `${currentLocationData.chaPosition.x}%`,
               top: `${currentLocationData.chaPosition.y}%`,
@@ -735,7 +735,21 @@ export default function SoloLevelingSpatial() {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Compact Context Label */}
+              {/* Activity Tooltip - Shows on Hover */}
+              <motion.div
+                className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30"
+                initial={{ y: 5 }}
+              >
+                <div className="bg-black/95 backdrop-blur-md text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap border border-blue-400/30 shadow-xl max-w-48">
+                  <div className="text-center">
+                    <div className="font-medium text-blue-300">Cha Hae-In</div>
+                    <div className="text-gray-300 text-xs mt-1">{currentLocationData.chaActivity}</div>
+                    <div className="text-blue-200 text-xs mt-1 font-medium">Tap to interact</div>
+                  </div>
+                </div>
+              </motion.div>
+              
+              {/* Simple Name Label */}
               <motion.div
                 className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded border border-blue-400/20 shadow-lg"
                 initial={{ opacity: 0, y: 5 }}
