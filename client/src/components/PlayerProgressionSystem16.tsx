@@ -357,9 +357,9 @@ export function PlayerProgressionSystem16({
         <div className="flex-1 overflow-hidden">
           {activeTab === 'stats' && (
             <div className="h-full p-6 overflow-y-auto character-scrollbar">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
                 {/* Player Info */}
-                <div className="space-y-6">
+                <div className="space-y-6 h-fit">
                   <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
                     <h3 className="text-xl font-bold text-white mb-4">Hunter Profile</h3>
                     <div className="space-y-3">
@@ -443,9 +443,9 @@ export function PlayerProgressionSystem16({
                 </div>
 
                 {/* Core Stats */}
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50 h-fit">
                   <h3 className="text-xl font-bold text-white mb-6">Core Stats</h3>
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-96 overflow-y-auto character-scrollbar">
                     {Object.entries(playerData.stats).map(([statKey, value]) => {
                       const IconComponent = getStatIcon(statKey as keyof CoreStats);
                       const colorClass = getStatColor(statKey as keyof CoreStats);
