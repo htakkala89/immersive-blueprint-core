@@ -1,0 +1,52 @@
+System 13: The Living World - Final Design Specification
+
+Part 1: The "Why" - Design Philosophy
+
+This system is the ultimate physical manifestation of the player's progression. It's not about decorating; it's about visualizing the journey. The evolution from a humble apartment to a luxurious penthouse serves as a powerful, tangible narrative device that shows the player's rise in status, wealth, and the deepening of their shared life with Cha Hae-In. This system provides the primary long-term motivation for engaging in the game's core economic loop.
+
+Part 2: The "What" - Core Mechanics
+
+To ensure visual consistency and artistic control while still feeling dynamic, the system operates on two core mechanics:
+
+A. Tiered Environments: The player's home progresses through 3 distinct, pre-designed visual tiers. Upgrading a tier means the entire background image for the Spatial View is permanently switched to a new, more luxurious one.
+B. Dynamic Overlays ("Decals"): Smaller, individual items purchased by the player (e.g., a trophy, a lamp, a framed photo from a date) are added as individual .PNG overlays onto the current background tier. This allows for personalization without needing to re-generate the entire scene.
+Part 3: The Housing Tiers - Detailed Breakdown
+
+This section includes the narrative purpose, unlock conditions, and specific AI image generation prompts for each tier.
+
+Consistent Style Keywords for ALL Prompts: masterpiece, best quality, sharp focus, manhwa art style, Korean webtoon aesthetic, clean lines, detailed architectural illustration, cinematic lighting, photorealistic details
+
+Tier 1: The Starter Apartment
+
+Narrative Significance: Represents the humble, lonely beginnings of Sung Jin-Woo's journey. It's functional but lacks warmth and personality.
+Unlock Condition: Available by default at the start of the game.
+AI Prompt (Interior Spatial View): (Style Keywords), the interior of a small, simple studio apartment in a nondescript area of Seoul. A single bed is against one wall. A small desk with a computer. A functional but basic kitchenette is visible. The lighting is from a single window, casting a stark late-afternoon light.
+AI Prompt (Exterior - for World Map Card): (Style Keywords), the facade of a standard, slightly older apartment building in a normal residential district of Seoul. Mundane architecture, concrete and brick, view from the street level.
+Interactive Nodes:
+Node (on the bed): Thought Prompt: `"Rest for a while."* -> Triggers the "restore energy" function.
+Node (on the desk): Thought Prompt: `"Check online hunter forums."* -> Opens a panel with world-building text.
+Tier 2: The Modern Gangnam High-Rise
+
+Narrative Significance: The first major sign of success. A clean slate for building a proper life together with Cha Hae-In. It's a home, not just a place to sleep.
+Unlock Condition: Becomes available for purchase at the "Luxury Realtor" after a major mid-game story milestone (e.g., post-Jeju Island raid). Requires a very large amount of Gold.
+AI Prompt (Interior Spatial View): (Style Keywords), the spacious, sun-drenched interior of a modern high-rise apartment in Gangnam. Open-plan living room with a large, plush grey sectional sofa. Polished hardwood floors. Floor-to-ceiling windows reveal a stunning daytime city view of Seoul. A sleek, minimalist kitchen with marble countertops is visible.
+AI Prompt (Exterior - for World Map Card): (Style Keywords), the exterior of a sleek, modern glass and steel skyscraper in Gangnam, Seoul. View from below looking up at the impressive, clean architectural lines against a clear blue sky.
+Interactive Nodes:
+Node (on the new sofa): Thought Prompt: `"Relax on the new couch."* -> Unlocks the "Watch a Movie Together" activity.
+Node (on the large window): Thought Prompt: `"Look out at the city together."* -> Triggers a unique, short conversational scene with Cha Hae-In.
+Tier 3: The Monarch's Penthouse
+
+Narrative Significance: The endgame residence. A symbol of absolute power, wealth, and security. It is a sanctuary for the world's most powerful couple, high above everyone else.
+Unlock Condition: Becomes available for purchase in the late-game after achieving peak narrative status and accumulating an immense fortune.
+AI Prompt (Interior Spatial View): (Style Keywords), the breathtaking, ultra-luxury interior of a massive penthouse suite at night, occupying the entire top floor of a skyscraper. Panoramic, floor-to-ceiling windows offer a 360-degree view of the glittering Seoul skyline far below. Opulent design with dark marble floors, soaring ceilings, and an infinity pool visible on the balcony. A collection of glowing magical artifacts are displayed in illuminated glass cases. The mood is powerful, quiet, and commanding.
+AI Prompt (Exterior - for World Map Card): (Style Keywords), an iconic landmark skyscraper at dusk, the absolute pinnacle of the Seoul skyline. Unique crystalline architecture. The very top penthouse suite is glowing with a faint, powerful purple mana energy.
+Interactive Nodes:
+Node (on the artifact display): Thought Prompt: `"Recall the battle."* -> Opens a "Memory Card" from the Relationship Constellation associated with that raid/item.
+Node (on the balcony door): Thought Prompt: `"Step out onto the balcony."* -> Transitions to a new Spatial View of the balcony, unlocking new conversations.
+Part 4: The Acquisition Flow & UI/UX
+
+The Trigger: Upgrades are never automatic. The player must go to the "Luxury Realtor" location on the World Map.
+The Interface: Inside the Realtor's office, interacting with the vendor opens a special UI showing the available property "listings." Each listing uses the Exterior AI Image as its preview.
+The Purchase: The player makes a deliberate, high-cost purchase. A satisfying confirmation UI and sound effect plays.
+The World Map Update: After the purchase, the player's "Home" node on the World Map moves to the new district (if applicable) and its Location Card is permanently updated with the new title (e.g., "The Monarch's Penthouse") and new exterior image.
+The Narrative Payoff: The first time the player brings Cha Hae-In to the new home, it triggers a unique, extensive conversational scene where they explore the new space together, solidifying the upgrade as a major relationship milestone.
