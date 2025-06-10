@@ -938,8 +938,8 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const handleLocationTravel = (location: any) => {
-    setPlayerLocation(location.id);
+  const handleLocationTravel = (locationId: string) => {
+    setPlayerLocation(locationId);
     setShowWorldMap(false);
     setCurrentDialogue('');
     setThoughtPrompts([]);
@@ -955,6 +955,8 @@ export default function SoloLevelingSpatial() {
     setDialogueActive(false);
     setShowLivingPortrait(false);
     setIsFocusMode(false);
+    setShowReceptionistDialogue(null);
+    setShowFloorSelect(false);
     
     // Generate scene for new location
     setTimeout(() => {
