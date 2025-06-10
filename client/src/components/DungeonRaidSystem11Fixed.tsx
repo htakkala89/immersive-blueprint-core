@@ -70,6 +70,14 @@ export function DungeonRaidSystem11({
   const [synergyGauge, setSynergyGauge] = useState(10);
   const [screenShake, setScreenShake] = useState(false);
   const [cameraShake, setCameraShake] = useState(false);
+  const [skillEffects, setSkillEffects] = useState<{
+    id: string;
+    type: 'mutilate' | 'violent_slash' | 'dominators_touch';
+    x: number;
+    y: number;
+    timestamp: number;
+  }[]>([]);
+  const [screenFlash, setScreenFlash] = useState<string | null>(null);
   const [monarchRuneOpen, setMonarchRuneOpen] = useState(false);
   const [commandMode, setCommandMode] = useState(false);
   const [damageNumbers, setDamageNumbers] = useState<Array<{
@@ -248,19 +256,66 @@ export function DungeonRaidSystem11({
       return;
     }
     
-    // Calculate damage based on skill type
+    // Calculate damage and add epic visual effects based on skill type
     let baseDamage = 0;
+    let effectColor = '';
+    let shakeIntensity = 'normal';
+    
     switch (skill.id) {
       case 'mutilate':
         baseDamage = 25 + Math.floor(Math.random() * 15); // 25-40 damage
+        effectColor = 'from-red-500 to-purple-600';
+        shakeIntensity = 'light';
+        // Red slash effect
+        setScreenFlash('bg-red-500/30');
+        setSkillEffects(prev => [...prev, {
+          id: `mutilate-${Date.now()}`,
+          type: 'mutilate',
+          x: Math.random() * 800,
+          y: Math.random() * 600,
+          timestamp: Date.now()
+        }]);
         break;
       case 'violent_slash':
         baseDamage = 35 + Math.floor(Math.random() * 20); // 35-55 damage
+        effectColor = 'from-orange-500 to-red-600';
+        shakeIntensity = 'medium';
+        // Orange violent slash effect
+        setScreenFlash('bg-orange-500/40');
+        setSkillEffects(prev => [...prev, {
+          id: `violent-${Date.now()}`,
+          type: 'violent_slash',
+          x: Math.random() * 800,
+          y: Math.random() * 600,
+          timestamp: Date.now()
+        }]);
+        setCameraShake(true);
+        setTimeout(() => setCameraShake(false), 300);
         break;
       case 'dominators_touch':
         baseDamage = 50 + Math.floor(Math.random() * 25); // 50-75 damage
+        effectColor = 'from-purple-600 to-indigo-800';
+        shakeIntensity = 'heavy';
+        // Purple dominator effect
+        setScreenFlash('bg-purple-600/50');
+        setSkillEffects(prev => [...prev, {
+          id: `dominator-${Date.now()}`,
+          type: 'dominators_touch',
+          x: Math.random() * 800,
+          y: Math.random() * 600,
+          timestamp: Date.now()
+        }]);
+        setScreenShake(true);
+        setCameraShake(true);
+        setTimeout(() => {
+          setScreenShake(false);
+          setCameraShake(false);
+        }, 500);
         break;
     }
+    
+    // Clear screen flash after brief moment
+    setTimeout(() => setScreenFlash(null), 150);
 
     // Apply damage only to hostile enemies (not Shadow Soldiers)
     setEnemies(prev => prev.map(enemy => {
@@ -854,7 +909,7 @@ export function DungeonRaidSystem11({
           </Button>
 
           {/* Full-Screen Battlefield Canvas */}
-          <div className="absolute inset-0">
+          <div className={`absolute inset-0 ${screenShake ? 'animate-shake' : ''} ${cameraShake ? 'animate-camera-shake' : ''}`}>
             {/* Intro Phase */}
             {gamePhase === 'intro' && (
               <motion.div
@@ -1068,6 +1123,71 @@ export function DungeonRaidSystem11({
                     </motion.div>
                   ))}
                 </AnimatePresence>
+
+                {/* Epic Skill Visual Effects */}
+                <AnimatePresence>
+                  {skillEffects.map(effect => (
+                    <motion.div
+                      key={effect.id}
+                      className="absolute pointer-events-none z-40"
+                      style={{ left: effect.x, top: effect.y }}
+                      initial={{ scale: 0, opacity: 0, rotate: 0 }}
+                      animate={{ 
+                        scale: [0, 1.5, 1, 0],
+                        opacity: [0, 1, 0.8, 0],
+                        rotate: effect.type === 'violent_slash' ? [0, 180, 360] : [0, 45, 0]
+                      }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      onAnimationComplete={() => {
+                        setSkillEffects(prev => prev.filter(e => e.id !== effect.id));
+                      }}
+                    >
+                      {/* Mutilate Effect - Red Slashes */}
+                      {effect.type === 'mutilate' && (
+                        <div className="relative">
+                          <div className="w-32 h-2 bg-gradient-to-r from-red-500 to-transparent rotate-45 blur-sm"></div>
+                          <div className="w-24 h-2 bg-gradient-to-r from-red-600 to-transparent -rotate-45 blur-sm absolute top-0"></div>
+                          <div className="w-20 h-1 bg-red-400 rotate-12 absolute top-1 left-2"></div>
+                        </div>
+                      )}
+
+                      {/* Violent Slash Effect - Orange Energy Waves */}
+                      {effect.type === 'violent_slash' && (
+                        <div className="relative">
+                          <div className="w-48 h-4 bg-gradient-to-r from-orange-500 via-red-500 to-transparent rotate-12 animate-pulse"></div>
+                          <div className="w-40 h-3 bg-gradient-to-r from-yellow-400 to-orange-600 -rotate-12 absolute top-2 blur-sm"></div>
+                          <div className="w-56 h-2 bg-gradient-to-r from-red-600 to-transparent rotate-6 absolute top-1 animate-ping"></div>
+                        </div>
+                      )}
+
+                      {/* Dominator's Touch Effect - Purple Energy Burst */}
+                      {effect.type === 'dominators_touch' && (
+                        <div className="relative">
+                          <div className="w-64 h-64 bg-gradient-radial from-purple-600/80 via-indigo-500/40 to-transparent rounded-full animate-pulse"></div>
+                          <div className="w-48 h-48 bg-gradient-radial from-purple-400/60 to-transparent rounded-full absolute top-8 left-8 animate-ping"></div>
+                          <div className="w-32 h-32 bg-gradient-radial from-white/80 to-transparent rounded-full absolute top-16 left-16"></div>
+                          {/* Lightning Effect */}
+                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div className="w-1 h-32 bg-purple-300 rotate-12 animate-pulse"></div>
+                            <div className="w-1 h-24 bg-indigo-300 -rotate-45 absolute top-0 animate-pulse"></div>
+                            <div className="w-1 h-28 bg-purple-400 rotate-75 absolute top-0 animate-pulse"></div>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                {/* Screen Flash Effect */}
+                {screenFlash && (
+                  <motion.div
+                    className={`absolute inset-0 ${screenFlash} pointer-events-none z-50`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.15 }}
+                  />
+                )}
               </div>
             )}
           </div>
