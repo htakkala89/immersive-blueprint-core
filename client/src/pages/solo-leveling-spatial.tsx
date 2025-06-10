@@ -127,7 +127,28 @@ export default function SoloLevelingSpatial() {
     energy: 80,
     maxEnergy: 100,
     apartmentTier: 2,
-    activeQuests: [],
+    activeQuests: [
+      {
+        id: 'clear_c_rank_gate',
+        type: 'gate_clearance',
+        title: 'C-Rank Gate Clearance - Hongdae',
+        description: 'A C-rank dungeon has appeared in Hongdae district. Clear it before it breaks and monsters spill into the city.',
+        status: 'accepted',
+        targetLocation: 'hongdae_cafe',
+        difficulty: 'C',
+        progress: 0,
+        rewards: {
+          gold: 15000000,
+          experience: 2500,
+          items: ['mana_crystal_rare', 'monster_core_uncommon']
+        },
+        requirements: {
+          level: 15
+        },
+        timeLimit: 24,
+        priority: 'high'
+      }
+    ],
     completedQuests: []
   });
 
