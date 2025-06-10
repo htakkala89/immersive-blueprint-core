@@ -43,7 +43,13 @@ export async function getGoogleAccessToken(): Promise<string | null> {
       return null;
     }
 
-    const serviceAccount: ServiceAccountKey = JSON.parse(serviceAccountString);
+    let serviceAccount: ServiceAccountKey;
+    try {
+      serviceAccount = JSON.parse(serviceAccountString);
+    } catch (parseError) {
+      console.log('Invalid Google service account JSON format');
+      return null;
+    }
     const scopes = ['https://www.googleapis.com/auth/cloud-platform'];
     
     // Create JWT assertion
@@ -86,7 +92,13 @@ export function getProjectId(): string | null {
       return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
     }
     
-    const serviceAccount: ServiceAccountKey = JSON.parse(serviceAccountString);
+    let serviceAccount: ServiceAccountKey;
+    try {
+      serviceAccount = JSON.parse(serviceAccountString);
+    } catch (parseError) {
+      console.log('Invalid Google service account JSON format in getProjectId');
+      return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
+    }
     return serviceAccount.project_id;
   } catch (error) {
     console.error('Error getting project ID:', error);
