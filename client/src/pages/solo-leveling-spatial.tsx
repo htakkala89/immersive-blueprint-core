@@ -853,16 +853,16 @@ export default function SoloLevelingSpatial() {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeOut" }}
               />
               
-              {/* Compact Presence Label - Right Side */}
+              {/* Ultra-Compact Presence Label */}
               <motion.div
-                className="absolute top-0 left-24 pointer-events-none z-30 whitespace-nowrap"
-                initial={{ opacity: 0, x: -10 }}
+                className="absolute top-1 left-12 pointer-events-none z-30 whitespace-nowrap"
+                initial={{ opacity: 0, x: -5 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
               >
-                <div className="bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded border border-amber-400/30 shadow-lg">
-                  <div className="font-medium text-amber-300 text-xs">Cha Hae-In</div>
-                  <div className="text-gray-300 text-xs">{currentLocationData.chaActivity}</div>
+                <div className="bg-black/60 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-sm border border-amber-400/20 shadow-md">
+                  <div className="font-medium text-amber-300" style={{ fontSize: '10px' }}>Cha Hae-In</div>
+                  <div className="text-gray-300" style={{ fontSize: '9px' }}>{currentLocationData.chaActivity}</div>
                 </div>
               </motion.div>
 
