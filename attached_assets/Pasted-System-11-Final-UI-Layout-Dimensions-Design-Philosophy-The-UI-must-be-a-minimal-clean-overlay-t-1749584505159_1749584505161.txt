@@ -1,0 +1,50 @@
+System 11: Final UI Layout & Dimensions
+Design Philosophy: The UI must be a minimal, clean overlay that provides critical information without obstructing the player's view of the action. Every element is pushed to the edges of the screen to maximize the visibility of the battlefield.
+
+Baseline Target: Dimensions are based on a reference mobile screen (e.g., iPhone 14 Pro, 1179px wide by 2556px tall). Use relative units for implementation.
+
+1. The Canvas: Full-Screen Action View
+Dimensions: 100% of screen width and height.
+Content: This is the rendered Unity scene. It displays the full-body character sprites of Sung Jin-Woo and Cha Hae-In, the monster sprites, and the multi-layered 2.5D dungeon environment. All action happens here.
+2. Header: Dungeon Info (Top-Left)
+Purpose: Provides at-a-glance context of the player's current location in the raid.
+UI: A small, unobtrusive liquid glassmorphism panel.
+Content: "Shadow Dungeon," "B-Rank," "Room 2/7," "Act 1."
+Dimensions:
+Height: approx. 80px
+Width: approx. 40% of the screen width.
+Position: Anchored to the top-left, with a Margin-Top of 60px (to clear the notch/status bar) and a Margin-Left of 16px.
+3. Synergy Gauge (Top-Right)
+Purpose: Tracks the status of the Team-Up Attack.
+UI: A clean, circular progress bar, as you've designed.
+Dimensions:
+Diameter: 72px.
+Position: Anchored to the top-right, with a Margin-Top of 60px and a Margin-Right of 16px.
+4. Health & Mana Bars (Diegetic - No UI Panel)
+This is a critical correction. We will not use the health/mana bars shown in the top corners of your mockup.
+Implementation: As per our core design, health and mana are displayed diegetically as glowing auras at the feet of the actual character sprites on the battlefield. This keeps the HUD clean and the player's focus on the characters.
+Sung Jin-Woo: Purple health aura, with a thin blue ring around it for mana.
+Cha Hae-In: Golden health aura.
+Enemies: Crimson red health aura.
+5. The Action Bar (Bottom-Center)
+Purpose: The player's primary command center for using skills.
+UI: A row of 4-5 skill buttons in a sleek, horizontal container.
+Dimensions:
+Button Size: 64px x 64px.
+Spacing between Buttons: 12px.
+Position: Anchored to the bottom, horizontally centered. It should have a Margin-Bottom of 24px to be easily reachable by the player's thumbs but not touching the edge of the screen.
+6. The Monarch Rune (Summon Button)
+Purpose: The dedicated button for opening the shadow soldier summoning menu.
+UI: A single, circular button with the Monarch's Crest icon.
+Dimensions:
+Diameter: 56px.
+Position: Centered, directly below the main Action Bar, with 16px of space between them.
+7. The Notification Banner (Top-Center)
+Purpose: To display non-intrusive messages from the Communicator system.
+UI: The liquid glassmorphism panel you designed is perfect.
+Behavior: It slides down from the top, pauses for ~5 seconds, and slides back up automatically.
+Dimensions:
+Height: approx. 72px.
+Width: approx. 80% of the screen width, centered.
+Position: When it animates down, its top edge should have a margin of 50px-60px from the top of the screen.
+This layout uses your excellent UI components but places them in the context of the dynamic, full-screen action scene we designed. This solves the problem of the "small battlefield" because the entire screen is the battlefield. This is the definitive layout for our combat experience.

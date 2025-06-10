@@ -701,37 +701,65 @@ export function DungeonRaidSystem11({
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.9, y: 20 }}
-          className={`w-full max-w-6xl h-[90vh] bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border border-slate-600/50 rounded-2xl overflow-hidden ${
+          className={`fixed inset-0 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 ${
             screenShake ? 'animate-pulse' : ''
           } ${cameraShake ? 'animate-bounce' : ''}`}
         >
-          {/* Header */}
-          <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-purple-900/30 to-blue-900/30">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  System 11: Dungeon Raid
-                </h2>
-                <div className="flex items-center gap-4 text-sm text-slate-300">
-                  <span>Room {currentRoom}/{totalRooms}</span>
-                  <span>•</span>
-                  <span>Act {dungeonAct}</span>
-                  <span>•</span>
-                  <span className="capitalize">{gamePhase.replace('_', ' ')}</span>
-                </div>
+          {/* Dungeon Info Header (Top-Left) */}
+          <div className="absolute top-16 left-4 bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl p-4 max-w-[40%]">
+            <div className="text-white">
+              <div className="text-sm text-slate-300 mb-1">Shadow Dungeon • B-Rank</div>
+              <div className="flex items-center gap-2 text-sm">
+                <span>Room {currentRoom}/{totalRooms}</span>
+                <span>•</span>
+                <span>Act {dungeonAct}</span>
+                <span>•</span>
+                <span className="capitalize">{gamePhase.replace('_', ' ')}</span>
               </div>
-              <Button
-                onClick={onClose}
-                variant="ghost"
-                size="sm"
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </Button>
             </div>
           </div>
 
-          <div className="flex flex-col p-6" style={{ height: 'calc(90vh - 140px)' }}>
+          {/* Synergy Gauge (Top-Right) */}
+          <div className="absolute top-16 right-4">
+            <div className="relative w-18 h-18">
+              <svg className="w-18 h-18 transform -rotate-90" viewBox="0 0 72 72">
+                <circle
+                  cx="36"
+                  cy="36"
+                  r="32"
+                  stroke="rgba(255,255,255,0.1)"
+                  strokeWidth="4"
+                  fill="transparent"
+                />
+                <circle
+                  cx="36"
+                  cy="36"
+                  r="32"
+                  stroke="rgb(147, 51, 234)"
+                  strokeWidth="4"
+                  fill="transparent"
+                  strokeDasharray={`${(synergyGauge / 100) * 201.06} 201.06`}
+                  className="transition-all duration-300"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-white text-xs font-bold">{synergyGauge}%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Close Button (Top-Right Corner) */}
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            size="sm"
+            className="absolute top-4 right-4 text-slate-400 hover:text-white z-50"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+
+          {/* Main Content Area */}
+          <div className="absolute inset-0 flex flex-col justify-center items-center">
             {/* Intro Phase */}
             {gamePhase === 'intro' && (
               <motion.div
@@ -850,84 +878,73 @@ export function DungeonRaidSystem11({
               </div>
             )}
 
-            {/* Combat Phase */}
+            {/* Combat Phase - Full Screen Battlefield */}
             {gamePhase === 'combat' && (
-              <div className="flex flex-col h-full">
-                {/* Player Status - Compact */}
-                <div className="flex justify-between mb-3">
-                  {players.map(player => (
-                    <div key={player.id} className="bg-slate-800/50 rounded-lg p-2 min-w-40">
-                      <div className="text-white font-semibold text-sm mb-1">{player.name}</div>
-                      <div className="space-y-1">
-                        <div>
-                          <div className="flex justify-between text-xs text-slate-300 mb-1">
-                            <span>Health</span>
-                            <span>{player.health}/{player.maxHealth}</span>
-                          </div>
-                          <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 transition-all duration-300"
-                              style={{ width: `${(player.health / player.maxHealth) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-xs text-slate-300 mb-1">
-                            <span>Mana</span>
-                            <span>{player.mana}/{player.maxMana}</span>
-                          </div>
-                          <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-blue-500 transition-all duration-300"
-                              style={{ width: `${(player.mana / player.maxMana) * 100}%` }}
-                            />
-                          </div>
-                        </div>
+              <div 
+                ref={battlefieldRef}
+                onClick={handleBattlefieldTap}
+                className="absolute inset-0 cursor-crosshair"
+              >
+                {/* Players with Diegetic Health/Mana Auras */}
+                {players.map(player => (
+                  <motion.div
+                    key={player.id}
+                    className="absolute"
+                    style={{ left: player.x, top: player.y }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                  >
+                    <div className="relative">
+                      {/* Character Avatar */}
+                      <div className={`w-12 h-12 rounded-full border-2 ${
+                        player.id === 'jinwoo' 
+                          ? 'bg-purple-600 border-purple-400' 
+                          : 'bg-yellow-600 border-yellow-400'
+                      }`}></div>
+                      
+                      {/* Character Name */}
+                      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-white whitespace-nowrap">
+                        {player.name}
                       </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Battlefield - Expanded */}
-                <div 
-                  ref={battlefieldRef}
-                  onClick={handleBattlefieldTap}
-                  className="relative bg-slate-700/30 rounded-xl border border-slate-600/50 cursor-crosshair overflow-hidden mb-3 flex-grow"
-                  style={{ height: '420px', maxHeight: '420px' }}
-                >
-                  {/* Players */}
-                  {players.map(player => (
-                    <motion.div
-                      key={player.id}
-                      className="absolute"
-                      style={{ left: player.x, top: player.y }}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                    >
-                      <div className="relative">
-                        <div className="w-8 h-8 bg-blue-500 rounded-full border-2 border-blue-300"></div>
-                        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-white whitespace-nowrap">
-                          {player.name}
-                        </div>
+                      
+                      {/* Diegetic Health Aura */}
+                      <div 
+                        className={`absolute inset-0 rounded-full animate-pulse ${
+                          player.id === 'jinwoo' 
+                            ? 'bg-purple-400/40' 
+                            : 'bg-yellow-400/40'
+                        }`}
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          transform: `scale(${player.health / player.maxHealth})`,
+                          filter: 'blur(2px)'
+                        }}
+                      ></div>
+                      
+                      {/* Diegetic Mana Ring (for Jinwoo only) */}
+                      {player.id === 'jinwoo' && (
                         <div 
-                          className="absolute inset-0 rounded-full bg-green-400/30 animate-pulse"
+                          className="absolute inset-0 rounded-full border-2 border-blue-400/60"
                           style={{
-                            width: '32px',
-                            height: '32px',
-                            transform: `scale(${player.health / player.maxHealth})`
+                            width: '48px',
+                            height: '48px',
+                            opacity: player.mana / player.maxMana,
+                            filter: 'blur(1px)'
                           }}
                         ></div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
 
-                  {/* Enemies */}
-                  {enemies.map(enemy => (
-                    <motion.div
-                      key={enemy.id}
-                      className="absolute cursor-pointer"
-                      style={{ left: enemy.x, top: enemy.y }}
-                      initial={{ scale: 0, rotate: -180 }}
+                {/* Enemies with Crimson Health Auras */}
+                {enemies.map(enemy => (
+                  <motion.div
+                    key={enemy.id}
+                    className="absolute cursor-pointer"
+                    style={{ left: enemy.x, top: enemy.y }}
+                    initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       whileHover={{ scale: 1.1 }}
                     >
@@ -991,9 +1008,13 @@ export function DungeonRaidSystem11({
                     ))}
                   </AnimatePresence>
                 </div>
+              </div>
+            )}
 
-                {/* Action Bar - Compact */}
-                <div className="flex justify-center gap-3 py-2 bg-slate-800/30 rounded-lg">
+            {/* Action Bar (Bottom-Center) - Fixed Position */}
+            {gamePhase === 'combat' && (
+              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+                <div className="flex justify-center gap-3 py-2 px-4 bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl">
                   {skills.map((skill, index) => (
                     <motion.button
                       key={skill.id}
@@ -1040,23 +1061,23 @@ export function DungeonRaidSystem11({
                 </div>
 
                 {/* Monarch Rune Radial Menu */}
-                <AnimatePresence>
-                  {monarchRuneOpen && (
-                    <motion.div
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute bottom-32 left-1/2 transform -translate-x-1/2"
-                    >
-                      <div className="relative w-48 h-48">
-                        {availableShadows.map((shadow, index) => {
-                          const angle = (index * 120) - 90;
-                          const radius = 60;
-                          const x = Math.cos(angle * Math.PI / 180) * radius;
-                          const y = Math.sin(angle * Math.PI / 180) * radius;
-                          const jinwoo = players.find(p => p.id === 'jinwoo');
-                          const canSummon = jinwoo && jinwoo.mana >= shadow.manaCost;
+                <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
+                  <AnimatePresence>
+                    {monarchRuneOpen && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="relative w-48 h-48">
+                          {availableShadows.map((shadow, index) => {
+                            const angle = (index * 120) - 90;
+                            const radius = 60;
+                            const x = Math.cos(angle * Math.PI / 180) * radius;
+                            const y = Math.sin(angle * Math.PI / 180) * radius;
+                            const jinwoo = players.find(p => p.id === 'jinwoo');
+                            const canSummon = jinwoo && jinwoo.mana >= shadow.manaCost;
                           
                           return (
                             <motion.button
