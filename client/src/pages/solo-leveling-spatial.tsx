@@ -155,43 +155,7 @@ export default function SoloLevelingSpatial() {
       tutorialCompleted: true,
       firstMissionActive: true
     },
-    activeQuests: [
-      {
-        id: 'red_gate_emergency',
-        type: 'gate_clearance',
-        title: 'Red Gate Emergency - Hunter Association',
-        description: 'A dangerous Red Gate has appeared near the Hunter Association. This is my mission - Time to finish what I started.',
-        status: 'accepted',
-        targetLocation: 'hunter_association',
-        difficulty: 'S',
-        progress: 0,
-        rewards: {
-          gold: 50000000,
-          experience: 5000,
-          items: ['legendary_core', 'shadow_essence']
-        },
-        requirements: {},
-        objectives: [
-          {
-            id: 'enter_red_gate',
-            description: 'Enter the Red Gate',
-            completed: false
-          },
-          {
-            id: 'clear_monsters',
-            description: 'Defeat all monsters in the dungeon',
-            completed: false
-          },
-          {
-            id: 'collect_loot',
-            description: 'Collect dungeon rewards',
-            completed: false
-          }
-        ],
-        timeLimit: 24,
-        priority: 'high'
-      }
-    ],
+    activeQuests: [],
     completedQuests: [],
     // System 16: Player Progression
     hunterRank: 'E-Rank',
