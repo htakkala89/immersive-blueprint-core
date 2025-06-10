@@ -6,7 +6,7 @@ import {
   Heart, Crown, Zap, Coins, User, Sword, Star, 
   Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
   MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
-  ShoppingCart, Calendar, Battery, Award, Package, X, Brain
+  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target
 } from 'lucide-react';
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
@@ -162,6 +162,7 @@ export default function SoloLevelingSpatial() {
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
   const [scheduledActivities, setScheduledActivities] = useState<any[]>([]);
   const [showActivityNotification, setShowActivityNotification] = useState(false);
+  const [showActivityScheduled, setShowActivityScheduled] = useState(false);
   
   // System 2: Affection Heart System state
   const [showAffectionHeart, setShowAffectionHeart] = useState(false);
@@ -1753,8 +1754,8 @@ export default function SoloLevelingSpatial() {
               
               // Show quest progress notification
               setTimeout(() => {
-                setShowActivityScheduled(true);
-                setTimeout(() => setShowActivityScheduled(false), 3000);
+                setShowActivityNotification(true);
+                setTimeout(() => setShowActivityNotification(false), 3000);
               }, 1000);
               
               console.log(`Quest progress: ${activeQuestAtLocation.title} advanced by interaction`);
