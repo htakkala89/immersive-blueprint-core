@@ -2596,19 +2596,7 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      {/* Dynamic Prompt Loop Status */}
-      <div className="fixed top-4 left-4 bg-black/80 text-white p-3 rounded-lg text-xs z-50">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span>Dynamic Prompt System</span>
-        </div>
-        <div>Cha Location: {chaHaeInCurrentLocation || 'None'}</div>
-        <div>Should Show: {(chaHaeInCurrentLocation === playerLocation) ? 'YES' : 'NO'}</div>
-        <div>Active Prompts: {thoughtPrompts.length}</div>
-        <div className="mt-2 text-xs text-gray-300">
-          {thoughtPrompts.length > 0 ? 'Prompts Active' : 'No Prompts'}
-        </div>
-      </div>
+
 
       {/* Wealth Display - Context-sensitive visibility */}
       <WealthDisplay
