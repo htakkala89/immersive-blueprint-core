@@ -47,6 +47,159 @@ interface LocationNodesProps {
 }
 
 const LOCATION_NODES: Record<string, InteractiveNode[]> = {
+  // Player Apartment - Dynamic Based on Tier
+  player_apartment: [
+    // Tier 1 - Basic Apartment (4 nodes)
+    {
+      id: 'bedroom',
+      label: 'Bedroom',
+      icon: Bed,
+      position: { x: 20, y: 30 },
+      thoughtPrompt: 'Lead her to the bedroom',
+      outcome: 'Intimate bedroom encounter',
+      gameLogic: 'system_5_intimate_activity'
+    },
+    {
+      id: 'couch_intimate',
+      label: 'Living Room Couch',
+      icon: Sofa,
+      position: { x: 45, y: 60 },
+      thoughtPrompt: 'Make love on the couch',
+      outcome: 'Intimate living room encounter',
+      gameLogic: 'system_5_intimate_activity'
+    },
+    {
+      id: 'kitchen_counter',
+      label: 'Kitchen Counter',
+      icon: ChefHat,
+      position: { x: 70, y: 40 },
+      thoughtPrompt: 'Intimate kitchen encounter',
+      outcome: 'Kitchen counter passion',
+      gameLogic: 'system_5_intimate_activity'
+    },
+    {
+      id: 'shower_room',
+      label: 'Bathroom',
+      icon: Shield,
+      position: { x: 80, y: 25 },
+      thoughtPrompt: 'Shower together',
+      outcome: 'Steamy shower romance',
+      gameLogic: 'system_5_intimate_activity'
+    },
+    // Tier 2 - Gangnam High-Rise (5 nodes)
+    {
+      id: 'modern_bedroom',
+      label: 'Modern Bedroom',
+      icon: Bed,
+      position: { x: 25, y: 30 },
+      thoughtPrompt: 'Stylish bedroom romance',
+      outcome: 'Intimate moments in your upgraded bedroom',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_2']
+    },
+    {
+      id: 'city_view_couch',
+      label: 'City View Living Room',
+      icon: Sofa,
+      position: { x: 55, y: 55 },
+      thoughtPrompt: 'Intimate moments with city lights',
+      outcome: 'Romance with stunning city views',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_2']
+    },
+    {
+      id: 'designer_kitchen',
+      label: 'Designer Kitchen',
+      icon: ChefHat,
+      position: { x: 70, y: 35 },
+      thoughtPrompt: 'Kitchen counter passion',
+      outcome: 'Intimate encounter in your designer kitchen',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_2']
+    },
+    {
+      id: 'luxury_shower',
+      label: 'Rain Shower',
+      icon: Shield,
+      position: { x: 80, y: 25 },
+      thoughtPrompt: 'Steamy shower romance',
+      outcome: 'Luxurious shower experience together',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_2']
+    },
+    {
+      id: 'rooftop_access',
+      label: 'Rooftop Garden',
+      icon: TreePine,
+      position: { x: 40, y: 20 },
+      thoughtPrompt: 'Garden terrace intimacy',
+      outcome: 'Romance under the stars on your private rooftop',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_2']
+    },
+    // Tier 3 - Hannam-dong Penthouse (6 nodes)
+    {
+      id: 'master_bedroom',
+      label: 'Master Suite',
+      icon: Bed,
+      position: { x: 20, y: 25 },
+      thoughtPrompt: 'Private penthouse bedroom',
+      outcome: 'Ultimate luxury bedroom experience',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_3']
+    },
+    {
+      id: 'infinity_pool',
+      label: 'Infinity Pool',
+      icon: Shield,
+      position: { x: 75, y: 30 },
+      thoughtPrompt: 'Romantic pool encounter',
+      outcome: 'Intimate moments in your private infinity pool',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_3']
+    },
+    {
+      id: 'wine_cellar',
+      label: 'Wine Cellar',
+      icon: ChefHat,
+      position: { x: 15, y: 65 },
+      thoughtPrompt: 'Intimate wine tasting',
+      outcome: 'Romance in your private wine collection',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_3']
+    },
+    {
+      id: 'panoramic_balcony',
+      label: 'City View Balcony',
+      icon: Building,
+      position: { x: 85, y: 50 },
+      thoughtPrompt: 'Passionate balcony moments',
+      outcome: 'Intimate encounter high above the city',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_3']
+    },
+    {
+      id: 'luxury_bathroom',
+      label: 'Marble Bathroom',
+      icon: Shield,
+      position: { x: 45, y: 70 },
+      thoughtPrompt: 'Luxurious bath together',
+      outcome: 'Spa-like intimate experience',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_3']
+    },
+    {
+      id: 'private_elevator',
+      label: 'Private Elevator',
+      icon: Building,
+      position: { x: 60, y: 80 },
+      thoughtPrompt: 'Elevator intimacy',
+      outcome: 'Private moments in your exclusive elevator',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_3']
+    }
+  ],
+
   // Gangnam District - Luxury Department Store
   luxury_department_store: [
     {
@@ -365,28 +518,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
     }
   ],
 
-  // Personal Spaces - Player Apartment
-  player_apartment: [
-    {
-      id: 'bed',
-      label: 'Bed',
-      icon: Bed,
-      position: { x: 60, y: 50 },
-      thoughtPrompt: 'Rest for a while.',
-      outcome: 'Triggers restore energy function. Time advances, energy refilled, location lighting updates.',
-      gameLogic: 'energy_restore_time_advance'
-    },
-    {
-      id: 'balcony',
-      label: 'Balcony',
-      icon: Building,
-      position: { x: 80, y: 25 },
-      thoughtPrompt: 'Step out onto the balcony.',
-      outcome: 'Transitions to unique Balcony Spatial View with own nodes and different conversation topics.',
-      gameLogic: 'spatial_view_transition',
-      requirements: ['apartment_tier_2']
-    }
-  ],
+
 
   // Personal Spaces - Cha Hae-In's Apartment
   chahaein_apartment: [
@@ -634,6 +766,7 @@ export function LocationInteractiveNodes({
 
     return node.requirements.every(req => {
       if (req === 'apartment_tier_2') return playerStats.apartmentTier >= 2;
+      if (req === 'apartment_tier_3') return playerStats.apartmentTier >= 3;
       if (req === 'padlock_item') return true; // Simplified - would check inventory
       return true;
     });
