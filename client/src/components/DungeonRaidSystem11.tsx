@@ -1470,6 +1470,16 @@ export function DungeonRaidSystem11({
               </div>
             </div>
 
+            {/* Debug Test Button */}
+            <div className="flex justify-center mb-2">
+              <button 
+                onClick={() => console.log('🔧 TEST BUTTON CLICKED - Component is working!')}
+                className="px-4 py-2 bg-red-600 text-white rounded"
+              >
+                Test Click
+              </button>
+            </div>
+
             {/* 4-Slot Action Bar - Liquid Glassmorphism */}
             <div className="flex justify-center gap-3 mb-4">
               {skills.map((skill, index) => {
