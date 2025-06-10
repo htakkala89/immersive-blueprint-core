@@ -1,0 +1,49 @@
+Inventory System - Final UI/UX Polish & Interaction Logic
+Design Philosophy: The inventory is the player's personal stash. The user experience should be fast, clear, and highly organized. Every tap should have satisfying feedback, and crucial actions should have safety measures to prevent mistakes.
+
+1. The Layout & Core Components
+The three-column layout you designed (Categories | Item Grid | Item Details) is perfect. It is the approved and final design. The header and main panel, using our liquid glassmorphism style, are also approved as-is.
+
+2. Detailed Interaction Flow & Animations
+This is how we make the static screen feel tactile and responsive.
+
+A. Filtering by Category (Left Column):
+
+User Action: The player taps a new category, for example, "Consumables."
+Visual Feedback: The "All Items" tab loses its purple underline, which now smoothly slides or appears under "Consumables." The (2) count next to the label ensures the player knows what to expect.
+Animation: The items in the central grid should not just instantly be replaced. They should have a quick, graceful transition:
+The old items fade out (~100ms).
+The new set of consumable items fades in using a staggered animation (each icon appears 50ms after the last). This makes the grid feel like it's actively and elegantly sorting itself.
+B. Selecting an Item (Center Column):
+
+User Action: The player taps an item in the grid, for example, a "Health Potion."
+Visual Feedback: The previously selected item's glowing border fades away, and the "Health Potion" card gets a new, bright purple selection border.
+Animation: The Item Details pane on the right updates with a smooth cross-fade transition (~200ms). The large item icon at the top of the details pane should have a subtle "pop" or "scale up" animation as it appears, drawing the user's eye.
+3. The Action Buttons (Right Column) - Detailed Logic
+This section defines the function of each button in the "Item Details" pane.
+
+The [Use] Button (For Consumables):
+
+Logic: This button is only visible and active if the selected item is a consumable (e.g., a potion, a buff item).
+UX Flow:
+The player taps [Use]. The action is immediate.
+A satisfying audio cue plays (e.g., a "potion drinking" or "power-up" sound).
+A quick particle effect can emanate from the bottom of the screen and fade, giving a sense of the character using the item.
+The quantity number on the item card in the grid (x8 → x7) updates instantly. If the quantity reaches zero, the card is removed.
+The [Sell] Button (Important Refinement):
+
+Logic: To maintain the immersion of our System 7 (Commerce), the player cannot sell items directly from their inventory screen. Selling is an activity that must happen at a vendor.
+The Fix: We will remove the "Sell for..." button from this screen.
+The Replacement: This area will simply display the item's value as static text, for informational purposes only.
+Example: Sell Value: ₩2,000,000
+Why: This reinforces the gameplay loop of needing to travel to the Hunter Market to liquidate your assets, making the world feel more real and consistent.
+The [Discard] Button (Safety First):
+
+Logic: This button is always available for items that can be discarded. It should be styled less prominently than the [Use] button (e.g., a simple outline instead of a solid fill).
+UX Flow: Because this is a destructive action, it requires confirmation.
+Player taps [Discard].
+A simple, clean confirmation modal appears in the center of the screen.
+Modal Text: "Are you sure you want to discard 3x Shadow Monarch Core? This action cannot be undone."
+Modal Buttons: [Confirm] and [Cancel].
+Tapping [Confirm] removes the item from the inventory permanently, accompanied by a "disintegrate" or "poof" sound effect.
+This refined interaction logic will make the inventory system feel polished, professional, and perfectly integrated with our other game systems.

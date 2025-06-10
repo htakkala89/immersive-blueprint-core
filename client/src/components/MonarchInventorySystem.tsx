@@ -128,14 +128,29 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const [itemToDiscard, setItemToDiscard] = useState<InventoryItem | null>(null);
+  const [inventory, setInventory] = useState<InventoryItem[]>(sampleInventory);
+  const [isFilterAnimating, setIsFilterAnimating] = useState(false);
 
-  const filteredItems = sampleInventory.filter(item => 
+  const filteredItems = inventory.filter(item => 
     activeFilter === 'all' || item.type === activeFilter
   );
 
+  const getFilterCount = (filterType: string) => {
+    if (filterType === 'all') return inventory.length;
+    return inventory.filter(item => item.type === filterType).length;
+  };
+
   const handleFilterChange = (newFilter: string) => {
-    setActiveFilter(newFilter);
+    if (newFilter === activeFilter) return;
+    
+    setIsFilterAnimating(true);
     setSelectedItem(null); // Clear selection when changing filters
+    
+    // Smooth transition animation
+    setTimeout(() => {
+      setActiveFilter(newFilter);
+      setTimeout(() => setIsFilterAnimating(false), 50);
+    }, 100);
   };
 
   const handleItemSelect = (item: InventoryItem) => {
@@ -143,13 +158,31 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
   };
 
   const handleUseItem = (item: InventoryItem) => {
-    console.log(`Using item: ${item.name}`);
-    // Implement use item logic
-  };
-
-  const handleSellItem = (item: InventoryItem) => {
-    console.log(`Selling item: ${item.name} for ₩${item.sellValue.toLocaleString()}`);
-    // Implement sell item logic
+    if (item.type !== 'consumable') return;
+    
+    // Play audio cue (simulated with console log)
+    console.log(`🎵 Using ${item.name} - playing potion sound effect`);
+    
+    // Update inventory quantity
+    setInventory(prev => prev.map(invItem => {
+      if (invItem.id === item.id) {
+        const newQuantity = invItem.quantity - 1;
+        if (newQuantity <= 0) {
+          // Remove item from inventory if quantity reaches 0
+          setSelectedItem(null);
+          return null;
+        }
+        const updatedItem = { ...invItem, quantity: newQuantity };
+        if (selectedItem?.id === item.id) {
+          setSelectedItem(updatedItem);
+        }
+        return updatedItem;
+      }
+      return invItem;
+    }).filter(Boolean) as InventoryItem[]);
+    
+    // Particle effect simulation
+    console.log(`✨ Particle effect: ${item.effect} activated`);
   };
 
   const handleDiscardClick = (item: InventoryItem) => {
@@ -159,8 +192,11 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
 
   const confirmDiscard = () => {
     if (itemToDiscard) {
-      console.log(`Discarding ${itemToDiscard.quantity}x ${itemToDiscard.name}`);
-      // Implement discard logic
+      console.log(`🗑️ Discarding ${itemToDiscard.quantity}x ${itemToDiscard.name} - playing disintegrate sound`);
+      
+      // Remove item from inventory
+      setInventory(prev => prev.filter(item => item.id !== itemToDiscard.id));
+      
       setShowDiscardConfirm(false);
       setItemToDiscard(null);
       setSelectedItem(null);
@@ -234,10 +270,7 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                     <category.icon className={`w-5 h-5 ${category.color}`} />
                     <span className="font-medium">{category.label}</span>
                     <span className="ml-auto text-xs bg-slate-700/50 px-2 py-1 rounded">
-                      {category.id === 'all' 
-                        ? sampleInventory.length 
-                        : sampleInventory.filter(item => item.type === category.id).length
-                      }
+                      ({getFilterCount(category.id)})
                     </span>
                   </motion.button>
                 ))}
@@ -325,13 +358,14 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                     )}
 
                     <div>
-                      <h4 className="text-white font-medium mb-2">Sell Value</h4>
+                      <h4 className="text-white font-medium mb-2">Market Value</h4>
                       <div className="flex items-center gap-2">
                         <Coins className="w-4 h-4 text-amber-400" />
-                        <span className="text-amber-300 font-bold">
+                        <span className="text-amber-300 font-medium">
                           ₩{selectedItem.sellValue.toLocaleString()}
                         </span>
                       </div>
+                      <p className="text-slate-400 text-xs mt-1">Visit Hunter Market to sell</p>
                     </div>
 
                     <div>
@@ -343,30 +377,45 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                   {/* Action Buttons */}
                   <div className="space-y-3 pt-4 border-t border-purple-500/20">
                     {selectedItem.type === 'consumable' && (
-                      <Button
-                        onClick={() => handleUseItem(selectedItem)}
-                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        Use Item
-                      </Button>
-                    )}
-                    
-                    {selectedItem.sellValue > 0 && (
-                      <Button
-                        onClick={() => handleSellItem(selectedItem)}
-                        className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
-                      >
-                        Sell for ₩{selectedItem.sellValue.toLocaleString()}
-                      </Button>
+                        <Button
+                          onClick={() => handleUseItem(selectedItem)}
+                          className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-200"
+                        >
+                          <motion.div
+                            initial={{ opacity: 0, y: 2 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex items-center gap-2"
+                          >
+                            <Beaker className="w-4 h-4" />
+                            Use Item
+                          </motion.div>
+                        </Button>
+                      </motion.div>
                     )}
 
-                    <Button
-                      variant="outline"
-                      onClick={() => handleDiscardClick(selectedItem)}
-                      className="w-full border-red-500/50 text-red-300 hover:bg-red-500/10"
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      Discard
-                    </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleDiscardClick(selectedItem)}
+                        className="w-full border-red-500/50 text-red-300 hover:bg-red-500/10 hover:border-red-400/70 transition-all duration-200"
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, y: 2 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex items-center gap-2"
+                        >
+                          <X className="w-4 h-4" />
+                          Discard
+                        </motion.div>
+                      </Button>
+                    </motion.div>
                   </div>
                 </motion.div>
               ) : (
