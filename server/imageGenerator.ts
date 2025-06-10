@@ -229,28 +229,45 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
     
     console.log('🎨 Generating image based on chat reaction...');
     
-    // Try Google Imagen first for character emotion scenes
-    try {
-      const googleResult = await generateWithGoogleImagen(emotionPrompt);
-      if (googleResult) {
-        lastImageGeneration = now;
-        console.log('✅ Google Imagen generated chat scene successfully');
-        return googleResult;
-      }
-    } catch (googleError) {
-      console.log('⚠️ Google Imagen failed for chat scene:', String(googleError));
-    }
+    // Check if this is mature content
+    const isMature = isMatureContent(emotionPrompt);
     
-    // Fallback to NovelAI
-    try {
-      const novelAIResult = await generateWithNovelAI(emotionPrompt);
-      if (novelAIResult) {
-        lastImageGeneration = now;
-        console.log('✅ NovelAI generated chat scene successfully');
-        return novelAIResult;
+    if (isMature) {
+      // Use NovelAI for mature content
+      try {
+        const novelAIResult = await generateWithNovelAI(emotionPrompt);
+        if (novelAIResult) {
+          lastImageGeneration = now;
+          console.log('✅ NovelAI generated mature chat scene successfully');
+          return novelAIResult;
+        }
+      } catch (novelError) {
+        console.log('⚠️ NovelAI failed for mature chat scene:', String(novelError));
       }
-    } catch (novelError) {
-      console.log('⚠️ NovelAI failed for chat scene:', String(novelError));
+    } else {
+      // Use Google Imagen for regular content
+      try {
+        const googleResult = await generateWithGoogleImagen(emotionPrompt);
+        if (googleResult) {
+          lastImageGeneration = now;
+          console.log('✅ Google Imagen generated chat scene successfully');
+          return googleResult;
+        }
+      } catch (googleError) {
+        console.log('⚠️ Google Imagen failed for chat scene:', String(googleError));
+        
+        // Fallback to NovelAI for regular content if Google fails
+        try {
+          const novelAIResult = await generateWithNovelAI(emotionPrompt);
+          if (novelAIResult) {
+            lastImageGeneration = now;
+            console.log('✅ NovelAI generated chat scene successfully (fallback)');
+            return novelAIResult;
+          }
+        } catch (novelError) {
+          console.log('⚠️ NovelAI fallback failed for chat scene:', String(novelError));
+        }
+      }
     }
     
     // Final fallback to OpenAI
@@ -302,17 +319,21 @@ export async function generateIntimateActivityImage(activityId: string, relation
     prompt = createIntimatePrompt(activityId, relationshipStatus, intimacyLevel);
   }
   
-  // Always use NovelAI for all content - no filtering
-  console.log('🎨 Generating explicit content with NovelAI...');
-  const result = await generateWithNovelAI(prompt);
-  if (result) {
-    console.log('✅ NovelAI generated explicit image successfully');
-    return result;
+  // Use NovelAI for all mature content
+  console.log('🎨 Generating mature content with NovelAI...');
+  try {
+    const result = await generateWithNovelAI(prompt);
+    if (result) {
+      console.log('✅ NovelAI generated mature content successfully');
+      return result;
+    }
+  } catch (error) {
+    console.log('⚠️ NovelAI failed for mature content:', String(error));
   }
 
-  // Fallback to Google Imagen with explicit prompts
-  console.log('🎯 Using Google Imagen for explicit content');
-  return await generateWithGoogleImagen(prompt);
+  // No fallback to Google Imagen for mature content - only NovelAI handles mature content
+  console.log('📝 Mature content generation failed - NovelAI unavailable');
+  return null;
 }
 
 // New function specifically for location-based scene generation
