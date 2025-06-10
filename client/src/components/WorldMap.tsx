@@ -513,8 +513,24 @@ export default function WorldMap({
                       </p>
                     </div>
 
-                    {/* Atmosphere Section */}
-                    <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                    {/* Atmosphere Section - Enhanced Frosted Glass */}
+                    <div 
+                      className="rounded-xl p-4"
+                      style={{
+                        backdropFilter: 'blur(80px) saturate(200%)',
+                        background: `
+                          linear-gradient(135deg, 
+                            rgba(255, 255, 255, 0.15) 0%, 
+                            rgba(255, 255, 255, 0.08) 25%,
+                            rgba(139, 92, 246, 0.12) 50%,
+                            rgba(255, 255, 255, 0.06) 75%,
+                            rgba(255, 255, 255, 0.1) 100%
+                          )
+                        `,
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        boxShadow: '0 8px 32px rgba(139, 92, 246, 0.1)'
+                      }}
+                    >
                       <div className="text-purple-300 text-xs font-medium mb-2 uppercase tracking-wide">
                         Current Atmosphere
                       </div>
@@ -523,8 +539,24 @@ export default function WorldMap({
                       </div>
                     </div>
 
-                    {/* Presence Status */}
-                    <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                    {/* Presence Status - Enhanced Frosted Glass */}
+                    <div 
+                      className="rounded-xl p-4"
+                      style={{
+                        backdropFilter: 'blur(80px) saturate(200%)',
+                        background: `
+                          linear-gradient(135deg, 
+                            rgba(255, 255, 255, 0.15) 0%, 
+                            rgba(255, 255, 255, 0.08) 25%,
+                            rgba(139, 92, 246, 0.12) 50%,
+                            rgba(255, 255, 255, 0.06) 75%,
+                            rgba(255, 255, 255, 0.1) 100%
+                          )
+                        `,
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        boxShadow: '0 8px 32px rgba(139, 92, 246, 0.1)'
+                      }}
+                    >
                       {chaHaeInLocation === selectedLocation.id ? (
                         <motion.div 
                           className="flex items-center gap-3 text-yellow-400"
@@ -544,17 +576,49 @@ export default function WorldMap({
                       )}
                     </div>
 
-                    {/* Travel Button */}
-                    <Button
+                    {/* Travel Button - Enhanced Frosted Glass */}
+                    <motion.button
                       onClick={() => {
                         onLocationSelect(selectedLocation);
                         setSelectedLocation(null);
                       }}
-                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-xl transition-all duration-300 shadow-lg shadow-purple-500/25"
+                      className="w-full text-white font-medium py-3 rounded-xl transition-all duration-300 disabled:opacity-50"
+                      style={{
+                        backdropFilter: 'blur(60px) saturate(180%)',
+                        background: getLocationState(selectedLocation) === 'locked' 
+                          ? `
+                            linear-gradient(135deg, 
+                              rgba(107, 114, 128, 0.6) 0%, 
+                              rgba(75, 85, 99, 0.5) 50%,
+                              rgba(107, 114, 128, 0.6) 100%
+                            )
+                          `
+                          : `
+                            linear-gradient(135deg, 
+                              rgba(139, 92, 246, 0.8) 0%, 
+                              rgba(59, 130, 246, 0.7) 50%,
+                              rgba(139, 92, 246, 0.8) 100%
+                            )
+                          `,
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        boxShadow: '0 8px 32px rgba(139, 92, 246, 0.2)'
+                      }}
+                      whileHover={getLocationState(selectedLocation) !== 'locked' ? {
+                        scale: 1.02,
+                        background: `
+                          linear-gradient(135deg, 
+                            rgba(139, 92, 246, 0.9) 0%, 
+                            rgba(59, 130, 246, 0.8) 50%,
+                            rgba(139, 92, 246, 0.9) 100%
+                          )
+                        `,
+                        boxShadow: '0 12px 40px rgba(139, 92, 246, 0.3)'
+                      } : {}}
+                      whileTap={{ scale: 0.98 }}
                       disabled={getLocationState(selectedLocation) === 'locked'}
                     >
                       {getLocationState(selectedLocation) === 'locked' ? 'Locked' : 'Travel Here'}
-                    </Button>
+                    </motion.button>
                   </div>
                 </div>
               </motion.div>
