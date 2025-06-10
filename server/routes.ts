@@ -99,6 +99,63 @@ Generate contextual prompts now:`;
 function generateFallbackPrompts(chaResponse: string, userMessage: string, context: any): string[] {
   const response = chaResponse.toLowerCase();
   const message = userMessage.toLowerCase();
+  const location = context?.location || 'hunter_association';
+  
+  // Hunter Association Office - Varied professional topics
+  if (location === 'hunter_association') {
+    if (response.includes('training') || response.includes('technique')) {
+      return [
+        "What new techniques are you working on?",
+        "Mind showing me some moves?",
+        "How do you stay so sharp?"
+      ];
+    }
+    if (response.includes('equipment') || response.includes('weapon')) {
+      return [
+        "That sword looks well-maintained",
+        "Any upgrades you're considering?",
+        "Your gear setup is impressive"
+      ];
+    }
+    if (response.includes('hunter') || response.includes('guild')) {
+      return [
+        "How do you handle guild politics?",
+        "The newer hunters look up to you",
+        "Leadership suits you well"
+      ];
+    }
+    if (response.includes('gate') || response.includes('dungeon')) {
+      return [
+        "What patterns have you noticed?",
+        "Any particularly challenging ones?",
+        "Your mana senses must be helpful"
+      ];
+    }
+    // Avoid defaulting to reports - use personal topics
+    return [
+      "You seem focused today",
+      "How has your training been going?",
+      "What's on your mind lately?"
+    ];
+  }
+  
+  // Casual locations - Personal conversations
+  if (location.includes('cafe') || location.includes('restaurant')) {
+    return [
+      "What do you usually order here?",
+      "It's nice to relax away from work",
+      "You seem more at ease here"
+    ];
+  }
+  
+  // Apartment - Intimate conversations
+  if (location.includes('apartment')) {
+    return [
+      "Your place feels peaceful",
+      "What do you do to unwind?",
+      "Thanks for inviting me over"
+    ];
+  }
   
   // Activity planning context
   if (response.includes('dinner') || response.includes('restaurant') || response.includes('eat')) {
@@ -118,29 +175,29 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
     ];
   }
   
-  // Movie/entertainment context
-  if (response.includes('movie') || response.includes('film') || response.includes('watch')) {
+  // Personal interests and growth
+  if (response.includes('think') || response.includes('feel') || response.includes('wonder')) {
     return [
-      "There's this new action film out",
-      "Something light and fun?",
-      "What genre do you prefer?"
+      "What's your perspective on that?",
+      "I'd like to understand better",
+      "Your insights are always thoughtful"
     ];
   }
   
-  // Work/mission context
-  if (response.includes('mission') || response.includes('work') || response.includes('report')) {
+  // Combat/strength topics
+  if (response.includes('strong') || response.includes('power') || response.includes('fight')) {
     return [
-      "Need any help with that?",
-      "Sounds like a tough assignment", 
-      "How are you handling the workload?"
+      "You've grown incredibly strong",
+      "Your dedication shows",
+      "Want to spar sometime?"
     ];
   }
   
-  // Default contextual prompts
+  // Relationship and personal connection
   return [
-    "Tell me more about that",
-    "What do you think?",
-    "That sounds interesting"
+    "You always surprise me",
+    "What matters most to you?",
+    "I enjoy our conversations"
   ];
 }
 
