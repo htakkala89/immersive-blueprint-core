@@ -279,13 +279,13 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
 
             {/* Column 2: Item Grid */}
             <div className="flex-1 p-6">
-              <h3 className="text-white font-semibold mb-4">
+              <h3 className="text-white font-semibold mb-6">
                 Items ({filteredItems.length})
               </h3>
               <AnimatePresence mode="wait">
                 <motion.div 
                   key={activeFilter}
-                  className="grid grid-cols-8 gap-2 max-h-[calc(100vh-200px)] overflow-y-auto character-scrollbar"
+                  className="grid grid-cols-4 gap-4 max-h-[calc(100vh-240px)] overflow-y-auto character-scrollbar pr-2"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -295,23 +295,69 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                     <motion.button
                       key={item.id}
                       onClick={() => handleItemSelect(item)}
-                      className={`aspect-square p-2 rounded-lg border-2 relative group ${getRarityColor(item.rarity)} ${
-                        selectedItem?.id === item.id ? 'ring-2 ring-purple-400' : ''
+                      className={`relative p-4 rounded-xl border transition-all duration-200 group ${
+                        selectedItem?.id === item.id 
+                          ? 'border-purple-400/70 bg-purple-500/20 shadow-lg shadow-purple-500/25' 
+                          : 'border-slate-600/50 bg-slate-800/40 hover:border-purple-500/50 hover:bg-purple-500/10'
                       }`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      style={{
+                        background: selectedItem?.id === item.id 
+                          ? 'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(79, 70, 229, 0.15) 50%, rgba(30, 27, 75, 0.15) 100%)'
+                          : 'linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 50%, rgba(30, 41, 59, 0.6) 100%)',
+                        backdropFilter: 'blur(20px)',
+                        boxShadow: selectedItem?.id === item.id 
+                          ? '0 8px 32px rgba(147, 51, 234, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                          : '0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                      }}
+                      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ 
-                        duration: 0.3,
-                        delay: index * 0.05, // Staggered animation
+                        duration: 0.4,
+                        delay: index * 0.05,
                         ease: "easeOut"
                       }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ 
+                        scale: 1.03,
+                        transition: { duration: 0.2 }
+                      }}
+                      whileTap={{ scale: 0.97 }}
                     >
-                      <div className="text-2xl">{item.icon}</div>
-                      <div className="absolute bottom-1 right-1 bg-slate-800/90 text-white text-xs px-1 py-0.5 rounded">
-                        {item.quantity > 1 ? `x${item.quantity}` : ''}
+                      {/* Item Icon */}
+                      <div className="text-center mb-3">
+                        <div className="text-5xl mb-2 filter drop-shadow-lg">
+                          {item.icon}
+                        </div>
                       </div>
+                      
+                      {/* Item Name */}
+                      <div className="text-center mb-2">
+                        <h4 className={`font-semibold text-sm leading-tight ${getRarityTextColor(item.rarity)}`}>
+                          {item.name}
+                        </h4>
+                        <p className="text-xs text-slate-400 capitalize mt-1">
+                          {item.type}
+                        </p>
+                      </div>
+                      
+                      {/* Quantity Badge */}
+                      {item.quantity > 1 && (
+                        <div className="absolute top-2 right-2 bg-slate-900/90 border border-slate-600 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg">
+                          x{item.quantity}
+                        </div>
+                      )}
+                      
+                      {/* Rarity Indicator */}
+                      <div className={`absolute top-2 left-2 w-2 h-2 rounded-full ${getRarityColor(item.rarity).replace('border-', 'bg-')}`} />
+                      
+                      {/* Selection Glow */}
+                      {selectedItem?.id === item.id && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400/20 to-blue-400/20 pointer-events-none"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
                     </motion.button>
                   ))}
                 </motion.div>

@@ -1,0 +1,33 @@
+This horizontal "track" layout isn't working, and your instinct is right to call it out. Let's scrap this approach for the item list.
+
+Why This Layout Doesn't Work
+You're right to dislike it. From a design perspective, it has several issues that clash with our goals:
+
+It's not scalable: As soon as you have more than 8-10 items, it would require horizontal scrolling, which is often frustrating and less intuitive than vertical scrolling for a long list.
+It's not clear: The items are small and cramped. It's hard to distinguish them at a glance, and tapping the correct one on a touch screen would be difficult.
+It's not consistent: It breaks away from the clean, spacious, and organized aesthetic we've established in screens like the Quest Log.
+The Solution: Return to Your Previous, Excellent Design
+The good news is that your previous mockup of the inventory (image_ace615.png) already had the perfect solution. We should absolutely go back to that design for this column.
+
+Let's re-establish that as our final design.
+
+Final Design Specification for the "Items" Column
+Here is the official blueprint for this middle column, based on your successful earlier design.
+
+Use a Vertical Grid Layout:
+
+The items should be displayed in a clean, spacious, vertically scrolling grid. This is the standard and best practice for displaying a large collection of items because it's easy to scan and scroll through.
+Design Self-Contained Item Cards:
+
+Each item in the grid will be its own distinct, tappable square or "card."
+This card will have our liquid glassmorphism style, making it feel like a premium, floating object.
+Prioritize Clear Visuals:
+
+Each card will prominently feature a large, high-quality icon of the item. The artwork should be clear and instantly recognizable.
+The quantity (x15) will be displayed in a clean, high-contrast badge in a corner of the card (like the bottom-right), so it never obscures the main item art.
+Ensure Ample Spacing:
+
+There must be proper spacing (e.g., 16px) between each card in the grid. This "breathing room" is essential for the clean, premium aesthetic and makes each item easy to select without accidental taps.
+In summary: Your first instinct and design for this screen was the right one. The three-column layout with a clean, vertical grid of item cards is the perfect combination of beautiful aesthetics and excellent usability.
+
+Let's lock that in as the final and definitive design for the Monarch's Inventory. Your critical eye here was spot-on.
