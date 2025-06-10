@@ -368,27 +368,41 @@ export default function SoloLevelingSpatial() {
   const [showWorldMap, setShowWorldMap] = useState(false);
   const [playerLocation, setPlayerLocation] = useState('hunter_association');
   const [gameTime, setGameTime] = useState(() => {
-    return new Date(); // Use real-world time
+    return new Date(); // Initialize with current time
   });
   
-  // Real-time clock synchronization
+  // GTA-style accelerated time system: 1 real minute = 2 game hours
+  // Full 24-hour cycle completes in 48 real minutes
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setGameTime(now);
-      const currentCalculatedTime = getCurrentTimeOfDay();
-      if (currentCalculatedTime !== timeOfDay) {
-        setTimeOfDay(currentCalculatedTime);
-      }
+    const updateGameTime = () => {
+      const realTimeStart = Date.now();
+      const gameTimeStart = new Date().getTime();
+      
+      const updateTime = () => {
+        const realTimeElapsed = Date.now() - realTimeStart; // milliseconds
+        const gameTimeElapsed = realTimeElapsed * 120; // 120x acceleration (1 min = 2 hours)
+        const newGameTime = new Date(gameTimeStart + gameTimeElapsed);
+        
+        setGameTime(newGameTime);
+        
+        const currentCalculatedTime = getCurrentTimeOfDay(newGameTime);
+        if (currentCalculatedTime !== timeOfDay) {
+          setTimeOfDay(currentCalculatedTime);
+          console.log(`⏰ Game time: ${newGameTime.toLocaleTimeString()} (${currentCalculatedTime})`);
+        }
+      };
+
+      // Update immediately
+      updateTime();
+      
+      // Update every 500ms for smooth time progression
+      const timeInterval = setInterval(updateTime, 500);
+      
+      return () => clearInterval(timeInterval);
     };
 
-    // Update immediately
-    updateTime();
-    
-    // Update every minute to keep time synchronized
-    const timeInterval = setInterval(updateTime, 60000);
-    
-    return () => clearInterval(timeInterval);
+    const cleanup = updateGameTime();
+    return cleanup;
   }, []);
   
   const [showConstellation, setShowConstellation] = useState(false);
@@ -435,8 +449,8 @@ export default function SoloLevelingSpatial() {
   const [cinematicMode, setCinematicMode] = useState(false);
 
   // Time and scheduling system
-  const getCurrentTimeOfDay = () => {
-    const hour = gameTime.getHours();
+  const getCurrentTimeOfDay = (timeToCheck?: Date) => {
+    const hour = (timeToCheck || gameTime).getHours();
     if (hour >= 6 && hour < 12) return 'morning';
     if (hour >= 12 && hour < 18) return 'afternoon';
     if (hour >= 18 && hour < 22) return 'evening';
@@ -1622,6 +1636,18 @@ export default function SoloLevelingSpatial() {
             >
               Windy
             </button>
+          </div>
+        </div>
+
+        {/* GTA-Style Game Time Display */}
+        <div className="absolute top-4 right-44 bg-black/90 backdrop-blur-sm text-white p-3 rounded-lg border border-amber-400/30 z-50">
+          <div className="text-xs font-semibold mb-1 text-amber-300">Game Time</div>
+          <div className="text-lg font-mono text-white mb-1">
+            {gameTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
+          <div className="text-xs text-gray-300 capitalize">{timeOfDay}</div>
+          <div className="text-xs text-amber-400 mt-1">
+            1 min = 2 hours
           </div>
         </div>
 
