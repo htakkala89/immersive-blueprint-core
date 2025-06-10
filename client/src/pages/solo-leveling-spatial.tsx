@@ -258,6 +258,9 @@ export default function SoloLevelingSpatial() {
     timestamp: Date;
   }>>([]);
 
+  // System 16: Player Progression state
+  const [showPlayerProgression, setShowPlayerProgression] = useState(false);
+
   // System 3: Quest Log state
   const [showQuestLog, setShowQuestLog] = useState(false);
 
@@ -2444,6 +2447,7 @@ export default function SoloLevelingSpatial() {
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
+            { icon: Crown, label: 'Character', color: 'text-amber-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
             { icon: Brain, label: 'Story Progress', color: 'text-purple-300', onClick: () => { setShowNarrativeProgression(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
             <button
@@ -2687,6 +2691,38 @@ export default function SoloLevelingSpatial() {
           }));
           setShowIntimateActivity(false);
           setCurrentIntimateActivity(null);
+        }}
+      />
+
+      {/* System 16: Player Progression System */}
+      <PlayerProgressionSystem16
+        isVisible={showPlayerProgression}
+        onClose={() => setShowPlayerProgression(false)}
+        playerData={{
+          name: "Sung Jin-Woo",
+          hunterRank: gameState.hunterRank || 'E-Rank',
+          level: gameState.level,
+          experience: gameState.experience || 0,
+          maxExperience: gameState.maxExperience || 1000,
+          health: gameState.health,
+          maxHealth: gameState.maxHealth,
+          mana: gameState.mana,
+          maxMana: gameState.maxMana,
+          stats: gameState.stats || {
+            strength: 10,
+            agility: 10,
+            vitality: 10,
+            intelligence: 10,
+            sense: 10
+          },
+          unspentStatPoints: gameState.unspentStatPoints || 0,
+          unspentSkillPoints: gameState.unspentSkillPoints || 0
+        }}
+        onUpdatePlayer={(updates) => {
+          setGameState(prev => ({
+            ...prev,
+            ...updates
+          }));
         }}
       />
 
