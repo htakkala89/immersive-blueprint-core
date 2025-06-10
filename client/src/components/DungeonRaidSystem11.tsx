@@ -62,7 +62,7 @@ export function DungeonRaidSystem11({
   playerLevel, 
   affectionLevel 
 }: RaidProps) {
-  const [gamePhase, setGamePhase] = useState<'preparation' | 'combat' | 'victory' | 'defeat'>('preparation');
+  const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'victory' | 'defeat'>('prep');
   const [synergyGauge, setSynergyGauge] = useState(0);
   const [teamUpReady, setTeamUpReady] = useState(false);
   const [combatLog, setCombatLog] = useState<string[]>([]);
@@ -823,8 +823,8 @@ export function DungeonRaidSystem11({
       {/* Dungeon Atmosphere */}
       <div className="absolute inset-0 bg-[url('/dungeon-bg.jpg')] bg-cover bg-center opacity-30" />
       
-      {/* UI Header */}
-      <div className="relative z-10 p-4 flex justify-between items-start">
+      {/* UI Header - Fixed at top */}
+      <div className="absolute top-0 left-0 right-0 z-20 p-4 flex justify-between items-start bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
         <div className="backdrop-blur-md bg-black/40 rounded-lg p-3 border border-purple-500/30">
           <h2 className="text-xl font-bold text-white mb-2">Shadow Dungeon Raid</h2>
           <div className="flex gap-4 text-sm">
@@ -833,7 +833,7 @@ export function DungeonRaidSystem11({
           </div>
         </div>
 
-        {gamePhase === 'preparation' && (
+        {gamePhase === 'prep' && (
           <Button
             onClick={() => setGamePhase('combat')}
             className="bg-red-600 hover:bg-red-700 text-white"
@@ -853,7 +853,7 @@ export function DungeonRaidSystem11({
       </div>
 
       {/* Preparation Phase */}
-      {gamePhase === 'preparation' && (
+      {gamePhase === 'prep' && (
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
