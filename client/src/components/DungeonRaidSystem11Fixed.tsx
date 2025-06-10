@@ -2041,20 +2041,7 @@ export function DungeonRaidSystem11Fixed({
           })}
         </div>
 
-        {/* Central Shadow Command Button */}
-        <div className="flex justify-center">
-          <motion.button
-            onClick={() => setCommandMode(!commandMode)}
-            className="w-12 h-12 rounded-full bg-gray-700 border-2 border-purple-400 flex items-center justify-center"
-            style={{ backdropFilter: 'blur(20px)' }}
-            whileTap={{ scale: 0.9 }}
-            animate={commandMode ? { 
-              boxShadow: "0px 0px 20px rgba(147, 51, 234, 0.8)" 
-            } : {}}
-          >
-            <Crown className="w-6 h-6 text-purple-400" />
-          </motion.button>
-        </div>
+
       </div>
 
       {/* Victory/Defeat Screens */}
