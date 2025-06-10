@@ -297,9 +297,15 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                 >
                   {/* Item Display */}
                   <div className="text-center">
-                    <div className={`w-24 h-24 mx-auto rounded-xl border-2 ${getRarityColor(selectedItem.rarity)} flex items-center justify-center text-6xl mb-4`}>
+                    <motion.div 
+                      key={selectedItem.id}
+                      initial={{ scale: 0.8, rotate: -10, opacity: 0 }}
+                      animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className={`w-24 h-24 mx-auto rounded-xl border-2 ${getRarityColor(selectedItem.rarity)} flex items-center justify-center text-6xl mb-4`}
+                    >
                       {selectedItem.icon}
-                    </div>
+                    </motion.div>
                     <h3 className={`text-xl font-bold ${getRarityTextColor(selectedItem.rarity)}`}>
                       {selectedItem.name}
                     </h3>
