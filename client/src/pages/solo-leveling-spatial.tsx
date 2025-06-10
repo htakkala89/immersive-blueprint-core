@@ -21,6 +21,9 @@ import WealthDisplay from '@/components/WealthDisplay';
 import HunterMarket from '@/components/HunterMarket';
 import HunterMarketVendors from '@/components/HunterMarketVendors';
 import QuestBoard from '@/components/QuestBoard';
+import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStore';
+import GangnamFurnishings from '@/components/GangnamFurnishings';
+import LuxuryRealtor from '@/components/LuxuryRealtor';
 
 interface GameState {
   level: number;
