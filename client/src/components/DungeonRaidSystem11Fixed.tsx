@@ -572,99 +572,90 @@ export function DungeonRaidSystem11({
 
   // Enemy counter-attack system
   useEffect(() => {
-    const realEnemies = enemies.filter(e => !e.isAlly && e.health > 0);
-    const allAllies = [
-      ...players,
-      ...enemies.filter(e => e.isAlly)
-    ];
-    
-    console.log(`👹 Enemy attack check: ${realEnemies.length} enemies, ${allAllies.length} allies`);
-    
-    if (realEnemies.length === 0 || allAllies.length === 0) {
-      console.log('⚠️ Enemy attack system inactive - no valid targets');
-      return;
-    }
+    if (gamePhase !== 'combat') return;
     
     console.log('💀 Starting enemy attack system');
 
     const enemyAttackInterval = setInterval(() => {
-      const currentRealEnemies = enemiesRef.current.filter(e => !e.isAlly && e.health > 0);
-      const currentAllAllies = [
-        ...playersRef.current,
-        ...enemiesRef.current.filter(e => e.isAlly)
-      ];
-      
-      if (currentRealEnemies.length === 0 || currentAllAllies.length === 0) {
-        return;
-      }
-      
-      console.log(`🔥 Enemy attack round: ${currentRealEnemies.length} enemies attacking`);
-      
-      currentRealEnemies.forEach(enemy => {
-        // Find nearest ally to attack
-        const nearestAlly = currentAllAllies.reduce((nearest, ally) => {
-          const distToEnemy = Math.sqrt(
-            Math.pow(ally.x - enemy.x, 2) + Math.pow(ally.y - enemy.y, 2)
-          );
-          const distToNearest = nearest ? Math.sqrt(
-            Math.pow(nearest.x - enemy.x, 2) + Math.pow(nearest.y - enemy.y, 2)
-          ) : Infinity;
+      // Use functional state updates to access current state
+      setPlayers(currentPlayers => {
+        setEnemies(currentEnemies => {
+          const realEnemies = currentEnemies.filter(e => !e.isAlly && e.health > 0);
+          const allAllies = [
+            ...currentPlayers,
+            ...currentEnemies.filter(e => e.isAlly)
+          ];
           
-          return distToEnemy < distToNearest ? ally : nearest;
-        }, null as (Player | Enemy) | null);
-
-        if (nearestAlly) {
-          let damage = 0;
+          if (realEnemies.length === 0 || allAllies.length === 0) {
+            return currentEnemies;
+          }
           
-          // Different damage based on enemy type
-          switch (enemy.type) {
-            case 'shadow_beast':
-              damage = Math.floor(Math.random() * 12) + 8; // 8-20 damage
-              break;
-            case 'orc_warrior':
-              damage = Math.floor(Math.random() * 15) + 10; // 10-25 damage
-              break;
-            case 'boss':
-              damage = Math.floor(Math.random() * 25) + 20; // 20-45 damage
-              break;
-            default:
-              damage = Math.floor(Math.random() * 10) + 5; // 5-15 damage
-              break;
-          }
+          console.log(`🔥 Enemy attack round: ${realEnemies.length} enemies attacking ${allAllies.length} allies`);
+          
+          realEnemies.forEach(enemy => {
+            // Find nearest ally to attack
+            const nearestAlly = allAllies.reduce((nearest, ally) => {
+              const distToEnemy = Math.sqrt(
+                Math.pow(ally.x - enemy.x, 2) + Math.pow(ally.y - enemy.y, 2)
+              );
+              const distToNearest = nearest ? Math.sqrt(
+                Math.pow(nearest.x - enemy.x, 2) + Math.pow(nearest.y - enemy.y, 2)
+              ) : Infinity;
+              
+              return distToEnemy < distToNearest ? ally : nearest;
+            }, null as (Player | Enemy) | null);
 
-          // Damage players
-          if ('id' in nearestAlly && (nearestAlly.id === 'jinwoo' || nearestAlly.id === 'chahaein')) {
-            setPlayers(prev => prev.map(player => 
-              player.id === nearestAlly.id 
-                ? { ...player, health: Math.max(0, player.health - damage) }
-                : player
-            ));
-          } 
-          // Damage shadow soldiers
-          else if ('isAlly' in nearestAlly && nearestAlly.isAlly) {
-            setEnemies(prev => prev.map(ally => 
-              ally.id === nearestAlly.id 
-                ? { ...ally, health: Math.max(0, ally.health - damage) }
-                : ally
-            ).filter(ally => !ally.isAlly || ally.health > 0));
-          }
+            if (nearestAlly) {
+              let damage = 0;
+              
+              // Different damage based on enemy type
+              switch (enemy.type) {
+                case 'shadow_beast':
+                  damage = Math.floor(Math.random() * 12) + 8; // 8-20 damage
+                  break;
+                case 'orc_warrior':
+                  damage = Math.floor(Math.random() * 15) + 10; // 10-25 damage
+                  break;
+                case 'boss':
+                  damage = Math.floor(Math.random() * 25) + 20; // 20-45 damage
+                  break;
+                default:
+                  damage = Math.floor(Math.random() * 10) + 5; // 5-15 damage
+                  break;
+              }
 
-          // Show damage numbers
-          setDamageNumbers(prev => [...prev, {
-            id: `enemy-damage-${enemy.id}-${Date.now()}`,
-            damage: damage,
-            x: nearestAlly.x,
-            y: nearestAlly.y,
-            timestamp: Date.now()
-          }]);
+              // Damage players
+              if ('id' in nearestAlly && (nearestAlly.id === 'jinwoo' || nearestAlly.id === 'chahaein')) {
+                setPlayers(prev => {
+                  const updated = prev.map(player => 
+                    player.id === nearestAlly.id 
+                      ? { ...player, health: Math.max(0, player.health - damage) }
+                      : player
+                  );
+                  console.log(`💥 ${enemy.name} dealt ${damage} damage to ${nearestAlly.name}! Health: ${updated.find(p => p.id === nearestAlly.id)?.health}`);
+                  return updated;
+                });
+              }
 
-          console.log(`${enemy.name} dealt ${damage} damage to ${nearestAlly.name || 'ally'}`);
-        }
+              // Show damage numbers
+              setDamageNumbers(prev => [...prev, {
+                id: `enemy-damage-${enemy.id}-${Date.now()}`,
+                damage: damage,
+                x: nearestAlly.x,
+                y: nearestAlly.y,
+                timestamp: Date.now()
+              }]);
+            }
+          });
+          
+          return currentEnemies;
+        });
+        return currentPlayers;
       });
     }, 3000);
 
     return () => clearInterval(enemyAttackInterval);
-  }, [enemies, players]);
+  }, [gamePhase]);
 
   // Battlefield trap system
   useEffect(() => {
