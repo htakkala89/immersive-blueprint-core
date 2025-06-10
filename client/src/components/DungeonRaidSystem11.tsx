@@ -67,6 +67,18 @@ export function DungeonRaidSystem11({
   // Debug logging for game phase
   console.log('🎮 Current game phase:', gamePhase);
   console.log('🎮 Component isVisible:', isVisible);
+  
+  // Reset component state when it becomes visible
+  useEffect(() => {
+    if (isVisible) {
+      console.log('🚀 Dungeon component mounted, resetting to prep phase');
+      setGamePhase('prep');
+      setCurrentRoom(1);
+      setCurrentWave(1);
+      setEnemies([]);
+      setCombatLog([]);
+    }
+  }, [isVisible]);
   const [currentRoom, setCurrentRoom] = useState(1);
   const [currentWave, setCurrentWave] = useState(1);
   const [roomExits, setRoomExits] = useState<Array<{
