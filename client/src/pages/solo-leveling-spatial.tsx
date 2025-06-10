@@ -817,6 +817,18 @@ export default function SoloLevelingSpatial() {
     setCurrentDialogue('');
     setThoughtPrompts([]);
     
+    // Close all location-specific interfaces
+    setShowHunterMarketVendors(false);
+    setShowQuestBoard(false);
+    setShowUnifiedShop(false);
+    setShowDailyLifeHub(false);
+    setShowIntimateModal(false);
+    setShowEnergyModal(false);
+    setShowArmory(false);
+    setDialogueActive(false);
+    setShowLivingPortrait(false);
+    setIsFocusMode(false);
+    
     // Generate scene for new location
     setTimeout(() => {
       generateSceneImage();
