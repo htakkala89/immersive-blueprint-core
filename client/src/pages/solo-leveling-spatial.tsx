@@ -17,7 +17,7 @@ import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
-import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11';
+import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';

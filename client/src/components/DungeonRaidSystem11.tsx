@@ -1079,9 +1079,9 @@ export function DungeonRaidSystem11({
                             const jinwoo = players.find(p => p.id === 'jinwoo');
                             const canSummon = jinwoo && jinwoo.mana >= shadow.manaCost;
                           
-                          return (
-                            <motion.button
-                              key={shadow.id}
+                            return (
+                              <motion.button
+                                key={shadow.id}
                               onClick={() => canSummon ? summonShadowSoldier(shadow.id) : null}
                               className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs ${
                                 canSummon 
@@ -1128,18 +1128,10 @@ export function DungeonRaidSystem11({
                   )}
                 </AnimatePresence>
 
-                {/* Synergy Gauge */}
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <div className="text-sm text-slate-300">Synergy</div>
-                  <div className="w-32 h-3 bg-slate-700 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-purple-500 to-purple-600"
-                      style={{ width: `${synergyGauge}%` }}
-                      animate={{ width: `${synergyGauge}%` }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </div>
-                  <div className="text-sm text-purple-300">{synergyGauge}%</div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             )}
