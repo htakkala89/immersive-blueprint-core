@@ -97,6 +97,8 @@ export default function SoloLevelingSpatial() {
   const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy' | 'romantic' | 'surprised' | 'contemplative' | 'amused' | 'concerned'>('focused');
   const [showLivingPortrait, setShowLivingPortrait] = useState(false);
   const [emotionalImage, setEmotionalImage] = useState<string | null>(null);
+  const [avatarImage, setAvatarImage] = useState<string | null>(null);
+  const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
@@ -594,22 +596,63 @@ export default function SoloLevelingSpatial() {
     }
   }, [conversationHistory]);
 
+  // Generate new avatar image when expression changes
+  const generateAvatarForExpression = async (expression: string) => {
+    if (isGeneratingAvatar) return; // Prevent multiple simultaneous generations
+    
+    try {
+      setIsGeneratingAvatar(true);
+      
+      const response = await fetch('/api/generate-avatar-expression', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          expression,
+          location: playerLocation,
+          timeOfDay: timeOfDay
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.imageUrl) {
+          setAvatarImage(data.imageUrl);
+          console.log(`Generated new avatar for expression: ${expression}`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to generate avatar expression:', error);
+    } finally {
+      setIsGeneratingAvatar(false);
+    }
+  };
+
   // Real-time expression updates during typing
   const updateExpressionBasedOnInput = (input: string) => {
     const inputLower = input.toLowerCase();
+    let newExpression: string;
     
     if (inputLower.includes('love') || inputLower.includes('beautiful') || inputLower.includes('kiss')) {
-      setChaHaeInExpression('romantic');
+      newExpression = 'romantic';
     } else if (inputLower.includes('funny') || inputLower.includes('joke') || inputLower.includes('laugh')) {
-      setChaHaeInExpression('amused');
+      newExpression = 'amused';
     } else if (inputLower.includes('worried') || inputLower.includes('danger') || inputLower.includes('careful')) {
-      setChaHaeInExpression('concerned');
+      newExpression = 'concerned';
     } else if (inputLower.includes('think') || inputLower.includes('wonder') || inputLower.includes('question')) {
-      setChaHaeInExpression('contemplative');
+      newExpression = 'contemplative';
     } else if (input.trim().length > 0) {
-      setChaHaeInExpression('welcoming');
+      newExpression = 'welcoming';
     } else {
-      setChaHaeInExpression('focused');
+      newExpression = 'focused';
+    }
+    
+    // Only update if expression actually changed
+    if (newExpression !== chaHaeInExpression) {
+      setChaHaeInExpression(newExpression as any);
+      // Generate new avatar image for the new expression
+      generateAvatarForExpression(newExpression);
     }
   };
 

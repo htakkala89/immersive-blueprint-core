@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage } from "./imageGenerator";
+import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage, generateAvatarExpressionImage } from "./imageGenerator";
 import { getCachedLocationImage, cacheLocationImage, preloadLocationImages, getCacheStats } from "./imagePreloader";
 import { getSceneImage } from "./preGeneratedImages";
 import { voiceService } from "./voiceService";
@@ -675,6 +675,34 @@ RESPONSE INSTRUCTIONS:
     } catch (error) {
       console.error("Energy replenishment error:", error);
       res.status(500).json({ error: "Failed to replenish energy" });
+    }
+  });
+
+  // Generate avatar expression image
+  app.post("/api/generate-avatar-expression", async (req, res) => {
+    try {
+      const { expression, location, timeOfDay } = req.body;
+      
+      if (!expression) {
+        return res.status(400).json({ error: "Expression is required" });
+      }
+      
+      console.log(`🎭 Generating avatar for expression: ${expression}`);
+      
+      const imageUrl = await generateAvatarExpressionImage(
+        expression,
+        location || 'hunter_association',
+        timeOfDay || 'afternoon'
+      );
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: "Failed to generate avatar expression" });
+      }
+    } catch (error) {
+      console.error("Avatar expression generation error:", error);
+      res.status(500).json({ error: "Failed to generate avatar expression" });
     }
   });
 

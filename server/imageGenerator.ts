@@ -10,6 +10,10 @@ const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPE
 let lastImageGeneration = 0;
 const IMAGE_GENERATION_COOLDOWN = 500; // 0.5 seconds between generations for better responsiveness
 
+// Rate limiting for avatar expression generation
+let lastAvatarGeneration = 0;
+const AVATAR_GENERATION_COOLDOWN = 2000; // 2 seconds between avatar generations
+
 // Image cache to reduce generation times
 const imageCache = new Map<string, { url: string; timestamp: number }>();
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
@@ -198,6 +202,82 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     return null;
   } catch (error) {
     console.error('Google Imagen generation error:', error);
+    return null;
+  }
+}
+
+// Generate avatar expression image based on current emotional state
+export async function generateAvatarExpressionImage(
+  expression: string,
+  location: string = 'hunter_association',
+  timeOfDay: string = 'afternoon'
+): Promise<string | null> {
+  try {
+    // Rate limiting check
+    const now = Date.now();
+    if (now - lastAvatarGeneration < AVATAR_GENERATION_COOLDOWN) {
+      console.log('⏱️ Avatar generation rate limited, using cached expression');
+      return null;
+    }
+    lastAvatarGeneration = now;
+
+    // Create cache key for this specific expression
+    const cacheKey = `avatar_${expression}_${location}_${timeOfDay}`;
+    
+    // Check cache first
+    const cached = imageCache.get(cacheKey);
+    if (cached && (now - cached.timestamp < CACHE_DURATION)) {
+      console.log(`🎭 Using cached avatar expression: ${expression}`);
+      return cached.url;
+    }
+
+    console.log(`🎭 Generating new avatar expression: ${expression} at ${location}`);
+
+    const expressionPrompts = {
+      romantic: "Cha Hae-In with a soft romantic blush, gentle smile, warm loving eyes, golden blonde hair catching light, beautiful S-rank hunter in elegant outfit",
+      welcoming: "Cha Hae-In with bright welcoming smile, friendly warm expression, confident posture, golden blonde hair styled elegantly, professional hunter attire",
+      surprised: "Cha Hae-In with wide surprised eyes, slightly open mouth, raised eyebrows, golden blonde hair framing her face, caught off-guard expression",
+      amused: "Cha Hae-In with playful amused smile, mischievous glint in eyes, slight head tilt, golden blonde hair flowing, enjoying a good joke",
+      contemplative: "Cha Hae-In with thoughtful expression, hand near chin, focused intelligent eyes, golden blonde hair styled neatly, deep in thought",
+      concerned: "Cha Hae-In with worried furrowed brow, serious concerned expression, protective stance, golden blonde hair slightly tousled, ready for action",
+      focused: "Cha Hae-In with intense focused gaze, determined expression, confident professional posture, golden blonde hair perfectly styled, S-rank hunter aura",
+      neutral: "Cha Hae-In with calm neutral expression, professional demeanor, composed stance, golden blonde hair elegantly styled, poised hunter"
+    };
+
+    const locationContexts = {
+      hunter_association: "modern glass office building, professional setting, sleek hunter association interior",
+      chahaein_apartment: "cozy modern apartment, warm home atmosphere, personal living space",
+      hongdae_cafe: "trendy Seoul cafe, warm coffee shop ambiance, casual meeting place",
+      myeongdong_restaurant: "elegant Korean restaurant, sophisticated dining atmosphere, romantic setting"
+    };
+
+    const timeContexts = {
+      morning: "soft morning light, gentle dawn atmosphere, fresh start feeling",
+      afternoon: "bright natural daylight, clear professional lighting, energetic midday",
+      evening: "warm golden hour lighting, cozy evening atmosphere, romantic sunset glow",
+      night: "soft ambient lighting, intimate nighttime mood, mysterious evening atmosphere"
+    };
+
+    const expressionPrompt = expressionPrompts[expression as keyof typeof expressionPrompts] || expressionPrompts.focused;
+    const locationContext = locationContexts[location as keyof typeof locationContexts] || locationContexts.hunter_association;
+    const timeContext = timeContexts[timeOfDay as keyof typeof timeContexts] || timeContexts.afternoon;
+
+    const fullPrompt = `Portrait of ${expressionPrompt}, ${locationContext}, ${timeContext}, anime art style, Solo Leveling manhwa aesthetic, high quality detailed artwork, beautiful Korean female hunter, professional anime illustration, cinematic lighting, expressive face focus, upper body portrait`;
+
+    console.log(`🎨 Generating avatar with expression: ${expression}`);
+    
+    const imageUrl = await generateWithGoogleImagen(fullPrompt);
+    
+    if (imageUrl) {
+      // Cache the successful generation
+      imageCache.set(cacheKey, { url: imageUrl, timestamp: now });
+      console.log(`✅ Generated avatar expression successfully: ${expression}`);
+      return imageUrl;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('❌ Avatar expression generation failed:', error);
     return null;
   }
 }
