@@ -340,6 +340,14 @@ export default function SoloLevelingSpatial() {
   const [showLuxuryDepartmentStore, setShowLuxuryDepartmentStore] = useState(false);
   const [showGangnamFurnishings, setShowGangnamFurnishings] = useState(false);
   const [showLuxuryRealtor, setShowLuxuryRealtor] = useState(false);
+  
+  // NPC Dialogue System
+  const [showNPCDialogue, setShowNPCDialogue] = useState<{
+    npcName: string;
+    dialogue: string;
+    avatar: string;
+    position: { x: number; y: number };
+  } | null>(null);
 
   // Time and scheduling system
   const getCurrentTimeOfDay = () => {
@@ -374,6 +382,18 @@ export default function SoloLevelingSpatial() {
   };
 
   const chaHaeInCurrentLocation = getChaHaeInLocation();
+
+  // Helper function for receptionist dialogue
+  const getReceptionistDialogue = (): string => {
+    const dialogues = [
+      "I heard there's been unusual gate activity near Gangnam lately. You might want to check the mission board.",
+      "The S-rank hunters have been busier than usual. Something big might be happening.",
+      "Pro tip: Always check your equipment durability before entering A-rank gates or higher.",
+      "Did you know the training facility on the upper floors has new simulation chambers?",
+      "I've heard whispers about a new dungeon type appearing. The analysis team is investigating."
+    ];
+    return dialogues[Math.floor(Math.random() * dialogues.length)];
+  };
 
   // Perspective-based scaling system per design specifications
   const getCharacterScale = (position: { x: number; y: number }, location: string) => {
@@ -1502,15 +1522,10 @@ export default function SoloLevelingSpatial() {
                 console.log('Opening mission board with gate alerts and world lore');
                 break;
               case 'receptionist':
-                // NPC dialogue with hints and rumors
-                handleEnvironmentalInteraction({
-                  id: nodeId,
-                  action: 'The receptionist shares valuable hunter gossip and gameplay tips',
-                  name: 'Guild Receptionist',
-                  x: 65,
-                  y: 45
-                });
-                console.log('Talking to receptionist for rumors and hints');
+                // NPC dialogue with hints and rumors - separate from Cha Hae-In
+                const receptionistDialogue = getReceptionistDialogue();
+                alert(`Guild Receptionist: "${receptionistDialogue}"`);
+                console.log('Talking to Guild Receptionist for rumors and hints:', receptionistDialogue);
                 break;
               case 'elevator_bank':
                 // Floor navigation system - could unlock higher floors based on rank
