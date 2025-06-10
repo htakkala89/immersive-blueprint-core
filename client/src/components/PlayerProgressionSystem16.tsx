@@ -450,7 +450,7 @@ export function PlayerProgressionSystem16({
                       const colorClass = getStatColor(statKey as keyof CoreStats);
                       
                       return (
-                        <div key={statKey} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                        <div key={statKey} className="flex items-center justify-between p-2 bg-slate-700/30 rounded-lg border border-slate-600/30">
                           <div className="flex items-center gap-3">
                             <IconComponent className={`w-5 h-5 ${colorClass}`} />
                             <div>
