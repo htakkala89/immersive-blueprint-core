@@ -342,11 +342,6 @@ export function DungeonRaidSystem11({
     if (enemy.type === 'boss' && enemy.health <= enemy.maxHealth * 0.3 && Math.random() < 0.4) {
       triggerBossStruggle();
     }
-    
-    // Check for victory
-    if (enemies.every(e => e.health <= 0)) {
-      setTimeout(() => setGamePhase('victory'), 1000);
-    }
   };
 
   const generateLootDrop = (x: number, y: number) => {
