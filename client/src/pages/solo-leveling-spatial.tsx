@@ -1163,6 +1163,12 @@ export default function SoloLevelingSpatial() {
     
     // Handle intimate spatial interactions at player apartment
     if (playerLocation === 'player_apartment') {
+      // Bed interactions when Cha Hae-In is present
+      if (interactionPoint.id === 'bed' && chaHaeInCurrentLocation === 'player_apartment') {
+        setActiveActivity('make_love');
+        setShowIntimateModal(true);
+        return;
+      }
       if (interactionPoint.id === 'bedroom') {
         setActiveActivity('make_love');
         setShowIntimateModal(true);
