@@ -133,6 +133,14 @@ export function DungeonRaidSystem11Fixed({
     progress: number;
     timeLeft: number;
   } | null>(null);
+  const [bossPhase, setBossPhase] = useState(1);
+  const [bossEnraged, setBossEnraged] = useState(false);
+  const [bossAttackCharging, setBossAttackCharging] = useState<{
+    active: boolean;
+    type: 'slam' | 'sweep' | 'devastation';
+    chargeTime: number;
+    dangerZone: { x: number; y: number; width: number; height: number };
+  } | null>(null);
   const [puzzleRunes, setPuzzleRunes] = useState<Array<{
     id: string;
     position: { x: number; y: number };
@@ -328,8 +336,27 @@ export function DungeonRaidSystem11Fixed({
     }
     
     // Check for boss struggle trigger
-    if (enemy.type === 'boss' && enemy.health <= enemy.maxHealth * 0.3 && Math.random() < 0.4) {
-      triggerBossStruggle();
+    // Boss phase transitions and special mechanics
+    if (enemy.type === 'boss') {
+      const healthPercentage = enemy.health / enemy.maxHealth;
+      
+      // Phase transitions
+      if (healthPercentage <= 0.7 && bossPhase === 1) {
+        setBossPhase(2);
+        setBossEnraged(true);
+        addToCombatLog("⚡ PHASE 2: The Ancient Guardian enters a berserker rage!");
+        triggerCameraShake();
+      } else if (healthPercentage <= 0.3 && bossPhase === 2) {
+        setBossPhase(3);
+        addToCombatLog("🔥 FINAL PHASE: The Guardian unleashes its full power!");
+        triggerCameraShake();
+      }
+      
+      // Boss struggle events (more frequent in later phases)
+      const struggleChance = bossPhase === 3 ? 0.6 : bossPhase === 2 ? 0.4 : 0.2;
+      if (Math.random() < struggleChance) {
+        triggerBossStruggle();
+      }
     }
     
     // Immediate victory check after damage is applied
