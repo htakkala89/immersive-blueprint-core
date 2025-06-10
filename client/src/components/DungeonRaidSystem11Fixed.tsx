@@ -72,6 +72,24 @@ export function DungeonRaidSystem11Fixed({
   }>>([]);
   const [shadowDashAnimation, setShadowDashAnimation] = useState(false);
   const [warpTunnelActive, setWarpTunnelActive] = useState(false);
+  const [environmentalPuzzle, setEnvironmentalPuzzle] = useState<{
+    active: boolean;
+    sequence: number[];
+    playerInput: number[];
+    completed: boolean;
+  } | null>(null);
+  const [stealthChallenge, setStealthChallenge] = useState<{
+    active: boolean;
+    guardPosition: number;
+    playerHidden: boolean;
+    detectionLevel: number;
+  } | null>(null);
+  const [healingFont, setHealingFont] = useState<{
+    active: boolean;
+    used: boolean;
+  } | null>(null);
+  const [multiWaveActive, setMultiWaveActive] = useState(false);
+  const [currentWave, setCurrentWave] = useState(1);
   const [synergyGauge, setSynergyGauge] = useState(0);
   const [teamUpReady, setTeamUpReady] = useState(false);
   const [combatLog, setCombatLog] = useState<string[]>([]);
@@ -402,78 +420,333 @@ export function DungeonRaidSystem11Fixed({
   };
 
   const generateRoomEnemies = () => {
-    const roomTypes = {
-      1: 'entrance',
-      2: 'corridor',
-      3: 'chamber',
-      4: 'guardian',
-      5: 'antechamber',
-      6: 'boss'
+    const dungeonStructure = {
+      1: { type: 'entrance', act: 1, encounters: ['standard_combat'] },
+      2: { type: 'trap_corridor', act: 1, encounters: ['simple_trap', 'standard_combat'] },
+      3: { type: 'arena_chamber', act: 2, encounters: ['multi_wave_combat'] },
+      4: { type: 'puzzle_chamber', act: 2, encounters: ['environmental_puzzle'] },
+      5: { type: 'stealth_section', act: 2, encounters: ['stealth_bypass'] },
+      6: { type: 'antechamber', act: 3, encounters: ['preparation'] },
+      7: { type: 'boss_arena', act: 3, encounters: ['boss_battle'] }
     };
     
-    const roomType = roomTypes[currentRoom as keyof typeof roomTypes];
+    const roomData = dungeonStructure[currentRoom as keyof typeof dungeonStructure];
+    if (!roomData) return;
+    
     let newEnemies: Enemy[] = [];
     
-    if (roomType === 'boss') {
-      // Final boss room
-      newEnemies = [{
-        id: 'final_boss',
-        name: 'Shadow Sovereign',
-        health: 300,
-        maxHealth: 300,
-        x: 600,
-        y: 280,
-        type: 'boss'
-      }];
-    } else if (roomType === 'guardian') {
-      // Mini-boss room
-      newEnemies = [
-        {
-          id: 'guardian',
-          name: 'Stone Guardian',
-          health: 120,
-          maxHealth: 120,
-          x: 580,
-          y: 300,
-          type: 'boss'
-        },
-        {
-          id: 'minion1',
-          name: 'Shadow Minion',
-          health: 40,
-          maxHealth: 40,
-          x: 520,
-          y: 320,
-          type: 'shadow_beast'
-        },
-        {
-          id: 'minion2',
-          name: 'Shadow Minion',
-          health: 40,
-          maxHealth: 40,
-          x: 640,
-          y: 320,
-          type: 'shadow_beast'
-        }
-      ];
-    } else {
-      // Regular rooms with escalating difficulty
-      const baseEnemies = Math.min(currentRoom + 1, 4);
-      for (let i = 0; i < baseEnemies; i++) {
-        newEnemies.push({
-          id: `enemy_${currentRoom}_${i}`,
-          name: currentRoom > 3 ? 'Elite Orc' : currentRoom > 1 ? 'Orc Warrior' : 'Shadow Beast',
-          health: 60 + (currentRoom * 10),
-          maxHealth: 60 + (currentRoom * 10),
-          x: 500 + (i * 60),
-          y: 300 + (Math.random() * 40 - 20),
-          type: currentRoom > 3 ? 'orc_warrior' : 'shadow_beast'
-        });
-      }
+    // Generate Cha Hae-In contextual dialogue
+    generateChaHaeInDialogue(roomData);
+    
+    switch (roomData.type) {
+      case 'entrance':
+        // Act I: Simple intro combat
+        newEnemies = [
+          {
+            id: 'shadow_beast_1',
+            name: 'Shadow Beast',
+            health: 60,
+            maxHealth: 60,
+            x: 520,
+            y: 320,
+            type: 'shadow_beast'
+          },
+          {
+            id: 'shadow_beast_2',
+            name: 'Shadow Beast',
+            health: 60,
+            maxHealth: 60,
+            x: 580,
+            y: 300,
+            type: 'shadow_beast'
+          }
+        ];
+        break;
+        
+      case 'trap_corridor':
+        // Act I: Trap teaching + combat
+        newEnemies = [
+          {
+            id: 'orc_scout',
+            name: 'Orc Scout',
+            health: 70,
+            maxHealth: 70,
+            x: 600,
+            y: 310,
+            type: 'orc_warrior'
+          }
+        ];
+        // Trigger trap sequence after 2 seconds
+        setTimeout(() => {
+          setTrapAlert({
+            active: true,
+            skillRequired: 'dodge',
+            timeLeft: 3000
+          });
+          addToCombatLog("Cha Hae-In: 'Watch out! Spike trap ahead!'");
+        }, 2000);
+        break;
+        
+      case 'arena_chamber':
+        // Act II: Multi-wave arena combat
+        newEnemies = [
+          {
+            id: 'elite_orc_1',
+            name: 'Elite Orc',
+            health: 90,
+            maxHealth: 90,
+            x: 500,
+            y: 320,
+            type: 'orc_warrior'
+          },
+          {
+            id: 'elite_orc_2',
+            name: 'Elite Orc',
+            health: 90,
+            maxHealth: 90,
+            x: 580,
+            y: 300,
+            type: 'orc_warrior'
+          }
+        ];
+        // Second wave spawns after first wave defeated
+        break;
+        
+      case 'puzzle_chamber':
+        // Act II: Environmental puzzle - no immediate enemies
+        newEnemies = [];
+        setTimeout(() => {
+          const sequence = [1, 3, 2, 4, 1];
+          setEnvironmentalPuzzle({
+            active: true,
+            sequence,
+            playerInput: [],
+            completed: false
+          });
+          addToCombatLog("Cha Hae-In: 'The runes are glowing in a pattern. Follow the sequence!'");
+          setGamePhase('room_clear');
+        }, 1000);
+        break;
+        
+      case 'stealth_section':
+        // Act II: Stealth bypass challenge
+        newEnemies = [
+          {
+            id: 'elite_guard',
+            name: 'Elite Shadow Guard',
+            health: 200,
+            maxHealth: 200,
+            x: 400,
+            y: 280,
+            type: 'boss',
+            isStunned: false // This guard patrols
+          }
+        ];
+        setTimeout(() => triggerStealthChallenge(), 1500);
+        break;
+        
+      case 'antechamber':
+        // Act III: Calm before storm - healing font
+        newEnemies = [];
+        setTimeout(() => triggerHealingFont(), 1000);
+        break;
+        
+      case 'boss_arena':
+        // Act III: Final boss battle
+        newEnemies = [
+          {
+            id: 'shadow_sovereign',
+            name: 'Shadow Sovereign',
+            health: 350,
+            maxHealth: 350,
+            x: 600,
+            y: 280,
+            type: 'boss'
+          }
+        ];
+        break;
     }
     
     setEnemies(newEnemies);
-    addToCombatLog(`Entered Room ${currentRoom} - ${roomType.charAt(0).toUpperCase() + roomType.slice(1)}`);
+    addToCombatLog(`${roomData.act === 1 ? 'Act I' : roomData.act === 2 ? 'Act II' : 'Act III'}: ${roomData.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`);
+  };
+
+  const generateChaHaeInDialogue = (roomData: any) => {
+    const dialogues = {
+      entrance: "This place feels ancient... I sense mana from beasts of the insectoid type. Stay sharp.",
+      trap_corridor: "Wait, don't step there! I can sense magical traps ahead.",
+      arena_chamber: "This chamber was built for combat. Prepare for multiple waves!",
+      puzzle_chamber: "The pattern on the floor must be the key! Let me analyze this...",
+      stealth_section: "That guard is too powerful to face directly. We need to find another way.",
+      antechamber: "The air here is thick with mana... I can feel it. The Monarch is just beyond this door.",
+      boss_arena: "This is it, Jin-Woo. Let's end this together!"
+    };
+    
+    const dialogue = dialogues[roomData.type as keyof typeof dialogues];
+    if (dialogue) {
+      setTimeout(() => addToCombatLog(`Cha Hae-In: "${dialogue}"`), 1000);
+    }
+  };
+
+  // Trap alert auto-damage system
+  useEffect(() => {
+    if (trapAlert && trapAlert.active) {
+      const timer = setTimeout(() => {
+        // Failed to avoid trap
+        setPlayers(prev => prev.map(p => p.id === 'jinwoo' ? {
+          ...p,
+          health: Math.max(0, p.health - 20)
+        } : p));
+        addToCombatLog("Jin-Woo takes 20 damage from spike trap!");
+        setTrapAlert(null);
+      }, trapAlert.timeLeft);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [trapAlert]);
+
+  const triggerEnvironmentalPuzzle = () => {
+    const sequence = [1, 3, 2, 4, 1]; // Pattern to solve
+    setEnvironmentalPuzzle({
+      active: true,
+      sequence,
+      playerInput: [],
+      completed: false
+    });
+    
+    addToCombatLog("Cha Hae-In: 'The runes are glowing in a pattern. Follow the sequence!'");
+    setGamePhase('room_clear'); // Switch to puzzle mode
+  };
+
+  const triggerStealthChallenge = () => {
+    setStealthChallenge({
+      active: true,
+      guardPosition: 50,
+      playerHidden: false,
+      detectionLevel: 0
+    });
+    
+    addToCombatLog("Cha Hae-In: 'That guard patrols this area. Stay in the shadows!'");
+    
+    // Guard patrol movement
+    const patrolInterval = setInterval(() => {
+      setStealthChallenge(prev => {
+        if (!prev || prev.detectionLevel >= 100) {
+          clearInterval(patrolInterval);
+          return prev;
+        }
+        
+        const newPosition = (prev.guardPosition + 5) % 400;
+        return {
+          ...prev,
+          guardPosition: newPosition,
+          detectionLevel: prev.playerHidden ? Math.max(0, prev.detectionLevel - 2) : prev.detectionLevel + 3
+        };
+      });
+    }, 100);
+  };
+
+  const triggerHealingFont = () => {
+    setHealingFont({
+      active: true,
+      used: false
+    });
+    
+    addToCombatLog("A mystical healing font glows before you. Touch it to restore your strength.");
+    setGamePhase('room_clear'); // Allow interaction
+  };
+
+  const handleEnvironmentalPuzzleInput = (runeIndex: number) => {
+    if (!environmentalPuzzle || environmentalPuzzle.completed) return;
+    
+    const newInput = [...environmentalPuzzle.playerInput, runeIndex];
+    
+    if (newInput.length <= environmentalPuzzle.sequence.length) {
+      if (newInput[newInput.length - 1] !== environmentalPuzzle.sequence[newInput.length - 1]) {
+        // Wrong input - reset
+        setEnvironmentalPuzzle(prev => prev ? {
+          ...prev,
+          playerInput: []
+        } : null);
+        addToCombatLog("Wrong sequence! The runes dim and reset.");
+        return;
+      }
+      
+      setEnvironmentalPuzzle(prev => prev ? {
+        ...prev,
+        playerInput: newInput
+      } : null);
+      
+      if (newInput.length === environmentalPuzzle.sequence.length) {
+        // Completed puzzle
+        setEnvironmentalPuzzle(prev => prev ? {
+          ...prev,
+          completed: true
+        } : null);
+        addToCombatLog("Cha Hae-In: 'Perfect! The path forward is clear!'");
+        
+        setTimeout(() => {
+          setEnvironmentalPuzzle(null);
+          generateRoomExits();
+        }, 2000);
+      }
+    }
+  };
+
+  const handleHealingFontUse = () => {
+    if (!healingFont || healingFont.used) return;
+    
+    setPlayers(prev => prev.map(player => ({
+      ...player,
+      health: player.maxHealth,
+      mana: player.maxMana
+    })));
+    
+    setHealingFont(prev => prev ? { ...prev, used: true } : null);
+    addToCombatLog("The healing font restores your strength completely!");
+    
+    setTimeout(() => {
+      setHealingFont(null);
+      generateRoomExits();
+    }, 2000);
+  };
+
+  const handleStealthHiding = (hidden: boolean) => {
+    setStealthChallenge(prev => prev ? {
+      ...prev,
+      playerHidden: hidden
+    } : null);
+  };
+
+  // Multi-wave combat for arena chamber
+  const spawnSecondWave = () => {
+    if (currentRoom === 3 && enemies.every(e => e.health <= 0) && currentWave === 1) {
+      setCurrentWave(2);
+      const waveEnemies: Enemy[] = [
+        {
+          id: 'wave2_orc_1',
+          name: 'Berserker Orc',
+          health: 110,
+          maxHealth: 110,
+          x: 450,
+          y: 310,
+          type: 'orc_warrior'
+        },
+        {
+          id: 'wave2_beast_1',
+          name: 'Alpha Shadow Beast',
+          health: 80,
+          maxHealth: 80,
+          x: 620,
+          y: 290,
+          type: 'shadow_beast'
+        }
+      ];
+      
+      setEnemies(waveEnemies);
+      addToCombatLog("Cha Hae-In: 'More enemies incoming! Second wave!'");
+      setMultiWaveActive(true);
+    }
   };
 
   // Additional mechanics for trap, loot, struggle, etc.

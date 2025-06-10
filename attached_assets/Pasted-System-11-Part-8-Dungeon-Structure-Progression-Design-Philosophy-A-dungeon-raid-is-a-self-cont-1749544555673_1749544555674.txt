@@ -1,0 +1,35 @@
+System 11, Part 8: Dungeon Structure & Progression
+
+Design Philosophy: A dungeon raid is a self-contained narrative arc. The progression through the Gate should follow a classic three-act structure to build tension, test the player's various skills, and create a satisfying rhythm that culminates in the epic boss battle. The structure will scale in length and complexity based on the Gate's rank (e.g., a C-Rank Gate might be a short, two-act experience, while an S-Rank Gate will be a grueling three-act saga).
+
+Act I: The Threshold (The First ~2-3 Rooms)
+
+Purpose: To introduce the dungeon's theme, atmosphere, and primary enemy types. This is the warm-up.
+Encounter Types:
+Standard Combat: The first few rooms will feature encounters with the dungeon's basic "mob" enemies. These fights are designed to be straightforward, allowing the player to get a feel for the enemy attack patterns and the overall difficulty.
+Simple Traps: A simple, single-sequence Trap & Reflex Challenge might be introduced here to teach the mechanic in a low-stakes environment.
+Layout & Pacing: The layout will be relatively linear—a clear path forward with maybe one optional side-room containing a minor treasure. The pacing is quick, moving the player from one encounter to the next.
+Cha Hae-In's Role: Her dialogue here is observational, setting the scene.
+"This place feels ancient... I sense mana from beasts of the insectoid type. Stay sharp."
+
+Act II: The Gauntlet (The Middle Section, ~3-5 Rooms)
+
+Purpose: This is the heart of the dungeon, designed to test the full range of the player's abilities and their teamwork with Cha Hae-In.
+Encounter Types: This act features a complex mix of all our designed encounters. The order can be varied to keep dungeons feeling unique.
+A difficult, multi-wave Standard Combat encounter in a large "arena" room.
+A crucial Environmental Puzzle that blocks the main path and must be solved to proceed.
+A tense Stealth Section where the player must bypass an overwhelmingly powerful elite guard.
+A corridor filled with complex, overlapping Trap Challenges requiring precise timing.
+Layout & Pacing: The layout becomes more complex. There might be minor branching paths, verticality, or larger, more open areas. The pacing slows down, as each room is a significant, deliberate challenge.
+Cha Hae-In's Role: Her role becomes highly interactive and strategic. She will offer hints for puzzles ("The pattern on the floor must be the key!"), warnings for traps ("Wait, don't step there!"), and call out enemy weaknesses in combat.
+Act III: The Apex (The Final ~1-2 Rooms)
+
+Purpose: To build final suspense before the climactic confrontation.
+Encounter Types:
+The Antechamber: The room immediately preceding the boss. This room is often quiet and devoid of enemies. Its purpose is purely atmospheric, designed to build tension. It might contain a final "Healing Font" to allow the player to recover before the boss, or a lore object that provides a hint about the boss's nature.
+The Boss Arena: The final, massive, and often spectacular chamber where the Boss Battle (as detailed in Part 7) takes place.
+Layout & Pacing: A moment of calm and exploration in the Antechamber, followed by the intense, sustained climax of the boss fight.
+Cha Hae-In's Role: Her dialogue becomes focused and serious, confirming the threat ahead.
+"The air here is thick with mana... I can feel it. The Monarch is just beyond this door. Let's end this."
+
+This three-act structure provides a flexible but reliable template for all our dungeon designs. It ensures that every raid has a satisfying narrative and gameplay arc, with escalating challenges that make reaching and defeating the final boss feel like a true accomplishment.
