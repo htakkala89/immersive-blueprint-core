@@ -11,6 +11,7 @@ import {
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
+import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
@@ -151,6 +152,13 @@ export default function SoloLevelingSpatial() {
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
   const [scheduledActivities, setScheduledActivities] = useState<any[]>([]);
   const [showActivityNotification, setShowActivityNotification] = useState(false);
+  
+  // System 5: Intimate Activity System state
+  const [showIntimateActivity, setShowIntimateActivity] = useState(false);
+  const [currentIntimateActivity, setCurrentIntimateActivity] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
@@ -1961,7 +1969,12 @@ export default function SoloLevelingSpatial() {
           
           // Route activity to appropriate system
           if (activity.category === 'intimate') {
-            setShowIntimateModal(true);
+            // Route to System 5: Intimate Activity System for mature content
+            setCurrentIntimateActivity({
+              id: activity.id,
+              title: activity.title
+            });
+            setShowIntimateActivity(true);
           } else if (activity.id === 'give_gift') {
             setShowUnifiedShop(true);
           } else if (activity.id === 'shopping_together') {
@@ -2093,6 +2106,29 @@ export default function SoloLevelingSpatial() {
             ...prev,
             affection: Math.min(100, prev.affection + 5)
           }));
+        }}
+      />
+
+      {/* System 5: Intimate Activity System */}
+      <IntimateActivitySystem5
+        isVisible={showIntimateActivity}
+        onClose={() => {
+          setShowIntimateActivity(false);
+          setCurrentIntimateActivity(null);
+        }}
+        activityId={currentIntimateActivity?.id || ''}
+        activityTitle={currentIntimateActivity?.title || ''}
+        backgroundImage={backgroundImage}
+        onSceneComplete={(memory) => {
+          // Add memory to constellation system
+          console.log('New intimate memory created:', memory);
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(10, prev.affection + 0.5), // Increase affection
+            intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + 1)
+          }));
+          setShowIntimateActivity(false);
+          setCurrentIntimateActivity(null);
         }}
       />
 
