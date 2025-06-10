@@ -1874,11 +1874,16 @@ export default function SoloLevelingSpatial() {
                 break;
               case 'red_gate_entrance':
                 // Enter the Red Gate dungeon for quest completion
-                console.log('RED GATE ENTRANCE TRIGGERED - Opening dungeon raid');
+                console.log('🚪 RED GATE ENTRANCE TRIGGERED - Opening dungeon raid');
                 console.log('Current showDungeonRaid state:', showDungeonRaid);
+                alert('Red Gate clicked! Opening dungeon...');
                 setShowDungeonRaid(true);
                 console.log('Dungeon raid state set to true');
-                // Alert removed - dungeon should open automatically
+                console.log('After setting, showDungeonRaid should be:', true);
+                // Force re-render check
+                setTimeout(() => {
+                  console.log('Delayed check - showDungeonRaid state:', showDungeonRaid);
+                }, 100);
                 break;
               case 'mission_board':
                 // Opens lore panel with gate information
@@ -2580,7 +2585,10 @@ export default function SoloLevelingSpatial() {
 
       <DungeonRaidSystem11
         isVisible={showDungeonRaid}
-        onClose={() => setShowDungeonRaid(false)}
+        onClose={() => {
+          console.log('Closing dungeon raid');
+          setShowDungeonRaid(false);
+        }}
         onRaidComplete={(success, loot) => {
           if (success) {
             setGameState(prev => ({
