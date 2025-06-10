@@ -90,6 +90,18 @@ export function DungeonRaidSystem11Fixed({
   } | null>(null);
   const [multiWaveActive, setMultiWaveActive] = useState(false);
   const [currentWave, setCurrentWave] = useState(1);
+  const [targetedEnemy, setTargetedEnemy] = useState<string | null>(null);
+  const [enemyTelegraphs, setEnemyTelegraphs] = useState<Array<{
+    enemyId: string;
+    type: 'attack' | 'charge' | 'slam';
+    dangerZone: { x: number; y: number; width: number; height: number };
+    timeLeft: number;
+  }>>([]);
+  const [playerMovement, setPlayerMovement] = useState<{
+    targetX: number;
+    targetY: number;
+    moving: boolean;
+  } | null>(null);
   const [synergyGauge, setSynergyGauge] = useState(0);
   const [teamUpReady, setTeamUpReady] = useState(false);
   const [combatLog, setCombatLog] = useState<string[]>([]);
@@ -249,11 +261,38 @@ export function DungeonRaidSystem11Fixed({
       const distance = Math.sqrt(
         Math.pow(enemy.x - x, 2) + Math.pow(enemy.y - y, 2)
       );
-      return distance < 40 && enemy.health > 0;
+      return distance < 50 && enemy.health > 0;
     });
     
     if (clickedEnemy) {
+      setTargetedEnemy(clickedEnemy.id);
       executeBasicAttack(clickedEnemy);
+      addToCombatLog(`Jin-Woo dashes toward ${clickedEnemy.name}!`);
+      
+      // Trigger Jin-Woo dash animation
+      setPlayers(prev => prev.map(player => 
+        player.id === 'jinwoo' 
+          ? { ...player, isActive: true, x: Math.max(clickedEnemy.x - 60, 120) }
+          : player
+      ));
+    } else {
+      // Movement to dodge attacks
+      setPlayerMovement({
+        targetX: x,
+        targetY: y,
+        moving: true
+      });
+      
+      // Move Jin-Woo to new position for evasion
+      setTimeout(() => {
+        setPlayers(prev => prev.map(player => 
+          player.id === 'jinwoo' 
+            ? { ...player, x: Math.max(50, Math.min(350, x)), y: Math.max(250, Math.min(380, y)) }
+            : player
+        ));
+        setPlayerMovement(null);
+        addToCombatLog("Jin-Woo evades to a safer position!");
+      }, 300);
     }
   }, [gamePhase, enemies]);
 
@@ -983,7 +1022,7 @@ export function DungeonRaidSystem11Fixed({
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-combat for Cha Hae-In
+  // Enhanced AI for Cha Hae-In with reactive behavior
   useEffect(() => {
     if (gamePhase === 'combat') {
       const interval = setInterval(() => {
@@ -992,26 +1031,97 @@ export function DungeonRaidSystem11Fixed({
         const aliveEnemies = enemies.filter(e => e.health > 0);
         
         if (chahaein && jinwoo && aliveEnemies.length > 0) {
+          // Priority targeting - focus on stunned enemies or same target as Jin-Woo
+          let targetEnemy = aliveEnemies.find(e => e.isStunned);
+          if (!targetEnemy && targetedEnemy) {
+            targetEnemy = aliveEnemies.find(e => e.id === targetedEnemy);
+          }
+          if (!targetEnemy) {
+            targetEnemy = aliveEnemies[0];
+          }
+          
           const damage = Math.floor(Math.random() * 25) + 15;
-          const targetEnemy = aliveEnemies[0];
+          const isStunnedTarget = targetEnemy.isStunned || false;
+          const finalDamage = isStunnedTarget ? Math.floor(damage * 1.3) : damage; // Bonus damage on stunned enemies
           
           setEnemies(prev => prev.map(e => 
-            e.id === targetEnemy.id ? { ...e, health: Math.max(0, e.health - damage) } : e
+            e.id === targetEnemy.id ? { ...e, health: Math.max(0, e.health - finalDamage) } : e
           ));
           
-          showDamageNumber(damage, targetEnemy.x + 20, targetEnemy.y, false);
-          addToCombatLog(`Cha Hae-In strikes ${targetEnemy.name} for ${damage} damage!`);
-          setSynergyGauge(prev => Math.min(100, prev + 8));
+          showDamageNumber(finalDamage, targetEnemy.x + 20, targetEnemy.y, isStunnedTarget);
           
-          if (enemies.every(e => e.health <= 0)) {
-            setTimeout(() => setGamePhase('victory'), 1000);
+          if (isStunnedTarget) {
+            addToCombatLog(`Cha Hae-In exploits the opening for ${finalDamage} damage!`);
+            setSynergyGauge(prev => Math.min(100, prev + 12)); // Extra synergy for teamwork
+          } else {
+            addToCombatLog(`Cha Hae-In strikes ${targetEnemy.name} for ${finalDamage} damage!`);
+            setSynergyGauge(prev => Math.min(100, prev + 8));
           }
         }
       }, 3000);
       
       return () => clearInterval(interval);
     }
-  }, [gamePhase, players, enemies]);
+  }, [gamePhase, players, enemies, targetedEnemy]);
+
+  // Enemy AI with telegraph attacks
+  useEffect(() => {
+    if (gamePhase === 'combat') {
+      const interval = setInterval(() => {
+        const aliveEnemies = enemies.filter(e => e.health > 0 && !e.isStunned);
+        const jinwoo = players.find(p => p.id === 'jinwoo');
+        
+        if (aliveEnemies.length > 0 && jinwoo && Math.random() < 0.4) {
+          const attackingEnemy = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+          
+          // Create telegraph warning
+          const telegraph = {
+            enemyId: attackingEnemy.id,
+            type: Math.random() < 0.5 ? 'attack' : Math.random() < 0.7 ? 'charge' : 'slam' as const,
+            dangerZone: {
+              x: jinwoo.x - 30,
+              y: jinwoo.y - 20,
+              width: 80,
+              height: 60
+            },
+            timeLeft: 2000
+          };
+          
+          setEnemyTelegraphs(prev => [...prev, telegraph]);
+          addToCombatLog(`${attackingEnemy.name} prepares to attack! Move to dodge!`);
+          
+          // Execute attack after delay
+          setTimeout(() => {
+            const currentJinwoo = players.find(p => p.id === 'jinwoo');
+            if (currentJinwoo) {
+              // Check if player is still in danger zone
+              const inDangerZone = 
+                currentJinwoo.x >= telegraph.dangerZone.x &&
+                currentJinwoo.x <= telegraph.dangerZone.x + telegraph.dangerZone.width &&
+                currentJinwoo.y >= telegraph.dangerZone.y &&
+                currentJinwoo.y <= telegraph.dangerZone.y + telegraph.dangerZone.height;
+              
+              if (inDangerZone) {
+                const damage = Math.floor(Math.random() * 20) + 15;
+                setPlayers(prev => prev.map(p => 
+                  p.id === 'jinwoo' ? { ...p, health: Math.max(0, p.health - damage) } : p
+                ));
+                showDamageNumber(damage, currentJinwoo.x, currentJinwoo.y - 30, false);
+                addToCombatLog(`${attackingEnemy.name} hits Jin-Woo for ${damage} damage!`);
+              } else {
+                addToCombatLog(`Jin-Woo successfully dodges ${attackingEnemy.name}'s attack!`);
+              }
+            }
+            
+            // Remove telegraph
+            setEnemyTelegraphs(prev => prev.filter(t => t.enemyId !== telegraph.enemyId));
+          }, 2000);
+        }
+      }, 4000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [gamePhase, enemies, players]);
 
   // Mana regeneration
   useEffect(() => {
@@ -1144,6 +1254,33 @@ export function DungeonRaidSystem11Fixed({
           
           {/* Ground Line */}
           <div className="absolute bottom-8 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+
+          {/* Enemy Telegraph Danger Zones */}
+          {enemyTelegraphs.map((telegraph, index) => (
+            <motion.div
+              key={`telegraph-${index}`}
+              className="absolute border-2 border-red-500 bg-red-500/20 rounded z-10"
+              style={{
+                left: telegraph.dangerZone.x,
+                top: telegraph.dangerZone.y,
+                width: telegraph.dangerZone.width,
+                height: telegraph.dangerZone.height
+              }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ 
+                opacity: [0.3, 0.8, 0.3],
+                scale: [0.8, 1.1, 0.8]
+              }}
+              transition={{
+                duration: 0.5,
+                repeat: Infinity
+              }}
+            >
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red-400 text-xl font-bold">
+                ⚠️
+              </div>
+            </motion.div>
+          ))}
           
           {/* Full Character Models with Health Auras */}
           {players.map(player => (

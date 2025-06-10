@@ -1,0 +1,42 @@
+The Gameplay Flow: The First Encounter
+
+This screen shows the very beginning of a fight in the first room of the dungeon. The player (represented by the purple icons) is on the left, and two enemies are on the right.
+
+Here is what is supposed to happen next:
+
+Step 1: The Player Initiates Combat
+
+Your Action: You, the player, decide to engage the closest enemy. You tap on the front-most red enemy icon.
+What Happens in the Game World:
+In the 2.5D view, your full-body Sung Jin-Woo character sprite immediately dashes across the screen toward the first monster.
+The tap automatically initiates his basic attack combo. You see a fluid animation of him striking with his daggers.
+Small, white damage numbers arc off the monster with each hit. The monster's red health aura at its feet visibly shrinks and dims.
+Step 2: Using a Skill for Strategic Advantage
+
+Your Action: After a few basic hits, you decide to use a skill. You tap the first button on your Action Bar (the launcher skill, Mutilate).
+What Happens in the Game World:
+Your character model unleashes a powerful upward slash animation, glowing with purple energy.
+The monster sprite is physically launched into the air, where it is momentarily helpless.
+On your UI, the skill button you just pressed turns gray and a cooldown timer begins, showing you can't use it again immediately.
+Step 3: Cha Hae-In's AI Reacts (Teamwork)
+
+Her Action: Cha Hae-In's AI, seeing the enemy is now airborne and vulnerable, immediately capitalizes on the opening.
+What Happens in the Game World:
+Her character sprite dashes in and begins her own aerial attack combo on the helpless monster, keeping the combo going.
+Because you are attacking the same target and setting each other up, the Synergy Gauge (the circular meter in the top right) begins to fill up noticeably faster, rewarding your teamwork.
+Step 4: The Other Enemy Responds
+
+Enemy Action: The second enemy, which has not been attacked yet, now makes its move. It targets you.
+What Happens in the Game World:
+The monster begins a "tell" animation—for example, rearing back and glowing with red energy.
+A telegraphed danger zone appears as a red highlight on the ground where its attack will land.
+This is your cue to tap a different spot on the ground to move your character out of the way, or use your Dash Skill (Button #2) for a quicker, more stylish evasion.
+Summary of the Core Loop
+
+From this point, the core loop of combat continues:
+
+Prioritize Targets: You choose which enemy to focus on.
+Use Skills: You use your skills strategically as they come off cooldown, managing your mana.
+Synergize: You work with Cha Hae-In to stun enemies and build up your Synergy Gauge for a powerful Team-Up Attack.
+React: You watch for enemy "tells" and move to evade their telegraphed attacks.
+Once both enemies are defeated, their models would dissolve, the "Spoils of War" reward sequence would play, and the glowing purple exit arrow (->) would appear, allowing you to proceed to "Room 2 / 6."
