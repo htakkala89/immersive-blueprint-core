@@ -128,19 +128,51 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'counter',
       label: 'Counter',
       icon: Coffee,
-      position: { x: 30, y: 40 },
+      position: { x: 75, y: 35 },
       thoughtPrompt: 'Order drinks for us.',
-      outcome: 'Initiates dialogue choice asking Cha Hae-In her preference. Correct choice grants affection boost.',
-      gameLogic: 'system_6_affection_boost'
+      outcome: 'You approach the counter to order beverages. Choosing her preferred drink correctly provides a bonus.',
+      gameLogic: 'cafe_ordering_system',
+      requirements: undefined,
+      spatialRelationships: {
+        enhances: ['window_seat'],
+        excludes: undefined,
+        proximity: undefined
+      },
+      environmentalStates: {
+        weather: ['clear', 'rain', 'cloudy'],
+        timeOfDay: ['morning', 'afternoon', 'evening'],
+        storyFlags: undefined
+      },
+      memoryTriggers: {
+        firstTime: 'Order drinks for us - I wonder what she prefers?',
+        repeated: 'Order drinks for us - I remember her preference now',
+        withCharacter: 'Order drinks for us - let\'s see if I can surprise her with her favorite'
+      }
     },
     {
       id: 'window_seat',
       label: 'Window Seat',
       icon: Eye,
-      position: { x: 75, y: 25 },
+      position: { x: 25, y: 45 },
       thoughtPrompt: 'Suggest we take the window seat.',
-      outcome: 'Text: *You both settle into comfortable seats, watching the city go by.* Unlocks unique conversation topics.',
-      gameLogic: 'conversation_context_unlock'
+      outcome: 'You both settle into comfortable seats with a peaceful view. This unlocks deeper conversation topics.',
+      gameLogic: 'intimate_conversation_unlock',
+      requirements: undefined,
+      spatialRelationships: {
+        enhances: undefined,
+        excludes: undefined,
+        proximity: ['counter']
+      },
+      environmentalStates: {
+        weather: ['clear', 'rain', 'cloudy'],
+        timeOfDay: ['morning', 'afternoon', 'evening'],
+        storyFlags: undefined
+      },
+      memoryTriggers: {
+        firstTime: 'Suggest we take the window seat - this feels like a perfect first date spot',
+        repeated: 'Suggest we take the window seat - our favorite spot in the cafe',
+        withCharacter: 'Suggest we take the window seat - somewhere we can talk privately'
+      }
     }
   ],
 

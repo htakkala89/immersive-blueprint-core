@@ -47,6 +47,7 @@ interface GameState {
   experience?: number;
   maxExperience?: number;
   apartmentTier?: number;
+  playerId?: string;
 }
 
 interface WorldLocation {
