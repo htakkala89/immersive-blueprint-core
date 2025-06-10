@@ -1,0 +1,35 @@
+Refined Interaction Flow for Intimate Spaces
+Step 1: Simplify and Declutter the Nodes
+The apartment's main Spatial View should not have a button for every single possible activity. Instead, it should have only a few broad, contextual interaction points that lead to deeper choices.
+
+Revised Node List for the Main Apartment View:
+
+[●] Living Room Couch
+[●] Kitchen Counter
+[●] Window
+[●] Bedroom Door (This is the most important one for this context)
+Step 2: The "Bedroom Door" as a Gateway
+The Bedroom node is the gateway to the most private and intimate moments. Tapping it does not immediately trigger a specific sex scene. That would be too abrupt. Instead, it initiates the idea of moving to a more private space.
+
+User Action: The player taps the [●] Bedroom Door node.
+Thought Prompt: A prompt appears at the bottom of the screen: "Suggest it's time to head to the bedroom."
+Step 3: Unlocking Activities in the Daily Life Hub
+This is the crucial step that connects the world to our activity system.
+
+User Action: The player taps the Thought Prompt.
+The Consequence: This is a narrative trigger. It does not start a new scene directly. Instead, a subtle notification appears (New activities are now available in your Day Planner.), and the system unlocks the most intimate activity cards in the Daily Life Hub (System 4).
+Step 4: The Player Makes a Deliberate Choice
+Now that the narrative has moved to a more intimate context, the player makes their specific choice from the Hub.
+
+User Action: The player opens the Monarch's Aura → Daily Life Hub → "Intimate" tab.
+The UI: They will now see that previously locked cards are available:
+[Activity Card] Take a shower together
+[Activity Card] Give a massage
+[Activity Card] Spend the night together
+The Choice: The player now selects the specific intimate activity they want to initiate. This is a much more deliberate and meaningful choice than just clicking a "Shower" button in the main room.
+Step 5: The Scene Begins
+After selecting the activity card from the Hub, the game transitions to the appropriate Spatial View (the bedroom or bathroom), and the intimate scene begins using our unrestricted Dialogue System (System 2) and the optional Narrative Lens (System 5).
+Why This Flow is Better
+It Declutters the UI: It keeps your beautiful apartment artwork clean and immersive, free from a dozen distracting buttons.
+It Enhances Player Agency & Narrative Flow: It turns the initiation of intimacy into a more respectful, two-step process: 1) Suggesting a move to a private space, and 2) Choosing a specific activity together. This feels more natural and consensual.
+It Preserves the "Specialness" of Intimacy: It keeps the most significant activities in their own special "planner," reinforcing that they are major relationship milestones, not just another casual interaction on the same level as looking out a window.

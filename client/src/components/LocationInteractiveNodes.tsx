@@ -90,58 +90,45 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       gameLogic: 'system_5_intimate_activity',
       requirements: ['apartment_tier_1']
     },
-    // Tier 2 - Gangnam High-Rise (5 nodes) - Organized by zones
-    // Private Quarters Zone
+    // Tier 2 - Gangnam High-Rise (4 nodes) - Gateway approach
     {
-      id: 'modern_bedroom',
-      label: 'Master Bedroom',
+      id: 'living_room_couch',
+      label: 'Living Room Couch',
+      icon: Sofa,
+      position: { x: 50, y: 55 },
+      thoughtPrompt: 'Suggest relaxing together on the couch',
+      outcome: 'Creates a comfortable, intimate atmosphere. New activities become available in your Day Planner.',
+      gameLogic: 'narrative_gateway_unlock',
+      requirements: ['apartment_tier_2']
+    },
+    {
+      id: 'kitchen_counter',
+      label: 'Kitchen Counter',
+      icon: ChefHat,
+      position: { x: 75, y: 35 },
+      thoughtPrompt: 'Suggest cooking something together',
+      outcome: 'An intimate cooking moment develops. New romantic activities unlock in your Day Planner.',
+      gameLogic: 'narrative_gateway_unlock',
+      requirements: ['apartment_tier_2']
+    },
+    {
+      id: 'panoramic_window',
+      label: 'City View Window',
+      icon: Eye,
+      position: { x: 80, y: 65 },
+      thoughtPrompt: 'Admire the Seoul skyline together',
+      outcome: 'Sharing the breathtaking view creates romantic tension. Intimate options appear in Day Planner.',
+      gameLogic: 'narrative_gateway_unlock',
+      requirements: ['apartment_tier_2']
+    },
+    {
+      id: 'bedroom_door',
+      label: 'Bedroom Door',
       icon: Bed,
       position: { x: 20, y: 30 },
-      thoughtPrompt: 'Stylish bedroom romance',
-      outcome: 'Intimate moments in your upgraded bedroom',
-      gameLogic: 'system_5_intimate_activity',
-      requirements: ['apartment_tier_2']
-    },
-    {
-      id: 'luxury_shower',
-      label: 'Executive Bathroom',
-      icon: Shield,
-      position: { x: 20, y: 60 },
-      thoughtPrompt: 'Steamy shower romance',
-      outcome: 'Luxurious shower experience together',
-      gameLogic: 'system_5_intimate_activity',
-      requirements: ['apartment_tier_2']
-    },
-    // Social Zone
-    {
-      id: 'city_view_couch',
-      label: 'Panoramic Lounge',
-      icon: Sofa,
-      position: { x: 50, y: 45 },
-      thoughtPrompt: 'Intimate moments with city lights',
-      outcome: 'Romance with stunning city views',
-      gameLogic: 'system_5_intimate_activity',
-      requirements: ['apartment_tier_2']
-    },
-    {
-      id: 'designer_kitchen',
-      label: 'Gourmet Kitchen',
-      icon: ChefHat,
-      position: { x: 80, y: 30 },
-      thoughtPrompt: 'Kitchen counter passion',
-      outcome: 'Intimate encounter in your designer kitchen',
-      gameLogic: 'system_5_intimate_activity',
-      requirements: ['apartment_tier_2']
-    },
-    // Outdoor Zone
-    {
-      id: 'rooftop_access',
-      label: 'Private Terrace',
-      icon: TreePine,
-      position: { x: 80, y: 70 },
-      thoughtPrompt: 'Garden terrace intimacy',
-      outcome: 'Romance under the stars on your private rooftop',
-      gameLogic: 'system_5_intimate_activity',
+      thoughtPrompt: 'Suggest it\'s time to head to the bedroom',
+      outcome: 'The most private space beckons. Intimate activity cards unlock in your Day Planner.',
+      gameLogic: 'intimate_gateway_unlock',
       requirements: ['apartment_tier_2']
     },
     // Tier 3 - Hannam-dong Penthouse (6 nodes)
