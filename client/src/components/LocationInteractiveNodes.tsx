@@ -112,12 +112,12 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       requirements: ['apartment_tier_2']
     },
     {
-      id: 'panoramic_window',
-      label: 'City View Window',
+      id: 'apartment_window',
+      label: 'Window',
       icon: Eye,
       position: { x: 80, y: 65 },
-      thoughtPrompt: 'Admire the Seoul skyline together',
-      outcome: 'Sharing the breathtaking view creates romantic tension. Intimate options appear in Day Planner.',
+      thoughtPrompt: 'Look out at the city lights together',
+      outcome: 'Sharing the view creates romantic tension. Intimate options appear in Day Planner.',
       gameLogic: 'narrative_gateway_unlock',
       requirements: ['apartment_tier_2']
     },
@@ -131,65 +131,55 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       gameLogic: 'intimate_gateway_unlock',
       requirements: ['apartment_tier_2']
     },
-    // Tier 3 - Hannam-dong Penthouse (6 nodes)
+    // Tier 3 - Hannam-dong Penthouse (5 nodes) - Ultimate luxury gateway approach
     {
-      id: 'master_bedroom',
-      label: 'Master Suite',
+      id: 'penthouse_living_room_couch',
+      label: 'Living Room Couch',
+      icon: Sofa,
+      position: { x: 45, y: 55 },
+      thoughtPrompt: 'Suggest relaxing on the sofa together',
+      outcome: 'Initiates high-level "relaxing at home" state. Can unlock "Cuddle and watch a movie" activity in Daily Life Hub.',
+      gameLogic: 'penthouse_relaxation_unlock',
+      requirements: ['apartment_tier_3']
+    },
+    {
+      id: 'floor_to_ceiling_window',
+      label: 'Floor-to-Ceiling Window',
+      icon: Eye,
+      position: { x: 80, y: 35 },
+      thoughtPrompt: 'Admire the view from the top of the world',
+      outcome: 'Triggers cinematic observation scene. From up here, the entire city looks like a constellation at your feet.',
+      gameLogic: 'penthouse_cinematic_mode',
+      requirements: ['apartment_tier_3']
+    },
+    {
+      id: 'master_suite_door',
+      label: 'Master Suite Door',
       icon: Bed,
-      position: { x: 20, y: 25 },
-      thoughtPrompt: 'Private penthouse bedroom',
-      outcome: 'Ultimate luxury bedroom experience',
-      gameLogic: 'system_5_intimate_activity',
+      position: { x: 20, y: 30 },
+      thoughtPrompt: 'Suggest heading to the master suite',
+      outcome: 'Major narrative step signifying intent for privacy. Unlocks highest tier intimate activity cards in Day Planner.',
+      gameLogic: 'master_suite_gateway_unlock',
       requirements: ['apartment_tier_3']
     },
     {
-      id: 'infinity_pool',
-      label: 'Infinity Pool',
-      icon: Shield,
-      position: { x: 75, y: 30 },
-      thoughtPrompt: 'Romantic pool encounter',
-      outcome: 'Intimate moments in your private infinity pool',
-      gameLogic: 'system_5_intimate_activity',
-      requirements: ['apartment_tier_3']
-    },
-    {
-      id: 'wine_cellar',
+      id: 'wine_cellar_door',
       label: 'Wine Cellar',
       icon: ChefHat,
-      position: { x: 15, y: 65 },
-      thoughtPrompt: 'Intimate wine tasting',
-      outcome: 'Romance in your private wine collection',
-      gameLogic: 'system_5_intimate_activity',
+      position: { x: 20, y: 70 },
+      thoughtPrompt: 'Open the wine cellar',
+      outcome: 'You retrieve a bottle of vintage wine. Adds "Vintage Wine" item to inventory for romantic activities.',
+      gameLogic: 'wine_cellar_inventory_add',
       requirements: ['apartment_tier_3']
     },
     {
-      id: 'panoramic_balcony',
-      label: 'City View Balcony',
-      icon: Building,
-      position: { x: 85, y: 50 },
-      thoughtPrompt: 'Passionate balcony moments',
-      outcome: 'Intimate encounter high above the city',
-      gameLogic: 'system_5_intimate_activity',
-      requirements: ['apartment_tier_3']
-    },
-    {
-      id: 'luxury_bathroom',
-      label: 'Marble Bathroom',
-      icon: Shield,
-      position: { x: 45, y: 70 },
-      thoughtPrompt: 'Luxurious bath together',
-      outcome: 'Spa-like intimate experience',
-      gameLogic: 'system_5_intimate_activity',
-      requirements: ['apartment_tier_3']
-    },
-    {
-      id: 'private_elevator',
+      id: 'private_elevator_exit',
       label: 'Private Elevator',
       icon: Building,
-      position: { x: 60, y: 80 },
-      thoughtPrompt: 'Elevator intimacy',
-      outcome: 'Private moments in your exclusive elevator',
-      gameLogic: 'system_5_intimate_activity',
+      position: { x: 75, y: 70 },
+      thoughtPrompt: 'Take the private elevator down',
+      outcome: 'Thematic exit for this location. Opens World Map to travel elsewhere.',
+      gameLogic: 'penthouse_world_map_exit',
       requirements: ['apartment_tier_3']
     }
   ],
