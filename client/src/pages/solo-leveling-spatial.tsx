@@ -1449,8 +1449,8 @@ export default function SoloLevelingSpatial() {
               </motion.div>
 
               {/* Hover Interaction Hint */}
-              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
-                <div className="bg-amber-900/80 backdrop-blur-sm text-amber-200 text-xs px-2 py-1 rounded border border-amber-400/40 shadow-lg">
+              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
+                <div className="bg-purple-900/90 backdrop-blur-sm text-purple-200 text-xs px-3 py-1.5 rounded-lg border border-purple-400/30 shadow-xl">
                   Tap to interact
                 </div>
               </div>
