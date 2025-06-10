@@ -356,99 +356,92 @@ export function PlayerProgressionSystem16({
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">
           {activeTab === 'stats' && (
-            <div className="h-full p-6 overflow-hidden">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full overflow-hidden">
+            <div className="h-full p-6 overflow-y-auto character-scrollbar">
+              <div className="max-w-4xl mx-auto space-y-6">
                 {/* Player Info */}
-                <div className="space-y-6 overflow-y-auto character-scrollbar">
-                  <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-                    <h3 className="text-xl font-bold text-white mb-4">Hunter Profile</h3>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-300">Name:</span>
-                        <span className="text-white font-medium">{playerData.name}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-300">Rank:</span>
-                        <span className="text-amber-400 font-medium">{playerData.hunterRank}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-300">Level:</span>
-                        <span className="text-purple-400 font-bold text-lg">{playerData.level}</span>
-                      </div>
-                      
-                      {/* XP Bar */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-400">Experience</span>
-                          <span className="text-slate-400">{playerData.experience}/{playerData.maxExperience}</span>
-                        </div>
-                        <div className="w-full bg-slate-700 rounded-full h-3">
-                          <div 
-                            className="bg-gradient-to-r from-purple-600 to-amber-500 h-3 rounded-full transition-all duration-300"
-                            style={{ width: `${(playerData.experience / playerData.maxExperience) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Health & Mana */}
-                      <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-red-400">Health</span>
-                            <span className="text-red-400">{playerData.health}/{playerData.maxHealth}</span>
-                          </div>
-                          <div className="w-full bg-slate-700 rounded-full h-2 mt-1">
-                            <div 
-                              className="bg-red-500 h-2 rounded-full"
-                              style={{ width: `${(playerData.health / playerData.maxHealth) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-blue-400">Mana</span>
-                            <span className="text-blue-400">{playerData.mana}/{playerData.maxMana}</span>
-                          </div>
-                          <div className="w-full bg-slate-700 rounded-full h-2 mt-1">
-                            <div 
-                              className="bg-blue-500 h-2 rounded-full"
-                              style={{ width: `${(playerData.mana / playerData.maxMana) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      </div>
+                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                  <h3 className="text-xl font-bold text-white mb-4">Hunter Profile</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-300">Name:</span>
+                      <span className="text-white font-medium">{playerData.name}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-300">Rank:</span>
+                      <span className="text-amber-400 font-medium">{playerData.hunterRank}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-300">Level:</span>
+                      <span className="text-purple-400 font-bold text-lg">{playerData.level}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Experience Bar */}
+                  <div className="mb-4">
+                    <div className="flex justify-between text-sm text-slate-300 mb-1">
+                      <span>Experience</span>
+                      <span>{playerData.experience}/{playerData.maxExperience}</span>
+                    </div>
+                    <div className="w-full bg-slate-700 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-amber-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${(playerData.experience / playerData.maxExperience) * 100}%` }}
+                      />
                     </div>
                   </div>
 
-                  {/* Unspent Points Alert */}
-                  {(playerData.unspentStatPoints > 0 || playerData.unspentSkillPoints > 0) && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-gradient-to-r from-purple-600/20 to-amber-500/20 border border-purple-500/50 rounded-xl p-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Star className="w-6 h-6 text-amber-400" />
-                        <div>
-                          <h4 className="text-white font-bold">Points Available!</h4>
-                          <p className="text-slate-300 text-sm">
-                            {playerData.unspentStatPoints > 0 && `${playerData.unspentStatPoints} Stat Points`}
-                            {playerData.unspentStatPoints > 0 && playerData.unspentSkillPoints > 0 && ' • '}
-                            {playerData.unspentSkillPoints > 0 && `${playerData.unspentSkillPoints} Skill Points`}
-                          </p>
-                        </div>
+                  {/* Health and Mana */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="flex justify-between text-sm text-red-300 mb-1">
+                        <span>Health</span>
+                        <span>{playerData.health}/{playerData.maxHealth}</span>
                       </div>
-                    </motion.div>
-                  )}
+                      <div className="w-full bg-slate-700 rounded-full h-2">
+                        <div 
+                          className="bg-red-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${(playerData.health / playerData.maxHealth) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm text-blue-300 mb-1">
+                        <span>Mana</span>
+                        <span>{playerData.mana}/{playerData.maxMana}</span>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-2">
+                        <div 
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${(playerData.mana / playerData.maxMana) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
+                {/* Points Available */}
+                {(playerData.unspentStatPoints > 0 || playerData.unspentSkillPoints > 0) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-r from-purple-900/50 to-amber-900/50 rounded-xl p-4 border border-purple-500/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Star className="w-6 h-6 text-amber-400" />
+                      <div>
+                        <h4 className="text-amber-300 font-bold">Points Available!</h4>
+                        <p className="text-slate-300 text-sm">
+                          {playerData.unspentStatPoints} Stat Points • {playerData.unspentSkillPoints} Skill Points
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Core Stats */}
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 flex flex-col max-h-full overflow-hidden">
-                  <div className="p-6 pb-4">
-                    <h3 className="text-xl font-bold text-white">Core Stats</h3>
-                  </div>
-                  <div className="flex-1 px-6 pb-6 overflow-y-auto character-scrollbar">
-                    <div className="space-y-4">
+                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+                  <h3 className="text-xl font-bold text-white mb-6">Core Stats</h3>
+                  <div className="space-y-4">
                       {Object.entries(playerData.stats).map(([statKey, value]) => {
                         const IconComponent = getStatIcon(statKey as keyof CoreStats);
                         const colorClass = getStatColor(statKey as keyof CoreStats);
@@ -496,8 +489,7 @@ export function PlayerProgressionSystem16({
                             </div>
                           </div>
                         );
-                      })}
-                    </div>
+                    })}
                   </div>
                 </div>
               </div>
