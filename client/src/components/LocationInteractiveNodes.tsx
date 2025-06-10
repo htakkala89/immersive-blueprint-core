@@ -141,7 +141,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       environmentalStates: {
         weather: ['clear', 'rain', 'cloudy'],
         timeOfDay: ['morning', 'afternoon', 'evening'],
-        storyFlags: ['gate_clearance_quest_active']
+        storyFlags: undefined
       },
       memoryTriggers: {
         firstTime: 'Enter the Red Gate - This is my mission',
@@ -423,6 +423,7 @@ export function LocationInteractiveNodes({
   const [nearbyNodes, setNearbyNodes] = useState<string[]>([]);
 
   const baseNodes = LOCATION_NODES[locationId] || [];
+  console.log('Base nodes for location', locationId, ':', baseNodes.map(n => n.id));
   
   // System 3: Environmental State Management - Filter nodes based on context
   const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
@@ -543,6 +544,9 @@ export function LocationInteractiveNodes({
   };
 
   const handleNodeClick = (node: InteractiveNode) => {
+    console.log('NODE CLICK DETECTED:', node.id);
+    console.log('Node details:', node);
+    
     // Check requirements
     if (node.requirements) {
       for (const req of node.requirements) {
