@@ -78,6 +78,19 @@ export function DungeonRaidSystem11({
     timestamp: number;
   }[]>([]);
   const [screenFlash, setScreenFlash] = useState<string | null>(null);
+  
+  // Refs for accessing current state in intervals
+  const enemiesRef = useRef(enemies);
+  const playersRef = useRef(players);
+  
+  // Update refs when state changes
+  useEffect(() => {
+    enemiesRef.current = enemies;
+  }, [enemies]);
+  
+  useEffect(() => {
+    playersRef.current = players;
+  }, [players]);
   const [monarchRuneOpen, setMonarchRuneOpen] = useState(false);
   const [commandMode, setCommandMode] = useState(false);
   const [damageNumbers, setDamageNumbers] = useState<Array<{
@@ -329,30 +342,66 @@ export function DungeonRaidSystem11({
     // Clear screen flash after brief moment
     setTimeout(() => setScreenFlash(null), 150);
 
-    // Apply damage only to hostile enemies (not Shadow Soldiers)
-    setEnemies(prev => prev.map(enemy => {
-      // Skip friendly Shadow Soldiers
-      if (enemy.isAlly) return enemy;
+    // Apply damage based on skill targeting
+    setEnemies(prev => {
+      const hostileEnemies = prev.filter(enemy => !enemy.isAlly);
       
-      const newHealth = Math.max(0, enemy.health - baseDamage);
+      if (hostileEnemies.length === 0) return prev;
       
-      // Add floating damage number
-      const damageId = `damage-${Date.now()}-${Math.random()}`;
-      setDamageNumbers(prevDamage => [...prevDamage, {
-        id: damageId,
-        damage: baseDamage,
-        x: enemy.x,
-        y: enemy.y - 20,
-        timestamp: Date.now()
-      }]);
+      let targetedEnemies: Enemy[] = [];
+      
+      // Different targeting for each skill
+      switch (skill.id) {
+        case 'mutilate':
+          // Single target - closest enemy to Jin-Woo
+          const jinwoo = players.find(p => p.id === 'jinwoo');
+          if (jinwoo) {
+            const closest = hostileEnemies.reduce((closest, enemy) => {
+              const distToCurrent = Math.sqrt((enemy.x - jinwoo.x) ** 2 + (enemy.y - jinwoo.y) ** 2);
+              const distToClosest = Math.sqrt((closest.x - jinwoo.x) ** 2 + (closest.y - jinwoo.y) ** 2);
+              return distToCurrent < distToClosest ? enemy : closest;
+            });
+            targetedEnemies = [closest];
+          }
+          break;
+        case 'violent_slash':
+          // Area of Effect - hits up to 3 nearby enemies
+          targetedEnemies = hostileEnemies.slice(0, 3);
+          break;
+        case 'dominators_touch':
+          // All enemies - ultimate ability
+          targetedEnemies = hostileEnemies;
+          break;
+      }
+      
+      return prev.map(enemy => {
+        // Skip friendly Shadow Soldiers
+        if (enemy.isAlly) return enemy;
+        
+        // Check if this enemy is targeted
+        const isTargeted = targetedEnemies.some(target => target.id === enemy.id);
+        if (!isTargeted) return enemy;
+        
+        const newHealth = Math.max(0, enemy.health - baseDamage);
+        
+        // Add floating damage number
+        const damageId = `damage-${Date.now()}-${Math.random()}`;
+        setDamageNumbers(prevDamage => [...prevDamage, {
+          id: damageId,
+          damage: baseDamage,
+          x: enemy.x,
+          y: enemy.y - 20,
+          timestamp: Date.now()
+        }]);
 
-      // Remove damage number after animation
-      setTimeout(() => {
-        setDamageNumbers(prevDamage => prevDamage.filter(d => d.id !== damageId));
-      }, 1500);
+        // Remove damage number after animation
+        setTimeout(() => {
+          setDamageNumbers(prevDamage => prevDamage.filter(d => d.id !== damageId));
+        }, 1500);
 
-      return { ...enemy, health: newHealth };
-    }));
+        return { ...enemy, health: newHealth };
+      });
+    });
 
     // Consume mana
     setPlayers(prev => prev.map(player => 
@@ -542,14 +591,18 @@ export function DungeonRaidSystem11({
     console.log('💀 Starting enemy attack system');
 
     const enemyAttackInterval = setInterval(() => {
-      // Get fresh enemy and ally lists each time
-      const currentRealEnemies = enemies.filter(e => !e.isAlly && e.health > 0);
+      const currentRealEnemies = enemiesRef.current.filter(e => !e.isAlly && e.health > 0);
       const currentAllAllies = [
-        ...players,
-        ...enemies.filter(e => e.isAlly)
+        ...playersRef.current,
+        ...enemiesRef.current.filter(e => e.isAlly)
       ];
       
+      if (currentRealEnemies.length === 0 || currentAllAllies.length === 0) {
+        return;
+      }
+      
       console.log(`🔥 Enemy attack round: ${currentRealEnemies.length} enemies attacking`);
+      
       currentRealEnemies.forEach(enemy => {
         // Find nearest ally to attack
         const nearestAlly = currentAllAllies.reduce((nearest, ally) => {
@@ -596,7 +649,7 @@ export function DungeonRaidSystem11({
               ally.id === nearestAlly.id 
                 ? { ...ally, health: Math.max(0, ally.health - damage) }
                 : ally
-            ).filter(ally => !ally.isAlly || ally.health > 0)); // Remove dead shadow soldiers
+            ).filter(ally => !ally.isAlly || ally.health > 0));
           }
 
           // Show damage numbers
@@ -611,7 +664,7 @@ export function DungeonRaidSystem11({
           console.log(`${enemy.name} dealt ${damage} damage to ${nearestAlly.name || 'ally'}`);
         }
       });
-    }, 3000); // Enemies attack every 3 seconds
+    }, 3000);
 
     return () => clearInterval(enemyAttackInterval);
   }, [enemies, players]);
@@ -682,8 +735,6 @@ export function DungeonRaidSystem11({
 
   // Create refs to avoid stale closure issues
   const battlefieldTrapsRef = useRef(battlefieldTraps);
-  const playersRef = useRef(players);
-  const enemiesRef = useRef(enemies);
 
   // Update refs when state changes
   useEffect(() => {
