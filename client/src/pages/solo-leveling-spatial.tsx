@@ -491,30 +491,140 @@ export default function SoloLevelingSpatial() {
     switch (weather) {
       case 'rain':
         return (
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(50)].map((_, i) => (
+          <div className="absolute inset-0 pointer-events-none z-50" style={{ position: 'fixed' }}>
+            {/* Heavy rain drops on the "lens" */}
+            {[...Array(80)].map((_, i) => (
               <motion.div
-                key={i}
-                className="absolute w-0.5 h-8 bg-blue-300/30"
-                style={{ left: `${Math.random() * 100}%`, top: '-32px' }}
+                key={`rain-${i}`}
+                className="absolute w-0.5 h-6 bg-blue-200/40 rounded-full"
+                style={{ 
+                  left: `${Math.random() * 100}%`, 
+                  top: '-24px',
+                  filter: 'blur(0.5px)'
+                }}
                 animate={{ y: '120vh' }}
-                transition={{ duration: 1 + Math.random(), repeat: Infinity, ease: 'linear' }}
+                transition={{ 
+                  duration: 0.5 + Math.random() * 0.8, 
+                  repeat: Infinity, 
+                  ease: 'linear',
+                  delay: Math.random() * 2
+                }}
               />
             ))}
+            {/* Rain drops on window effect */}
+            {[...Array(15)].map((_, i) => (
+              <motion.div
+                key={`window-drop-${i}`}
+                className="absolute w-1 h-1 bg-blue-300/60 rounded-full"
+                style={{ 
+                  left: `${Math.random() * 100}%`, 
+                  top: `${Math.random() * 100}%`,
+                  filter: 'blur(1px)'
+                }}
+                animate={{
+                  opacity: [0.3, 0.8, 0.3],
+                  scale: [1, 1.2, 1]
+                }}
+                transition={{ 
+                  duration: 3 + Math.random() * 2, 
+                  repeat: Infinity,
+                  delay: Math.random() * 5
+                }}
+              />
+            ))}
+            {/* Mist overlay */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-b from-blue-900/5 via-transparent to-blue-900/10"
+              style={{ backdropFilter: 'blur(0.5px)' }}
+            />
           </div>
         );
       case 'snow':
         return (
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(30)].map((_, i) => (
+          <div className="absolute inset-0 pointer-events-none z-50" style={{ position: 'fixed' }}>
+            {/* Falling snowflakes */}
+            {[...Array(40)].map((_, i) => (
               <motion.div
-                key={i}
-                className="absolute w-2 h-2 bg-white/70 rounded-full"
-                style={{ left: `${Math.random() * 100}%`, top: '-8px' }}
-                animate={{ y: '110vh', x: Math.sin(i) * 20 }}
-                transition={{ duration: 3 + Math.random() * 2, repeat: Infinity, ease: 'linear' }}
+                key={`snow-${i}`}
+                className="absolute w-2 h-2 bg-white/80 rounded-full"
+                style={{ 
+                  left: `${Math.random() * 100}%`, 
+                  top: '-8px',
+                  filter: 'blur(0.5px)'
+                }}
+                animate={{ 
+                  y: '110vh', 
+                  x: Math.sin(i * 0.5) * 30,
+                  rotate: 360
+                }}
+                transition={{ 
+                  duration: 4 + Math.random() * 3, 
+                  repeat: Infinity, 
+                  ease: 'linear',
+                  delay: Math.random() * 3
+                }}
               />
             ))}
+            {/* Snow accumulation on "window" */}
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={`snow-window-${i}`}
+                className="absolute w-3 h-3 bg-white/40 rounded-full"
+                style={{ 
+                  left: `${Math.random() * 100}%`, 
+                  top: `${Math.random() * 20}%`,
+                  filter: 'blur(1px)'
+                }}
+                animate={{
+                  opacity: [0.2, 0.6, 0.2],
+                  scale: [0.8, 1.1, 0.8]
+                }}
+                transition={{ 
+                  duration: 5 + Math.random() * 3, 
+                  repeat: Infinity,
+                  delay: Math.random() * 4
+                }}
+              />
+            ))}
+            {/* Cold mist effect */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-t from-blue-100/5 via-transparent to-white/5"
+              style={{ backdropFilter: 'blur(0.3px)' }}
+            />
+          </div>
+        );
+      case 'cloudy':
+        return (
+          <div className="absolute inset-0 pointer-events-none z-50" style={{ position: 'fixed' }}>
+            {/* Blowing leaves */}
+            {[...Array(12)].map((_, i) => (
+              <motion.div
+                key={`leaf-${i}`}
+                className="absolute w-2 h-3 bg-amber-600/60 rounded-full"
+                style={{ 
+                  left: `${Math.random() * 100}%`, 
+                  top: `${Math.random() * 100}%`,
+                  clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+                }}
+                animate={{
+                  x: [0, 200, -50],
+                  y: [0, 50, 100],
+                  rotate: [0, 180, 360],
+                  opacity: [0.6, 0.3, 0.8]
+                }}
+                transition={{ 
+                  duration: 8 + Math.random() * 4, 
+                  repeat: Infinity,
+                  delay: Math.random() * 6,
+                  ease: "easeInOut"
+                }}
+              />
+            ))}
+            {/* Atmospheric haze */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-br from-gray-400/3 via-transparent to-gray-600/5"
+              style={{ backdropFilter: 'blur(0.2px)' }}
+            />
           </div>
         );
       default:
@@ -912,6 +1022,37 @@ export default function SoloLevelingSpatial() {
           </motion.div>
         )}
         
+        {/* Weather Control Panel - Temporary Testing */}
+        <div className="absolute top-4 right-4 bg-black/80 text-white p-2 rounded z-50">
+          <div className="text-xs font-semibold mb-2">Weather Effects Test</div>
+          <div className="flex gap-2 text-xs">
+            <button 
+              onClick={() => setWeather('clear')}
+              className={`px-2 py-1 rounded ${weather === 'clear' ? 'bg-blue-600' : 'bg-gray-600'}`}
+            >
+              Clear
+            </button>
+            <button 
+              onClick={() => setWeather('rain')}
+              className={`px-2 py-1 rounded ${weather === 'rain' ? 'bg-blue-600' : 'bg-gray-600'}`}
+            >
+              Rain
+            </button>
+            <button 
+              onClick={() => setWeather('snow')}
+              className={`px-2 py-1 rounded ${weather === 'snow' ? 'bg-blue-600' : 'bg-gray-600'}`}
+            >
+              Snow
+            </button>
+            <button 
+              onClick={() => setWeather('cloudy')}
+              className={`px-2 py-1 rounded ${weather === 'cloudy' ? 'bg-blue-600' : 'bg-gray-600'}`}
+            >
+              Windy
+            </button>
+          </div>
+        </div>
+
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
