@@ -356,10 +356,10 @@ export function PlayerProgressionSystem16({
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">
           {activeTab === 'stats' && (
-            <div className="h-full p-6 overflow-y-auto character-scrollbar">
-              <div className="max-w-4xl mx-auto space-y-6">
+            <div className="h-full flex flex-col p-6">
+              <div className="max-w-4xl mx-auto flex-1 flex flex-col gap-4">
                 {/* Player Info */}
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50 flex-shrink-0">
                   <h3 className="text-xl font-bold text-white mb-4">Hunter Profile</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="flex justify-between items-center">
@@ -440,17 +440,17 @@ export function PlayerProgressionSystem16({
 
                 {/* Core Stats */}
                 <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 flex flex-col min-h-0 flex-1 overflow-hidden">
-                  <div className="p-6 pb-4">
+                  <div className="p-4 pb-2">
                     <h3 className="text-xl font-bold text-white">Core Stats</h3>
                   </div>
-                  <div className="flex-1 px-6 pb-6 overflow-y-auto character-scrollbar">
-                    <div className="space-y-4">
+                  <div className="flex-1 px-4 pb-4 overflow-y-auto character-scrollbar">
+                    <div className="space-y-2">
                     {Object.entries(playerData.stats).map(([statKey, value]) => {
                       const IconComponent = getStatIcon(statKey as keyof CoreStats);
                       const colorClass = getStatColor(statKey as keyof CoreStats);
                       
                       return (
-                        <div key={statKey} className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                        <div key={statKey} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
                           <div className="flex items-center gap-3">
                             <IconComponent className={`w-5 h-5 ${colorClass}`} />
                             <div>
