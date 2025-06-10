@@ -1874,8 +1874,8 @@ export default function SoloLevelingSpatial() {
       {/* Wealth Display - Context-sensitive visibility */}
       <WealthDisplay
         currentGold={gameState.gold || 0}
-        isVisible={showUnifiedShop || showHunterMarket || playerLocation === 'luxury_realtor'}
-        context={showHunterMarket ? 'market' : showUnifiedShop ? 'vendor' : 'hidden'}
+        isVisible={showUnifiedShop || showHunterMarketVendors || playerLocation === 'luxury_realtor'}
+        context={showHunterMarketVendors ? 'market' : showUnifiedShop ? 'vendor' : 'hidden'}
       />
 
       <WorldMap
@@ -1889,9 +1889,10 @@ export default function SoloLevelingSpatial() {
       />
 
       {/* Economic System Interfaces */}
-      <HunterMarket
-        isVisible={showHunterMarket}
-        onClose={() => setShowHunterMarket(false)}
+      <HunterMarketVendors
+        isVisible={showHunterMarketVendors}
+        onClose={() => setShowHunterMarketVendors(false)}
+        backgroundImage={locations[playerLocation]?.backgroundImage}
         inventory={gameState.inventory || []}
         currentGold={gameState.gold || 0}
         onSellItem={handleSellItem}
