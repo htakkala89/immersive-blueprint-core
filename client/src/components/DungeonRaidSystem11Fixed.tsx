@@ -465,9 +465,17 @@ export function DungeonRaidSystem11({
       ...enemies.filter(e => e.isAlly)
     ];
     
-    if (realEnemies.length === 0 || allAllies.length === 0) return;
+    console.log(`👹 Enemy attack check: ${realEnemies.length} enemies, ${allAllies.length} allies`);
+    
+    if (realEnemies.length === 0 || allAllies.length === 0) {
+      console.log('⚠️ Enemy attack system inactive - no valid targets');
+      return;
+    }
+    
+    console.log('💀 Starting enemy attack system');
 
     const enemyAttackInterval = setInterval(() => {
+      console.log(`🔥 Enemy attack round: ${realEnemies.length} enemies attacking`);
       realEnemies.forEach(enemy => {
         // Find nearest ally to attack
         const nearestAlly = allAllies.reduce((nearest, ally) => {
