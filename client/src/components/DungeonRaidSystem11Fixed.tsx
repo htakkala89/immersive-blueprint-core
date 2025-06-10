@@ -112,11 +112,29 @@ export function DungeonRaidSystem11({
     {
       id: 'enemy1',
       name: 'Shadow Beast',
-      health: 80,
-      maxHealth: 80,
+      health: 120,
+      maxHealth: 120,
       x: 300,
       y: 200,
       type: 'shadow_beast'
+    },
+    {
+      id: 'enemy2',
+      name: 'Orc Warrior',
+      health: 100,
+      maxHealth: 100,
+      x: 450,
+      y: 150,
+      type: 'orc_warrior'
+    },
+    {
+      id: 'enemy3',
+      name: 'Shadow Soldier',
+      health: 90,
+      maxHealth: 90,
+      x: 250,
+      y: 320,
+      type: 'shadow_soldier'
     }
   ]);
 
@@ -722,7 +740,9 @@ export function DungeonRaidSystem11({
                       return (
                         <button
                           key={shadow.id}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             console.log(`Attempting to summon ${shadow.name}, canSummon: ${canSummon}`);
                             if (canSummon) {
                               summonShadowSoldier(shadow.id);
@@ -730,16 +750,16 @@ export function DungeonRaidSystem11({
                               console.log('Cannot summon - insufficient mana');
                             }
                           }}
-                          className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs ${
+                          className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs transition-all ${
                             canSummon 
-                              ? 'border-purple-400 bg-purple-500/30 hover:bg-purple-500/50 cursor-pointer'
+                              ? 'border-purple-400 bg-purple-500/30 hover:bg-purple-500/50 cursor-pointer hover:scale-105'
                               : 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
                           }`}
                           style={{
                             left: `calc(50% + ${x}px - 32px)`,
-                            top: `calc(50% + ${y}px - 32px)`
+                            top: `calc(50% + ${y}px - 32px)`,
+                            pointerEvents: 'auto'
                           }}
-                          disabled={!canSummon}
                         >
                           <div className="text-white font-bold">{shadow.name}</div>
                           <div className="text-blue-300">{shadow.manaCost}MP</div>
