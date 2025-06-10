@@ -343,7 +343,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'vanity_table',
       label: 'Vanity Table',
       icon: Eye,
-      position: { x: 25, y: 40 },
+      position: { x: 20, y: 25 },
       thoughtPrompt: 'Look at her personal items.',
       outcome: 'Observe Cha Hae-In\'s elegant makeup collection and personal accessories, gaining insight into her private life.',
       gameLogic: 'intimacy_insight_system_6'
@@ -352,7 +352,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bookshelf',
       label: 'Bookshelf',
       icon: Building,
-      position: { x: 70, y: 35 },
+      position: { x: 80, y: 20 },
       thoughtPrompt: 'Browse her book collection.',
       outcome: 'Discover her reading preferences - hunter manuals, poetry, and romantic novels that reveal her softer side.',
       gameLogic: 'character_depth_system_6'
@@ -361,7 +361,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bed',
       label: 'Bed',
       icon: Bed,
-      position: { x: 45, y: 65 },
+      position: { x: 50, y: 50 },
       thoughtPrompt: 'Notice the carefully made bed.',
       outcome: 'Admire her attention to detail and disciplined lifestyle. Unlocks deeper understanding of her character.',
       gameLogic: 'intimacy_progression_system_5'
@@ -370,7 +370,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'window_view',
       label: 'Window View',
       icon: Eye,
-      position: { x: 80, y: 25 },
+      position: { x: 80, y: 75 },
       thoughtPrompt: 'Look out her window.',
       outcome: 'Enjoy the view she wakes up to every morning - the Seoul skyline with hunter gates visible in distance.',
       gameLogic: 'atmospheric_immersion'
@@ -379,7 +379,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'tea_station',
       label: 'Tea Station',
       icon: Coffee,
-      position: { x: 60, y: 75 },
+      position: { x: 20, y: 80 },
       thoughtPrompt: 'Notice her tea collection.',
       outcome: 'Discover she enjoys traditional Korean teas. Option to prepare tea together for affection boost.',
       gameLogic: 'system_6_affection_activity'
@@ -583,13 +583,18 @@ export function LocationInteractiveNodes({
             whileHover={available ? { scale: 1.1 } : {}}
             whileTap={available ? { scale: 0.95 } : {}}
           >
-            {/* Node Orb */}
+            {/* Node Orb with improved spacing */}
             <motion.div
-              className={`w-4 h-4 rounded-full flex items-center justify-center ${
+              className={`w-6 h-6 rounded-full flex items-center justify-center ${
                 available 
                   ? 'bg-purple-500 border-2 border-purple-300' 
                   : 'bg-gray-600 border-2 border-gray-400'
               }`}
+              style={{
+                minWidth: '24px',
+                minHeight: '24px',
+                margin: '8px' // 8px base spacing around each node
+              }}
               animate={available ? {
                 boxShadow: [
                   '0 0 5px rgba(147, 51, 234, 0.6)',
@@ -599,12 +604,12 @@ export function LocationInteractiveNodes({
               } : {}}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <IconComponent className="w-2 h-2 text-white" />
+              <IconComponent className="w-3 h-3 text-white" />
             </motion.div>
 
-            {/* Node Label */}
-            <div className="absolute top-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-              <div className={`backdrop-blur-sm px-2 py-1 rounded text-xs border ${
+            {/* Node Label with proper spacing */}
+            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+              <div className={`backdrop-blur-sm px-3 py-1.5 rounded-md text-sm border ${
                 available 
                   ? 'bg-black/80 border-purple-400/50 text-purple-200'
                   : 'bg-black/60 border-gray-500/50 text-gray-400'
