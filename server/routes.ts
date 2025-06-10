@@ -288,6 +288,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate location scene images for WorldMap
+  app.post("/api/generate-scene-image", async (req, res) => {
+    try {
+      const { location, timeOfDay } = req.body;
+      
+      if (!location || !timeOfDay) {
+        return res.status(400).json({ error: "Missing required parameters: location, timeOfDay" });
+      }
+
+      console.log(`🏙️ Generating location scene: ${location} during ${timeOfDay}`);
+      
+      const imageUrl = await generateLocationSceneImage(location, timeOfDay);
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: "Failed to generate location scene image" });
+      }
+    } catch (error) {
+      console.error(`Failed to generate location scene: ${error}`);
+      res.status(500).json({ error: "Failed to generate location scene image" });
+    }
+  });
+
   // Generate emotional scene images of Cha Hae-In for location cards
   app.get("/api/chat-scene-image", async (req, res) => {
     try {

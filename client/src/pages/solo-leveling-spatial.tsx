@@ -16,7 +16,7 @@ import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellation } from '@/components/RelationshipConstellation';
 import { DungeonRaid } from '@/components/DungeonRaid';
 import { MonarchArmory } from '@/components/MonarchArmory';
-import { WorldMap } from '@/components/WorldMap';
+import WorldMap from '@/components/WorldMap';
 
 interface GameState {
   level: number;
@@ -318,7 +318,7 @@ export default function SoloLevelingSpatial() {
       name: 'Gangnam Business Tower',
       description: 'High-end corporate district with view of Seoul',
       backgroundImage: '/api/scenes/gangnam_tower.jpg',
-      chaHaeInPresent: chaHaeInCurrentLocation === 'gangnam_tower',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_association',
       chaActivity: 'attending a hunter briefing meeting',
       chaPosition: { x: 50, y: 35 },
       chaExpression: 'focused' as const,
@@ -350,7 +350,7 @@ export default function SoloLevelingSpatial() {
       name: 'Underground Music Venue',
       description: 'Popular nightclub where hunters sometimes unwind',
       backgroundImage: '/api/scenes/hongdae_club.jpg',
-      chaHaeInPresent: chaHaeInCurrentLocation === 'hongdae_club',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hongdae_cafe',
       chaActivity: 'reluctantly chaperoning younger hunters',
       chaPosition: { x: 65, y: 45 },
       chaExpression: 'shy' as const,
@@ -381,7 +381,7 @@ export default function SoloLevelingSpatial() {
       name: 'Myeongdong Shopping District',
       description: 'Bustling shopping area with luxury brands and street food',
       backgroundImage: '/api/scenes/myeongdong_shopping.jpg',
-      chaHaeInPresent: chaHaeInCurrentLocation === 'myeongdong_shopping',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'myeongdong_restaurant',
       chaActivity: 'window shopping for hunter gear accessories',
       chaPosition: { x: 40, y: 45 },
       chaExpression: 'neutral' as const,
@@ -397,7 +397,7 @@ export default function SoloLevelingSpatial() {
       name: 'International Hunter Market',
       description: 'Diverse marketplace with global hunter supplies',
       backgroundImage: '/api/scenes/itaewon_market.jpg',
-      chaHaeInPresent: chaHaeInCurrentLocation === 'itaewon_market',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'myeongdong_restaurant',
       chaActivity: 'researching international hunter techniques',
       chaPosition: { x: 50, y: 40 },
       chaExpression: 'focused' as const,
@@ -413,7 +413,7 @@ export default function SoloLevelingSpatial() {
       name: 'Elite Hunter Training Center',
       description: 'State-of-the-art combat training facility in Dongdaemun',
       backgroundImage: '/api/scenes/training_facility.jpg',
-      chaHaeInPresent: chaHaeInCurrentLocation === 'training_facility',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_association',
       chaActivity: 'practicing advanced sword techniques',
       chaPosition: { x: 50, y: 45 },
       chaExpression: 'focused' as const,
