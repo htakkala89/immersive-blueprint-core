@@ -275,7 +275,11 @@ export default function SoloLevelingSpatial() {
   const [showEnergyModal, setShowEnergyModal] = useState(false);
   const [showWorldMap, setShowWorldMap] = useState(false);
   const [playerLocation, setPlayerLocation] = useState('hunter_association');
-  const [gameTime, setGameTime] = useState(new Date());
+  const [gameTime, setGameTime] = useState(() => {
+    const now = new Date();
+    now.setHours(14, 0, 0, 0); // Set to 2 PM (afternoon)
+    return now;
+  });
   const [showConstellation, setShowConstellation] = useState(false);
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
   const [showArmory, setShowArmory] = useState(false);
@@ -1843,6 +1847,17 @@ export default function SoloLevelingSpatial() {
           }));
         }}
       />
+
+      {/* Debug Time Panel */}
+      <div className="fixed top-4 left-4 bg-black/80 text-white p-3 rounded-lg text-xs z-50">
+        <div>Game Time: {gameTime.toLocaleTimeString()}</div>
+        <div>Calculated Time: {getCurrentTimeOfDay()}</div>
+        <div>State Time: {timeOfDay}</div>
+        <div>Cha Location: {chaHaeInCurrentLocation || 'None'}</div>
+        <div>Player Location: {playerLocation}</div>
+        <div>Should Show: {(chaHaeInCurrentLocation === playerLocation) ? 'YES' : 'NO'}</div>
+        <div>Affection: {gameState.affection}</div>
+      </div>
 
       {/* Wealth Display - Context-sensitive visibility */}
       <WealthDisplay
