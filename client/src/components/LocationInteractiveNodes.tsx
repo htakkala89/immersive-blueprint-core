@@ -277,23 +277,49 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
   // Personal Spaces - Cha Hae-In's Apartment
   chahaein_apartment: [
     {
+      id: 'vanity_table',
+      label: 'Vanity Table',
+      icon: Eye,
+      position: { x: 25, y: 40 },
+      thoughtPrompt: 'Look at her personal items.',
+      outcome: 'Observe Cha Hae-In\'s elegant makeup collection and personal accessories, gaining insight into her private life.',
+      gameLogic: 'intimacy_insight_system_6'
+    },
+    {
+      id: 'bookshelf',
+      label: 'Bookshelf',
+      icon: Building,
+      position: { x: 70, y: 35 },
+      thoughtPrompt: 'Browse her book collection.',
+      outcome: 'Discover her reading preferences - hunter manuals, poetry, and romantic novels that reveal her softer side.',
+      gameLogic: 'character_depth_system_6'
+    },
+    {
       id: 'bed',
       label: 'Bed',
       icon: Bed,
-      position: { x: 40, y: 60 },
-      thoughtPrompt: 'Rest for a while.',
-      outcome: 'Triggers restore energy function. Time advances, energy refilled, location lighting updates.',
-      gameLogic: 'energy_restore_time_advance'
+      position: { x: 45, y: 65 },
+      thoughtPrompt: 'Notice the carefully made bed.',
+      outcome: 'Admire her attention to detail and disciplined lifestyle. Unlocks deeper understanding of her character.',
+      gameLogic: 'intimacy_progression_system_5'
     },
     {
-      id: 'balcony',
-      label: 'Balcony',
-      icon: Building,
-      position: { x: 75, y: 30 },
-      thoughtPrompt: 'Step out onto the balcony.',
-      outcome: 'Transitions to unique Balcony Spatial View with own nodes and different conversation topics.',
-      gameLogic: 'spatial_view_transition',
-      requirements: ['apartment_tier_2']
+      id: 'window_view',
+      label: 'Window View',
+      icon: Eye,
+      position: { x: 80, y: 25 },
+      thoughtPrompt: 'Look out her window.',
+      outcome: 'Enjoy the view she wakes up to every morning - the Seoul skyline with hunter gates visible in distance.',
+      gameLogic: 'atmospheric_immersion'
+    },
+    {
+      id: 'tea_station',
+      label: 'Tea Station',
+      icon: Coffee,
+      position: { x: 60, y: 75 },
+      thoughtPrompt: 'Notice her tea collection.',
+      outcome: 'Discover she enjoys traditional Korean teas. Option to prepare tea together for affection boost.',
+      gameLogic: 'system_6_affection_activity'
     }
   ]
 };

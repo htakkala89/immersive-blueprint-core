@@ -27,6 +27,7 @@ import QuestBoard from '@/components/QuestBoard';
 import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
+import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
 
 interface GameState {
   level: number;
@@ -1456,62 +1457,91 @@ export default function SoloLevelingSpatial() {
           </motion.div>
         )}
         
-        {/* Interactive Elements Layer */}
-        {currentLocationData.interactiveElements
-          .filter((element: any) => element.id !== 'cha_desk') // Filter out Cha's desk since she has her own tile
-          .map((element: any) => (
-          <motion.div
-            key={element.id}
-            className="absolute group z-10"
-            style={{
-              left: `${element.position.x}%`,
-              top: `${element.position.y}%`,
-              transform: 'translate(-50%, -50%)'
-            }}
-            animate={{ opacity: isFocusMode ? 0 : 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <motion.button
-              className="w-6 h-6 bg-purple-500/70 rounded-full border border-purple-300/60 backdrop-blur-sm relative shadow-md shadow-purple-500/30"
-              whileHover={{ scale: 1.3 }}
-              whileTap={{ scale: 0.8 }}
-              onClick={() => {
-                console.log('Clicked element:', element.id);
-                handleEnvironmentalInteraction({
-                  id: element.id,
-                  action: element.action,
-                  name: element.name,
-                  x: element.position.x,
-                  y: element.position.y
-                });
-              }}
-            >
-              {/* Subtle pulsing glow effect */}
-              <motion.div
-                className="absolute inset-0 rounded-full bg-purple-400/25"
-                animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.1, 0.4] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-              
-              {/* Inner dot */}
-              <div className="absolute inset-1.5 rounded-full bg-purple-100/80 shadow-inner" />
-            </motion.button>
+        {/* Enhanced Interactive Nodes System */}
+        <LocationInteractiveNodes
+          locationId={playerLocation}
+          onNodeInteraction={(nodeId, thoughtPrompt, outcome) => {
+            console.log('Node interaction:', { nodeId, thoughtPrompt, outcome });
             
-            {/* Enhanced Tooltip */}
-            <motion.div
-              className="absolute -top-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30"
-              initial={{ y: 5 }}
-              whileHover={{ y: 0 }}
-            >
-              <div className="bg-black/95 backdrop-blur-md text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap border border-purple-400/30 shadow-xl">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
-                  <span>{element.name}</span>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        ))}
+            // Handle different node types with specific logic
+            switch (nodeId) {
+              case 'jewelry_counter':
+              case 'designer_apparel':
+              case 'luxury_confections':
+                setActiveView('luxury_department_store');
+                break;
+              case 'living_room_collection':
+              case 'bedroom_collection':
+                setActiveView('gangnam_furnishings');
+                break;
+              case 'reception_desk':
+              case 'architectural_models':
+                setActiveView('luxury_realtor');
+                break;
+              case 'counter':
+              case 'window_seat':
+              case 'park_bench':
+              case 'food_vendor_cart':
+              case 'view_menu':
+              case 'speak_sommelier':
+              case 'observation_deck':
+              case 'wall_of_locks':
+                // Trigger environmental interaction with thought prompt
+                handleEnvironmentalInteraction({
+                  id: nodeId,
+                  action: thoughtPrompt,
+                  name: nodeId.replace(/_/g, ' '),
+                  x: 50,
+                  y: 50
+                });
+                break;
+              case 'mission_board':
+              case 'receptionist':
+              case 'sparring_ring':
+              case 'combat_analytics':
+                // Hunter Association interactions
+                handleEnvironmentalInteraction({
+                  id: nodeId,
+                  action: thoughtPrompt,
+                  name: nodeId.replace(/_/g, ' '),
+                  x: 50,
+                  y: 50
+                });
+                break;
+              case 'vanity_table':
+              case 'bookshelf':
+              case 'bed':
+              case 'window_view':
+              case 'tea_station':
+                // Intimate apartment interactions - enhance affection
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(100, prev.affection + 2)
+                }));
+                handleEnvironmentalInteraction({
+                  id: nodeId,
+                  action: thoughtPrompt,
+                  name: nodeId.replace(/_/g, ' '),
+                  x: 50,
+                  y: 50
+                });
+                break;
+              default:
+                handleEnvironmentalInteraction({
+                  id: nodeId,
+                  action: thoughtPrompt,
+                  name: nodeId.replace(/_/g, ' '),
+                  x: 50,
+                  y: 50
+                });
+            }
+          }}
+          playerStats={{
+            affection: gameState.affection,
+            gold: gameState.gold || 0,
+            apartmentTier: gameState.apartmentTier || 1
+          }}
+        />
         
 
 
