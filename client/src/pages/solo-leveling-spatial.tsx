@@ -2411,7 +2411,7 @@ export default function SoloLevelingSpatial() {
                backdropFilter: 'blur(40px) saturate(180%)', 
                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
              }}>
-          <div className="text-white text-sm mb-2 font-medium text-center opacity-80">Systems</div>
+          <div className="text-white text-sm mb-2 font-medium text-center opacity-80">Monarch's Aura</div>
           {[
             { icon: Package, label: 'Inventory', color: 'text-purple-300', onClick: () => { setShowInventory(true); setMonarchAuraVisible(false); } },
             { icon: Crown, label: 'Armory', color: 'text-amber-300', onClick: () => { setShowMonarchArmory(true); setMonarchAuraVisible(false); } },
