@@ -740,13 +740,18 @@ export default function SoloLevelingSpatial() {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Hover Label Only */}
+              {/* Context Card - Always Visible */}
               <motion.div
-                className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/90 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity pointer-events-none"
-                initial={{ y: 5 }}
-                whileHover={{ y: 0 }}
+                className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-blue-400/30 shadow-xl min-w-max"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
               >
-                Cha Hae-In
+                <div className="text-center">
+                  <div className="font-medium text-blue-300">Cha Hae-In</div>
+                  <div className="text-gray-300 text-xs mt-1">{currentLocationData.chaActivity}</div>
+                  <div className="text-blue-200 text-xs mt-1 font-medium">Tap to interact</div>
+                </div>
               </motion.div>
             </div>
           </motion.div>
