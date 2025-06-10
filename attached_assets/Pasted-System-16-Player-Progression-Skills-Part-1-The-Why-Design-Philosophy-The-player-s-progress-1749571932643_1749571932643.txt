@@ -1,0 +1,54 @@
+System 16: Player Progression & Skills
+
+Part 1: The "Why" - Design Philosophy
+
+The player's progression must mirror Sung Jin-Woo's iconic journey: a dramatic, exponential ascent from the "Weakest Hunter of All Mankind" to an unstoppable Monarch. The system is designed to feel empowering, with clear, satisfying power spikes upon leveling up and unlocking new, game-changing skills. Player choice in how they build their character is paramount.
+
+Part 2: The "What" - The Core Components
+
+A. The Core Stats
+
+These are the five fundamental attributes that define the player's combat prowess.
+
+Strength (STR): Directly increases the damage of all physical attacks and some physical skills.
+Agility (AGI): Increases attack speed, critical hit chance, and evasion rate.
+Vitality (VIT): Increases maximum Health (HP) and physical/magical defense.
+Intelligence (INT): Increases maximum Mana (MP) and the damage of all magical skills.
+Sense (SNS): A unique stat that increases the chance to detect hidden dungeon passages, find weak points on bosses (increasing critical damage against them), and perceive telegraphed attacks more easily (providing a larger dodge window).
+B. Experience (XP) and Levels
+
+Earning XP: The primary way to level up. XP is rewarded for:
+Defeating enemies in Dungeon Raids (System 11).
+Completing missions from the Quest Log (System 3).
+Leveling Up: When the player's XP bar fills, they level up. This is a significant event, accompanied by a bright flash of purple light on their character, a powerful sound effect, and a full restoration of their Health and Mana.
+C. The Level-Up Rewards
+
+Upon leveling up, the player is granted points to manually improve their character, giving them full agency over their build.
+
+Stat Points: The player receives 5 Stat Points per level to allocate among the five Core Stats as they see fit.
+Skill Points: The player receives 1 Skill Point per level, which is used to unlock and upgrade skills in the Skill System.
+Part 3: The "How" - The Systems in Detail
+
+A. The Skill System: "The Monarch's Constellation"
+
+We will not use a simple list for skills. To match our aesthetic, the skill system is a visual, interactive Skill Constellation.
+
+Visuals: Accessed via a "Skills" tab in the Character screen, it displays a beautiful star map. Each star or nexus of runes is a skill. Lines of light connect skills, showing the progression path.
+Unlocking Skills: The player spends their Skill Points to unlock new nodes on the constellation. Some powerful skills may have prerequisites (e.g., "Requires Level 30," "Requires 5 points in Mutilate").
+Skill Types:
+Active Skills: Abilities that are placed on the Action Bar (System 11) for use in combat (e.g., Mutilate, Dominator's Touch).
+Passive Skills: "Always-on" bonuses that enhance the character (e.g., +10% Critical Damage, Increased Mana Regeneration).
+Upgrading Skills: Each active skill can be upgraded multiple times (e.g., Level 1-5) by spending additional Skill Points, which might increase its damage, reduce its cooldown, or add a secondary effect.
+B. The UI/UX: The "Character Command" Screen
+
+This is the interface the player sees when they select the 'Character' rune from the Monarch's Aura (System 3). It's a multi-paned view using our liquid glassmorphism style.
+
+The Stats Pane:
+Displays the player's name, Hunter Rank, and current Level and XP bar.
+Lists the five Core Stats (STR, AGI, VIT, INT, SNS) with their current values.
+If the player has unspent Stat Points, a prominent [+] button appears next to each stat, allowing them to allocate points directly. A notification, "You have [X] Stat Points to spend!", will be clearly visible.
+The Skills Pane:
+This pane displays the interactive Skill Constellation. The player can pan and zoom.
+Node States: Unlocked skills glow brightly. Affordable skills (you have enough points) pulse gently. Unaffordable skills are dim.
+Interaction: Tapping a node brings up a detailed tooltip with a description of the skill, a video preview of its animation, its upgrade path, and a clear [Unlock] or [Upgrade] button that shows the Skill Point cost.
+This complete progression system provides a deep and rewarding RPG experience, giving players a clear path to power that is fueled by their success in the game's core activities.

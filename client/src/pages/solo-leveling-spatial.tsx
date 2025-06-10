@@ -18,6 +18,7 @@ import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11';
+import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import WorldMap from '@/components/WorldMap';
 import WealthDisplay from '@/components/WealthDisplay';
@@ -30,6 +31,14 @@ import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
 import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSystem9';
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
+
+interface CoreStats {
+  strength: number;
+  agility: number;
+  vitality: number;
+  intelligence: number;
+  sense: number;
+}
 
 interface GameState {
   level: number;
@@ -57,6 +66,11 @@ interface GameState {
     tutorialCompleted?: boolean;
     firstMissionActive?: boolean;
   };
+  // System 16: Player Progression
+  hunterRank?: string;
+  stats?: CoreStats;
+  unspentStatPoints?: number;
+  unspentSkillPoints?: number;
 }
 
 interface WorldLocation {
@@ -176,7 +190,18 @@ export default function SoloLevelingSpatial() {
         priority: 'high'
       }
     ],
-    completedQuests: []
+    completedQuests: [],
+    // System 16: Player Progression
+    hunterRank: 'E-Rank',
+    stats: {
+      strength: 25,
+      agility: 20,
+      vitality: 18,
+      intelligence: 15,
+      sense: 12
+    },
+    unspentStatPoints: 5,
+    unspentSkillPoints: 3
   });
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('afternoon');
