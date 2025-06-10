@@ -516,7 +516,7 @@ export default function SoloLevelingSpatial() {
       interactiveElements: [
         { id: 'materials_trader', name: 'Materials Trader', position: { x: 25, y: 50 }, action: 'Trade rare materials and monster drops' },
         { id: 'equipment_smith', name: 'Equipment Smith', position: { x: 70, y: 40 }, action: 'Browse weapons and armor upgrades' },
-        { id: 'alchemist_vendor', name: 'Alchemist', position: { x: 60, y: 65 }, action: 'Purchase potions and enhancement items' }
+        { id: 'alchemist', name: 'Alchemist', position: { x: 60, y: 65 }, action: 'Purchase potions and enhancement items' }
       ]
     },
 
@@ -879,7 +879,7 @@ export default function SoloLevelingSpatial() {
     if (playerLocation === 'hunter_market') {
       if (interactionPoint.id === 'materials_trader' || 
           interactionPoint.id === 'equipment_smith' || 
-          interactionPoint.id === 'alchemist_vendor') {
+          interactionPoint.id === 'alchemist') {
         setSelectedVendor(interactionPoint.id);
         setShowHunterMarketVendors(true);
         return;
