@@ -69,7 +69,17 @@ app.use((req, res, next) => {
     port,
     host: "0.0.0.0",
     reusePort: true,
-  }, () => {
+  }, async () => {
     log(`serving on port ${port}`);
+    
+    // Start image preloading after server is ready
+    const { preloadLocationImages, getCacheStats } = await import("./imagePreloader");
+    
+    setTimeout(async () => {
+      console.log('🚀 Initializing location image preloading...');
+      await preloadLocationImages();
+      const stats = getCacheStats();
+      console.log(`📊 Cache Status: ${stats.cached}/${stats.total} images (${stats.percentage}%)`);
+    }, 3000); // Delay to allow all services to initialize
   });
 })();

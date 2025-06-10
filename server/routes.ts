@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage } from "./imageGenerator";
+import { getCachedLocationImage, cacheLocationImage, preloadLocationImages, getCacheStats } from "./imagePreloader";
 import { getSceneImage } from "./preGeneratedImages";
 import { voiceService } from "./voiceService";
 import { log } from "./vite";
@@ -297,11 +298,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Missing required parameters: location, timeOfDay" });
       }
 
+      // Check cache first for instant response
+      const cachedImage = getCachedLocationImage(location, timeOfDay);
+      if (cachedImage) {
+        console.log(`📸 Using cached image for location: ${location} at ${timeOfDay}`);
+        return res.json({ imageUrl: cachedImage });
+      }
+
       console.log(`🏙️ Generating location scene: ${location} during ${timeOfDay}`);
       
       const imageUrl = await generateLocationSceneImage(location, timeOfDay);
       
       if (imageUrl) {
+        // Cache the newly generated image
+        cacheLocationImage(location, timeOfDay, imageUrl);
         res.json({ imageUrl });
       } else {
         res.status(500).json({ error: "Failed to generate location scene image" });
@@ -310,6 +320,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error(`Failed to generate location scene: ${error}`);
       res.status(500).json({ error: "Failed to generate location scene image" });
     }
+  });
+
+  // Cache status endpoint for monitoring preload progress
+  app.get("/api/cache-status", (req, res) => {
+    const stats = getCacheStats();
+    res.json({
+      ...stats,
+      isComplete: stats.percentage === 100
+    });
   });
 
   // Generate emotional scene images of Cha Hae-In for location cards

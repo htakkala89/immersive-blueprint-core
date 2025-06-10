@@ -7,8 +7,20 @@ import { Button } from '@/components/ui/button';
 const LocationSceneImage = ({ locationId, timeOfDay }: { locationId: string; timeOfDay: string }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cacheStatus, setCacheStatus] = useState<{ cached: number; total: number; percentage: number } | null>(null);
 
   useEffect(() => {
+    // Check cache status first
+    const checkCacheStatus = async () => {
+      try {
+        const response = await fetch('/api/cache-status');
+        const status = await response.json();
+        setCacheStatus(status);
+      } catch (error) {
+        console.log('Failed to check cache status');
+      }
+    };
+
     const fetchLocationImage = async () => {
       try {
         const response = await fetch('/api/generate-scene-image', {
@@ -31,19 +43,28 @@ const LocationSceneImage = ({ locationId, timeOfDay }: { locationId: string; tim
       }
     };
 
+    checkCacheStatus();
     fetchLocationImage();
   }, [locationId, timeOfDay]);
 
   if (loading) {
     return (
-      <div className="w-full h-48 rounded-2xl mb-6 bg-gradient-to-br from-purple-600/20 via-blue-600/15 to-purple-800/20 flex items-center justify-center">
+      <div className="w-full h-48 rounded-2xl mb-6 bg-gradient-to-br from-purple-600/20 via-blue-600/15 to-purple-800/20 flex flex-col items-center justify-center">
         <motion.div
           animate={{ scale: [1, 1.1, 1], opacity: [0.6, 0.8, 0.6] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="text-4xl"
+          className="text-4xl mb-3"
         >
           🏢
         </motion.div>
+        {cacheStatus && (
+          <div className="text-xs text-purple-300 text-center">
+            <div className="mb-1">Loading scene...</div>
+            <div className="text-purple-400">
+              Cache: {cacheStatus.cached}/{cacheStatus.total} ({cacheStatus.percentage}%)
+            </div>
+          </div>
+        )}
       </div>
     );
   }
