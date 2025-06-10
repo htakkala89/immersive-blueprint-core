@@ -330,6 +330,11 @@ export function DungeonRaidSystem11({
       }
     }
     
+    // Check for boss struggle trigger
+    if (enemy.type === 'boss' && enemy.health <= enemy.maxHealth * 0.3 && Math.random() < 0.4) {
+      triggerBossStruggle();
+    }
+    
     // Check for victory
     if (enemies.every(e => e.health <= 0)) {
       setTimeout(() => setGamePhase('victory'), 1000);
@@ -412,6 +417,38 @@ export function DungeonRaidSystem11({
     });
     
     addToCombatLog("Boss struggle! Rapidly tap to break free!");
+    
+    // Start boss struggle timer with progress decay
+    const timer = setInterval(() => {
+      setBossStruggle(prev => {
+        if (!prev) return null;
+        
+        const newTimeLeft = prev.timeLeft - 100;
+        // Progress decays over time to increase urgency
+        const decayedProgress = Math.max(0, prev.progress - 1);
+        
+        if (newTimeLeft <= 0) {
+          // Failed to break free
+          addToCombatLog("Failed to break free! Taking massive damage!");
+          setPlayers(p => p.map(player => 
+            player.id === 'jinwoo' ? { ...player, health: Math.max(0, player.health - 50) } : player
+          ));
+          triggerCameraShake();
+          clearInterval(timer);
+          return null;
+        }
+        
+        if (prev.progress >= 100) {
+          // Successfully broke free
+          addToCombatLog("Successfully broke free from boss grip!");
+          setSynergyGauge(prev => Math.min(100, prev + 15));
+          clearInterval(timer);
+          return null;
+        }
+        
+        return { ...prev, timeLeft: newTimeLeft, progress: decayedProgress };
+      });
+    }, 100);
   };
 
   const handleStruggleTap = () => {
@@ -443,6 +480,43 @@ export function DungeonRaidSystem11({
       oscillator.stop(audioContext.currentTime + 0.3);
     } catch (error) {
       console.log('Audio not available');
+    }
+  };
+
+  // Initialize puzzle runes for dungeon puzzles
+  const initializePuzzleRunes = () => {
+    const runePositions = [
+      { x: 100, y: 150 },
+      { x: 200, y: 120 },
+      { x: 300, y: 180 },
+      { x: 150, y: 250 },
+      { x: 250, y: 220 }
+    ];
+    
+    const correctSequence = [0, 2, 1, 4, 3]; // Randomized correct order
+    
+    setPuzzleRunes(runePositions.map((pos, index) => ({
+      id: `rune_${index}`,
+      position: pos,
+      isCorrect: correctSequence.indexOf(index) !== -1,
+      isActivated: false
+    })));
+  };
+
+  const handleRuneTouch = (runeId: string) => {
+    setPuzzleRunes(prev => prev.map(rune => 
+      rune.id === runeId ? { ...rune, isActivated: !rune.isActivated } : rune
+    ));
+    
+    // Check if puzzle is solved
+    const activatedRunes = puzzleRunes.filter(r => r.isActivated);
+    const correctRunes = puzzleRunes.filter(r => r.isCorrect);
+    
+    if (activatedRunes.length === correctRunes.length && 
+        activatedRunes.every(r => r.isCorrect)) {
+      addToCombatLog("Puzzle solved! Ancient magic flows through you!");
+      setSynergyGauge(prev => Math.min(100, prev + 25));
+      setPuzzleRunes([]);
     }
   };
 
@@ -1012,6 +1086,31 @@ export function DungeonRaidSystem11({
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Puzzle Runes System */}
+            <AnimatePresence>
+              {puzzleRunes.map(rune => (
+                <motion.div
+                  key={rune.id}
+                  className={`absolute w-8 h-8 rounded-full border-2 flex items-center justify-center cursor-pointer ${
+                    rune.isActivated ? 'bg-blue-500 border-blue-300 shadow-lg shadow-blue-500/50' : 'bg-gray-700 border-gray-500'
+                  }`}
+                  style={{ left: rune.position.x, top: rune.position.y }}
+                  initial={{ scale: 0, rotate: 0 }}
+                  animate={{ 
+                    scale: 1, 
+                    rotate: rune.isActivated ? 360 : 0,
+                    boxShadow: rune.isActivated ? "0px 0px 20px rgba(59, 130, 246, 0.8)" : "none"
+                  }}
+                  exit={{ scale: 0 }}
+                  whileTap={{ scale: 0.8 }}
+                  onTap={() => handleRuneTouch(rune.id)}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="text-white text-xs">⚡</span>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </motion.div>
 
           {/* System 11 Touch-Based Action Bar - 4 Slots */}
@@ -1066,12 +1165,14 @@ export function DungeonRaidSystem11({
                     className={`relative w-16 h-16 rounded-xl border-2 flex items-center justify-center ${
                       isOnCooldown ? 'border-gray-600 bg-gray-800/50' : 
                       notEnoughMana ? 'border-red-500 bg-red-900/30' :
+                      trapAlert?.active && trapAlert.skillRequired === skill.id ? 'border-yellow-400 bg-yellow-500/40 animate-pulse shadow-lg shadow-yellow-500/60' :
                       'border-purple-400 bg-purple-600/20'
                     }`}
                     style={{
                       backdropFilter: 'blur(20px) saturate(180%)',
                       background: isOnCooldown ? 'rgba(75, 85, 99, 0.3)' :
                                  notEnoughMana ? 'rgba(153, 27, 27, 0.3)' :
+                                 trapAlert?.active && trapAlert.skillRequired === skill.id ? 'rgba(234, 179, 8, 0.5)' :
                                  skill.isCharging ? 'rgba(147, 51, 234, 0.6)' :
                                  'rgba(147, 51, 234, 0.3)'
                     }}
