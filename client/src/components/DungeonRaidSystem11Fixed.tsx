@@ -107,9 +107,19 @@ export function DungeonRaidSystem11({
   const [playerInventory, setPlayerInventory] = useState([
     { id: 'health_potion', name: 'Health Potion', icon: '🧪', quantity: 5, healAmount: 200 },
     { id: 'mana_potion', name: 'Mana Potion', icon: '💙', quantity: 3, manaAmount: 150 },
-    { id: 'energy_drink', name: 'Energy Drink', icon: '⚡', quantity: 2, healAmount: 100 }
+    { id: 'energy_drink', name: 'Energy Drink', icon: '⚡', quantity: 2, healAmount: 100 },
+    { id: 'revival_stone', name: 'Revival Stone', icon: '💎', quantity: 2, isRevivalItem: true }
   ]);
   const [showInventory, setShowInventory] = useState(false);
+  const [deathState, setDeathState] = useState<{
+    isPlayerDead: boolean;
+    deadPlayer: string | null;
+    revivalTimer: number;
+  }>({
+    isPlayerDead: false,
+    deadPlayer: null,
+    revivalTimer: 0
+  });
   
   const battlefieldRef = useRef<HTMLDivElement>(null);
 
@@ -216,6 +226,59 @@ export function DungeonRaidSystem11({
     return baseEnemies;
   };
 
+  // Death detection system
+  useEffect(() => {
+    if (gamePhase === 'combat') {
+      const deadPlayers = players.filter(p => p.health <= 0);
+      
+      if (deadPlayers.length > 0 && !deathState.isPlayerDead) {
+        const deadPlayer = deadPlayers[0];
+        console.log(`💀 ${deadPlayer.name} has fallen in combat!`);
+        
+        setDeathState({
+          isPlayerDead: true,
+          deadPlayer: deadPlayer.name,
+          revivalTimer: 10 // 10 second revival timer
+        });
+        
+        // Start revival countdown
+        const revivalInterval = setInterval(() => {
+          setDeathState(prev => {
+            if (prev.revivalTimer <= 1) {
+              clearInterval(revivalInterval);
+              
+              // Auto-revive with 50% health
+              setPlayers(prevPlayers => prevPlayers.map(player => 
+                player.health <= 0 
+                  ? { ...player, health: Math.floor(player.maxHealth * 0.5) }
+                  : player
+              ));
+              
+              console.log(`✨ ${deadPlayer.name} has been revived with 50% health!`);
+              
+              return {
+                isPlayerDead: false,
+                deadPlayer: null,
+                revivalTimer: 0
+              };
+            }
+            return { ...prev, revivalTimer: prev.revivalTimer - 1 };
+          });
+        }, 1000);
+      }
+      
+      // Check for total party wipe
+      const allPlayersDead = players.every(p => p.health <= 0) && players.length > 0;
+      if (allPlayersDead && !deathState.isPlayerDead) {
+        console.log('💀 PARTY WIPE! Dungeon failed...');
+        setGamePhase('complete');
+        setTimeout(() => {
+          onRaidComplete(false, []); // Failed raid
+        }, 2000);
+      }
+    }
+  }, [players, gamePhase, deathState.isPlayerDead, onRaidComplete]);
+
   // Room completion detection
   useEffect(() => {
     if (gamePhase === 'combat' && enemies.length > 0) {
@@ -299,13 +362,41 @@ export function DungeonRaidSystem11({
     const item = playerInventory.find(inv => inv.id === itemId);
     if (!item || item.quantity <= 0) return;
 
+    // Handle revival items
+    if (item.isRevivalItem && deathState.isPlayerDead) {
+      console.log(`Using ${item.name} for emergency revival!`);
+      
+      // Instant revival with 75% health
+      setPlayers(prevPlayers => prevPlayers.map(player => 
+        player.health <= 0 
+          ? { ...player, health: Math.floor(player.maxHealth * 0.75) }
+          : player
+      ));
+      
+      // Clear death state
+      setDeathState({
+        isPlayerDead: false,
+        deadPlayer: null,
+        revivalTimer: 0
+      });
+      
+      // Reduce item quantity
+      setPlayerInventory(prev => prev.map(inv => 
+        inv.id === itemId ? { ...inv, quantity: inv.quantity - 1 } : inv
+      ));
+      
+      console.log(`${deathState.deadPlayer} revived instantly with 75% health!`);
+      return;
+    }
+
+    // Regular consumable usage
     setPlayers(prevPlayers => prevPlayers.map(player => {
-      if (item.healAmount) {
+      if (item.healAmount && player.health > 0) {
         const newHealth = Math.min(player.maxHealth, player.health + item.healAmount);
         console.log(`${player.name} used ${item.name} - healed for ${newHealth - player.health} HP`);
         return { ...player, health: newHealth };
       }
-      if (item.manaAmount) {
+      if (item.manaAmount && player.health > 0) {
         const newMana = Math.min(player.maxMana, player.mana + item.manaAmount);
         console.log(`${player.name} used ${item.name} - restored ${newMana - player.mana} MP`);
         return { ...player, mana: newMana };
@@ -1488,6 +1579,53 @@ export function DungeonRaidSystem11({
             >
               <Package className="w-5 h-5" />
             </Button>
+          )}
+
+          {/* Death Overlay */}
+          {deathState.isPlayerDead && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute inset-0 z-[100] bg-red-900/80 backdrop-blur-sm flex items-center justify-center"
+            >
+              <motion.div
+                initial={{ scale: 0.8, y: 50 }}
+                animate={{ scale: 1, y: 0 }}
+                className="text-center bg-black/90 border border-red-500/50 rounded-3xl p-8"
+              >
+                <div className="text-6xl mb-4">💀</div>
+                <h3 className="text-4xl font-bold text-red-400 mb-2">Hunter Down!</h3>
+                <p className="text-red-300 mb-4">{deathState.deadPlayer} has fallen in combat</p>
+                <div className="text-white text-lg mb-2">Auto-Revival in:</div>
+                <div className="text-5xl font-bold text-yellow-400 mb-4">{deathState.revivalTimer}</div>
+                <p className="text-slate-300 text-sm">Will revive with 50% health</p>
+                
+                {/* Emergency Revival Button */}
+                {playerInventory.find(item => item.id === 'revival_stone' && item.quantity > 0) && (
+                  <div className="mt-4 mb-4">
+                    <Button
+                      onClick={() => useConsumableItem('revival_stone')}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2"
+                    >
+                      💎 Use Revival Stone (Instant 75% HP)
+                    </Button>
+                    <p className="text-xs text-purple-300 mt-1">
+                      {playerInventory.find(item => item.id === 'revival_stone')?.quantity} stones remaining
+                    </p>
+                  </div>
+                )}
+                
+                {/* Revival timer progress bar */}
+                <div className="mt-6 w-64 bg-gray-700 rounded-full h-2 mx-auto">
+                  <motion.div 
+                    className="bg-gradient-to-r from-red-500 to-yellow-400 h-2 rounded-full"
+                    initial={{ width: "100%" }}
+                    animate={{ width: `${(deathState.revivalTimer / 10) * 100}%` }}
+                    transition={{ duration: 1 }}
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
           )}
 
           {/* Inventory Overlay */}
