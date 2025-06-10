@@ -97,6 +97,13 @@ export function DungeonRaidSystem11({
     phase: 'warning' | 'expanding' | 'active' | 'fading';
     timestamp: number;
   }>>([]);
+  const [roomExits, setRoomExits] = useState<Array<{
+    id: string;
+    direction: 'forward' | 'boss';
+    position: { x: number; y: number };
+    glowing: boolean;
+    label: string;
+  }>>([]);
   
   const battlefieldRef = useRef<HTMLDivElement>(null);
 
@@ -164,6 +171,104 @@ export function DungeonRaidSystem11({
     enemiesRef.current = enemies;
     playersRef.current = players;
   }, [enemies, players]);
+
+  // Generate enemies for each room
+  const generateRoomEnemies = (room: number, act: number): Enemy[] => {
+    const baseEnemies: Enemy[] = [];
+    
+    if (room === totalRooms) {
+      // Final boss room
+      baseEnemies.push({
+        id: 'boss-final',
+        name: 'Shadow Monarch',
+        health: 800,
+        maxHealth: 800,
+        x: 400,
+        y: 200,
+        type: 'boss'
+      });
+    } else {
+      // Regular rooms with escalating difficulty
+      const enemyCount = Math.min(2 + room, 5);
+      
+      for (let i = 0; i < enemyCount; i++) {
+        const enemyType = act === 1 ? 'shadow_beast' : act === 2 ? 'orc_warrior' : 'shadow_beast';
+        const baseHealth = act === 1 ? 80 : act === 2 ? 120 : 150;
+        
+        baseEnemies.push({
+          id: `enemy-${room}-${i}`,
+          name: enemyType === 'shadow_beast' ? 'Shadow Beast' : 'Orc Warrior',
+          health: baseHealth + (room * 20),
+          maxHealth: baseHealth + (room * 20),
+          x: 250 + (i * 100) + Math.random() * 50,
+          y: 150 + Math.random() * 100,
+          type: enemyType
+        });
+      }
+    }
+    
+    return baseEnemies;
+  };
+
+  // Room completion detection
+  useEffect(() => {
+    if (gamePhase === 'combat') {
+      const aliveEnemies = enemies.filter(e => !e.isAlly && e.health > 0);
+      
+      if (aliveEnemies.length === 0 && enemies.length > 0) {
+        console.log(`🏆 Room ${currentRoom} cleared!`);
+        
+        if (currentRoom === totalRooms) {
+          // Dungeon complete
+          setGamePhase('complete');
+          setTimeout(() => {
+            onRaidComplete(true, [
+              { type: 'gold', amount: 5000 },
+              { type: 'experience', amount: 1000 }
+            ]);
+          }, 2000);
+        } else {
+          // Move to next room
+          setGamePhase('room_clear');
+          setTimeout(() => {
+            const exits = [{
+              id: currentRoom === totalRooms - 1 ? 'boss_chamber' : 'next_room',
+              direction: currentRoom === totalRooms - 1 ? 'boss' as const : 'forward' as const,
+              position: { x: 400, y: 300 },
+              glowing: true,
+              label: currentRoom === totalRooms - 1 ? 'Enter Boss Chamber' : 'Continue Forward'
+            }];
+            setRoomExits(exits);
+          }, 1500);
+        }
+      }
+    }
+  }, [enemies, gamePhase, currentRoom, totalRooms, onRaidComplete]);
+
+  // Handle room progression
+  const handleExitSelect = (exitId: string) => {
+    const nextRoom = currentRoom + 1;
+    setCurrentRoom(nextRoom);
+    
+    // Reset room state
+    setRoomExits([]);
+    setSkillCooldowns({});
+    setBattlefieldTraps([]);
+    setDamageNumbers([]);
+    
+    // Generate new enemies for the next room
+    const newEnemies = generateRoomEnemies(nextRoom, nextRoom <= 2 ? 1 : nextRoom <= 5 ? 2 : 3);
+    setEnemies(newEnemies);
+    
+    // Set appropriate phase
+    if (nextRoom === totalRooms) {
+      setGamePhase('boss_antechamber');
+    } else {
+      setGamePhase('combat');
+    }
+    
+    console.log(`🚪 Entering Room ${nextRoom}/${totalRooms}`);
+  };
 
   const [skills] = useState<Skill[]>([
     {
@@ -1236,6 +1341,79 @@ export function DungeonRaidSystem11({
                   />
                 )}
               </div>
+            )}
+
+            {/* Room Clear Phase */}
+            {gamePhase === 'room_clear' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center justify-center h-full"
+              >
+                <div className="text-center bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-8">
+                  <h3 className="text-4xl font-bold text-green-400 mb-4">Room Cleared!</h3>
+                  <p className="text-slate-300 mb-6">All enemies defeated. Choose your path forward.</p>
+                  
+                  {/* Room Exit Options */}
+                  <div className="space-y-4">
+                    {roomExits.map(exit => (
+                      <Button
+                        key={exit.id}
+                        onClick={() => handleExitSelect(exit.id)}
+                        className={`w-64 py-4 text-lg ${
+                          exit.direction === 'boss' 
+                            ? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800' 
+                            : 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800'
+                        } text-white`}
+                      >
+                        {exit.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Boss Antechamber */}
+            {gamePhase === 'boss_antechamber' && (
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center justify-center h-full"
+              >
+                <div className="text-center bg-black/50 backdrop-blur-md border border-red-500/30 rounded-3xl p-8">
+                  <h3 className="text-5xl font-bold text-red-400 mb-4">Boss Chamber</h3>
+                  <p className="text-slate-300 mb-2">You sense an overwhelming presence ahead...</p>
+                  <p className="text-red-300 mb-6 text-lg font-semibold">Shadow Monarch awaits</p>
+                  <Button
+                    onClick={() => setGamePhase('combat')}
+                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-12 py-4 text-xl"
+                  >
+                    Enter Final Battle
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Dungeon Complete */}
+            {gamePhase === 'complete' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center justify-center h-full"
+              >
+                <div className="text-center bg-gradient-to-b from-yellow-900/40 to-yellow-800/40 backdrop-blur-md border border-yellow-400/30 rounded-3xl p-12">
+                  <h3 className="text-6xl font-bold text-yellow-400 mb-6">VICTORY!</h3>
+                  <p className="text-yellow-200 mb-4 text-xl">Shadow Dungeon Conquered</p>
+                  <p className="text-slate-300 mb-8">The Shadow Monarch has been defeated. You have proven yourself worthy.</p>
+                  <div className="space-y-2 text-left bg-black/30 rounded-lg p-4 mb-6">
+                    <div className="text-yellow-300">Rewards Earned:</div>
+                    <div className="text-white">• 5,000 Gold</div>
+                    <div className="text-white">• 1,000 Experience</div>
+                    <div className="text-purple-300">• Shadow Monarch's Essence</div>
+                  </div>
+                </div>
+              </motion.div>
             )}
           </div>
 
