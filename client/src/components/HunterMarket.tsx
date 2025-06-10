@@ -14,32 +14,8 @@ interface HunterMarketProps {
 
 interface SellableItem extends InventoryItem {
   estimatedValue: number;
-  marketDemand: 'low' | 'medium' | 'high' | 'critical';
+  marketDemand: 'low' | 'medium' | 'high';
 }
-
-const MARKET_PRICES = {
-  mana_crystal: {
-    common: 50000,
-    uncommon: 150000,
-    rare: 500000,
-    epic: 1500000,
-    legendary: 5000000
-  },
-  monster_core: {
-    common: 100000,
-    uncommon: 300000,
-    rare: 1000000,
-    epic: 3000000,
-    legendary: 10000000
-  },
-  equipment: {
-    common: 25000,
-    uncommon: 75000,
-    rare: 250000,
-    epic: 750000,
-    legendary: 2500000
-  }
-};
 
 export default function HunterMarket({ 
   isVisible, 
@@ -53,36 +29,17 @@ export default function HunterMarket({
 
   const getSellableItems = (): SellableItem[] => {
     return inventory
-      .filter(item => ['mana_crystal', 'monster_core', 'equipment'].includes(item.type))
-      .map(item => {
-        const basePrice = MARKET_PRICES[item.type as keyof typeof MARKET_PRICES];
-        const rarityPrice = basePrice ? basePrice[item.rarity || 'common'] : (item.value || 1000);
-        
-        // Market fluctuation (±20%)
-        const fluctuation = 0.8 + (Math.random() * 0.4);
-        const estimatedValue = Math.floor(rarityPrice * fluctuation);
-        
-        const marketDemand = Math.random() > 0.7 ? 'high' : 
-                           Math.random() > 0.4 ? 'medium' : 'low';
-
-        return {
-          ...item,
-          estimatedValue,
-          marketDemand
-        };
-      });
+      .filter(item => ['mana_crystal', 'monster_core', 'weapon', 'armor'].includes(item.type))
+      .map(item => ({
+        ...item,
+        estimatedValue: Math.floor((item.value || 1000) * (0.8 + Math.random() * 0.4)),
+        marketDemand: Math.random() > 0.6 ? 'high' : Math.random() > 0.3 ? 'medium' : 'low'
+      }));
   };
 
   const sellableItems = getSellableItems();
 
-  const formatGold = (amount: number) => {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'KRW',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount).replace('₩', '₩ ');
-  };
+  const formatGold = (amount: number) => `₩ ${amount.toLocaleString('ko-KR')}`;
 
   const getRarityColor = (rarity?: string) => {
     switch (rarity) {
@@ -96,7 +53,6 @@ export default function HunterMarket({
 
   const getDemandColor = (demand: string) => {
     switch (demand) {
-      case 'critical': return 'text-red-400';
       case 'high': return 'text-green-400';
       case 'medium': return 'text-yellow-400';
       default: return 'text-gray-400';
@@ -105,7 +61,6 @@ export default function HunterMarket({
 
   const handleSell = () => {
     if (!selectedItem) return;
-    
     const totalValue = selectedItem.estimatedValue * sellQuantity;
     onSellItem(selectedItem.id, sellQuantity, totalValue);
     setSelectedItem(null);
@@ -115,176 +70,136 @@ export default function HunterMarket({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
-      {/* Background Overlay */}
-      <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      
-      {/* Market Interface */}
+    <AnimatePresence>
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-amber-500/30 rounded-3xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden shadow-2xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-amber-500/20 bg-gradient-to-r from-amber-600/10 to-yellow-600/10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center">
-              <Package className="w-6 h-6 text-amber-900" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white">Hunter Market</h2>
-              <p className="text-amber-200 text-sm">Trade valuable resources for gold</p>
-            </div>
-          </div>
+        <motion.div
+          initial={{ scale: 0.9, y: 50 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.9, y: 50 }}
+          className="relative w-[95%] max-w-6xl h-[90%] overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 rounded-3xl backdrop-blur-xl border border-white/10 shadow-2xl" />
           
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-amber-200 text-xs">Current Wealth</p>
-              <p className="text-white text-lg font-mono">{formatGold(currentGold)}</p>
+          <div className="absolute inset-0 opacity-5 flex items-center justify-center">
+            <div className="w-64 h-64 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full" />
+          </div>
+
+          <div className="relative flex items-center justify-between p-6 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center">
+                <Package className="w-6 h-6 text-amber-900" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Hunter Market</h2>
+                <p className="text-blue-200 text-sm">Trade valuable resources for gold</p>
+              </div>
             </div>
-            <Button
-              onClick={onClose}
-              variant="outline"
-              size="icon"
-              className="border-gray-600 hover:border-gray-400"
-            >
+            
+            <Button onClick={onClose} variant="outline" size="icon" className="border-gray-600 hover:border-gray-400">
               <X className="w-5 h-5" />
             </Button>
           </div>
-        </div>
 
-        {/* Market Content */}
-        <div className="p-6 max-h-[60vh] overflow-y-auto">
-          {sellableItems.length === 0 ? (
-            <div className="text-center py-12">
-              <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-400 mb-2">No Sellable Items</h3>
-              <p className="text-gray-500">Complete dungeon raids to acquire valuable resources</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {sellableItems.map((item) => (
-                <motion.div
-                  key={item.id}
-                  whileHover={{ scale: 1.02 }}
-                  className={`${getRarityColor(item.rarity)} border rounded-xl p-4 cursor-pointer transition-all hover:shadow-lg`}
-                  onClick={() => setSelectedItem(item)}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Gem className="w-5 h-5" />
-                      <h3 className="font-semibold">{item.name}</h3>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3" />
-                      <span className="text-xs capitalize">{item.rarity || 'common'}</span>
-                    </div>
+          <div className="relative flex h-[calc(90vh-120px)]">
+            <div className="flex-1 p-6 border-r border-white/10">
+              <h3 className="text-lg font-semibold text-white mb-4">Your Inventory</h3>
+              <div className="space-y-3 h-full overflow-y-auto">
+                {sellableItems.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <Package className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No sellable items in inventory</p>
                   </div>
-                  
-                  <p className="text-sm text-gray-300 mb-3 line-clamp-2">{item.description}</p>
-                  
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-400">Market Value:</span>
-                      <span className="font-mono text-sm">{formatGold(item.estimatedValue)}</span>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-400">Quantity:</span>
-                      <span className="font-semibold">{item.quantity}</span>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-400">Demand:</span>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" />
-                        <span className={`text-xs capitalize ${getDemandColor(item.marketDemand)}`}>
-                          {item.marketDemand}
-                        </span>
+                ) : (
+                  sellableItems.map(item => (
+                    <motion.div
+                      key={item.id}
+                      whileHover={{ scale: 1.02 }}
+                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                        selectedItem?.id === item.id 
+                          ? 'border-amber-400 bg-amber-400/10' 
+                          : 'border-white/20 bg-white/5 hover:bg-white/10'
+                      }`}
+                      onClick={() => setSelectedItem(item)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getRarityColor(item.rarity)}`}>
+                            {item.type === 'mana_crystal' && <Gem className="w-6 h-6" />}
+                            {item.type === 'monster_core' && <Star className="w-6 h-6" />}
+                            {(item.type === 'weapon' || item.type === 'armor') && <Package className="w-6 h-6" />}
+                          </div>
+                          <div>
+                            <h4 className="text-white font-medium">{item.name}</h4>
+                            <p className="text-sm text-gray-400">x{item.quantity}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-amber-300 font-mono">{formatGold(item.estimatedValue)} ea.</p>
+                          <p className={`text-xs ${getDemandColor(item.marketDemand)}`}>
+                            {item.marketDemand} demand
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="pt-2 border-t border-current/20">
-                      <span className="text-xs text-gray-400">Total Value: </span>
-                      <span className="font-bold">{formatGold(item.estimatedValue * item.quantity)}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                    </motion.div>
+                  ))
+                )}
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Sell Dialog */}
-        <AnimatePresence>
-          {selectedItem && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/90 flex items-center justify-center"
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-gray-900 border border-amber-500/30 rounded-2xl p-6 max-w-md w-full mx-4"
-              >
-                <h3 className="text-xl font-bold text-white mb-4">Sell {selectedItem.name}</h3>
-                
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-2">Quantity to Sell</label>
-                    <input
-                      type="range"
-                      min="1"
-                      max={selectedItem.quantity}
-                      value={sellQuantity}
-                      onChange={(e) => setSellQuantity(parseInt(e.target.value))}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-gray-400 mt-1">
-                      <span>1</span>
-                      <span className="text-white font-medium">{sellQuantity}</span>
-                      <span>{selectedItem.quantity}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-gray-800 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Total Sale Value:</span>
-                      <span className="text-green-400 font-bold text-lg">
-                        {formatGold(selectedItem.estimatedValue * sellQuantity)}
-                      </span>
+            <div className="w-80 p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Sell Items</h3>
+              
+              {selectedItem ? (
+                <div className="space-y-4">
+                  <div className={`p-4 rounded-xl border ${getRarityColor(selectedItem.rarity)}`}>
+                    <h4 className="text-white font-medium mb-2">{selectedItem.name}</h4>
+                    <p className="text-sm text-gray-300 mb-3">{selectedItem.description}</p>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">Quantity to sell</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max={selectedItem.quantity}
+                          value={sellQuantity}
+                          onChange={(e) => setSellQuantity(Math.min(selectedItem.quantity, Math.max(1, parseInt(e.target.value) || 1)))}
+                          className="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-2 text-white"
+                        />
+                      </div>
+                      
+                      <div className="text-center py-4 bg-black/20 rounded-lg">
+                        <p className="text-sm text-gray-400">Total Sale Value</p>
+                        <p className="text-2xl font-bold text-amber-300">
+                          {formatGold(selectedItem.estimatedValue * sellQuantity)}
+                        </p>
+                      </div>
+                      
+                      <Button
+                        onClick={handleSell}
+                        className="w-full bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-amber-900 font-bold"
+                      >
+                        <Coins className="w-4 h-4 mr-2" />
+                        Confirm Sale
+                      </Button>
                     </div>
                   </div>
                 </div>
-                
-                <div className="flex gap-3">
-                  <Button
-                    onClick={() => setSelectedItem(null)}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleSell}
-                    className="flex-1 bg-green-600 hover:bg-green-500"
-                  >
-                    <Coins className="w-4 h-4 mr-2" />
-                    Sell
-                  </Button>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>Select an item to sell</p>
                 </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              )}
+            </div>
+          </div>
+        </motion.div>
       </motion.div>
-    </div>
+    </AnimatePresence>
   );
 }
