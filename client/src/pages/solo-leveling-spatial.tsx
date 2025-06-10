@@ -17,6 +17,9 @@ import { RelationshipConstellation } from '@/components/RelationshipConstellatio
 import { DungeonRaid } from '@/components/DungeonRaid';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import WorldMap from '@/components/WorldMap';
+import WealthDisplay from '@/components/WealthDisplay';
+import HunterMarket from '@/components/HunterMarket';
+import QuestBoard from '@/components/QuestBoard';
 
 interface GameState {
   level: number;
@@ -237,6 +240,18 @@ export default function SoloLevelingSpatial() {
   const [showArmory, setShowArmory] = useState(false);
   const [activeActivity, setActiveActivity] = useState<string | null>(null);
 
+  // Economic system states
+  const [showHunterMarket, setShowHunterMarket] = useState(false);
+  const [showQuestBoard, setShowQuestBoard] = useState(false);
+  const [recentTransactions, setRecentTransactions] = useState<Array<{
+    id: string;
+    type: 'gain' | 'loss';
+    amount: number;
+    description: string;
+    timestamp: string;
+  }>>([]);
+  const [activeQuests, setActiveQuests] = useState<string[]>([]);
+
   // Time and scheduling system
   const getCurrentTimeOfDay = () => {
     const hour = gameTime.getHours();
@@ -246,7 +261,7 @@ export default function SoloLevelingSpatial() {
     return 'night';
   };
 
-  const getChaHaeInLocation = () => {
+  const getChaHaeInLocation = (): string | null => {
     const currentTime = getCurrentTimeOfDay();
     const affection = gameState.affection;
     
@@ -334,7 +349,7 @@ export default function SoloLevelingSpatial() {
       chaExpression: 'focused' as const,
       interactiveElements: [
         { id: 'cha_desk', name: 'Cha Hae-In at her desk', position: { x: 60, y: 45 }, action: 'Approach Cha Hae-In' },
-        { id: 'mission_board', name: 'Mission Board', position: { x: 20, y: 30 }, action: 'Check available missions' },
+        { id: 'mission_board', name: 'Quest Board', position: { x: 20, y: 30 }, action: 'Check available missions' },
         { id: 'coffee_machine', name: 'Coffee Machine', position: { x: 80, y: 60 }, action: 'Offer to get coffee' }
       ]
     },
@@ -754,7 +769,56 @@ export default function SoloLevelingSpatial() {
     }, 100);
   };
 
+  // Economic system handlers
+  const handleSellItem = async (itemId: string, quantity: number, totalValue: number) => {
+    try {
+      const response = await fetch('/api/sell-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemId,
+          quantity,
+          totalValue,
+          gameState
+        })
+      });
+      
+      const data = await response.json();
+      setGameState(data.gameState);
+      
+      // Add transaction to recent transactions
+      const transaction = {
+        id: Date.now().toString(),
+        type: 'gain' as const,
+        amount: totalValue,
+        description: `Sold ${quantity}x item`,
+        timestamp: new Date().toISOString()
+      };
+      setRecentTransactions(prev => [transaction, ...prev.slice(0, 9)]);
+      
+      console.log(`Sold ${quantity} items for ₩${totalValue.toLocaleString()}`);
+    } catch (error) {
+      console.error('Failed to sell item:', error);
+    }
+  };
+
+  const handleAcceptQuest = async (quest: any) => {
+    setActiveQuests(prev => [...prev, quest.id]);
+    console.log(`Accepted quest: ${quest.title}`);
+  };
+
   const handleEnvironmentalInteraction = async (interactionPoint: any) => {
+    // Handle economic location interactions
+    if (playerLocation === 'hunter_market' && interactionPoint.id === 'sell_counter') {
+      setShowHunterMarket(true);
+      return;
+    }
+    
+    if (playerLocation === 'hunter_association' && interactionPoint.id === 'mission_board') {
+      setShowQuestBoard(true);
+      return;
+    }
+    
     setDialogueActive(true);
     setIsLoading(true);
     
