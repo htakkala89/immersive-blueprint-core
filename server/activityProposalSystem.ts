@@ -198,7 +198,8 @@ export class ActivityProposalSystem {
       let scheduledActivity: ScheduledActivity | undefined;
       
       if (status === 'agreed') {
-        const activityId = `${proposal.activityType}_${Date.now()}`;
+        const activityType = proposal.activityType || 'dinner';
+        const activityId = `${activityType}_${Date.now()}`;
         const now = new Date();
         
         // Default to evening if no time specified
@@ -213,7 +214,7 @@ export class ActivityProposalSystem {
         // Default location based on activity type
         let location = proposal.suggestedLocation || '';
         if (!location) {
-          switch (proposal.activityType) {
+          switch (activityType) {
             case 'dinner':
               location = 'myeongdong_restaurant';
               break;
@@ -233,9 +234,9 @@ export class ActivityProposalSystem {
         
         scheduledActivity = {
           id: activityId,
-          type: proposal.activityType as any,
-          title: `${proposal.activityType.charAt(0).toUpperCase() + proposal.activityType.slice(1)} with Cha Hae-In`,
-          description: `A ${proposal.activityType} date with Cha Hae-In at ${location}`,
+          type: activityType as any,
+          title: `${activityType.charAt(0).toUpperCase() + activityType.slice(1)} with Cha Hae-In`,
+          description: `A ${activityType} date with Cha Hae-In at ${location}`,
           location,
           scheduledTime: now.toISOString(),
           status: 'confirmed',

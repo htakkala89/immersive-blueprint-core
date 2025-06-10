@@ -366,37 +366,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Additional core gameplay endpoints
   
-  // Chat endpoint with proper AI integration
+  // Chat endpoint with activity proposal system integration
   app.post("/api/chat", async (req, res) => {
     try {
       const { message, gameState, context } = req.body;
       
-      // Import personality system
-      const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
+      // Check if user is proposing an activity
+      const activityProposal = ActivityProposalSystem.detectActivityProposal(message, gameState);
       
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
-        safetySettings: [
-          { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-          { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-          { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-          { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
-        ]
-      });
-
-      // Create conversation context for personality system
-      const conversationContext = {
-        affectionLevel: Math.floor((gameState.affection || 25) / 20), // Convert 0-100 to 0-5 scale
-        currentScene: context?.location || 'hunter_association',
-        timeOfDay: (context?.timeOfDay || 'afternoon') as 'morning' | 'afternoon' | 'evening' | 'night',
-        recentActivity: context?.activity,
-        mood: 'focused' as 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic' | 'disappointed' | 'hurt' | 'defensive',
-        userBehavior: 'positive' as 'positive' | 'neutral' | 'rude' | 'mean'
-      };
-
-      const personalityPrompt = getPersonalityPrompt(conversationContext);
+      let response: string;
+      let expressionUpdate = 'focused';
+      let updatedGameState = { ...gameState };
       
-      const fullPrompt = `${personalityPrompt}
+      if (activityProposal.isActivityProposal) {
+        console.log(`🎯 Activity proposal detected: ${activityProposal.activityType} (confidence: ${activityProposal.confidence}%)`);
+        
+        // Generate conversation-based response to activity proposal
+        const activityResponse = await ActivityProposalSystem.generateActivityResponse(
+          activityProposal, 
+          message, 
+          gameState
+        );
+        
+        response = activityResponse.response;
+        
+        // If she agreed, add the activity to scheduled activities
+        if (activityResponse.status === 'agreed' && activityResponse.scheduledActivity) {
+          updatedGameState.scheduledActivities = [
+            ...(gameState.scheduledActivities || []),
+            activityResponse.scheduledActivity
+          ];
+          
+          console.log(`✅ Activity scheduled: ${activityResponse.scheduledActivity.title}`);
+        }
+        
+        // Set appropriate expression based on response
+        if (activityResponse.status === 'agreed') {
+          expressionUpdate = 'welcoming';
+        } else if (activityResponse.status === 'declined') {
+          expressionUpdate = 'concerned';
+        } else {
+          expressionUpdate = 'contemplative';
+        }
+        
+      } else {
+        // Regular conversation flow
+        const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
+        
+        const model = genAI.getGenerativeModel({ 
+          model: "gemini-1.5-flash",
+          safetySettings: [
+            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
+          ]
+        });
+
+        // Create conversation context for personality system
+        const conversationContext = {
+          affectionLevel: Math.floor((gameState.affection || 25) / 20), // Convert 0-100 to 0-5 scale
+          currentScene: context?.location || 'hunter_association',
+          timeOfDay: (context?.timeOfDay || 'afternoon') as 'morning' | 'afternoon' | 'evening' | 'night',
+          recentActivity: context?.activity,
+          mood: 'focused' as 'confident' | 'playful' | 'vulnerable' | 'focused' | 'romantic' | 'disappointed' | 'hurt' | 'defensive',
+          userBehavior: 'positive' as 'positive' | 'neutral' | 'rude' | 'mean'
+        };
+
+        const personalityPrompt = getPersonalityPrompt(conversationContext);
+        
+        const fullPrompt = `${personalityPrompt}
 
 CURRENT SITUATION:
 - Location: ${context?.location || 'Hunter Association'}
@@ -414,37 +453,37 @@ RESPONSE INSTRUCTIONS:
 - Use "Jin-Woo" when addressing him directly
 - Show your hunter expertise when relevant
 - Express growing feelings if affection is high enough`;
-      
-      const result = await model.generateContent(fullPrompt);
-      const response = result.response.text();
-      
-      // Advanced emotion detection for avatar updates
-      let newExpression = 'focused';
-      const responseText = response.toLowerCase();
-      
-      // Romantic expressions
-      if (responseText.includes('blush') || responseText.includes('heart') || responseText.includes('love') || responseText.includes('feelings')) {
-        newExpression = 'romantic';
-      }
-      // Happy/welcoming expressions
-      else if (responseText.includes('smile') || responseText.includes('happy') || responseText.includes('glad') || responseText.includes('wonderful')) {
-        newExpression = 'welcoming';
-      }
-      // Surprised expressions
-      else if (responseText.includes('surprised') || responseText.includes('unexpected') || responseText.includes('wow') || responseText.includes('really?')) {
-        newExpression = 'surprised';
-      }
-      // Amused expressions
-      else if (responseText.includes('laugh') || responseText.includes('funny') || responseText.includes('amusing') || responseText.includes('tease')) {
-        newExpression = 'amused';
-      }
-      // Contemplative expressions
-      else if (responseText.includes('think') || responseText.includes('consider') || responseText.includes('wonder') || responseText.includes('hmm')) {
-        newExpression = 'contemplative';
-      }
-      // Concerned expressions
-      else if (responseText.includes('worry') || responseText.includes('concern') || responseText.includes('careful') || responseText.includes('danger')) {
-        newExpression = 'concerned';
+        
+        const result = await model.generateContent(fullPrompt);
+        response = result.response.text();
+        
+        // Advanced emotion detection for avatar updates
+        const responseText = response.toLowerCase();
+        
+        // Romantic expressions
+        if (responseText.includes('blush') || responseText.includes('heart') || responseText.includes('love') || responseText.includes('feelings')) {
+          expressionUpdate = 'romantic';
+        }
+        // Happy/welcoming expressions
+        else if (responseText.includes('smile') || responseText.includes('happy') || responseText.includes('glad') || responseText.includes('wonderful')) {
+          expressionUpdate = 'welcoming';
+        }
+        // Surprised expressions
+        else if (responseText.includes('surprised') || responseText.includes('unexpected') || responseText.includes('wow') || responseText.includes('really?')) {
+          expressionUpdate = 'surprised';
+        }
+        // Amused expressions
+        else if (responseText.includes('laugh') || responseText.includes('funny') || responseText.includes('amusing') || responseText.includes('tease')) {
+          expressionUpdate = 'amused';
+        }
+        // Contemplative expressions
+        else if (responseText.includes('think') || responseText.includes('consider') || responseText.includes('wonder') || responseText.includes('hmm')) {
+          expressionUpdate = 'contemplative';
+        }
+        // Concerned expressions
+        else if (responseText.includes('worry') || responseText.includes('concern') || responseText.includes('careful') || responseText.includes('danger')) {
+          expressionUpdate = 'concerned';
+        }
       }
       
       let audioUrl = null;
@@ -460,8 +499,11 @@ RESPONSE INSTRUCTIONS:
       res.json({ 
         response, 
         audioUrl,
-        expression: newExpression,
-        gameState: {
+        expression: expressionUpdate,
+        gameState: updatedGameState.scheduledActivities ? {
+          ...updatedGameState,
+          affection: Math.min(100, (gameState.affection || 25) + 1)
+        } : {
           ...gameState,
           affection: Math.min(100, (gameState.affection || 25) + 1)
         }
