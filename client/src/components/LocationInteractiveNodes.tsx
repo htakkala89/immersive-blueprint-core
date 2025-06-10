@@ -57,7 +57,8 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       position: { x: 20, y: 30 },
       thoughtPrompt: 'Lead her to the bedroom',
       outcome: 'Intimate bedroom encounter',
-      gameLogic: 'system_5_intimate_activity'
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_1']
     },
     {
       id: 'couch_intimate',
@@ -66,7 +67,8 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       position: { x: 45, y: 60 },
       thoughtPrompt: 'Make love on the couch',
       outcome: 'Intimate living room encounter',
-      gameLogic: 'system_5_intimate_activity'
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_1']
     },
     {
       id: 'kitchen_counter',
@@ -75,7 +77,8 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       position: { x: 70, y: 40 },
       thoughtPrompt: 'Intimate kitchen encounter',
       outcome: 'Kitchen counter passion',
-      gameLogic: 'system_5_intimate_activity'
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_1']
     },
     {
       id: 'shower_room',
@@ -84,7 +87,8 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       position: { x: 80, y: 25 },
       thoughtPrompt: 'Shower together',
       outcome: 'Steamy shower romance',
-      gameLogic: 'system_5_intimate_activity'
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_1']
     },
     // Tier 2 - Gangnam High-Rise (5 nodes) - Organized by zones
     // Private Quarters Zone
@@ -769,8 +773,8 @@ export function LocationInteractiveNodes({
     if (locationId === 'player_apartment' && node.requirements) {
       const currentTier = playerStats.apartmentTier;
       
-      // Tier 1 nodes (no requirements) - only show if tier 1
-      if (!node.requirements.length && currentTier === 1) return true;
+      // Tier 1 nodes - only show if exactly tier 1
+      if (node.requirements.includes('apartment_tier_1') && currentTier === 1) return true;
       
       // Tier 2 nodes - only show if exactly tier 2
       if (node.requirements.includes('apartment_tier_2') && currentTier === 2) return true;
