@@ -630,11 +630,19 @@ export function LocationInteractiveNodes({
     });
   };
 
+  // Force render something visible for debugging
   return (
     <div className="absolute inset-0 pointer-events-none">
-      {/* DEBUG: Visible indicator that component is loaded */}
-      <div className="absolute top-0 left-0 bg-red-500 text-white p-2 z-50 pointer-events-auto">
-        DEBUG: Nodes={nodes.length}, Location={locationId}
+      {/* DEBUG: Always visible indicator */}
+      <div className="absolute top-0 left-0 bg-red-500 text-white p-2 z-[9999] pointer-events-auto">
+        DEBUG: Component Loaded! Nodes={nodes.length}, Location={locationId}
+      </div>
+      
+      {/* TEST: Force render a test node */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+        <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white font-bold pointer-events-auto cursor-pointer">
+          TEST
+        </div>
       </div>
       {/* Interactive Nodes */}
       {nodes.map((node) => {
