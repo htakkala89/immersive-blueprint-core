@@ -1837,8 +1837,10 @@ export default function SoloLevelingSpatial() {
               case 'red_gate_entrance':
                 // Enter the Red Gate dungeon for quest completion
                 console.log('RED GATE ENTRANCE TRIGGERED - Opening dungeon raid');
+                console.log('Current showDungeonRaid state:', showDungeonRaid);
                 setShowDungeonRaid(true);
                 console.log('Dungeon raid state set to true');
+                alert('Dungeon should be opening now!');
                 break;
               case 'mission_board':
                 // Opens lore panel with gate information

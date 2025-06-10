@@ -570,7 +570,6 @@ export function LocationInteractiveNodes({
   };
 
   const handleNodeClick = (node: InteractiveNode) => {
-    alert(`Node clicked: ${node.id}`);
     console.log('NODE CLICK DETECTED:', node.id);
     console.log('Node details:', node);
     
