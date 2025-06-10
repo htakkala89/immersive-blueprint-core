@@ -10,7 +10,8 @@ interface Enemy {
   maxHealth: number;
   x: number;
   y: number;
-  type: 'shadow_beast' | 'orc_warrior' | 'boss';
+  type: 'shadow_beast' | 'orc_warrior' | 'boss' | 'shadow_soldier';
+  isAlly?: boolean;
   isStunned?: boolean;
   statusEffects?: Array<{
     type: 'poison' | 'stun' | 'burning';
@@ -181,6 +182,13 @@ export function DungeonRaidSystem11({
     const skill = skills.find(s => s.id === skillId);
     if (!skill || skillCooldowns[skillId] > 0) return;
     
+    // Special handling for Shadow Exchange - opens Shadow Soldier menu
+    if (skill.id === 'shadow_exchange') {
+      setMonarchRuneOpen(true);
+      console.log('Opening Shadow Soldier selection menu');
+      return;
+    }
+    
     // Calculate damage based on skill type
     let baseDamage = 0;
     switch (skill.id) {
@@ -193,13 +201,13 @@ export function DungeonRaidSystem11({
       case 'dominators_touch':
         baseDamage = 50 + Math.floor(Math.random() * 25); // 50-75 damage
         break;
-      case 'shadow_exchange':
-        baseDamage = 30 + Math.floor(Math.random() * 20); // 30-50 damage
-        break;
     }
 
-    // Apply damage to all enemies and show damage numbers
+    // Apply damage only to hostile enemies (not Shadow Soldiers)
     setEnemies(prev => prev.map(enemy => {
+      // Skip friendly Shadow Soldiers
+      if (enemy.isAlly) return enemy;
+      
       const newHealth = Math.max(0, enemy.health - baseDamage);
       
       // Add floating damage number
@@ -253,8 +261,35 @@ export function DungeonRaidSystem11({
     const jinwoo = players.find(p => p.id === 'jinwoo');
     
     if (shadow && jinwoo && jinwoo.mana >= shadow.manaCost) {
-      console.log(`Summoning: ${shadow.name}`);
+      // Consume mana
+      setPlayers(prev => prev.map(player => 
+        player.id === 'jinwoo' 
+          ? { ...player, mana: Math.max(0, player.mana - shadow.manaCost) }
+          : player
+      ));
+
+      // Spawn shadow soldier as an ally
+      const newShadow = {
+        id: `shadow-${shadowId}-${Date.now()}`,
+        name: shadow.name,
+        health: 60,
+        maxHealth: 60,
+        x: jinwoo.x + 50,
+        y: jinwoo.y + 30,
+        type: 'shadow_soldier' as const,
+        isAlly: true
+      };
+
+      setEnemies(prev => [...prev, newShadow]);
+
+      // Close the menu
       setMonarchRuneOpen(false);
+
+      // Screen effect
+      setScreenShake(true);
+      setTimeout(() => setScreenShake(false), 300);
+
+      console.log(`Summoning: ${shadow.name} for ${shadow.manaCost} mana`);
     }
   };
 
@@ -411,28 +446,38 @@ export function DungeonRaidSystem11({
                   </motion.div>
                 ))}
 
-                {/* Enemies with Crimson Health Auras */}
+                {/* Enemies and Shadow Soldiers */}
                 {enemies.map(enemy => (
                   <motion.div
                     key={enemy.id}
                     className="absolute cursor-pointer"
                     style={{ left: enemy.x, top: enemy.y }}
-                    initial={{ scale: 0, rotate: -180 }}
+                    initial={{ scale: 0, rotate: enemy.isAlly ? 0 : -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     whileHover={{ scale: 1.1 }}
                   >
                     <div className="relative">
-                      {/* Enemy Avatar */}
-                      <div className="w-10 h-10 bg-red-600 rounded-full border-2 border-red-400"></div>
+                      {/* Avatar - Different colors for allies vs enemies */}
+                      <div className={`w-10 h-10 rounded-full border-2 ${
+                        enemy.isAlly 
+                          ? 'bg-purple-600 border-purple-400' 
+                          : 'bg-red-600 border-red-400'
+                      }`}></div>
                       
-                      {/* Enemy Name & Health */}
-                      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-white whitespace-nowrap">
+                      {/* Name & Health */}
+                      <div className={`absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs whitespace-nowrap ${
+                        enemy.isAlly ? 'text-purple-300' : 'text-white'
+                      }`}>
                         {enemy.name} ({enemy.health}/{enemy.maxHealth})
                       </div>
                       
-                      {/* Crimson Health Aura */}
+                      {/* Health Aura - Different colors for allies vs enemies */}
                       <div 
-                        className="absolute inset-0 rounded-full bg-red-400/40 animate-pulse"
+                        className={`absolute inset-0 rounded-full animate-pulse ${
+                          enemy.isAlly 
+                            ? 'bg-purple-400/40' 
+                            : 'bg-red-400/40'
+                        }`}
                         style={{
                           width: '40px',
                           height: '40px',
