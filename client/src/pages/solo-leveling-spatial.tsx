@@ -444,7 +444,7 @@ export default function SoloLevelingSpatial() {
   };
 
   const getChaHaeInLocation = (): string | null => {
-    const currentTime = getCurrentTimeOfDay();
+    const currentTime = timeOfDay; // Use the timeOfDay state which can be overridden by dev menu
     const affection = gameState.affection;
     
     // Deterministic location system - Cha Hae-In has a predictable schedule
@@ -1632,6 +1632,7 @@ export default function SoloLevelingSpatial() {
           {/* Time Period Override */}
           <div className="mb-3">
             <div className="text-xs text-gray-300 mb-1">Time: {timeOfDay}</div>
+            <div className="text-xs text-purple-300 mb-2">Cha Location: {chaHaeInCurrentLocation || 'Unavailable'}</div>
             <div className="flex gap-1 text-xs">
               <button 
                 onClick={() => setTimeOfDay('morning')}
