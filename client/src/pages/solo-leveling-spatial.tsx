@@ -434,6 +434,9 @@ export default function SoloLevelingSpatial() {
   
   // Cinematic Mode - For atmospheric River's Edge experience
   const [cinematicMode, setCinematicMode] = useState(false);
+  
+  // Developer Menu - Collapsible state
+  const [showDevMenu, setShowDevMenu] = useState(true);
 
   // Time and scheduling system
   const getCurrentTimeOfDay = (timeToCheck?: Date) => {
@@ -1667,10 +1670,22 @@ export default function SoloLevelingSpatial() {
         )}
         
         {/* Developer Menu */}
-        <div className="absolute top-4 right-4 bg-black/90 backdrop-blur-sm text-white p-3 rounded-lg border border-purple-400/30 z-50 max-w-xs">
-          <div className="text-xs font-semibold mb-3 text-purple-300">Developer Menu</div>
+        <div className="absolute top-4 left-4 bg-black/90 backdrop-blur-sm text-white rounded-lg border border-purple-400/30 z-50 max-w-xs">
+          {/* Collapsible Header */}
+          <div 
+            className="flex items-center justify-between p-3 cursor-pointer hover:bg-white/10 transition-colors"
+            onClick={() => setShowDevMenu(!showDevMenu)}
+          >
+            <div className="text-xs font-semibold text-purple-300">Developer Menu</div>
+            <div className={`text-purple-300 transform transition-transform ${showDevMenu ? 'rotate-180' : ''}`}>
+              ▼
+            </div>
+          </div>
           
-          {/* Affection Controls */}
+          {/* Collapsible Content */}
+          {showDevMenu && (
+            <div className="p-3 pt-0 border-t border-purple-400/20">
+              {/* Affection Controls */}
           <div className="mb-3">
             <div className="text-xs text-gray-300 mb-1">Affection: {gameState.affection}</div>
             <div className="flex gap-1 text-xs">
@@ -1808,9 +1823,9 @@ export default function SoloLevelingSpatial() {
               </button>
             </div>
           </div>
+            </div>
+          )}
         </div>
-
-
 
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
