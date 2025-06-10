@@ -491,20 +491,19 @@ export default function SoloLevelingSpatial() {
     switch (weather) {
       case 'rain':
         return (
-          <div className="absolute inset-0 pointer-events-none z-50" style={{ position: 'fixed' }}>
+          <div className="fixed inset-0 pointer-events-none z-50">
             {/* Heavy rain drops on the "lens" */}
-            {[...Array(80)].map((_, i) => (
+            {[...Array(60)].map((_, i) => (
               <motion.div
                 key={`rain-${i}`}
-                className="absolute w-0.5 h-6 bg-blue-200/40 rounded-full"
+                className="absolute w-1 h-8 bg-blue-300/70 rounded-full shadow-sm"
                 style={{ 
                   left: `${Math.random() * 100}%`, 
-                  top: '-24px',
-                  filter: 'blur(0.5px)'
+                  top: '-32px'
                 }}
                 animate={{ y: '120vh' }}
                 transition={{ 
-                  duration: 0.5 + Math.random() * 0.8, 
+                  duration: 0.8 + Math.random() * 0.5, 
                   repeat: Infinity, 
                   ease: 'linear',
                   delay: Math.random() * 2
@@ -512,119 +511,107 @@ export default function SoloLevelingSpatial() {
               />
             ))}
             {/* Rain drops on window effect */}
-            {[...Array(15)].map((_, i) => (
+            {[...Array(20)].map((_, i) => (
               <motion.div
                 key={`window-drop-${i}`}
-                className="absolute w-1 h-1 bg-blue-300/60 rounded-full"
+                className="absolute w-2 h-2 bg-blue-400/80 rounded-full shadow-lg"
                 style={{ 
                   left: `${Math.random() * 100}%`, 
-                  top: `${Math.random() * 100}%`,
-                  filter: 'blur(1px)'
+                  top: `${Math.random() * 100}%`
+                }}
+                animate={{
+                  opacity: [0.4, 1, 0.4],
+                  scale: [0.8, 1.3, 0.8]
+                }}
+                transition={{ 
+                  duration: 4 + Math.random() * 3, 
+                  repeat: Infinity,
+                  delay: Math.random() * 6
+                }}
+              />
+            ))}
+            {/* Mist overlay */}
+            <div className="absolute inset-0 bg-blue-900/10 backdrop-blur-[1px]" />
+          </div>
+        );
+      case 'snow':
+        return (
+          <div className="fixed inset-0 pointer-events-none z-50">
+            {/* Falling snowflakes */}
+            {[...Array(35)].map((_, i) => (
+              <motion.div
+                key={`snow-${i}`}
+                className="absolute w-3 h-3 bg-white/90 rounded-full shadow-sm"
+                style={{ 
+                  left: `${Math.random() * 100}%`, 
+                  top: '-12px'
+                }}
+                animate={{ 
+                  y: '110vh', 
+                  x: Math.sin(i * 0.5) * 40,
+                  rotate: 360
+                }}
+                transition={{ 
+                  duration: 5 + Math.random() * 4, 
+                  repeat: Infinity, 
+                  ease: 'linear',
+                  delay: Math.random() * 4
+                }}
+              />
+            ))}
+            {/* Snow accumulation on "window" */}
+            {[...Array(12)].map((_, i) => (
+              <motion.div
+                key={`snow-window-${i}`}
+                className="absolute w-4 h-4 bg-white/60 rounded-full shadow-md"
+                style={{ 
+                  left: `${Math.random() * 100}%`, 
+                  top: `${Math.random() * 30}%`
                 }}
                 animate={{
                   opacity: [0.3, 0.8, 0.3],
-                  scale: [1, 1.2, 1]
+                  scale: [0.7, 1.2, 0.7]
                 }}
                 transition={{ 
-                  duration: 3 + Math.random() * 2, 
+                  duration: 6 + Math.random() * 4, 
                   repeat: Infinity,
                   delay: Math.random() * 5
                 }}
               />
             ))}
-            {/* Mist overlay */}
-            <div 
-              className="absolute inset-0 bg-gradient-to-b from-blue-900/5 via-transparent to-blue-900/10"
-              style={{ backdropFilter: 'blur(0.5px)' }}
-            />
-          </div>
-        );
-      case 'snow':
-        return (
-          <div className="absolute inset-0 pointer-events-none z-50" style={{ position: 'fixed' }}>
-            {/* Falling snowflakes */}
-            {[...Array(40)].map((_, i) => (
-              <motion.div
-                key={`snow-${i}`}
-                className="absolute w-2 h-2 bg-white/80 rounded-full"
-                style={{ 
-                  left: `${Math.random() * 100}%`, 
-                  top: '-8px',
-                  filter: 'blur(0.5px)'
-                }}
-                animate={{ 
-                  y: '110vh', 
-                  x: Math.sin(i * 0.5) * 30,
-                  rotate: 360
-                }}
-                transition={{ 
-                  duration: 4 + Math.random() * 3, 
-                  repeat: Infinity, 
-                  ease: 'linear',
-                  delay: Math.random() * 3
-                }}
-              />
-            ))}
-            {/* Snow accumulation on "window" */}
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={`snow-window-${i}`}
-                className="absolute w-3 h-3 bg-white/40 rounded-full"
-                style={{ 
-                  left: `${Math.random() * 100}%`, 
-                  top: `${Math.random() * 20}%`,
-                  filter: 'blur(1px)'
-                }}
-                animate={{
-                  opacity: [0.2, 0.6, 0.2],
-                  scale: [0.8, 1.1, 0.8]
-                }}
-                transition={{ 
-                  duration: 5 + Math.random() * 3, 
-                  repeat: Infinity,
-                  delay: Math.random() * 4
-                }}
-              />
-            ))}
             {/* Cold mist effect */}
-            <div 
-              className="absolute inset-0 bg-gradient-to-t from-blue-100/5 via-transparent to-white/5"
-              style={{ backdropFilter: 'blur(0.3px)' }}
-            />
+            <div className="absolute inset-0 bg-white/5 backdrop-blur-[0.5px]" />
           </div>
         );
       case 'cloudy':
         return (
-          <div className="absolute inset-0 pointer-events-none z-50" style={{ position: 'fixed' }}>
+          <div className="fixed inset-0 pointer-events-none z-50">
             {/* Blowing leaves */}
-            {[...Array(12)].map((_, i) => (
+            {[...Array(15)].map((_, i) => (
               <motion.div
                 key={`leaf-${i}`}
-                className="absolute w-2 h-3 bg-amber-600/60 rounded-full"
+                className="absolute w-3 h-4 bg-amber-600/80 shadow-sm"
                 style={{ 
                   left: `${Math.random() * 100}%`, 
                   top: `${Math.random() * 100}%`,
-                  clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+                  clipPath: 'polygon(50% 0%, 85% 35%, 100% 100%, 15% 65%, 0% 35%)'
                 }}
                 animate={{
-                  x: [0, 200, -50],
-                  y: [0, 50, 100],
-                  rotate: [0, 180, 360],
-                  opacity: [0.6, 0.3, 0.8]
+                  x: [0, 300, -100],
+                  y: [0, 80, 150],
+                  rotate: [0, 270, 540],
+                  opacity: [0.7, 0.4, 0.9]
                 }}
                 transition={{ 
-                  duration: 8 + Math.random() * 4, 
+                  duration: 10 + Math.random() * 6, 
                   repeat: Infinity,
-                  delay: Math.random() * 6,
+                  delay: Math.random() * 8,
                   ease: "easeInOut"
                 }}
               />
             ))}
             {/* Atmospheric haze */}
-            <div 
-              className="absolute inset-0 bg-gradient-to-br from-gray-400/3 via-transparent to-gray-600/5"
-              style={{ backdropFilter: 'blur(0.2px)' }}
-            />
+            <div className="absolute inset-0 bg-gray-500/8 backdrop-blur-[0.3px]" />
           </div>
         );
       default:
