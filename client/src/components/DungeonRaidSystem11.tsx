@@ -853,18 +853,18 @@ export function DungeonRaidSystem11({
             {/* Combat Phase */}
             {gamePhase === 'combat' && (
               <div className="flex flex-col h-full">
-                {/* Player Status */}
-                <div className="flex justify-between mb-4">
+                {/* Player Status - Compact */}
+                <div className="flex justify-between mb-3">
                   {players.map(player => (
-                    <div key={player.id} className="bg-slate-800/50 rounded-lg p-3 min-w-48">
-                      <div className="text-white font-semibold mb-2">{player.name}</div>
-                      <div className="space-y-2">
+                    <div key={player.id} className="bg-slate-800/50 rounded-lg p-2 min-w-40">
+                      <div className="text-white font-semibold text-sm mb-1">{player.name}</div>
+                      <div className="space-y-1">
                         <div>
                           <div className="flex justify-between text-xs text-slate-300 mb-1">
                             <span>Health</span>
                             <span>{player.health}/{player.maxHealth}</span>
                           </div>
-                          <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                          <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-green-500 transition-all duration-300"
                               style={{ width: `${(player.health / player.maxHealth) * 100}%` }}
@@ -876,7 +876,7 @@ export function DungeonRaidSystem11({
                             <span>Mana</span>
                             <span>{player.mana}/{player.maxMana}</span>
                           </div>
-                          <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                          <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-blue-500 transition-all duration-300"
                               style={{ width: `${(player.mana / player.maxMana) * 100}%` }}
@@ -888,12 +888,12 @@ export function DungeonRaidSystem11({
                   ))}
                 </div>
 
-                {/* Battlefield */}
+                {/* Battlefield - Expanded */}
                 <div 
                   ref={battlefieldRef}
                   onClick={handleBattlefieldTap}
-                  className="relative bg-slate-700/30 rounded-xl border border-slate-600/50 cursor-crosshair overflow-hidden mb-4 flex-grow"
-                  style={{ height: '280px', maxHeight: '280px' }}
+                  className="relative bg-slate-700/30 rounded-xl border border-slate-600/50 cursor-crosshair overflow-hidden mb-3 flex-grow"
+                  style={{ height: '420px', maxHeight: '420px' }}
                 >
                   {/* Players */}
                   {players.map(player => (
@@ -992,8 +992,8 @@ export function DungeonRaidSystem11({
                   </AnimatePresence>
                 </div>
 
-                {/* Action Bar - Always visible */}
-                <div className="flex justify-center gap-4 py-4 bg-slate-800/30 rounded-lg">
+                {/* Action Bar - Compact */}
+                <div className="flex justify-center gap-3 py-2 bg-slate-800/30 rounded-lg">
                   {skills.map((skill, index) => (
                     <motion.button
                       key={skill.id}
