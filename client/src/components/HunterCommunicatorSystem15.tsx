@@ -666,38 +666,105 @@ export function HunterCommunicatorSystem15({
           </Button>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex border-b border-slate-700 bg-slate-800">
+        {/* Enhanced Tab Navigation */}
+        <div 
+          className="flex relative z-20"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+            backdropFilter: 'blur(15px)',
+            borderBottom: '1px solid rgba(255,255,255,0.06)'
+          }}
+        >
           <button
             onClick={() => setActiveTab('messages')}
-            className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 transition-colors ${
-              activeTab === 'messages' 
-                ? 'text-blue-400 border-b-2 border-blue-400' 
+            className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 transition-all duration-300 relative ${
+              activeTab === 'messages'
+                ? 'text-blue-300'
                 : 'text-slate-400 hover:text-white'
             }`}
+            style={{
+              textShadow: activeTab === 'messages' 
+                ? '0 0 10px rgba(147,197,253,0.5), 0 1px 2px rgba(0,0,0,0.8)'
+                : '0 1px 2px rgba(0,0,0,0.8)'
+            }}
           >
-            <MessageCircle className="w-4 h-4" />
+            <MessageCircle 
+              className="w-4 h-4" 
+              style={{
+                filter: activeTab === 'messages'
+                  ? 'drop-shadow(0 0 6px rgba(147,197,253,0.4))'
+                  : 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))'
+              }}
+            />
             Messages
             {conversations.reduce((sum, c) => sum + c.unreadCount, 0) > 0 && (
-              <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span 
+                className="text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(147,51,234,0.9), rgba(139,69,198,0.9))',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  boxShadow: '0 0 12px rgba(147,51,234,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+                }}
+              >
                 {conversations.reduce((sum, c) => sum + c.unreadCount, 0)}
               </span>
+            )}
+            {/* Glowing underline for active tab */}
+            {activeTab === 'messages' && (
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-0.5"
+                style={{
+                  background: 'linear-gradient(90deg, rgba(147,197,253,0.6), rgba(59,130,246,0.8), rgba(147,197,253,0.6))',
+                  boxShadow: '0 0 8px rgba(59,130,246,0.6)'
+                }}
+              />
             )}
           </button>
           <button
             onClick={() => setActiveTab('alerts')}
-            className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 transition-colors ${
-              activeTab === 'alerts' 
-                ? 'text-blue-400 border-b-2 border-blue-400' 
+            className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 transition-all duration-300 relative ${
+              activeTab === 'alerts'
+                ? 'text-blue-300'
                 : 'text-slate-400 hover:text-white'
             }`}
+            style={{
+              textShadow: activeTab === 'alerts' 
+                ? '0 0 10px rgba(147,197,253,0.5), 0 1px 2px rgba(0,0,0,0.8)'
+                : '0 1px 2px rgba(0,0,0,0.8)'
+            }}
           >
-            <Bell className="w-4 h-4" />
+            <Bell 
+              className="w-4 h-4" 
+              style={{
+                filter: activeTab === 'alerts'
+                  ? 'drop-shadow(0 0 6px rgba(147,197,253,0.4))'
+                  : 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))'
+              }}
+            />
             System Alerts
             {systemAlerts.filter(a => !a.read).length > 0 && (
-              <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span 
+                className="text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(147,51,234,0.9), rgba(139,69,198,0.9))',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  boxShadow: '0 0 12px rgba(147,51,234,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+                }}
+              >
                 {systemAlerts.filter(a => !a.read).length}
               </span>
+            )}
+            {/* Glowing underline for active tab */}
+            {activeTab === 'alerts' && (
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-0.5"
+                style={{
+                  background: 'linear-gradient(90deg, rgba(147,197,253,0.6), rgba(59,130,246,0.8), rgba(147,197,253,0.6))',
+                  boxShadow: '0 0 8px rgba(59,130,246,0.6)'
+                }}
+              />
             )}
           </button>
         </div>
@@ -706,41 +773,105 @@ export function HunterCommunicatorSystem15({
         <div className="flex-1 flex overflow-hidden">
           {activeTab === 'messages' ? (
             <>
-              {/* Conversation List */}
-              <div className="w-1/3 border-r border-slate-700 bg-slate-800">
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-white mb-4">Conversations</h3>
-                  <div className="space-y-2">
+              {/* Enhanced Conversation List with Floating Pills */}
+              <div 
+                className="w-1/3 relative z-10"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
+                <div className="p-6">
+                  <h3 
+                    className="text-lg font-semibold text-white mb-6"
+                    style={{
+                      textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                      filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                    }}
+                  >
+                    Conversations
+                  </h3>
+                  <div className="space-y-3">
                     {conversations.map((conversation) => (
                       <motion.div
                         key={conversation.id}
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ 
+                          scale: 1.02,
+                          y: -2,
+                          transition: { duration: 0.2 }
+                        }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {
                           setSelectedConversation(conversation.id);
                           markConversationAsRead(conversation.id);
                         }}
-                        className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                          selectedConversation === conversation.id 
-                            ? 'bg-blue-600' 
-                            : 'bg-slate-700 hover:bg-slate-600'
-                        }`}
+                        className="cursor-pointer transition-all duration-300"
+                        style={{
+                          background: selectedConversation === conversation.id 
+                            ? 'linear-gradient(135deg, rgba(147,51,234,0.15), rgba(59,130,246,0.1))'
+                            : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                          backdropFilter: 'blur(15px)',
+                          border: selectedConversation === conversation.id
+                            ? '1px solid rgba(147,51,234,0.3)'
+                            : '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '20px',
+                          padding: '16px',
+                          boxShadow: selectedConversation === conversation.id
+                            ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 25px rgba(147,51,234,0.15), 0 0 20px rgba(147,51,234,0.1)'
+                            : 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)'
+                        }}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl">{conversation.participantAvatar}</span>
+                          <div 
+                            className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+                              backdropFilter: 'blur(10px)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
+                            }}
+                          >
+                            {conversation.participantAvatar}
+                          </div>
                           <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium text-white">{conversation.participantName}</span>
+                            <div className="flex items-center justify-between mb-1">
+                              <span 
+                                className="font-medium text-white"
+                                style={{
+                                  textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                                  filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
+                                }}
+                              >
+                                {conversation.participantName}
+                              </span>
                               {conversation.unreadCount > 0 && (
-                                <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                <span 
+                                  className="text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                                  style={{
+                                    background: 'linear-gradient(135deg, rgba(147,51,234,0.9), rgba(139,69,198,0.9))',
+                                    backdropFilter: 'blur(10px)',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    boxShadow: '0 0 12px rgba(147,51,234,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+                                  }}
+                                >
                                   {conversation.unreadCount}
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-slate-300 truncate">
+                            <p 
+                              className="text-sm text-slate-300 truncate mb-1"
+                              style={{
+                                textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                              }}
+                            >
                               {conversation.lastMessage.content}
                             </p>
-                            <span className="text-xs text-slate-400">
+                            <span 
+                              className="text-xs text-slate-400"
+                              style={{
+                                textShadow: '0 1px 1px rgba(0,0,0,0.8)'
+                              }}
+                            >
                               {formatTimestamp(conversation.lastMessage.timestamp)}
                             </span>
                           </div>
@@ -749,87 +880,282 @@ export function HunterCommunicatorSystem15({
                     ))}
                   </div>
                 </div>
+                
+                {/* Glowing Divider */}
+                <div 
+                  className="absolute top-0 right-0 bottom-0 w-px"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(147,51,234,0.6), rgba(59,130,246,0.4), rgba(147,51,234,0.6))',
+                    boxShadow: '0 0 8px rgba(147,51,234,0.4), 0 0 16px rgba(59,130,246,0.2)'
+                  }}
+                />
               </div>
 
-              {/* Chat Area */}
-              <div className="flex-1 flex flex-col">
+              {/* Enhanced Chat Area */}
+              <div 
+                className="flex-1 flex flex-col relative z-10"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005))',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
                 {selectedConversationData ? (
                   <>
-                    {/* Chat Header */}
-                    <div className="p-4 border-b border-slate-700 bg-slate-800">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{selectedConversationData.participantAvatar}</span>
+                    {/* Enhanced Chat Header */}
+                    <div 
+                      className="p-6"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
+                        backdropFilter: 'blur(15px)',
+                        borderBottom: '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                      }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
+                          }}
+                        >
+                          {selectedConversationData.participantAvatar}
+                        </div>
                         <div>
-                          <h4 className="font-semibold text-white">{selectedConversationData.participantName}</h4>
-                          <div className="flex items-center gap-2 text-sm text-slate-400">
-                            <div className={`w-2 h-2 rounded-full ${
-                              chaState.status === 'available' ? 'bg-green-400' : 
-                              chaState.status === 'busy' || chaState.status === 'in_meeting' ? 'bg-yellow-400' :
-                              chaState.status === 'in_raid' ? 'bg-red-400' :
-                              chaState.status === 'sleeping' ? 'bg-gray-400' : 'bg-gray-600'
-                            }`} />
-                            <span className="capitalize">{chaState.status.replace('_', ' ')}</span>
+                          <h4 
+                            className="font-semibold text-white text-lg"
+                            style={{
+                              textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                              filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                            }}
+                          >
+                            {selectedConversationData.participantName}
+                          </h4>
+                          <div className="flex items-center gap-2 text-sm text-slate-300">
+                            <div 
+                              className={`w-2 h-2 rounded-full ${
+                                chaState.status === 'available' ? 'bg-green-400' : 
+                                chaState.status === 'busy' || chaState.status === 'in_meeting' ? 'bg-yellow-400' :
+                                chaState.status === 'in_raid' ? 'bg-red-400' :
+                                chaState.status === 'sleeping' ? 'bg-gray-400' : 'bg-gray-600'
+                              }`}
+                              style={{
+                                boxShadow: chaState.status === 'available' 
+                                  ? '0 0 8px rgba(34,197,94,0.6), 0 0 16px rgba(34,197,94,0.3)'
+                                  : chaState.status === 'busy' || chaState.status === 'in_meeting'
+                                  ? '0 0 8px rgba(234,179,8,0.6), 0 0 16px rgba(234,179,8,0.3)'
+                                  : '0 0 8px rgba(239,68,68,0.6), 0 0 16px rgba(239,68,68,0.3)'
+                              }}
+                            />
+                            <span 
+                              className="capitalize"
+                              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                            >
+                              {chaState.status.replace('_', ' ')}
+                            </span>
                             <span>•</span>
-                            <span>{chaState.activity}</span>
+                            <span style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
+                              {chaState.activity}
+                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Messages */}
-                    <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900">
+                    {/* Enhanced Messages with Scene Script Styling */}
+                    <div 
+                      ref={chatContainerRef} 
+                      className="flex-1 overflow-y-auto p-6 space-y-6"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(15,23,42,0.3), rgba(30,41,59,0.2))',
+                        backdropFilter: 'blur(30px)'
+                      }}
+                    >
                       {selectedConversationData.messages.map((message) => (
-                        <div
+                        <motion.div
                           key={message.id}
-                          className={`flex ${message.senderId === 'player' ? 'justify-end' : 'justify-start'}`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className={`w-full ${message.senderId === 'player' ? 'text-right' : 'text-left'}`}
                         >
-                          <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                              message.senderId === 'player'
-                                ? 'bg-blue-600 text-white rounded-br-none'
-                                : 'bg-slate-700 text-white rounded-bl-none'
-                            }`}
-                          >
-                            <p className="text-sm">{message.content}</p>
-                            <div className="flex items-center justify-between mt-1">
-                              <span className="text-xs opacity-70">
-                                {formatTimestamp(message.timestamp)}
-                              </span>
-                              {renderMessageStateIcon(message)}
+                          {message.senderId === 'player' ? (
+                            // Player messages: Right-aligned, italicized, dimmer
+                            <div className="flex justify-end">
+                              <div className="max-w-2xl">
+                                <p 
+                                  className="text-slate-300 italic text-base leading-relaxed"
+                                  style={{
+                                    textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                                    filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.03))'
+                                  }}
+                                >
+                                  {message.content}
+                                </p>
+                                <div className="flex items-center justify-end gap-2 mt-2">
+                                  <span 
+                                    className="text-xs text-slate-500"
+                                    style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                                  >
+                                    {formatTimestamp(message.timestamp)}
+                                  </span>
+                                  {renderMessageStateIcon(message)}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
+                          ) : (
+                            // NPC messages: Left-aligned with portrait, scene script style
+                            <div className="flex gap-4">
+                              <div 
+                                className="w-12 h-12 rounded-full flex items-center justify-center text-xl flex-shrink-0"
+                                style={{
+                                  background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+                                  backdropFilter: 'blur(10px)',
+                                  border: '1px solid rgba(255,255,255,0.1)',
+                                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
+                                }}
+                              >
+                                {selectedConversationData.participantAvatar}
+                              </div>
+                              <div className="flex-1 max-w-2xl">
+                                <div className="mb-1">
+                                  <span 
+                                    className="text-sm font-medium text-blue-300"
+                                    style={{
+                                      textShadow: '0 0 8px rgba(147,197,253,0.4), 0 1px 2px rgba(0,0,0,0.8)',
+                                      filter: 'drop-shadow(0 1px 1px rgba(147,197,253,0.1))'
+                                    }}
+                                  >
+                                    {selectedConversationData.participantName}
+                                  </span>
+                                </div>
+                                <p 
+                                  className="text-white text-base leading-relaxed"
+                                  style={{
+                                    textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                                    filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
+                                  }}
+                                >
+                                  {message.content}
+                                </p>
+                                <span 
+                                  className="text-xs text-slate-400 mt-2 block"
+                                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                                >
+                                  {formatTimestamp(message.timestamp)}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </motion.div>
                       ))}
+                      
+                      {/* Enhanced Typing Indicator */}
                       {isTyping && (
-                        <div className="flex justify-start">
-                          <div className="bg-slate-700 px-4 py-2 rounded-lg rounded-bl-none">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex gap-4"
+                        >
+                          <div 
+                            className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+                              backdropFilter: 'blur(10px)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
+                            }}
+                          >
+                            {selectedConversationData.participantAvatar}
+                          </div>
+                          <div 
+                            className="px-4 py-3 rounded-2xl"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                              backdropFilter: 'blur(15px)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                            }}
+                          >
                             <div className="flex space-x-1">
-                              <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-                              <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                              <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                              <div 
+                                className="w-2 h-2 rounded-full animate-bounce"
+                                style={{ 
+                                  background: 'rgba(147,197,253,0.6)',
+                                  boxShadow: '0 0 4px rgba(147,197,253,0.4)'
+                                }}
+                              />
+                              <div 
+                                className="w-2 h-2 rounded-full animate-bounce"
+                                style={{ 
+                                  background: 'rgba(147,197,253,0.6)',
+                                  boxShadow: '0 0 4px rgba(147,197,253,0.4)',
+                                  animationDelay: '0.1s'
+                                }}
+                              />
+                              <div 
+                                className="w-2 h-2 rounded-full animate-bounce"
+                                style={{ 
+                                  background: 'rgba(147,197,253,0.6)',
+                                  boxShadow: '0 0 4px rgba(147,197,253,0.4)',
+                                  animationDelay: '0.2s'
+                                }}
+                              />
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       )}
                     </div>
 
-                    {/* Message Input */}
-                    <div className="p-4 border-t border-slate-700 bg-slate-800">
+                    {/* Enhanced Message Input */}
+                    <div 
+                      className="p-6 relative z-20"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
+                        backdropFilter: 'blur(15px)',
+                        borderTop: '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                      }}
+                    >
                       {connectionStatus === 'no_signal' ? (
-                        <div className="text-center text-slate-400 py-2">
-                          <div className="flex items-center justify-center gap-2">
-                            <XIcon className="w-4 h-4" />
-                            No signal - Cannot send messages
+                        <div 
+                          className="text-center py-4 rounded-2xl"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.05))',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(239,68,68,0.2)',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                          }}
+                        >
+                          <div className="flex items-center justify-center gap-2 text-red-300">
+                            <XIcon 
+                              className="w-4 h-4" 
+                              style={{ filter: 'drop-shadow(0 0 4px rgba(239,68,68,0.4))' }}
+                            />
+                            <span style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
+                              No signal - Cannot send messages
+                            </span>
                           </div>
                         </div>
                       ) : (
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                           <Textarea
                             value={currentInput}
                             onChange={(e) => setCurrentInput(e.target.value)}
                             placeholder={canSendMessages ? "Type your message..." : "Select a conversation to start messaging"}
-                            className="flex-1 min-h-[40px] max-h-32 bg-slate-700 border-slate-600 text-white placeholder-slate-400"
+                            className="flex-1 min-h-[50px] max-h-32 text-white placeholder-slate-400 border-0 resize-none"
                             disabled={!canSendMessages}
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                              backdropFilter: 'blur(15px)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              borderRadius: '16px',
+                              padding: '16px',
+                              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.1)',
+                              textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                            }}
                             onKeyPress={(e) => {
                               if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
@@ -840,19 +1166,66 @@ export function HunterCommunicatorSystem15({
                           <Button
                             onClick={handleSendMessage}
                             disabled={!currentInput.trim() || !canSendMessages}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            className="px-4 py-3 text-white transition-all duration-200"
+                            style={{
+                              background: currentInput.trim() && canSendMessages
+                                ? 'linear-gradient(135deg, rgba(59,130,246,0.8), rgba(37,99,235,0.9))'
+                                : 'linear-gradient(135deg, rgba(100,116,139,0.4), rgba(71,85,105,0.5))',
+                              backdropFilter: 'blur(10px)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              borderRadius: '12px',
+                              boxShadow: currentInput.trim() && canSendMessages
+                                ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 0 16px rgba(59,130,246,0.3)'
+                                : 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                            }}
                           >
-                            <Send className="w-4 h-4" />
+                            <Send 
+                              className="w-4 h-4" 
+                              style={{
+                                filter: currentInput.trim() && canSendMessages
+                                  ? 'drop-shadow(0 0 4px rgba(59,130,246,0.4))'
+                                  : 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))'
+                              }}
+                            />
                           </Button>
                         </div>
                       )}
                     </div>
                   </>
                 ) : (
-                  <div className="flex-1 flex items-center justify-center bg-slate-900">
-                    <div className="text-center text-slate-400">
-                      <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p>Select a conversation to start messaging</p>
+                  <div 
+                    className="flex-1 flex items-center justify-center relative z-10"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(15,23,42,0.2), rgba(30,41,59,0.1))',
+                      backdropFilter: 'blur(30px)'
+                    }}
+                  >
+                    <div className="text-center">
+                      <div 
+                        className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                          backdropFilter: 'blur(15px)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                        }}
+                      >
+                        <MessageCircle 
+                          className="w-8 h-8 text-slate-400" 
+                          style={{
+                            filter: 'drop-shadow(0 0 6px rgba(148,163,184,0.3)) drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
+                          }}
+                        />
+                      </div>
+                      <p 
+                        className="text-slate-300 text-lg"
+                        style={{
+                          textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                          filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.05))'
+                        }}
+                      >
+                        Select a conversation to start messaging
+                      </p>
                     </div>
                   </div>
                 )}
