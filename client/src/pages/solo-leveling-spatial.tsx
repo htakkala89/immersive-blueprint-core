@@ -341,11 +341,9 @@ export default function SoloLevelingSpatial() {
   const [showGangnamFurnishings, setShowGangnamFurnishings] = useState(false);
   const [showLuxuryRealtor, setShowLuxuryRealtor] = useState(false);
   
-  // NPC Dialogue System
-  const [showNPCDialogue, setShowNPCDialogue] = useState<{
-    npcName: string;
+  // NPC Dialogue System - Simple static dialogue box
+  const [showReceptionistDialogue, setShowReceptionistDialogue] = useState<{
     dialogue: string;
-    avatar: string;
     position: { x: number; y: number };
   } | null>(null);
 
@@ -383,14 +381,16 @@ export default function SoloLevelingSpatial() {
 
   const chaHaeInCurrentLocation = getChaHaeInLocation();
 
-  // Helper function for receptionist dialogue
+  // Helper function for receptionist dialogue - rotating pre-scripted hints
   const getReceptionistDialogue = (): string => {
     const dialogues = [
-      "I heard there's been unusual gate activity near Gangnam lately. You might want to check the mission board.",
-      "The S-rank hunters have been busier than usual. Something big might be happening.",
-      "Pro tip: Always check your equipment durability before entering A-rank gates or higher.",
-      "Did you know the training facility on the upper floors has new simulation chambers?",
-      "I've heard whispers about a new dungeon type appearing. The analysis team is investigating."
+      "I heard the vendor at the Market is paying high prices for wolf cores this week.",
+      "Some hunters were talking about a strange energy spike in the old subway tunnels. Might be a hidden gate.",
+      "Did you know you can practice new skills at the Elite Training Center? It's top-of-the-line.",
+      "The luxury department store in Gangnam has some rare enhancement stones on display.",
+      "A-rank hunters have been reporting unusual mana fluctuations during recent raids.",
+      "The new apartment complex offers great amenities for S-rank hunters. Worth checking out.",
+      "I overheard that someone found a rare material vendor hidden in the back alleys of Hongdae."
     ];
     return dialogues[Math.floor(Math.random() * dialogues.length)];
   };
@@ -1522,10 +1522,12 @@ export default function SoloLevelingSpatial() {
                 console.log('Opening mission board with gate alerts and world lore');
                 break;
               case 'receptionist':
-                // NPC dialogue with hints and rumors - separate from Cha Hae-In
-                const receptionistDialogue = getReceptionistDialogue();
-                alert(`Guild Receptionist: "${receptionistDialogue}"`);
-                console.log('Talking to Guild Receptionist for rumors and hints:', receptionistDialogue);
+                // Simple NPC dialogue box - no focus animation, brief interaction
+                setShowReceptionistDialogue({
+                  dialogue: getReceptionistDialogue(),
+                  position: { x: 65, y: 45 }
+                });
+                console.log('Guild Employee Ji-Hoon providing rumor/hint');
                 break;
               case 'elevator_bank':
                 // Floor navigation system - could unlock higher floors based on rank
@@ -2362,6 +2364,48 @@ export default function SoloLevelingSpatial() {
         onQuestAccept={handleQuestAccept}
         onNewMessage={handleNewMessage}
       />
+
+      {/* Simple Receptionist Dialogue Box - Liquid Glassmorphism */}
+      {showReceptionistDialogue && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute"
+            style={{
+              left: `${showReceptionistDialogue.position.x}%`,
+              top: `${showReceptionistDialogue.position.y}%`,
+              transform: 'translate(-50%, -50%)'
+            }}
+          >
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 max-w-sm shadow-2xl">
+              {/* NPC Portrait and Name */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">JH</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">Guild Employee Ji-Hoon</h3>
+                  <p className="text-white/70 text-xs">Hunter Association</p>
+                </div>
+              </div>
+              
+              {/* Dialogue Text */}
+              <div className="bg-white/5 rounded-lg p-4 mb-4">
+                <p className="text-white/90 text-sm leading-relaxed">
+                  "{showReceptionistDialogue.dialogue}"
+                </p>
+              </div>
+              
+              {/* Dismiss Button */}
+              <button
+                onClick={() => setShowReceptionistDialogue(null)}
+                className="w-full bg-blue-500/20 hover:bg-blue-500/30 text-white py-2 px-4 rounded-lg transition-colors border border-blue-400/30"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
