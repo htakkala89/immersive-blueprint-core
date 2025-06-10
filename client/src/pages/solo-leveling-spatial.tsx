@@ -1886,16 +1886,23 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      <DungeonRaid
+      <DungeonRaidSystem11
         isVisible={showDungeonRaid}
         onClose={() => setShowDungeonRaid(false)}
         onRaidComplete={(success, loot) => {
           if (success) {
             setGameState(prev => ({
               ...prev,
-              gold: (prev.gold || 0) + 1000,
-              affection: Math.min(100, prev.affection + 10)
+              gold: (prev.gold || 0) + 15000000,
+              affection: Math.min(100, prev.affection + 10),
+              experience: (prev.experience || 0) + 500
             }));
+            loot.forEach(item => {
+              setGameState(prev => ({
+                ...prev,
+                inventory: [...prev.inventory, item]
+              }));
+            });
           }
         }}
         playerLevel={gameState.level}
