@@ -1594,34 +1594,108 @@ export default function SoloLevelingSpatial() {
           </motion.div>
         )}
         
-        {/* Weather Control Panel - Temporary Testing */}
-        <div className="absolute top-4 right-4 bg-black/80 text-white p-2 rounded z-50">
-          <div className="text-xs font-semibold mb-2">Weather Effects Test</div>
-          <div className="flex gap-2 text-xs">
-            <button 
-              onClick={() => setWeather('clear')}
-              className={`px-2 py-1 rounded ${weather === 'clear' ? 'bg-blue-600' : 'bg-gray-600'}`}
-            >
-              Clear
-            </button>
-            <button 
-              onClick={() => setWeather('rain')}
-              className={`px-2 py-1 rounded ${weather === 'rain' ? 'bg-blue-600' : 'bg-gray-600'}`}
-            >
-              Rain
-            </button>
-            <button 
-              onClick={() => setWeather('snow')}
-              className={`px-2 py-1 rounded ${weather === 'snow' ? 'bg-blue-600' : 'bg-gray-600'}`}
-            >
-              Snow
-            </button>
-            <button 
-              onClick={() => setWeather('cloudy')}
-              className={`px-2 py-1 rounded ${weather === 'cloudy' ? 'bg-blue-600' : 'bg-gray-600'}`}
-            >
-              Windy
-            </button>
+        {/* Developer Menu */}
+        <div className="absolute top-4 right-4 bg-black/90 backdrop-blur-sm text-white p-3 rounded-lg border border-purple-400/30 z-50 max-w-xs">
+          <div className="text-xs font-semibold mb-3 text-purple-300">Developer Menu</div>
+          
+          {/* Affection Controls */}
+          <div className="mb-3">
+            <div className="text-xs text-gray-300 mb-1">Affection: {gameState.affection}</div>
+            <div className="flex gap-1 text-xs">
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, affection: 0 }))}
+                className="px-2 py-1 rounded bg-red-600 hover:bg-red-700"
+              >
+                0
+              </button>
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, affection: 40 }))}
+                className="px-2 py-1 rounded bg-yellow-600 hover:bg-yellow-700"
+              >
+                40
+              </button>
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, affection: 70 }))}
+                className="px-2 py-1 rounded bg-green-600 hover:bg-green-700"
+              >
+                70
+              </button>
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, affection: 100 }))}
+                className="px-2 py-1 rounded bg-purple-600 hover:bg-purple-700"
+              >
+                100
+              </button>
+            </div>
+          </div>
+
+          {/* Time Period Override */}
+          <div className="mb-3">
+            <div className="text-xs text-gray-300 mb-1">Time: {timeOfDay}</div>
+            <div className="flex gap-1 text-xs">
+              <button 
+                onClick={() => setTimeOfDay('morning')}
+                className={`px-2 py-1 rounded ${timeOfDay === 'morning' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Morning
+              </button>
+              <button 
+                onClick={() => setTimeOfDay('evening')}
+                className={`px-2 py-1 rounded ${timeOfDay === 'evening' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Evening
+              </button>
+              <button 
+                onClick={() => setTimeOfDay('night')}
+                className={`px-2 py-1 rounded ${timeOfDay === 'night' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Night
+              </button>
+            </div>
+          </div>
+
+          {/* Resource Boosts */}
+          <div className="mb-3">
+            <div className="text-xs text-gray-300 mb-1">Resources</div>
+            <div className="flex gap-1 text-xs">
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, gold: 999999999 }))}
+                className="px-2 py-1 rounded bg-yellow-600 hover:bg-yellow-700"
+              >
+                Max Gold
+              </button>
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, level: 50, hunterRank: 'S-Rank' }))}
+                className="px-2 py-1 rounded bg-red-600 hover:bg-red-700"
+              >
+                S-Rank
+              </button>
+            </div>
+          </div>
+
+          {/* Weather Controls */}
+          <div>
+            <div className="text-xs text-gray-300 mb-1">Weather</div>
+            <div className="flex gap-1 text-xs">
+              <button 
+                onClick={() => setWeather('clear')}
+                className={`px-2 py-1 rounded ${weather === 'clear' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Clear
+              </button>
+              <button 
+                onClick={() => setWeather('rain')}
+                className={`px-2 py-1 rounded ${weather === 'rain' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Rain
+              </button>
+              <button 
+                onClick={() => setWeather('snow')}
+                className={`px-2 py-1 rounded ${weather === 'snow' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Snow
+              </button>
+            </div>
           </div>
         </div>
 
