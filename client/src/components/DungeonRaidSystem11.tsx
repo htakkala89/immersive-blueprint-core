@@ -63,7 +63,7 @@ export function DungeonRaidSystem11({
   affectionLevel 
 }: RaidProps) {
   const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'victory' | 'defeat' | 'room_clear'>('prep');
-  const [currentRoom, setCurrentRoom] = useState(3);
+  const [currentRoom, setCurrentRoom] = useState(2);
   const [currentWave, setCurrentWave] = useState(1);
   const [roomExits, setRoomExits] = useState<Array<{
     id: string;
@@ -787,11 +787,163 @@ export function DungeonRaidSystem11({
     return () => clearInterval(interval);
   }, []);
 
+
+
+  // Generate enemies for the current room
+  const generateRoomEnemies = () => {
+    let newEnemies: Enemy[] = [];
+    
+    switch (currentRoom) {
+      case 1:
+        // Entrance - simple intro combat
+        newEnemies = [
+          {
+            id: 'entrance_beast_1',
+            name: 'Shadow Beast',
+            health: 60,
+            maxHealth: 60,
+            x: 520,
+            y: 320,
+            type: 'shadow_beast' as const
+          },
+          {
+            id: 'entrance_beast_2',
+            name: 'Shadow Beast',
+            health: 60,
+            maxHealth: 60,
+            x: 580,
+            y: 300,
+            type: 'shadow_beast' as const
+          }
+        ];
+        addToCombatLog("Act I: Entrance - Clear the path forward!");
+        break;
+        
+      case 2:
+        // Trap Corridor
+        newEnemies = [
+          {
+            id: 'corridor_orc_1',
+            name: 'Orc Warrior',
+            health: 90,
+            maxHealth: 90,
+            x: 480,
+            y: 280,
+            type: 'orc_warrior' as const
+          },
+          {
+            id: 'corridor_beast_1',
+            name: 'Shadow Beast',
+            health: 70,
+            maxHealth: 70,
+            x: 600,
+            y: 320,
+            type: 'shadow_beast' as const
+          }
+        ];
+        addToCombatLog("Act I: Trap Corridor - Watch for environmental hazards!");
+        break;
+        
+      case 3:
+        // Arena Chamber - multi-wave combat
+        newEnemies = [
+          {
+            id: 'arena_beast_1',
+            name: 'Arena Shadow Beast',
+            health: 80,
+            maxHealth: 80,
+            x: 500,
+            y: 300,
+            type: 'shadow_beast' as const
+          },
+          {
+            id: 'arena_beast_2',
+            name: 'Arena Shadow Beast',
+            health: 80,
+            maxHealth: 80,
+            x: 550,
+            y: 250,
+            type: 'shadow_beast' as const
+          }
+        ];
+        addToCombatLog("Act II: Arena Chamber - Defeat all enemies in waves!");
+        break;
+        
+      case 4:
+        // Puzzle Chamber
+        newEnemies = [
+          {
+            id: 'puzzle_guardian_1',
+            name: 'Stone Guardian',
+            health: 120,
+            maxHealth: 120,
+            x: 520,
+            y: 280,
+            type: 'orc_warrior' as const
+          }
+        ];
+        addToCombatLog("Act II: Puzzle Chamber - Solve ancient mysteries!");
+        break;
+        
+      case 5:
+        // Stealth Section
+        newEnemies = [
+          {
+            id: 'elite_guard',
+            name: 'Elite Shadow Guard',
+            health: 150,
+            maxHealth: 150,
+            x: 400,
+            y: 280,
+            type: 'boss' as const
+          }
+        ];
+        addToCombatLog("Act II: Stealth Section - Avoid detection or fight!");
+        break;
+        
+      case 6:
+        // Antechamber - healing room
+        newEnemies = [];
+        addToCombatLog("Act III: Antechamber - Prepare for the final battle!");
+        setTimeout(() => {
+          setGamePhase('room_clear');
+          generateRoomExits();
+        }, 2000);
+        break;
+        
+      case 7:
+        // Boss Arena
+        newEnemies = [
+          {
+            id: 'shadow_sovereign',
+            name: 'Shadow Sovereign',
+            health: 350,
+            maxHealth: 350,
+            x: 520,
+            y: 280,
+            type: 'boss' as const
+          }
+        ];
+        addToCombatLog("Act III: Boss Arena - Face the Shadow Sovereign!");
+        break;
+        
+      default:
+        newEnemies = [];
+    }
+    
+    setEnemies(newEnemies);
+    setCurrentWave(1);
+  };
+
   // Game initialization with puzzle mechanics
   useEffect(() => {
     if (isVisible && gamePhase === 'prep') {
       setTimeout(() => {
         setGamePhase('combat');
+        
+        // Generate enemies for current room
+        generateRoomEnemies();
+        
         addToCombatLog("Combat begins! Use skills strategically!");
         
         // 30% chance to spawn puzzle runes in combat
@@ -888,19 +1040,8 @@ export function DungeonRaidSystem11({
         ]);
       } else {
         // Generate new enemies for next room
-        const newEnemies = [
-          {
-            id: 'room_enemy_1',
-            name: 'Shadow Guardian',
-            health: 90,
-            maxHealth: 90,
-            x: 500,
-            y: 300,
-            type: 'shadow_beast' as const
-          }
-        ];
-        setEnemies(newEnemies);
-        addToCombatLog(`Advancing to Room ${currentRoom}...`);
+        setTimeout(() => generateRoomEnemies(), 500);
+        addToCombatLog(`Advancing to Room ${currentRoom + 1}...`);
       }
     }
   };
