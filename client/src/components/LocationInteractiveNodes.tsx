@@ -636,6 +636,7 @@ export function LocationInteractiveNodes({
       {/* DEBUG: Always visible indicator */}
       <div className="absolute top-0 left-0 bg-red-500 text-white p-2 z-[9999] pointer-events-auto">
         DEBUG: Component Loaded! Nodes={nodes.length}, Location={locationId}
+        <br/>Base: {baseNodes.length}, Red Gate: {baseNodes.some(n => n.id === 'red_gate_entrance') ? 'YES' : 'NO'}
       </div>
       
       {/* TEST: Force render a test node */}
