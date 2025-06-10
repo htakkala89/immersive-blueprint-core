@@ -280,6 +280,15 @@ export default function SoloLevelingSpatial() {
     now.setHours(14, 0, 0, 0); // Set to 2 PM (afternoon)
     return now;
   });
+  
+  // Sync timeOfDay state with getCurrentTimeOfDay function
+  useEffect(() => {
+    const currentCalculatedTime = getCurrentTimeOfDay();
+    if (currentCalculatedTime !== timeOfDay) {
+      setTimeOfDay(currentCalculatedTime);
+    }
+  }, [gameTime]);
+  
   const [showConstellation, setShowConstellation] = useState(false);
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
   const [showArmory, setShowArmory] = useState(false);
@@ -316,8 +325,7 @@ export default function SoloLevelingSpatial() {
       if (affection >= 70) return 'chahaein_apartment'; // High affection - at her place
       return 'hunter_association'; // Always at work in mornings
     } else if (currentTime === 'afternoon') {
-      if (Math.random() > 0.8 && affection >= 50) return 'hunter_market'; // Occasional market visits
-      return 'hunter_association'; // Usually at Hunter Association during work hours
+      return 'hunter_association'; // Always at Hunter Association during work hours
     } else if (currentTime === 'evening') {
       if (affection >= 60) return 'myeongdong_restaurant'; // Dinner together if close
       if (affection >= 40) return 'hongdae_cafe'; // Casual meetup
