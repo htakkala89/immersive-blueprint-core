@@ -1776,6 +1776,18 @@ export default function SoloLevelingSpatial() {
         {/* Enhanced Interactive Nodes System */}
         <LocationInteractiveNodes
           locationId={playerLocation}
+          playerStats={{
+            affection: gameState.affection,
+            gold: gameState.gold || 0,
+            apartmentTier: gameState.apartmentTier || 1
+          }}
+          environmentalContext={{
+            weather: weather,
+            timeOfDay: timeOfDay,
+            storyFlags: Object.keys(storyFlags).filter(flag => storyFlags[flag]),
+            visitHistory: {},
+            chaHaeInPresent: chaHaeInPresent
+          }}
           onNodeInteraction={(nodeId, thoughtPrompt, outcome) => {
             console.log('Node interaction triggered:', { nodeId, thoughtPrompt, outcome });
             console.log('Current story flags:', storyFlags);
@@ -1944,18 +1956,6 @@ export default function SoloLevelingSpatial() {
                   y: 50
                 });
             }
-          }}
-          playerStats={{
-            affection: gameState.affection,
-            gold: gameState.gold || 0,
-            apartmentTier: gameState.apartmentTier || 1
-          }}
-          environmentalContext={{
-            weather,
-            timeOfDay,
-            storyFlags,
-            visitHistory,
-            chaHaeInPresent
           }}
         />
         

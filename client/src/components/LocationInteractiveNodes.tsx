@@ -594,10 +594,19 @@ export function LocationInteractiveNodes({
 
     // Red Gate bypasses thought prompt and goes directly to dungeon
     if (node.id === 'red_gate_entrance') {
+      console.log('🚪 RED GATE NODE CLICKED - Direct execution path');
+      console.log('Node details:', node);
       alert('Red Gate clicked! About to call onNodeInteraction');
       console.log('Red Gate - bypassing thought prompt, going directly to dungeon');
       const memoryState = getNodeMemoryState(node);
+      console.log('Memory state:', memoryState);
+      console.log('Calling onNodeInteraction with:', { 
+        nodeId: node.id, 
+        thoughtPrompt: memoryState.thoughtPrompt, 
+        outcome: memoryState.outcome 
+      });
       onNodeInteraction(node.id, memoryState.thoughtPrompt, memoryState.outcome);
+      console.log('onNodeInteraction call completed');
       return;
     }
 
