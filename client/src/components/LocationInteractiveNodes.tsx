@@ -592,6 +592,14 @@ export function LocationInteractiveNodes({
       return; // Node is blocked by conflicting nearby node
     }
 
+    // Red Gate bypasses thought prompt and goes directly to dungeon
+    if (node.id === 'red_gate_entrance') {
+      console.log('Red Gate - bypassing thought prompt, going directly to dungeon');
+      const memoryState = getNodeMemoryState(node);
+      onNodeInteraction(node.id, memoryState.thoughtPrompt, memoryState.outcome);
+      return;
+    }
+
     setSelectedNode(node);
     setShowThoughtPrompt(true);
   };

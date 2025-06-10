@@ -1840,7 +1840,7 @@ export default function SoloLevelingSpatial() {
                 console.log('Current showDungeonRaid state:', showDungeonRaid);
                 setShowDungeonRaid(true);
                 console.log('Dungeon raid state set to true');
-                alert('Dungeon should be opening now!');
+                // Alert removed - dungeon should open automatically
                 break;
               case 'mission_board':
                 // Opens lore panel with gate information
