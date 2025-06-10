@@ -75,6 +75,32 @@ export function DungeonRaidSystem11({
     y: number;
     isCritical: boolean;
   }>>([]);
+  const [lootDrops, setLootDrops] = useState<Array<{
+    id: string;
+    amount: number;
+    x: number;
+    y: number;
+    targetX: number;
+    targetY: number;
+    isCollected: boolean;
+  }>>([]);
+  const [trapAlert, setTrapAlert] = useState<{
+    active: boolean;
+    skillRequired: string;
+    timeLeft: number;
+  } | null>(null);
+  const [bossStruggle, setBossStruggle] = useState<{
+    active: boolean;
+    progress: number;
+    timeLeft: number;
+  } | null>(null);
+  const [puzzleRunes, setPuzzleRunes] = useState<Array<{
+    id: string;
+    position: { x: number; y: number };
+    isCorrect: boolean;
+    isActivated: boolean;
+  }>>([]);
+  const [synergyChimeReady, setSynergyChimeReady] = useState(false);
   
   // Touch-based skill system - 4 slot action bar
   const [skills, setSkills] = useState<Skill[]>([
@@ -197,6 +223,12 @@ export function DungeonRaidSystem11({
   const handleSkillTap = useCallback((skillId: string) => {
     if (gamePhase !== 'combat') return;
     
+    // Handle trap evasion first
+    if (trapAlert?.active) {
+      handleTrapEvasion(skillId);
+      return;
+    }
+    
     const skill = skills.find(s => s.id === skillId);
     if (!skill) return;
     
@@ -219,7 +251,7 @@ export function DungeonRaidSystem11({
     }
     
     executeSkill(skill);
-  }, [gamePhase, skills, players]);
+  }, [gamePhase, skills, players, trapAlert]);
 
   const handleSkillHold = useCallback((skillId: string) => {
     const skill = skills.find(s => s.id === skillId);
@@ -288,9 +320,129 @@ export function DungeonRaidSystem11({
       triggerCameraShake();
     }
     
+    // Generate loot when enemy dies
+    if (enemy.health - finalDamage <= 0) {
+      generateLootDrop(enemy.x, enemy.y);
+      
+      // Random trap trigger chance
+      if (Math.random() < 0.3) {
+        triggerTrap();
+      }
+    }
+    
     // Check for victory
     if (enemies.every(e => e.health <= 0)) {
       setTimeout(() => setGamePhase('victory'), 1000);
+    }
+  };
+
+  const generateLootDrop = (x: number, y: number) => {
+    const lootAmount = Math.floor(Math.random() * 5000) + 1000;
+    const id = Math.random().toString(36).substr(2, 9);
+    const jinwoo = players.find(p => p.id === 'jinwoo');
+    
+    if (jinwoo) {
+      setLootDrops(prev => [...prev, {
+        id,
+        amount: lootAmount,
+        x,
+        y,
+        targetX: jinwoo.x,
+        targetY: jinwoo.y,
+        isCollected: false
+      }]);
+      
+      // Magnetic attraction animation
+      setTimeout(() => {
+        setLootDrops(prev => prev.map(loot => 
+          loot.id === id ? { ...loot, isCollected: true } : loot
+        ));
+        
+        // Play collection chime sound effect
+        playChimeSound();
+        
+        // Remove after animation
+        setTimeout(() => {
+          setLootDrops(prev => prev.filter(loot => loot.id !== id));
+        }, 800);
+      }, 1000);
+    }
+  };
+
+  const triggerTrap = () => {
+    const trapSkills = ['violent_slash', 'mutilate', 'shadow_exchange'];
+    const requiredSkill = trapSkills[Math.floor(Math.random() * trapSkills.length)];
+    
+    setTrapAlert({
+      active: true,
+      skillRequired: requiredSkill,
+      timeLeft: 1000
+    });
+    
+    addToCombatLog("⚠️ TRAP TRIGGERED! Quick, use the highlighted skill!");
+    
+    // Auto-fail if not responded to in time
+    setTimeout(() => {
+      setTrapAlert(prev => {
+        if (prev?.active) {
+          addToCombatLog("Failed to evade trap! Jin-Woo takes damage!");
+          setPlayers(p => p.map(player => 
+            player.id === 'jinwoo' ? { ...player, health: Math.max(0, player.health - 15) } : player
+          ));
+          triggerCameraShake();
+        }
+        return null;
+      });
+    }, 1000);
+  };
+
+  const handleTrapEvasion = (skillId: string) => {
+    if (trapAlert?.active && trapAlert.skillRequired === skillId) {
+      setTrapAlert(null);
+      addToCombatLog("Successfully evaded trap with quick reflexes!");
+      setSynergyGauge(prev => Math.min(100, prev + 5));
+    }
+  };
+
+  const triggerBossStruggle = () => {
+    setBossStruggle({
+      active: true,
+      progress: 0,
+      timeLeft: 5000
+    });
+    
+    addToCombatLog("Boss struggle! Rapidly tap to break free!");
+  };
+
+  const handleStruggleTap = () => {
+    if (bossStruggle?.active) {
+      setBossStruggle(prev => prev ? {
+        ...prev,
+        progress: Math.min(100, prev.progress + 8)
+      } : null);
+    }
+  };
+
+  const playChimeSound = () => {
+    // Create audio context for chime sound
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      console.log('Audio not available');
     }
   };
 
@@ -458,13 +610,44 @@ export function DungeonRaidSystem11({
     setCombatLog(prev => [...prev.slice(-4), message]);
   };
 
-  // Synergy and cooldown systems
+  // Synergy and cooldown systems with resonant chime
   useEffect(() => {
     if (synergyGauge >= 100 && !teamUpReady) {
       setTeamUpReady(true);
+      setSynergyChimeReady(true);
       addToCombatLog("Team-Up Attack Ready! Perfect synergy achieved!");
+      
+      // Play resonant chime audio cue
+      playResonantChime();
     }
   }, [synergyGauge]);
+
+  const playResonantChime = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator1 = audioContext.createOscillator();
+      const oscillator2 = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator1.connect(gainNode);
+      oscillator2.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Create harmonic resonant chime
+      oscillator1.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+      oscillator2.frequency.setValueAtTime(660, audioContext.currentTime); // E5
+      
+      gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+      
+      oscillator1.start(audioContext.currentTime);
+      oscillator2.start(audioContext.currentTime);
+      oscillator1.stop(audioContext.currentTime + 1.5);
+      oscillator2.stop(audioContext.currentTime + 1.5);
+    } catch (error) {
+      console.log('Audio not available');
+    }
+  };
 
   // Cooldown timer with visual pie wipe animation
   useEffect(() => {
@@ -729,6 +912,105 @@ export function DungeonRaidSystem11({
                   {damage.damage}
                 </motion.div>
               ))}
+            </AnimatePresence>
+
+            {/* Magnetic Loot Drops */}
+            <AnimatePresence>
+              {lootDrops.map(loot => (
+                <motion.div
+                  key={loot.id}
+                  className="absolute pointer-events-none"
+                  style={{ left: loot.x, top: loot.y }}
+                  initial={{ opacity: 1, scale: 0 }}
+                  animate={loot.isCollected ? {
+                    x: loot.targetX - loot.x,
+                    y: loot.targetY - loot.y,
+                    scale: 0.5,
+                    opacity: 0
+                  } : {
+                    opacity: 1,
+                    scale: 1,
+                    y: [0, -5, 0, -3, 0]
+                  }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  transition={{ 
+                    duration: loot.isCollected ? 0.8 : 2,
+                    ease: loot.isCollected ? "easeInOut" : "easeInOut",
+                    repeat: loot.isCollected ? 0 : Infinity
+                  }}
+                >
+                  <div className="relative">
+                    <span className="text-yellow-400 text-sm font-bold drop-shadow-lg">₩{loot.amount}</span>
+                    {/* Magnetic glow effect */}
+                    <div className="absolute inset-0 bg-yellow-400/30 rounded-full blur-sm animate-pulse" />
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* Trap Alert System */}
+            <AnimatePresence>
+              {trapAlert?.active && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center bg-red-900/80"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <motion.div
+                    className="bg-red-800 border-4 border-red-600 rounded-lg p-6 text-center"
+                    initial={{ scale: 0.5, rotate: -10 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0.5, rotate: 10 }}
+                  >
+                    <div className="text-white text-xl font-bold mb-2">⚠️ TRAP TRIGGERED!</div>
+                    <div className="text-yellow-400 text-lg mb-4">Use {trapAlert.skillRequired.replace('_', ' ').toUpperCase()} to evade!</div>
+                    <motion.div
+                      className="w-32 h-2 bg-gray-700 rounded-full mx-auto"
+                      initial={{ width: '100%' }}
+                    >
+                      <motion.div
+                        className="h-full bg-red-500 rounded-full"
+                        animate={{ width: '0%' }}
+                        transition={{ duration: trapAlert.timeLeft / 1000 }}
+                      />
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Boss Struggle Mini-Game */}
+            <AnimatePresence>
+              {bossStruggle?.active && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center bg-black/80"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onTap={handleStruggleTap}
+                >
+                  <motion.div
+                    className="bg-gray-900 border-4 border-purple-600 rounded-lg p-8 text-center"
+                    initial={{ scale: 0.5 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0.5 }}
+                  >
+                    <div className="text-white text-2xl font-bold mb-4">💪 BOSS STRUGGLE!</div>
+                    <div className="text-yellow-400 text-lg mb-4">Rapidly tap to break free!</div>
+                    <div className="w-48 h-4 bg-gray-700 rounded-full mx-auto mb-4">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-red-500 to-green-500 rounded-full"
+                        animate={{ width: `${bossStruggle.progress}%` }}
+                        transition={{ duration: 0.1 }}
+                      />
+                    </div>
+                    <div className="text-white text-sm">
+                      Progress: {Math.floor(bossStruggle.progress)}%
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </motion.div>
 
