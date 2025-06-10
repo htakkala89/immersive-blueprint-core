@@ -563,26 +563,36 @@ export function DungeonRaidSystem11({
   // Trap phase progression
   useEffect(() => {
     const progressInterval = setInterval(() => {
-      setBattlefieldTraps(prev => prev.map(trap => {
-        const age = Date.now() - trap.timestamp;
+      setBattlefieldTraps(prev => {
+        const updatedTraps = prev.map(trap => {
+          const age = Date.now() - trap.timestamp;
+          
+          if (trap.phase === 'warning' && age > 2000) {
+            console.log(`🟡 Trap ${trap.id} → EXPANDING (age: ${age}ms)`);
+            return { ...trap, phase: 'expanding' as const };
+          } else if (trap.phase === 'expanding' && age > 4000) {
+            console.log(`🔴 Trap ${trap.id} → ACTIVE (age: ${age}ms)`);
+            return { ...trap, phase: 'active' as const, radius: trap.maxRadius };
+          } else if (trap.phase === 'active' && age > 8000) {
+            console.log(`🌫️ Trap ${trap.id} → FADING (age: ${age}ms)`);
+            return { ...trap, phase: 'fading' as const };
+          } else if (trap.phase === 'expanding') {
+            // Gradually expand radius
+            const expandProgress = (age - 2000) / 2000; // 2 seconds to expand
+            return { ...trap, radius: Math.min(trap.maxRadius * expandProgress, trap.maxRadius) };
+          }
+          
+          return trap;
+        });
         
-        if (trap.phase === 'warning' && age > 2000) {
-          return { ...trap, phase: 'expanding' as const };
-        } else if (trap.phase === 'expanding' && age > 4000) {
-          return { ...trap, phase: 'active' as const, radius: trap.maxRadius };
-        } else if (trap.phase === 'active' && age > 7000) {
-          return { ...trap, phase: 'fading' as const };
-        } else if (trap.phase === 'expanding') {
-          // Gradually expand radius
-          const expandProgress = (age - 2000) / 2000; // 2 seconds to expand
-          return { ...trap, radius: Math.min(trap.maxRadius * expandProgress, trap.maxRadius) };
-        }
+        // Filter out completely faded traps (after 10 seconds total)
+        const filteredTraps = updatedTraps.filter(trap => {
+          const age = Date.now() - trap.timestamp;
+          return age < 10000;
+        });
         
-        return trap;
-      }).filter(trap => {
-        const age = Date.now() - trap.timestamp;
-        return age < 8000; // Remove after 8 seconds total
-      }));
+        return filteredTraps;
+      });
     }, 100);
 
     return () => clearInterval(progressInterval);
@@ -593,9 +603,15 @@ export function DungeonRaidSystem11({
     const damageInterval = setInterval(() => {
       const activeTraps = battlefieldTraps.filter(trap => trap.phase === 'active');
       
-      if (activeTraps.length === 0) return;
+      console.log(`🔍 Damage check running - ${battlefieldTraps.length} total traps, ${activeTraps.length} active`);
+      
+      if (activeTraps.length === 0) {
+        return;
+      }
 
-      console.log(`Checking trap damage - ${activeTraps.length} active traps`);
+      console.log(`⚡ Checking trap damage - ${activeTraps.length} active traps`);
+      console.log('👤 Player positions:', players.map(p => ({ name: p.name, x: p.x, y: p.y })));
+      console.log('🔴 Active trap positions:', activeTraps.map(t => ({ x: t.x, y: t.y, radius: t.radius })));
 
       // Check players
       players.forEach(player => {
@@ -604,7 +620,7 @@ export function DungeonRaidSystem11({
             Math.pow(player.x - trap.x, 2) + Math.pow(player.y - trap.y, 2)
           );
           
-          console.log(`Player ${player.name} distance to trap: ${distance}, trap radius: ${trap.radius}`);
+          console.log(`Player ${player.name} at (${player.x}, ${player.y}) - trap at (${trap.x}, ${trap.y}) - distance: ${distance}, radius: ${trap.radius}`);
           
           if (distance <= trap.radius) {
             const damage = Math.floor(Math.random() * 20) + 15; // 15-35 trap damage
