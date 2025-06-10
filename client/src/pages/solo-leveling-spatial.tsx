@@ -311,6 +311,11 @@ export default function SoloLevelingSpatial() {
   }>>([]);
   const [activeQuests, setActiveQuests] = useState<string[]>([]);
 
+  // System 7 Commerce - Store States
+  const [showLuxuryDepartmentStore, setShowLuxuryDepartmentStore] = useState(false);
+  const [showGangnamFurnishings, setShowGangnamFurnishings] = useState(false);
+  const [showLuxuryRealtor, setShowLuxuryRealtor] = useState(false);
+
   // Time and scheduling system
   const getCurrentTimeOfDay = () => {
     const hour = gameTime.getHours();
@@ -492,6 +497,55 @@ export default function SoloLevelingSpatial() {
       ]
     },
 
+    // System 7 Commerce Locations
+    luxury_department_store: {
+      id: 'luxury_department_store',
+      name: 'Luxury Department Store',
+      description: 'Premium boutique with high-end gifts, jewelry, and designer accessories',
+      backgroundImage: '/api/scenes/luxury_department_store.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'luxury_department_store',
+      chaActivity: 'examining elegant jewelry displays',
+      chaPosition: { x: 45, y: 40 },
+      chaExpression: 'focused' as const,
+      interactiveElements: [
+        { id: 'jewelry_cases', name: 'Glass Jewelry Cases', position: { x: 25, y: 45 }, action: 'Browse premium jewelry collection' },
+        { id: 'designer_mannequins', name: 'Designer Clothing', position: { x: 65, y: 35 }, action: 'Examine elegant dresses' },
+        { id: 'luxury_shelves', name: 'Artisan Chocolates', position: { x: 50, y: 60 }, action: 'Select premium gift items' }
+      ]
+    },
+
+    gangnam_furnishings: {
+      id: 'gangnam_furnishings',
+      name: 'Gangnam Modern Furnishings',
+      description: 'Designer furniture showroom for luxury living spaces',
+      backgroundImage: '/api/scenes/gangnam_furnishings.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'gangnam_furnishings',
+      chaActivity: 'appreciating modern design aesthetics',
+      chaPosition: { x: 55, y: 45 },
+      chaExpression: 'happy' as const,
+      interactiveElements: [
+        { id: 'living_room_sets', name: 'Living Room Collections', position: { x: 30, y: 50 }, action: 'Browse furniture sets' },
+        { id: 'bedroom_displays', name: 'Bedroom Furniture', position: { x: 70, y: 40 }, action: 'Examine bedroom collections' },
+        { id: 'design_consultation', name: 'Design Consultant', position: { x: 50, y: 25 }, action: 'Discuss interior design' }
+      ]
+    },
+
+    luxury_realtor: {
+      id: 'luxury_realtor',
+      name: 'Seoul Luxury Realty',
+      description: 'Exclusive real estate office for premium properties',
+      backgroundImage: '/api/scenes/luxury_realtor.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'luxury_realtor',
+      chaActivity: 'discussing property investments with an agent',
+      chaPosition: { x: 50, y: 40 },
+      chaExpression: 'focused' as const,
+      interactiveElements: [
+        { id: 'property_listings', name: 'Premium Property Listings', position: { x: 30, y: 35 }, action: 'Browse luxury apartments' },
+        { id: 'consultation_desk', name: 'Real Estate Agent', position: { x: 70, y: 45 }, action: 'Schedule property viewing' },
+        { id: 'investment_portfolio', name: 'Investment Options', position: { x: 40, y: 60 }, action: 'Discuss investment opportunities' }
+      ]
+    },
+
     // Itaewon District - International & Diverse
     itaewon_market: {
       id: 'itaewon_market',
@@ -522,22 +576,6 @@ export default function SoloLevelingSpatial() {
         { id: 'materials_trader', name: 'Materials Trader', position: { x: 25, y: 50 }, action: 'Trade rare materials and monster drops' },
         { id: 'equipment_smith', name: 'Equipment Smith', position: { x: 70, y: 40 }, action: 'Browse weapons and armor upgrades' },
         { id: 'alchemist', name: 'Alchemist', position: { x: 60, y: 65 }, action: 'Purchase potions and enhancement items' }
-      ]
-    },
-
-    luxury_realtor: {
-      id: 'luxury_realtor',
-      name: 'Luxury Realtor',
-      description: 'High-end real estate office for successful hunters',
-      backgroundImage: '/api/scenes/luxury_realtor.jpg',
-      chaHaeInPresent: chaHaeInCurrentLocation === 'luxury_realtor',
-      chaActivity: 'discussing property investments with an agent',
-      chaPosition: { x: 50, y: 40 },
-      chaExpression: 'focused' as const,
-      interactiveElements: [
-        { id: 'property_listings', name: 'Property Listings', position: { x: 30, y: 35 }, action: 'Browse luxury apartments' },
-        { id: 'consultation_desk', name: 'Real Estate Agent', position: { x: 70, y: 45 }, action: 'Schedule property viewing' },
-        { id: 'investment_portfolio', name: 'Investment Options', position: { x: 40, y: 60 }, action: 'Discuss investment opportunities' }
       ]
     },
 
@@ -881,6 +919,34 @@ export default function SoloLevelingSpatial() {
   };
 
   const handleEnvironmentalInteraction = async (interactionPoint: any) => {
+    // Handle System 7 Commerce Store interactions
+    if (playerLocation === 'luxury_department_store') {
+      if (interactionPoint.id === 'jewelry_cases' || 
+          interactionPoint.id === 'designer_mannequins' || 
+          interactionPoint.id === 'luxury_shelves') {
+        setShowLuxuryDepartmentStore(true);
+        return;
+      }
+    }
+    
+    if (playerLocation === 'gangnam_furnishings') {
+      if (interactionPoint.id === 'living_room_sets' || 
+          interactionPoint.id === 'bedroom_displays' || 
+          interactionPoint.id === 'design_consultation') {
+        setShowGangnamFurnishings(true);
+        return;
+      }
+    }
+    
+    if (playerLocation === 'luxury_realtor') {
+      if (interactionPoint.id === 'property_listings' || 
+          interactionPoint.id === 'consultation_desk' || 
+          interactionPoint.id === 'investment_portfolio') {
+        setShowLuxuryRealtor(true);
+        return;
+      }
+    }
+
     // Handle specific Hunter Market vendor interactions
     if (playerLocation === 'hunter_market') {
       if (interactionPoint.id === 'materials_trader' || 

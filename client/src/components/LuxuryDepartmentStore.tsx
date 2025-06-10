@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Diamond, Heart, Gift, ShoppingBag, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import ItemInspectionView from './ItemInspectionView';
 
 interface LuxuryItem {
   id: string;
