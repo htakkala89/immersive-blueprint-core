@@ -332,28 +332,35 @@ export function DungeonRaidSystem11Fixed({
       triggerBossStruggle();
     }
     
-    // Check for room clear or multi-wave progression
-    setTimeout(() => {
-      const currentEnemies = enemies.filter(e => e.health > 0);
-      if (currentEnemies.length === 0) {
+    // Immediate victory check after damage is applied
+    const updatedEnemies = enemies.map(e => 
+      e.id === enemy.id ? { ...e, health: Math.max(0, e.health - finalDamage) } : e
+    );
+    const aliveCount = updatedEnemies.filter(e => e.health > 0).length;
+    
+    if (aliveCount === 0) {
+      console.log('Victory detected in executeBasicAttack!');
+      setTimeout(() => {
         if (currentRoom === 3 && currentWave === 1) {
-          // Arena chamber - spawn second wave
           spawnSecondWave();
         } else if (currentRoom >= 7) {
-          setGamePhase('victory'); // Final victory
+          setGamePhase('victory');
         } else {
-          // Trigger spoils of war sequence
-          addToCombatLog("Victory! Collecting spoils...");
+          addToCombatLog("VICTORY! All enemies defeated!");
           
-          // Fade out action bar and enter room clear state
+          // Generate loot immediately
+          updatedEnemies.forEach(deadEnemy => {
+            generateLootDrop(deadEnemy.x, deadEnemy.y);
+          });
+          
           setTimeout(() => {
             setGamePhase('room_clear');
             generateRoomExits();
-            addToCombatLog("Path forward revealed!");
-          }, 2000);
+            addToCombatLog("Exit portals have materialized!");
+          }, 2500);
         }
-      }
-    }, 500);
+      }, 1000);
+    }
   };
 
   const showDamageNumber = (damage: number, x: number, y: number, isCritical: boolean) => {
@@ -1233,7 +1240,45 @@ export function DungeonRaidSystem11Fixed({
         </motion.div>
       </div>
 
-      <div className="absolute top-2 right-2 z-30">
+      <div className="absolute top-2 right-2 z-30 flex gap-2">
+        {/* Victory Check Button for Testing */}
+        {gamePhase === 'combat' && (
+          <button
+            onClick={() => {
+              console.log('Checking victory condition...');
+              console.log('Enemies:', enemies.map(e => ({ id: e.id, health: e.health })));
+              
+              const aliveEnemies = enemies.filter(e => e.health > 0);
+              console.log('Alive enemies:', aliveEnemies.length);
+              
+              if (aliveEnemies.length === 0) {
+                console.log('Victory detected! Starting spoils sequence...');
+                addToCombatLog("VICTORY! All enemies defeated!");
+                
+                // Generate loot drops
+                enemies.forEach(enemy => {
+                  console.log(`Generating loot for ${enemy.name} at (${enemy.x}, ${enemy.y})`);
+                  generateLootDrop(enemy.x, enemy.y);
+                });
+                
+                // Start room clear sequence
+                setTimeout(() => {
+                  console.log('Setting game phase to room_clear');
+                  setGamePhase('room_clear');
+                  generateRoomExits();
+                  addToCombatLog("Exit portals have materialized!");
+                }, 2500);
+              } else {
+                console.log('Still have alive enemies:', aliveEnemies);
+                addToCombatLog(`${aliveEnemies.length} enemies still alive!`);
+              }
+            }}
+            className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-500"
+          >
+            Victory
+          </button>
+        )}
+        
         <Button
           onClick={onClose}
           variant="ghost"
