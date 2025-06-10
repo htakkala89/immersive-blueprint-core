@@ -192,7 +192,7 @@ export default function SoloLevelingSpatial() {
 
   // System 9: AI Narrative Engine state
   const [showNarrativeProgression, setShowNarrativeProgression] = useState(false);
-  const [storyFlags, setStoryFlags] = useState<string[]>(['beginning_journey']);
+  const [storyFlags, setStoryFlags] = useState<string[]>(['beginning_journey', 'gate_clearance_quest_active']);
   const [visitHistory, setVisitHistory] = useState<Record<string, number>>({});
   const [chaHaeInPresent, setChaHaeInPresent] = useState(true);
 
@@ -1831,6 +1831,11 @@ export default function SoloLevelingSpatial() {
                   x: 50,
                   y: 50
                 });
+                break;
+              case 'red_gate_entrance':
+                // Enter the Red Gate dungeon for quest completion
+                setShowDungeonRaid(true);
+                console.log('Entering Red Gate dungeon for gate clearance quest');
                 break;
               case 'mission_board':
                 // Opens lore panel with gate information

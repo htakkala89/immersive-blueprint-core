@@ -125,6 +125,31 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
   // Hongdae District - Cafe
   hongdae_cafe: [
     {
+      id: 'red_gate_entrance',
+      label: 'Red Gate',
+      icon: Shield,
+      position: { x: 50, y: 40 },
+      thoughtPrompt: 'Enter the Red Gate to clear the dungeon.',
+      outcome: 'You approach the crimson portal that has materialized near Hongik University. The air crackles with dangerous energy.',
+      gameLogic: 'dungeon_entrance',
+      requirements: undefined,
+      spatialRelationships: {
+        enhances: undefined,
+        excludes: ['counter', 'window_seat'],
+        proximity: undefined
+      },
+      environmentalStates: {
+        weather: ['clear', 'rain', 'cloudy'],
+        timeOfDay: ['morning', 'afternoon', 'evening'],
+        storyFlags: ['gate_clearance_quest_active']
+      },
+      memoryTriggers: {
+        firstTime: 'Enter the Red Gate - This is my mission',
+        repeated: 'Enter the Red Gate - Time to finish what I started',
+        withCharacter: 'Enter the Red Gate - Let\'s clear this together'
+      }
+    },
+    {
       id: 'counter',
       label: 'Counter',
       icon: Coffee,
