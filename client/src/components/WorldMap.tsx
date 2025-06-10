@@ -165,6 +165,28 @@ const LOCATIONS: Location[] = [
     }
   },
   {
+    id: 'player_apartment',
+    name: 'Your Apartment',
+    description: 'Your modest but comfortable home base. A quiet place to rest between missions and perhaps share intimate moments.',
+    x: 35,
+    y: 20,
+    unlocked: true,
+    district: 'gangnam',
+    image: '/api/placeholder/400/250',
+    timeOfDayMood: {
+      morning: 'Peaceful morning light streaming through windows',
+      afternoon: 'Quiet afternoon sanctuary',
+      evening: 'Cozy evening atmosphere',
+      night: 'Private, intimate space for rest'
+    },
+    chaHaeInSchedule: {
+      morning: 10,
+      afternoon: 5,
+      evening: 30,
+      night: 70
+    }
+  },
+  {
     id: 'chahaein_apartment',
     name: 'Cha Hae-In\'s Apartment',
     description: 'A peaceful sanctuary where Korea\'s top female hunter finds solace away from the chaos of gate raids and guild politics.',

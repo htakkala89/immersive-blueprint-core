@@ -252,7 +252,8 @@ export default function SoloLevelingSpatial() {
     
     // Deterministic location system - Cha Hae-In has a predictable schedule
     if (currentTime === 'morning') {
-      if (affection >= 70) return 'chahaein_apartment';
+      if (affection >= 80) return 'player_apartment'; // Very intimate - stays overnight
+      if (affection >= 70) return 'chahaein_apartment'; // High affection - at her place
       return 'hunter_association'; // Always at work in mornings
     } else if (currentTime === 'afternoon') {
       return 'hunter_association'; // Always at Hunter Association during work hours
@@ -261,7 +262,8 @@ export default function SoloLevelingSpatial() {
       if (affection >= 40) return 'hongdae_cafe'; // Casual meetup
       return 'hunter_association'; // Still working late
     } else { // night
-      if (affection >= 70) return 'chahaein_apartment'; // Private time if very close
+      if (affection >= 80) return 'player_apartment'; // Very intimate - spends night together
+      if (affection >= 70) return 'chahaein_apartment'; // High affection - at her place
       return null; // Not available at night unless very close
     }
   };
@@ -301,6 +303,23 @@ export default function SoloLevelingSpatial() {
   };
   
   const worldLocations = {
+    // Player's Personal Space
+    player_apartment: {
+      id: 'player_apartment',
+      name: 'Your Apartment',
+      description: 'Your modest but comfortable home base in Seoul',
+      backgroundImage: '/api/scenes/player_apartment.jpg',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
+      chaActivity: 'relaxing on your couch, looking comfortable in your space',
+      chaPosition: { x: 40, y: 55 },
+      chaExpression: 'loving' as const,
+      interactiveElements: [
+        { id: 'couch', name: 'Living Room Couch', position: { x: 45, y: 60 }, action: 'Sit together' },
+        { id: 'kitchen', name: 'Kitchen Counter', position: { x: 70, y: 40 }, action: 'Prepare something together' },
+        { id: 'bedroom_door', name: 'Bedroom', position: { x: 20, y: 30 }, action: 'Private space' }
+      ]
+    },
+
     // Gangnam District - Business & Hunter Association
     hunter_association: {
       id: 'hunter_association',
@@ -948,14 +967,7 @@ export default function SoloLevelingSpatial() {
         
 
 
-        {/* Debug: Always show test indicator */}
-        <div className="fixed top-40 left-4 bg-red-600 text-white p-2 rounded z-50 text-xs">
-          <div>Should show Cha: {(chaHaeInCurrentLocation === playerLocation) ? 'YES' : 'NO'}</div>
-          <div>Location: {playerLocation}</div>
-          <div>Time: {timeOfDay}</div>
-          <div>Cha at: {chaHaeInCurrentLocation || 'None'}</div>
-          <div>Affection: {gameState.affection}</div>
-        </div>
+
 
         {/* Cha Hae-In Presence Indicator - Golden Breathing Node */}
         {(chaHaeInCurrentLocation === playerLocation) && (
