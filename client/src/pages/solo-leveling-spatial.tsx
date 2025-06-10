@@ -1323,8 +1323,8 @@ export default function SoloLevelingSpatial() {
       activeQuests: [...(prev.activeQuests || []), questData]
     }));
     
-    // Update active quests for System 8 World Map tracking
-    setActiveQuests(prev => [...prev, questData]);
+    // Update active quests for System 8 World Map tracking (store location IDs)
+    setActiveQuests(prev => [...prev, questData.targetLocation]);
     
     // Mark quest location on world map with golden exclamation point
     console.log(`Quest location "${questData.targetLocation}" marked on World Map with golden (!) indicator`);
@@ -1339,17 +1339,46 @@ export default function SoloLevelingSpatial() {
 
   // Quest tracking and management handlers
   const handleQuestTrack = (questId: string) => {
-    console.log(`Tracking quest ${questId} on World Map`);
-    setShowWorldMap(true);
+    // Find the quest in gameState.activeQuests to get its target location
+    const quest = gameState.activeQuests?.find(q => q.id === questId);
+    if (quest) {
+      console.log(`Tracking quest "${quest.title}" at location: ${quest.targetLocation}`);
+      // Set the quest location as focused and open world map
+      setActiveQuests(prev => {
+        // Ensure quest location is marked if not already
+        if (!prev.includes(quest.targetLocation)) {
+          return [...prev, quest.targetLocation];
+        }
+        return prev;
+      });
+      setShowWorldMap(true);
+    } else {
+      console.log(`Quest ${questId} not found in active quests`);
+    }
   };
 
   const handleQuestAbandon = (questId: string) => {
+    // Find the quest to get its target location before removing
+    const quest = gameState.activeQuests?.find(q => q.id === questId);
+    
     setGameState(prev => ({
       ...prev,
       activeQuests: (prev.activeQuests || []).filter(q => q.id !== questId)
     }));
-    setActiveQuests(prev => prev.filter(q => (typeof q === 'object' ? q.id : q) !== questId));
-    console.log(`Quest ${questId} abandoned`);
+    
+    // Remove quest location from world map markers if no other quests use it
+    if (quest) {
+      const remainingQuests = gameState.activeQuests?.filter(q => q.id !== questId) || [];
+      const stillHasQuestsAtLocation = remainingQuests.some(q => q.targetLocation === quest.targetLocation);
+      
+      if (!stillHasQuestsAtLocation) {
+        setActiveQuests(prev => prev.filter(locationId => locationId !== quest.targetLocation));
+      }
+      
+      console.log(`Quest "${quest.title}" abandoned and removed from ${quest.targetLocation}`);
+    } else {
+      console.log(`Quest ${questId} abandoned`);
+    }
   };
 
   // Simulate asynchronous notifications
