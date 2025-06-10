@@ -64,14 +64,9 @@ export function DungeonRaidSystem11({
 }: RaidProps) {
   const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'victory' | 'defeat' | 'room_clear'>('prep');
   
-  // Debug logging for game phase
-  console.log('🎮 Current game phase:', gamePhase);
-  console.log('🎮 Component isVisible:', isVisible);
-  
   // Reset component state when it becomes visible
   useEffect(() => {
     if (isVisible) {
-      console.log('🚀 Dungeon component mounted, resetting to prep phase');
       setGamePhase('prep');
       setCurrentRoom(1);
       setCurrentWave(1);
@@ -245,45 +240,26 @@ export function DungeonRaidSystem11({
   }, [gamePhase, enemies]);
 
   const handleSkillTap = useCallback((skillId: string) => {
-    console.log('🎯 SKILL BUTTON CLICKED:', skillId);
-    console.log('Game phase:', gamePhase);
-    console.log('Available skills:', skills.map(s => ({ id: s.id, cooldown: s.currentCooldown })));
-    
-    if (gamePhase !== 'combat') {
-      console.log('❌ Not in combat phase');
-      return;
-    }
+    if (gamePhase !== 'combat') return;
     
     // Handle trap evasion first
     if (trapAlert?.active) {
-      console.log('🪤 Trap active, handling evasion');
       handleTrapEvasion(skillId);
       return;
     }
     
     const skill = skills.find(s => s.id === skillId);
-    if (!skill) {
-      console.log('❌ Skill not found:', skillId);
-      return;
-    }
+    if (!skill) return;
     
     const jinwoo = players.find(p => p.id === 'jinwoo');
-    if (!jinwoo) {
-      console.log('❌ Jin-Woo not found');
-      return;
-    }
-    
-    console.log('Skill details:', { id: skill.id, cooldown: skill.currentCooldown, manaCost: skill.manaCost });
-    console.log('Jin-Woo mana:', jinwoo.mana);
+    if (!jinwoo) return;
     
     if (skill.currentCooldown > 0) {
-      console.log('❌ Skill on cooldown:', skill.currentCooldown);
       triggerCameraShake();
       return;
     }
     
     if (jinwoo.mana < skill.manaCost) {
-      console.log('❌ Not enough mana');
       setSkills(prev => prev.map(s => 
         s.id === skillId ? { ...s, flashRed: true } : s
       ));
@@ -293,7 +269,6 @@ export function DungeonRaidSystem11({
       return;
     }
     
-    console.log('✅ Executing skill:', skillId);
     executeSkill(skill);
   }, [gamePhase, skills, players, trapAlert]);
 
@@ -1486,15 +1461,7 @@ export function DungeonRaidSystem11({
               </div>
             </div>
 
-            {/* Debug Test Button */}
-            <div className="flex justify-center mb-2">
-              <button 
-                onClick={() => console.log('🔧 TEST BUTTON CLICKED - Component is working!')}
-                className="px-4 py-2 bg-red-600 text-white rounded"
-              >
-                Test Click
-              </button>
-            </div>
+
 
             {/* 4-Slot Action Bar - Liquid Glassmorphism */}
             <div className="flex justify-center gap-3 mb-4">
