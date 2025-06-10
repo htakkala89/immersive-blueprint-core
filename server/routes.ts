@@ -122,13 +122,29 @@ async function generateDynamicPrompts(chaResponse: string, userMessage: string, 
     const emotionalState = analyzeEmotionalCues(chaResponse);
     const locationContext = getLocationContext(context?.location);
     
+    const location = context?.location || 'hunter_association';
+    const affectionLevel = context?.affectionLevel || 0;
+    const timeOfDay = context?.timeOfDay || 'day';
+    
+    // Create location-specific context for AI prompt generation
+    let locationContextPrompt = '';
+    if (location === 'player_apartment' || location === 'chahaein_apartment') {
+      locationContextPrompt = `SETTING: Private apartment setting at ${timeOfDay}. This is an intimate, personal space where conversations should be romantic, caring, and emotionally vulnerable. Affection level: ${affectionLevel}/100.`;
+    } else if (location === 'hunter_association') {
+      locationContextPrompt = `SETTING: Professional Hunter Association headquarters. Conversations should be professional but can include personal warmth given their close relationship.`;
+    } else {
+      locationContextPrompt = `SETTING: Casual social location (${location}). Conversations should be relaxed and personal.`;
+    }
+
     const promptGenerationContext = `Create 3 dialogue options for Jin-Woo responding to Cha Hae-In.
+
+${locationContextPrompt}
 
 CONVERSATION:
 User: "${userMessage}"
 Cha Hae-In: "${chaResponse}"
 
-Create 3 natural responses Jin-Woo would say. Keep each under 50 characters.
+Create 3 natural responses Jin-Woo would say that fit the setting. Keep each under 50 characters.
 
 Example format:
 1. That sounds challenging
@@ -200,8 +216,71 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
   const response = chaResponse.toLowerCase();
   const message = userMessage.toLowerCase();
   const location = context?.location || 'hunter_association';
+  const affectionLevel = context?.affectionLevel || 0;
+  const timeOfDay = context?.timeOfDay || 'day';
   
-  // Hunter Association Office - Varied professional topics
+  // Player Apartment - Intimate, romantic setting
+  if (location === 'player_apartment') {
+    if (response.includes('comfortable') || response.includes('cozy')) {
+      return [
+        "I love having you here with me",
+        "You make this place feel like home",
+        "*I pull you closer on the couch*"
+      ];
+    }
+    if (response.includes('tired') || response.includes('relax')) {
+      return [
+        "Let me take care of you tonight",
+        "*I massage your shoulders gently*",
+        "You can rest here as long as you want"
+      ];
+    }
+    if (response.includes('beautiful') || response.includes('gorgeous')) {
+      return [
+        "*I brush a strand of hair from your face*",
+        "You're breathtaking in this light",
+        "*I lean in to kiss you softly*"
+      ];
+    }
+    if (timeOfDay === 'night' && affectionLevel >= 70) {
+      return [
+        "Stay the night with me",
+        "*I hold your hand tenderly*",
+        "I never want this moment to end"
+      ];
+    }
+    // Default intimate apartment prompts
+    return [
+      "I'm so glad you're here",
+      "*I caress your cheek gently*",
+      "You mean everything to me"
+    ];
+  }
+  
+  // Cha Hae-In's Apartment - Personal, romantic
+  if (location === 'chahaein_apartment') {
+    if (response.includes('home') || response.includes('private')) {
+      return [
+        "Thank you for letting me into your world",
+        "Your place reflects who you are",
+        "*I admire how you've made this yours*"
+      ];
+    }
+    if (response.includes('intimate') || response.includes('close')) {
+      return [
+        "*I move closer to you*",
+        "Being here with you feels so right",
+        "*I take your hand in mine*"
+      ];
+    }
+    return [
+      "Your home is as beautiful as you are",
+      "*I look into your eyes lovingly*",
+      "I feel so connected to you here"
+    ];
+  }
+  
+  // Hunter Association Office - Professional but personal
   if (location === 'hunter_association') {
     if (response.includes('training') || response.includes('technique')) {
       return [
@@ -231,7 +310,7 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
         "Your mana senses must be helpful"
       ];
     }
-    // Avoid defaulting to reports - use personal topics
+    // Professional but with personal warmth
     return [
       "You seem focused today",
       "How has your training been going?",
@@ -239,7 +318,7 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
     ];
   }
   
-  // Casual locations - Personal conversations
+  // Casual romantic locations - Personal conversations
   if (location.includes('cafe') || location.includes('restaurant')) {
     return [
       "What do you usually order here?",
