@@ -904,8 +904,17 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
+        {/* Debug Info - Temporary */}
+        <div className="absolute top-20 left-4 bg-black/80 text-white p-2 rounded z-50 text-xs">
+          <div>Time: {timeOfDay}</div>
+          <div>Player Location: {playerLocation}</div>
+          <div>Cha Location: {chaHaeInCurrentLocation}</div>
+          <div>Present: {currentLocationData.chaHaeInPresent ? 'YES' : 'NO'}</div>
+          <div>Position: {currentLocationData.chaPosition?.x}%, {currentLocationData.chaPosition?.y}%</div>
+        </div>
+
         {/* Cha Hae-In Presence Indicator - Golden Breathing Node */}
-        {currentLocationData.chaHaeInPresent && (
+        {(currentLocationData.chaHaeInPresent || (playerLocation === 'hunter_association' && timeOfDay === 'afternoon')) && (
           <motion.div
             className="absolute cursor-pointer z-20 group"
             style={{
