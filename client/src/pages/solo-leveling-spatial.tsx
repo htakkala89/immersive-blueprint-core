@@ -206,33 +206,28 @@ export default function SoloLevelingSpatial() {
     const currentTime = getCurrentTimeOfDay();
     const affection = gameState.affection;
     
-    // Enhanced probability-based location system with all Seoul districts
+    // Deterministic location system - Cha Hae-In has a predictable schedule
     if (currentTime === 'morning') {
-      if (affection >= 70 && Math.random() < 0.4) return 'chahaein_apartment';
-      if (Math.random() < 0.3) return 'training_facility';
-      if (Math.random() < 0.3) return 'hongdae_cafe';
-      if (Math.random() < 0.2) return 'gangnam_tower';
-      return 'hunter_association';
+      if (affection >= 70) return 'chahaein_apartment';
+      return 'hunter_association'; // Always at work in mornings
     } else if (currentTime === 'afternoon') {
-      if (Math.random() < 0.4) return 'hunter_association';
-      if (Math.random() < 0.2) return 'training_facility';
-      if (Math.random() < 0.15) return 'itaewon_market';
-      if (Math.random() < 0.15) return 'myeongdong_shopping';
-      return 'gangnam_tower';
+      return 'hunter_association'; // Always at Hunter Association during work hours
     } else if (currentTime === 'evening') {
-      if (affection >= 40 && Math.random() < 0.3) return 'myeongdong_restaurant';
-      if (affection >= 50 && Math.random() < 0.2) return 'namsan_tower';
-      if (affection >= 70 && Math.random() < 0.3) return 'chahaein_apartment';
-      if (Math.random() < 0.2) return 'hangang_park';
-      return 'hongdae_club';
+      if (affection >= 60) return 'myeongdong_restaurant'; // Dinner together if close
+      if (affection >= 40) return 'hongdae_cafe'; // Casual meetup
+      return 'hunter_association'; // Still working late
     } else { // night
-      if (affection >= 70 && Math.random() < 0.8) return 'chahaein_apartment';
-      if (affection >= 60 && Math.random() < 0.2) return 'namsan_tower';
-      return null; // She's not available at night unless high affection
+      if (affection >= 70) return 'chahaein_apartment'; // Private time if very close
+      return null; // Not available at night unless very close
     }
   };
 
   const chaHaeInCurrentLocation = getChaHaeInLocation();
+  
+  // Debug logging for character presence
+  console.log('Current time:', timeOfDay);
+  console.log('Cha Hae-In location:', chaHaeInCurrentLocation);
+  console.log('Current scene:', gameState.currentScene);
 
   const worldLocations = {
     // Gangnam District - Business & Hunter Association
