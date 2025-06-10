@@ -598,11 +598,29 @@ export function DungeonRaidSystem11({
     return () => clearInterval(progressInterval);
   }, []);
 
+  // Create refs to avoid stale closure issues
+  const battlefieldTrapsRef = useRef(battlefieldTraps);
+  const playersRef = useRef(players);
+  const enemiesRef = useRef(enemies);
+
+  // Update refs when state changes
+  useEffect(() => {
+    battlefieldTrapsRef.current = battlefieldTraps;
+  }, [battlefieldTraps]);
+
+  useEffect(() => {
+    playersRef.current = players;
+  }, [players]);
+
+  useEffect(() => {
+    enemiesRef.current = enemies;
+  }, [enemies]);
+
   // Trap damage detection
   useEffect(() => {
     console.log('🚀 Starting trap damage detection system');
     const damageInterval = setInterval(() => {
-      // Get current state directly from refs to avoid stale closure issues
+      // Use fresh state from dependencies
       const currentTraps = battlefieldTraps;
       const currentPlayers = players;
       const currentEnemies = enemies;
@@ -611,16 +629,28 @@ export function DungeonRaidSystem11({
       
       console.log(`🔍 Damage check running - ${currentTraps.length} total traps, ${activeTraps.length} active`);
       
+      // Debug trap states
+      if (currentTraps.length > 0) {
+        console.log('📊 Current trap states:', currentTraps.map(t => ({ 
+          id: t.id, 
+          phase: t.phase, 
+          age: Date.now() - t.timestamp,
+          x: t.x,
+          y: t.y,
+          radius: t.radius
+        })));
+      }
+      
       if (activeTraps.length === 0) {
         return;
       }
 
       console.log(`⚡ Checking trap damage - ${activeTraps.length} active traps`);
-      console.log('👤 Player positions:', players.map(p => ({ name: p.name, x: p.x, y: p.y })));
+      console.log('👤 Player positions:', currentPlayers.map(p => ({ name: p.name, x: p.x, y: p.y })));
       console.log('🔴 Active trap positions:', activeTraps.map(t => ({ x: t.x, y: t.y, radius: t.radius })));
 
       // Check players
-      players.forEach(player => {
+      currentPlayers.forEach(player => {
         activeTraps.forEach(trap => {
           const distance = Math.sqrt(
             Math.pow(player.x - trap.x, 2) + Math.pow(player.y - trap.y, 2)
@@ -655,7 +685,7 @@ export function DungeonRaidSystem11({
       });
 
       // Check shadow soldiers
-      const shadowSoldiers = enemies.filter(e => e.isAlly);
+      const shadowSoldiers = currentEnemies.filter(e => e.isAlly);
       shadowSoldiers.forEach(soldier => {
         activeTraps.forEach(trap => {
           const distance = Math.sqrt(
@@ -686,7 +716,7 @@ export function DungeonRaidSystem11({
     }, 500); // Check for trap damage every 0.5 seconds for better responsiveness
 
     return () => clearInterval(damageInterval);
-  }, []); // Remove dependencies to prevent constant restarts
+  }, [battlefieldTraps, players, enemies]); // Add dependencies back to get fresh state
 
   // Enemy respawn system
   useEffect(() => {
