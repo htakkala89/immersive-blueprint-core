@@ -600,10 +600,16 @@ export function DungeonRaidSystem11({
 
   // Trap damage detection
   useEffect(() => {
+    console.log('🚀 Starting trap damage detection system');
     const damageInterval = setInterval(() => {
-      const activeTraps = battlefieldTraps.filter(trap => trap.phase === 'active');
+      // Get current state directly from refs to avoid stale closure issues
+      const currentTraps = battlefieldTraps;
+      const currentPlayers = players;
+      const currentEnemies = enemies;
       
-      console.log(`🔍 Damage check running - ${battlefieldTraps.length} total traps, ${activeTraps.length} active`);
+      const activeTraps = currentTraps.filter(trap => trap.phase === 'active');
+      
+      console.log(`🔍 Damage check running - ${currentTraps.length} total traps, ${activeTraps.length} active`);
       
       if (activeTraps.length === 0) {
         return;
@@ -680,7 +686,7 @@ export function DungeonRaidSystem11({
     }, 500); // Check for trap damage every 0.5 seconds for better responsiveness
 
     return () => clearInterval(damageInterval);
-  }, [battlefieldTraps, players, enemies]);
+  }, []); // Remove dependencies to prevent constant restarts
 
   // Enemy respawn system
   useEffect(() => {
