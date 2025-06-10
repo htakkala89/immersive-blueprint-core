@@ -185,52 +185,140 @@ export default function LuxuryDepartmentStore({
             {/* Luxury Store Environment */}
             <div className="relative w-full h-full bg-gradient-to-b from-slate-50/90 to-slate-100/90 dark:from-slate-800/90 dark:to-slate-900/90 rounded-xl backdrop-blur-sm border border-white/20">
               
-              {/* Interactive Items Display */}
+              {/* Beautiful Store Displays - Items on Shelves, Glass Cases, and Mannequins */}
               {LUXURY_ITEMS.map((item) => (
                 <motion.div
                   key={item.id}
-                  className={`absolute cursor-pointer transform -translate-x-1/2 -translate-y-1/2`}
+                  className="absolute cursor-pointer"
                   style={{
                     left: `${item.position.x}%`,
-                    top: `${item.position.y}%`
+                    top: `${item.position.y}%`,
+                    transform: 'translate(-50%, -50%)'
                   }}
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleItemClick(item)}
                   onHoverStart={() => setHoveredItem(item.id)}
                   onHoverEnd={() => setHoveredItem(null)}
                 >
-                  {/* Item Display Container */}
-                  <div className={`relative w-24 h-24 bg-gradient-to-br ${getRarityColor(item.rarity)} rounded-lg p-1 shadow-lg`}>
-                    <div className="w-full h-full bg-white/90 dark:bg-slate-800/90 rounded-md flex items-center justify-center backdrop-blur-sm">
-                      {getDisplayIcon(item.displayType, item.category)}
+                  {/* Display Type - Glass Case */}
+                  {item.displayType === 'case' && (
+                    <div className="relative">
+                      {/* Glass Case Base */}
+                      <div className="w-32 h-20 bg-gradient-to-b from-slate-100/80 to-slate-200/60 rounded-lg border-2 border-white/40 backdrop-blur-sm shadow-xl">
+                        {/* Glass Top */}
+                        <div className="absolute inset-x-1 top-1 bottom-6 bg-gradient-to-br from-white/30 to-transparent rounded-md border border-white/50" />
+                        
+                        {/* Item Inside Case */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <motion.div
+                            className={`w-8 h-8 bg-gradient-to-br ${getRarityColor(item.rarity)} rounded-full flex items-center justify-center shadow-lg`}
+                            animate={{ rotateY: 360 }}
+                            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                          >
+                            <Diamond className="w-4 h-4 text-white" />
+                          </motion.div>
+                        </div>
+                        
+                        {/* Luxury Lighting */}
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-yellow-300/60 to-transparent" />
+                      </div>
+                      
+                      {/* Case Label */}
+                      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/70 px-2 py-1 rounded text-white text-xs font-medium">
+                        {item.name}
+                      </div>
                     </div>
-                    
-                    {/* Hover Info */}
-                    <AnimatePresence>
-                      {hoveredItem === item.id && (
-                        <motion.div
-                          className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-48 bg-black/90 backdrop-blur-md rounded-lg p-3 text-white text-sm z-30"
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                        >
-                          <h4 className="font-bold mb-1">{item.name}</h4>
-                          <p className="text-gray-300 mb-2 text-xs">{item.description}</p>
+                  )}
+
+                  {/* Display Type - Mannequin */}
+                  {item.displayType === 'mannequin' && (
+                    <div className="relative">
+                      {/* Mannequin Stand */}
+                      <div className="w-24 h-40 bg-gradient-to-b from-slate-200/80 to-slate-300/60 rounded-lg backdrop-blur-sm shadow-xl overflow-hidden">
+                        {/* Mannequin Figure */}
+                        <div className="absolute inset-x-2 top-4 bottom-8 bg-gradient-to-b from-white/40 to-slate-100/40 rounded-sm">
+                          {/* Dress/Clothing Display */}
+                          <div className={`absolute inset-2 bg-gradient-to-br ${getRarityColor(item.rarity)} rounded opacity-80`} />
+                          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white/60 rounded-full" />
+                        </div>
+                        
+                        {/* Mannequin Base */}
+                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-slate-400/60 rounded-b-lg" />
+                      </div>
+                      
+                      {/* Mannequin Label */}
+                      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 px-2 py-1 rounded text-white text-xs font-medium whitespace-nowrap">
+                        {item.name}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Display Type - Shelf */}
+                  {item.displayType === 'shelf' && (
+                    <div className="relative">
+                      {/* Wooden Shelf */}
+                      <div className="w-28 h-16 bg-gradient-to-b from-amber-100/80 to-amber-200/60 rounded backdrop-blur-sm shadow-xl border border-amber-300/40">
+                        {/* Shelf Surface */}
+                        <div className="absolute top-2 left-2 right-2 h-1 bg-amber-300/60 rounded" />
+                        
+                        {/* Item on Shelf */}
+                        <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
+                          <motion.div
+                            className={`w-12 h-8 bg-gradient-to-br ${getRarityColor(item.rarity)} rounded-lg flex items-center justify-center shadow-md`}
+                            animate={{ y: [0, -2, 0] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                          >
+                            <Gift className="w-3 h-3 text-white" />
+                          </motion.div>
+                        </div>
+                      </div>
+                      
+                      {/* Shelf Label */}
+                      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/70 px-2 py-1 rounded text-white text-xs font-medium">
+                        {item.name}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Detailed Hover Information */}
+                  <AnimatePresence>
+                    {hoveredItem === item.id && (
+                      <motion.div
+                        className="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 w-64 bg-black/95 backdrop-blur-md rounded-xl p-4 text-white text-sm z-30 border border-white/20"
+                        initial={{ opacity: 0, y: -20, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-bold text-lg">{item.name}</h4>
+                          <div className={`px-2 py-1 rounded text-xs bg-gradient-to-r ${getRarityColor(item.rarity)}`}>
+                            {item.rarity}
+                          </div>
+                        </div>
+                        
+                        <p className="text-gray-300 mb-3 text-sm italic">"{item.flavorText}"</p>
+                        <p className="text-gray-400 mb-3 text-xs">{item.description}</p>
+                        
+                        <div className="border-t border-white/20 pt-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-yellow-400 font-bold">₩{item.price.toLocaleString()}</span>
+                            <span className="text-yellow-400 font-bold text-xl">₩{item.price.toLocaleString()}</span>
                             <span className="text-pink-400 flex items-center gap-1">
-                              <Heart className="w-3 h-3" />
-                              +{item.affectionBonus}
+                              <Heart className="w-4 h-4" />
+                              +{item.affectionBonus} Affection
                             </span>
                           </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                          <div className="text-center mt-2">
+                            <span className="text-gray-400 text-xs">Click to inspect and purchase</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                  {/* Rarity Glow Effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${getRarityColor(item.rarity)} rounded-lg opacity-20 animate-pulse`} />
+                  {/* Ambient Glow Effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${getRarityColor(item.rarity)} rounded-lg opacity-10 animate-pulse pointer-events-none`} 
+                       style={{ transform: 'scale(1.2)' }} />
                 </motion.div>
               ))}
 
