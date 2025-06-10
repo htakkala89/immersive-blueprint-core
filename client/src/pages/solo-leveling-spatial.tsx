@@ -73,6 +73,7 @@ interface GameState {
   stats?: CoreStats;
   unspentStatPoints?: number;
   unspentSkillPoints?: number;
+  storyProgress?: number;
 }
 
 interface WorldLocation {
@@ -2877,7 +2878,7 @@ export default function SoloLevelingSpatial() {
         currentTime={timeOfDay}
         chaHaeInLocation={chaHaeInCurrentLocation || ''}
         playerAffection={gameState.affection}
-        storyProgress={gameState.level}
+        storyProgress={gameState.storyProgress || gameState.level || 0}
         activeQuests={activeQuests}
       />
 
