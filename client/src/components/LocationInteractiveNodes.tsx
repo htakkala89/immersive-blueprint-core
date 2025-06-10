@@ -583,7 +583,7 @@ export function LocationInteractiveNodes({
             whileHover={available ? { scale: 1.1 } : {}}
             whileTap={available ? { scale: 0.95 } : {}}
           >
-            {/* Node Orb with improved spacing */}
+            {/* Node Orb with 8px spacing system */}
             <motion.div
               className={`w-6 h-6 rounded-full flex items-center justify-center ${
                 available 
@@ -593,7 +593,8 @@ export function LocationInteractiveNodes({
               style={{
                 minWidth: '24px',
                 minHeight: '24px',
-                margin: '8px' // 8px base spacing around each node
+                padding: '4px', // 4px micro spacing for icon-to-border
+                margin: '8px' // 8px standard element spacing
               }}
               animate={available ? {
                 boxShadow: [
@@ -607,13 +608,16 @@ export function LocationInteractiveNodes({
               <IconComponent className="w-3 h-3 text-white" />
             </motion.div>
 
-            {/* Node Label with proper spacing */}
+            {/* Node Label with 8px spacing from orb */}
             <div className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-              <div className={`backdrop-blur-sm px-3 py-1.5 rounded-md text-sm border ${
+              <div className={`backdrop-blur-sm rounded-md text-sm border ${
                 available 
                   ? 'bg-black/80 border-purple-400/50 text-purple-200'
                   : 'bg-black/60 border-gray-500/50 text-gray-400'
-              }`}>
+              }`}
+              style={{
+                padding: '4px 8px' // 4px micro spacing vertical, 8px standard horizontal
+              }}>
                 {node.label}
               </div>
             </div>
@@ -638,23 +642,31 @@ export function LocationInteractiveNodes({
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-black/80 backdrop-blur-xl border border-purple-400/30 rounded-2xl p-6 max-w-md mx-4"
+              className="bg-black/80 backdrop-blur-xl border border-purple-400/30 rounded-2xl max-w-md mx-4"
+              style={{ padding: '24px' }} // 24px container padding (3x unit)
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="text-center space-y-4">
-                <div className="w-12 h-12 mx-auto bg-purple-500/20 rounded-full flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto bg-purple-500/20 rounded-full flex items-center justify-center"
+                     style={{ marginBottom: '16px' }}> {/* 16px component spacing (2x unit) */}
                   <selectedNode.icon className="w-6 h-6 text-purple-400" />
                 </div>
 
-                <h3 className="text-white text-lg font-semibold">
+                <h3 className="text-white text-lg font-semibold"
+                    style={{ marginBottom: '8px' }}> {/* 8px standard spacing */}
                   {selectedNode.label}
                 </h3>
 
-                <div className="text-purple-200 text-sm italic">
+                <div className="text-purple-200 text-sm italic"
+                     style={{ 
+                       marginBottom: '24px', // 24px section spacing (3x unit)
+                       padding: '8px 0' // 8px vertical padding
+                     }}>
                   "{selectedNode.thoughtPrompt}"
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex"
+                     style={{ gap: '8px' }}> {/* 8px gap between buttons */}
                   <Button
                     onClick={() => {
                       setShowThoughtPrompt(false);
@@ -662,12 +674,14 @@ export function LocationInteractiveNodes({
                     }}
                     variant="ghost"
                     className="flex-1 text-white/60 hover:bg-white/10"
+                    style={{ padding: '8px 16px' }} // 8px vertical, 16px horizontal
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleThoughtPromptClick}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    style={{ padding: '8px 16px' }} // 8px vertical, 16px horizontal
                   >
                     Act on Thought
                   </Button>
