@@ -65,9 +65,50 @@ export default function SoloLevelingSpatial() {
     maxMana: 50,
     affection: 25,
     currentScene: 'hunter_association',
-    inventory: [],
+    inventory: [
+      {
+        id: 'red_mana_crystal_1',
+        name: 'Red Mana Crystal',
+        description: 'A pulsing crimson crystal harvested from a B-rank fire elemental. Contains concentrated flame magic.',
+        icon: '🔴',
+        type: 'mana_crystal',
+        quantity: 3,
+        value: 750000,
+        rarity: 'rare'
+      },
+      {
+        id: 'shadow_wolf_core_1',
+        name: 'Shadow Wolf Core',
+        description: 'The dark essence core of an elite shadow wolf. Highly sought after for stealth enchantments.',
+        icon: '🐺',
+        type: 'monster_core',
+        quantity: 2,
+        value: 1200000,
+        rarity: 'epic'
+      },
+      {
+        id: 'blue_mana_crystal_1',
+        name: 'Blue Mana Crystal',
+        description: 'A crystallized fragment of pure ice magic from a C-rank frost giant.',
+        icon: '🔵',
+        type: 'mana_crystal',
+        quantity: 5,
+        value: 300000,
+        rarity: 'uncommon'
+      },
+      {
+        id: 'drake_scale_core_1',
+        name: 'Drake Scale Core',
+        description: 'Legendary core from a juvenile drake. Contains immense magical power and dragon essence.',
+        icon: '🐉',
+        type: 'monster_core',
+        quantity: 1,
+        value: 5000000,
+        rarity: 'legendary'
+      }
+    ],
     inCombat: false,
-    gold: 1000,
+    gold: 50000000,
     intimacyLevel: 1,
     energy: 80,
     maxEnergy: 100
@@ -1803,6 +1844,14 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
+      {/* Wealth Display - Context-sensitive visibility */}
+      <WealthDisplay
+        currentGold={gameState.gold || 0}
+        isVisible={showUnifiedShop || showHunterMarket || playerLocation === 'luxury_realtor'}
+        showTransactionHistory={showHunterMarket}
+        recentTransactions={recentTransactions}
+      />
+
       <WorldMap
         isVisible={showWorldMap}
         onClose={() => setShowWorldMap(false)}
@@ -1811,6 +1860,23 @@ export default function SoloLevelingSpatial() {
         chaHaeInLocation={chaHaeInCurrentLocation}
         playerAffection={gameState.affection}
         storyProgress={gameState.level}
+      />
+
+      {/* Economic System Interfaces */}
+      <HunterMarket
+        isVisible={showHunterMarket}
+        onClose={() => setShowHunterMarket(false)}
+        inventory={gameState.inventory || []}
+        currentGold={gameState.gold || 0}
+        onSellItem={handleSellItem}
+      />
+
+      <QuestBoard
+        isVisible={showQuestBoard}
+        onClose={() => setShowQuestBoard(false)}
+        playerLevel={gameState.level}
+        onAcceptQuest={handleAcceptQuest}
+        activeQuests={activeQuests}
       />
     </div>
   );

@@ -632,6 +632,85 @@ RESPONSE INSTRUCTIONS:
     }
   });
 
+  // Economic System - Sell Items
+  app.post("/api/sell-item", async (req, res) => {
+    try {
+      const { itemId, quantity, totalValue, gameState } = req.body;
+      
+      if (!itemId || !quantity || !totalValue || !gameState) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      
+      // Update inventory - remove sold items
+      const updatedInventory = gameState.inventory.map((item: any) => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            quantity: Math.max(0, item.quantity - quantity)
+          };
+        }
+        return item;
+      }).filter((item: any) => item.quantity > 0);
+      
+      // Update gold
+      const updatedGameState = {
+        ...gameState,
+        gold: (gameState.gold || 0) + totalValue,
+        inventory: updatedInventory
+      };
+      
+      res.json({ 
+        gameState: updatedGameState,
+        message: `Successfully sold ${quantity} items for ₩${totalValue.toLocaleString()}`
+      });
+    } catch (error) {
+      console.error("Sell item error:", error);
+      res.status(500).json({ error: "Failed to sell item" });
+    }
+  });
+
+  // Economic System - Complete Quest
+  app.post("/api/complete-quest", async (req, res) => {
+    try {
+      const { questId, gameState } = req.body;
+      
+      if (!questId || !gameState) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      
+      // Quest reward logic (this would be expanded based on specific quest)
+      const questRewards = {
+        'clear_c_rank_gate': { gold: 15000000, experience: 2500 },
+        'investigate_mana_signature': { gold: 25000000, experience: 4000 },
+        'escort_vip_hunter': { gold: 50000000, experience: 7500 },
+        'emergency_gate_response': { gold: 100000000, experience: 15000 },
+        'training_facility_maintenance': { gold: 5000000, experience: 1000 },
+        'market_security_patrol': { gold: 2000000, experience: 500 }
+      };
+      
+      const reward = questRewards[questId as keyof typeof questRewards];
+      if (!reward) {
+        return res.status(400).json({ error: "Invalid quest ID" });
+      }
+      
+      const updatedGameState = {
+        ...gameState,
+        gold: (gameState.gold || 0) + reward.gold,
+        experience: (gameState.experience || 0) + reward.experience,
+        level: Math.floor(((gameState.experience || 0) + reward.experience) / 1000) + 1
+      };
+      
+      res.json({ 
+        gameState: updatedGameState,
+        reward,
+        message: `Quest completed! Received ₩${reward.gold.toLocaleString()} and ${reward.experience} XP`
+      });
+    } catch (error) {
+      console.error("Complete quest error:", error);
+      res.status(500).json({ error: "Failed to complete quest" });
+    }
+  });
+
   // Scene image generation
   app.post("/api/generate-scene-image", async (req, res) => {
     try {
