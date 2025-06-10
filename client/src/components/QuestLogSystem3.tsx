@@ -122,67 +122,228 @@ export function QuestLogSystem3({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-2xl flex items-center justify-center z-50 p-4"
+      style={{
+        backdropFilter: 'blur(60px) saturate(180%)',
+        background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.4), rgba(0,0,0,0.7))'
+      }}
     >
       <motion.div
         initial={{ scale: 0.9, y: 50 }}
         animate={{ scale: 1, y: 0 }}
-        className="bg-slate-900/95 backdrop-blur-xl rounded-2xl w-full max-w-6xl h-[80vh] flex flex-col overflow-hidden border border-white/10 shadow-2xl"
+        className="w-full max-w-6xl h-[80vh] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced"
+        style={{
+          background: 'linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,41,59,0.75))',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '24px',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8)',
+          position: 'relative'
+        }}
       >
-        {/* Header with Liquid Glassmorphism */}
-        <div className="relative p-6 border-b border-white/10">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm" />
+        {/* Noise texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] pointer-events-none rounded-2xl"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            backgroundSize: '180px 180px'
+          }}
+        />
+        
+        {/* Inner glow border */}
+        <div 
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          style={{
+            background: 'linear-gradient(135deg, rgba(147,51,234,0.1), rgba(59,130,246,0.08))',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '24px',
+            boxShadow: 'inset 0 0 20px rgba(147,51,234,0.1)'
+          }}
+        />
+        {/* Header with Enhanced Liquid Glassmorphism */}
+        <div className="relative p-6 border-b border-white/10 z-10">
+          <div 
+            className="absolute inset-0 backdrop-blur-sm"
+            style={{
+              background: 'linear-gradient(135deg, rgba(59,130,246,0.08), rgba(147,51,234,0.06))',
+              borderBottom: '1px solid rgba(255,255,255,0.08)'
+            }}
+          />
           <div className="relative flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-blue-500/20 border border-blue-400/30">
-                <Crown className="w-8 h-8 text-blue-400" />
+              <div 
+                className="p-3 rounded-xl border"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(147,51,234,0.1))',
+                  border: '1px solid rgba(59,130,246,0.3)',
+                  backdropFilter: 'blur(20px)',
+                  boxShadow: 'inset 0 0 20px rgba(59,130,246,0.1), 0 8px 32px rgba(59,130,246,0.15)'
+                }}
+              >
+                <Crown 
+                  className="w-8 h-8 text-blue-400" 
+                  style={{
+                    filter: 'drop-shadow(0 0 8px rgba(59,130,246,0.4))',
+                    textShadow: '0 0 10px rgba(59,130,246,0.6)'
+                  }}
+                />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-white mb-1">Quest Log</h2>
-                <p className="text-slate-400">Monarch's Aura - Mission Command Center</p>
+                <h2 
+                  className="text-2xl font-bold text-white mb-1"
+                  style={{
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                    filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                  }}
+                >
+                  Quest Log
+                </h2>
+                <p 
+                  className="text-slate-300"
+                  style={{
+                    textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                    filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
+                  }}
+                >
+                  Monarch's Aura - Mission Command Center
+                </p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="text-slate-400 hover:text-white"
+              className="text-slate-300 hover:text-white transition-all duration-200"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.1)'
+              }}
             >
-              <X className="w-6 h-6" />
+              <X 
+                className="w-6 h-6" 
+                style={{
+                  filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
+                }}
+              />
             </Button>
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex border-b border-white/10 bg-slate-800/50">
+        {/* Tab Navigation with Enhanced Glassmorphism */}
+        <div 
+          className="flex border-b border-white/10 relative z-10"
+          style={{
+            background: 'linear-gradient(135deg, rgba(30,41,59,0.4), rgba(15,23,42,0.6))',
+            backdropFilter: 'blur(20px)'
+          }}
+        >
           <button
             onClick={() => setActiveTab('active')}
-            className={`flex-1 px-6 py-4 flex items-center justify-center gap-3 transition-all ${
+            className={`flex-1 px-6 py-4 flex items-center justify-center gap-3 transition-all duration-300 relative ${
               activeTab === 'active' 
-                ? 'text-blue-400 border-b-2 border-blue-400 bg-blue-400/5' 
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                ? 'text-blue-300' 
+                : 'text-slate-400 hover:text-white'
             }`}
+            style={{
+              background: activeTab === 'active' 
+                ? 'linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.04))'
+                : 'transparent'
+            }}
           >
-            <Target className="w-5 h-5" />
-            Active Missions
+            {/* Glowing underline for active tab */}
+            {activeTab === 'active' && (
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-0.5"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.8), transparent)',
+                  boxShadow: '0 0 8px rgba(59,130,246,0.6), 0 0 16px rgba(59,130,246,0.3)',
+                  filter: 'blur(0.5px)'
+                }}
+              />
+            )}
+            <Target 
+              className="w-5 h-5" 
+              style={{
+                filter: activeTab === 'active' 
+                  ? 'drop-shadow(0 0 4px rgba(59,130,246,0.4))' 
+                  : 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
+              }}
+            />
+            <span 
+              style={{
+                textShadow: activeTab === 'active' 
+                  ? '0 0 8px rgba(59,130,246,0.3), 0 1px 2px rgba(0,0,0,0.8)' 
+                  : '0 1px 2px rgba(0,0,0,0.8)'
+              }}
+            >
+              Active Missions
+            </span>
             {activeQuests.length > 0 && (
-              <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-1">
+              <span 
+                className="text-white text-xs rounded-full px-2 py-1"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(59,130,246,0.8), rgba(37,99,235,0.9))',
+                  border: '1px solid rgba(59,130,246,0.3)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 8px rgba(59,130,246,0.3)',
+                  textShadow: '0 1px 1px rgba(0,0,0,0.5)'
+                }}
+              >
                 {activeQuests.length}
               </span>
             )}
           </button>
           <button
             onClick={() => setActiveTab('completed')}
-            className={`flex-1 px-6 py-4 flex items-center justify-center gap-3 transition-all ${
+            className={`flex-1 px-6 py-4 flex items-center justify-center gap-3 transition-all duration-300 relative ${
               activeTab === 'completed' 
-                ? 'text-green-400 border-b-2 border-green-400 bg-green-400/5' 
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                ? 'text-green-300' 
+                : 'text-slate-400 hover:text-white'
             }`}
+            style={{
+              background: activeTab === 'completed' 
+                ? 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.04))'
+                : 'transparent'
+            }}
           >
-            <CheckCircle className="w-5 h-5" />
-            Completed Missions
+            {/* Glowing underline for active tab */}
+            {activeTab === 'completed' && (
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-0.5"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.8), transparent)',
+                  boxShadow: '0 0 8px rgba(34,197,94,0.6), 0 0 16px rgba(34,197,94,0.3)',
+                  filter: 'blur(0.5px)'
+                }}
+              />
+            )}
+            <CheckCircle 
+              className="w-5 h-5" 
+              style={{
+                filter: activeTab === 'completed' 
+                  ? 'drop-shadow(0 0 4px rgba(34,197,94,0.4))' 
+                  : 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
+              }}
+            />
+            <span 
+              style={{
+                textShadow: activeTab === 'completed' 
+                  ? '0 0 8px rgba(34,197,94,0.3), 0 1px 2px rgba(0,0,0,0.8)' 
+                  : '0 1px 2px rgba(0,0,0,0.8)'
+              }}
+            >
+              Completed Missions
+            </span>
             {completedQuests.length > 0 && (
-              <span className="bg-green-500 text-white text-xs rounded-full px-2 py-1">
+              <span 
+                className="text-white text-xs rounded-full px-2 py-1"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(34,197,94,0.8), rgba(22,163,74,0.9))',
+                  border: '1px solid rgba(34,197,94,0.3)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 8px rgba(34,197,94,0.3)',
+                  textShadow: '0 1px 1px rgba(0,0,0,0.5)'
+                }}
+              >
                 {completedQuests.length}
               </span>
             )}
@@ -191,59 +352,173 @@ export function QuestLogSystem3({
 
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Quest List */}
-          <div className="w-1/2 border-r border-white/10 bg-slate-800/30">
+          {/* Quest List with Enhanced Glassmorphism */}
+          <div 
+            className="w-1/2 border-r border-white/10 relative z-10"
+            style={{
+              background: 'linear-gradient(135deg, rgba(30,41,59,0.3), rgba(15,23,42,0.5))',
+              backdropFilter: 'blur(25px)'
+            }}
+          >
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
+              <h3 
+                className="text-lg font-semibold text-white mb-4"
+                style={{
+                  textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                  filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                }}
+              >
                 {activeTab === 'active' ? 'Active Missions' : 'Mission History'}
               </h3>
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {(activeTab === 'active' ? activeQuests : completedQuests).map((quest) => (
                   <motion.div
                     key={quest.id}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setSelectedQuest(quest)}
-                    className={`p-4 rounded-xl cursor-pointer transition-all border ${
-                      selectedQuest?.id === quest.id 
-                        ? 'bg-blue-500/20 border-blue-400/50' 
-                        : 'bg-white/5 border-white/10 hover:bg-white/10'
-                    }`}
+                    className="cursor-pointer transition-all duration-300 relative"
+                    style={{
+                      background: selectedQuest?.id === quest.id 
+                        ? 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(37,99,235,0.1))'
+                        : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                      backdropFilter: 'blur(15px)',
+                      border: selectedQuest?.id === quest.id
+                        ? '1px solid rgba(59,130,246,0.4)'
+                        : '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '16px',
+                      boxShadow: selectedQuest?.id === quest.id
+                        ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 32px rgba(59,130,246,0.2), 0 0 0 1px rgba(59,130,246,0.1)'
+                        : 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.3)',
+                      padding: '16px'
+                    }}
                   >
-                    <div className="flex items-start justify-between mb-3">
+                    {/* Subtle noise texture for quest cards */}
+                    <div 
+                      className="absolute inset-0 opacity-[0.02] pointer-events-none rounded-2xl"
+                      style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 150 150' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter2)'/%3E%3C/svg%3E")`,
+                        backgroundSize: '120px 120px'
+                      }}
+                    />
+                    <div className="flex items-start justify-between mb-3 relative z-10">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg border ${getRankColor(quest.rank)}`}>
-                          <span className="font-bold text-sm">{quest.rank}</span>
+                        <div 
+                          className={`p-2 rounded-lg border ${getRankColor(quest.rank)}`}
+                          style={{
+                            backdropFilter: 'blur(10px)',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
+                          }}
+                        >
+                          <span 
+                            className="font-bold text-sm"
+                            style={{
+                              textShadow: '0 0 4px currentColor, 0 1px 2px rgba(0,0,0,0.8)',
+                              filter: 'drop-shadow(0 0 2px currentColor)'
+                            }}
+                          >
+                            {quest.rank}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {getTypeIcon(quest.type)}
+                          <div style={{ filter: 'drop-shadow(0 0 4px currentColor) drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>
+                            {getTypeIcon(quest.type)}
+                          </div>
                           {quest.isUrgent && (
-                            <AlertTriangle className="w-4 h-4 text-red-400" />
+                            <AlertTriangle 
+                              className="w-4 h-4 text-red-400" 
+                              style={{
+                                filter: 'drop-shadow(0 0 6px rgba(239,68,68,0.6)) drop-shadow(0 1px 2px rgba(0,0,0,0.8))'
+                              }}
+                            />
                           )}
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-xs text-slate-400 mb-1">Progress</div>
-                        <div className="w-16 h-2 bg-slate-700 rounded-full overflow-hidden">
+                        <div 
+                          className="text-xs text-slate-300 mb-1"
+                          style={{
+                            textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                            filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
+                          }}
+                        >
+                          Progress
+                        </div>
+                        <div 
+                          className="w-16 h-2 rounded-full overflow-hidden"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(15,23,42,0.8), rgba(30,41,59,0.6))',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)'
+                          }}
+                        >
                           <div 
-                            className="h-full bg-blue-400 transition-all"
-                            style={{ width: `${calculateProgress(quest)}%` }}
+                            className="h-full transition-all"
+                            style={{ 
+                              width: `${calculateProgress(quest)}%`,
+                              background: 'linear-gradient(90deg, rgba(59,130,246,0.8), rgba(147,51,234,0.8))',
+                              boxShadow: '0 0 8px rgba(59,130,246,0.4)'
+                            }}
                           />
                         </div>
                       </div>
                     </div>
                     
-                    <h4 className="font-semibold text-white mb-2 line-clamp-2">{quest.title}</h4>
-                    <p className="text-sm text-slate-400 mb-3 line-clamp-2">{quest.description}</p>
+                    <h4 
+                      className="font-semibold text-white mb-2 line-clamp-2 relative z-10"
+                      style={{
+                        textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                        filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                      }}
+                    >
+                      {quest.title}
+                    </h4>
+                    <p 
+                      className="text-sm text-slate-300 mb-3 line-clamp-2 relative z-10"
+                      style={{
+                        textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                        filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
+                      }}
+                    >
+                      {quest.description}
+                    </p>
                     
-                    <div className="flex items-center justify-between text-xs text-slate-500">
+                    <div 
+                      className="flex items-center justify-between text-xs text-slate-400 relative z-10"
+                      style={{
+                        textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                      }}
+                    >
                       <div className="flex items-center gap-2">
-                        <MapPin className="w-3 h-3" />
-                        <span className="capitalize">{quest.targetLocation.replace(/_/g, ' ')}</span>
+                        <MapPin 
+                          className="w-3 h-3" 
+                          style={{
+                            filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))'
+                          }}
+                        />
+                        <span 
+                          className="capitalize"
+                          style={{
+                            textShadow: '0 1px 1px rgba(0,0,0,0.8)'
+                          }}
+                        >
+                          {quest.targetLocation.replace(/_/g, ' ')}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock className="w-3 h-3" />
-                        <span>{formatDuration(quest.estimatedDuration)}</span>
+                        <Clock 
+                          className="w-3 h-3" 
+                          style={{
+                            filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))'
+                          }}
+                        />
+                        <span 
+                          style={{
+                            textShadow: '0 1px 1px rgba(0,0,0,0.8)'
+                          }}
+                        >
+                          {formatDuration(quest.estimatedDuration)}
+                        </span>
                       </div>
                     </div>
                   </motion.div>
@@ -266,58 +541,161 @@ export function QuestLogSystem3({
             </div>
           </div>
 
-          {/* Quest Details */}
-          <div className="flex-1 bg-slate-900/50">
+          {/* Quest Details with Enhanced Glassmorphism */}
+          <div 
+            className="flex-1 relative z-10"
+            style={{
+              background: 'linear-gradient(135deg, rgba(15,23,42,0.6), rgba(30,41,59,0.4))',
+              backdropFilter: 'blur(30px)'
+            }}
+          >
             {selectedQuest ? (
-              <div className="p-6 h-full overflow-y-auto">
+              <div className="p-6 h-full overflow-y-auto relative z-10">
+                {/* Subtle noise texture for details panel */}
+                <div 
+                  className="absolute inset-0 opacity-[0.02] pointer-events-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter3'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter3)'/%3E%3C/svg%3E")`,
+                    backgroundSize: '160px 160px'
+                  }}
+                />
                 {/* Quest Header */}
-                <div className="mb-6">
+                <div className="mb-6 relative z-10">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className={`p-3 rounded-xl border ${getRankColor(selectedQuest.rank)}`}>
-                      <span className="font-bold text-lg">{selectedQuest.rank}</span>
+                    <div 
+                      className={`p-3 rounded-xl border ${getRankColor(selectedQuest.rank)}`}
+                      style={{
+                        backdropFilter: 'blur(15px)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      <span 
+                        className="font-bold text-lg"
+                        style={{
+                          textShadow: '0 0 8px currentColor, 0 2px 4px rgba(0,0,0,0.8)',
+                          filter: 'drop-shadow(0 0 4px currentColor)'
+                        }}
+                      >
+                        {selectedQuest.rank}
+                      </span>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-white mb-2">{selectedQuest.title}</h3>
-                      <div className="flex items-center gap-4 text-sm text-slate-400">
+                      <h3 
+                        className="text-2xl font-bold text-white mb-2"
+                        style={{
+                          textShadow: '0 2px 8px rgba(0,0,0,0.5), 0 0 12px rgba(255,255,255,0.1)',
+                          filter: 'drop-shadow(0 2px 4px rgba(255,255,255,0.1))'
+                        }}
+                      >
+                        {selectedQuest.title}
+                      </h3>
+                      <div 
+                        className="flex items-center gap-4 text-sm text-slate-300"
+                        style={{
+                          textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                        }}
+                      >
                         <div className="flex items-center gap-2">
-                          {getTypeIcon(selectedQuest.type)}
+                          <div style={{ filter: 'drop-shadow(0 0 4px currentColor) drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>
+                            {getTypeIcon(selectedQuest.type)}
+                          </div>
                           <span className="capitalize">{selectedQuest.type.replace(/_/g, ' ')}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4" />
+                          <MapPin 
+                            className="w-4 h-4" 
+                            style={{
+                              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
+                            }}
+                          />
                           <span className="capitalize">{selectedQuest.targetLocation.replace(/_/g, ' ')}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
+                          <Calendar 
+                            className="w-4 h-4" 
+                            style={{
+                              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
+                            }}
+                          />
                           <span>{selectedQuest.sender}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-400">Mission Progress</span>
-                      <span className="text-white">{Math.round(calculateProgress(selectedQuest))}%</span>
+                  {/* Enhanced Progress Bar */}
+                  <div className="mb-4 relative z-10">
+                    <div 
+                      className="flex justify-between text-sm mb-2"
+                      style={{
+                        textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                      }}
+                    >
+                      <span className="text-slate-300">Mission Progress</span>
+                      <span 
+                        className="text-white font-semibold"
+                        style={{
+                          textShadow: '0 1px 2px rgba(0,0,0,0.8), 0 0 4px rgba(255,255,255,0.1)'
+                        }}
+                      >
+                        {Math.round(calculateProgress(selectedQuest))}%
+                      </span>
                     </div>
-                    <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
+                    <div 
+                      className="w-full h-3 rounded-full overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(15,23,42,0.8), rgba(30,41,59,0.6))',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05)'
+                      }}
+                    >
                       <div 
-                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
-                        style={{ width: `${calculateProgress(selectedQuest)}%` }}
+                        className="h-full transition-all duration-500"
+                        style={{ 
+                          width: `${calculateProgress(selectedQuest)}%`,
+                          background: 'linear-gradient(90deg, rgba(59,130,246,0.9), rgba(147,51,234,0.9), rgba(236,72,153,0.8))',
+                          boxShadow: '0 0 12px rgba(59,130,246,0.6), inset 0 1px 0 rgba(255,255,255,0.2)'
+                        }}
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Mission Briefing */}
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                    <Shield className="w-5 h-5" />
+                {/* Enhanced Mission Briefing */}
+                <div className="mb-6 relative z-10">
+                  <h4 
+                    className="text-lg font-semibold text-white mb-3 flex items-center gap-2"
+                    style={{
+                      textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                      filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                    }}
+                  >
+                    <Shield 
+                      className="w-5 h-5" 
+                      style={{
+                        filter: 'drop-shadow(0 0 6px rgba(59,130,246,0.4)) drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
+                      }}
+                    />
                     Mission Briefing
                   </h4>
-                  <div className="bg-white/5 rounded-lg p-4">
-                    <p className="text-slate-300 leading-relaxed">{selectedQuest.longDescription}</p>
+                  <div 
+                    className="rounded-lg p-4"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                      backdropFilter: 'blur(15px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.3)'
+                    }}
+                  >
+                    <p 
+                      className="text-slate-300 leading-relaxed"
+                      style={{
+                        textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                        filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
+                      }}
+                    >
+                      {selectedQuest.longDescription}
+                    </p>
                   </div>
                 </div>
 
