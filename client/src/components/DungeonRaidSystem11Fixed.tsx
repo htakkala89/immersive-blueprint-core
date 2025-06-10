@@ -947,10 +947,27 @@ export function DungeonRaidSystem11Fixed({
 
   const handleStruggleTap = () => {
     if (bossStruggle?.active) {
-      setBossStruggle(prev => prev ? {
-        ...prev,
-        progress: Math.min(100, prev.progress + 8)
-      } : null);
+      setBossStruggle(prev => {
+        if (!prev) return null;
+        
+        const newProgress = Math.min(100, prev.progress + 8);
+        
+        // Check for completion
+        if (newProgress >= 100) {
+          // Successfully broke free
+          addToCombatLog("Successfully broke free from boss grip!");
+          setSynergyGauge(prev => Math.min(100, prev + 15));
+          
+          // Return null to close the struggle
+          setTimeout(() => {
+            setBossStruggle(null);
+          }, 500);
+          
+          return { ...prev, progress: 100 };
+        }
+        
+        return { ...prev, progress: newProgress };
+      });
     }
   };
 
@@ -2147,9 +2164,23 @@ export function DungeonRaidSystem11Fixed({
                   transition={{ duration: 0.1 }}
                 />
               </div>
-              <div className="text-white text-sm">
+              <div className="text-white text-sm mb-4">
                 Progress: {Math.floor(bossStruggle.progress)}%
               </div>
+              
+              {/* Completion button when at 100% */}
+              {bossStruggle.progress >= 100 && (
+                <button
+                  onClick={() => {
+                    addToCombatLog("Successfully broke free from boss grip!");
+                    setSynergyGauge(prev => Math.min(100, prev + 15));
+                    setBossStruggle(null);
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 font-bold"
+                >
+                  BREAK FREE!
+                </button>
+              )}
             </motion.div>
           </motion.div>
         )}
