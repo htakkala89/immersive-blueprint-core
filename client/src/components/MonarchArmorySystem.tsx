@@ -190,14 +190,25 @@ export function MonarchArmorySystem({ isVisible, onClose }: MonarchArmorySystemP
           </div>
 
           {!upgradeMode ? (
-            /* Main Armory View */
-            <div className="flex h-full">
-              {/* 3D Character Model Area */}
-              <div className="flex-1 relative overflow-hidden">
-                {/* Ethereal Background */}
-                <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-black/40 to-purple-900/20">
-                  {/* Floating Particles */}
-                  {[...Array(20)].map((_, i) => (
+            /* Immersive 3D Armory Environment */
+            <div className="relative h-full overflow-hidden">
+              {/* 3D Shadow Dimension Environment */}
+              <div className="absolute inset-0">
+                {/* Dynamic Ethereal Background */}
+                <div 
+                  className="absolute inset-0"
+                  style={{
+                    background: `
+                      radial-gradient(circle at 20% 30%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+                      radial-gradient(circle at 40% 80%, rgba(168, 85, 247, 0.25) 0%, transparent 50%),
+                      linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 27, 75, 0.9) 50%, rgba(15, 23, 42, 0.9) 100%)
+                    `
+                  }}
+                />
+                
+                {/* Mystical Floating Particles */}
+                {[...Array(30)].map((_, i) => (
                     <motion.div
                       key={i}
                       className="absolute w-1 h-1 bg-purple-400 rounded-full opacity-30"
@@ -237,10 +248,119 @@ export function MonarchArmorySystem({ isVisible, onClose }: MonarchArmorySystemP
                     <div className="text-6xl">🤴</div>
                     
                     {/* Equipment Slots Overlay */}
-                    {equipmentSlots.map((slot) => {
-                      const equippedItem = equippedItems.find(item => item.slot === slot.id);
-                      return (
+                    {Object.entries(equipmentSlots).map(([slot, coords]) => (
+                      <motion.div
+                        key={slot}
+                        className="absolute w-8 h-8 border-2 border-purple-400/50 rounded-lg bg-purple-500/10 cursor-pointer hover:bg-purple-500/20 transition-colors"
+                        style={{
+                          left: `${coords.x}%`,
+                          top: `${coords.y}%`
+                        }}
+                        whileHover={{ scale: 1.1 }}
+                        title={`${slot} slot`}
+                      />
+                    ))}
+                  </motion.div>
+                </div>
+                
+                {/* Floating Total Stats Panel - Top Right */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="absolute top-6 right-6 w-80 bg-slate-900/90 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6 shadow-2xl"
+                  style={{
+                    backdropFilter: 'blur(40px) saturate(180%)',
+                    borderImage: 'linear-gradient(135deg, rgba(168,85,247,0.4), rgba(168,85,247,0.1)) 1'
+                  }}
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-700 rounded-lg flex items-center justify-center">
+                      <Crown className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-white font-bold text-lg">Total Stats</h3>
+                  </div>
+                  
+                  {/* Stat Bars */}
+                  <div className="space-y-4">
+                    {Object.entries(totalStats).map(([stat, value]) => (
+                      <div key={stat} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-300 capitalize text-sm font-medium">{stat}</span>
+                          <span className="text-white font-bold">{value}</span>
+                        </div>
+                        <div className="w-full bg-slate-700/50 rounded-full h-2">
+                          <motion.div
+                            className={`h-2 rounded-full ${getStatColor(stat)}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min((value / 1000) * 100, 100)}%` }}
+                            transition={{ duration: 1, delay: 0.2 }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Equipment Carousel at Bottom */}
+                <div className="absolute bottom-6 left-6 right-6 h-32">
+                  <div className="bg-slate-900/90 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-4 h-full">
+                    <h3 className="text-white font-bold mb-3">Available Equipment</h3>
+                    <div className="flex gap-4 overflow-x-auto scrollbar-hide">
+                      {sampleEquipment.map((item, index) => (
                         <motion.div
+                          key={item.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className={`min-w-20 h-20 rounded-xl border-2 ${getRarityBorder(item.rarity)} bg-slate-800/50 cursor-pointer flex items-center justify-center text-3xl relative group`}
+                          whileHover={{ scale: 1.05, y: -5 }}
+                          onClick={() => handleEquipItem(item, item.slot)}
+                        >
+                          {item.icon}
+                          
+                          {/* Hover Tooltip using the designed card layout */}
+                          <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                            whileHover={{ opacity: 1, y: 0, scale: 1 }}
+                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-xl p-4 shadow-2xl opacity-0 group-hover:opacity-100 transition-all z-10"
+                          >
+                            <div className="text-center mb-3">
+                              <div className={`w-16 h-16 mx-auto rounded-xl border-2 ${getRarityBorder(item.rarity)} flex items-center justify-center text-4xl mb-2`}>
+                                {item.icon}
+                              </div>
+                              <h4 className={`font-bold ${getRarityTextColor(item.rarity)}`}>{item.name}</h4>
+                              <p className="text-slate-400 text-sm capitalize">{item.slot}</p>
+                            </div>
+                            
+                            <div className="space-y-2 text-sm">
+                              {Object.entries(item.stats).map(([stat, value]) => (
+                                <div key={stat} className="flex justify-between">
+                                  <span className="text-slate-300 capitalize">{stat}:</span>
+                                  <span className="text-green-400 font-bold">+{value}</span>
+                                </div>
+                              ))}
+                            </div>
+                            
+                            <div className="mt-3 pt-3 border-t border-purple-500/20">
+                              <Button
+                                size="sm"
+                                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEquipItem(item, item.slot);
+                                }}
+                              >
+                                Equip
+                              </Button>
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
                           key={slot.id}
                           className={`absolute w-12 h-12 rounded-lg border-2 border-dashed ${
                             equippedItem ? 'border-amber-400 bg-amber-400/20' : 'border-purple-400/50'
