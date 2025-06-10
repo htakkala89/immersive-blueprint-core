@@ -182,10 +182,42 @@ export function DungeonRaidSystem11({
     const skill = skills.find(s => s.id === skillId);
     if (!skill || skillCooldowns[skillId] > 0) return;
     
-    // Special handling for Shadow Exchange - opens Shadow Soldier menu
+    // Special handling for Shadow Exchange - teleport ability
     if (skill.id === 'shadow_exchange') {
-      setMonarchRuneOpen(true);
-      console.log('Opening Shadow Soldier selection menu');
+      // Shadow Exchange teleports Jin-Woo to a new position
+      const jinwoo = players.find(p => p.id === 'jinwoo');
+      if (jinwoo && battlefieldRef.current) {
+        const rect = battlefieldRef.current.getBoundingClientRect();
+        const newX = Math.random() * (rect.width - 50);
+        const newY = Math.random() * (rect.height - 50);
+        
+        setPlayers(prev => prev.map(player => 
+          player.id === 'jinwoo' 
+            ? { 
+                ...player, 
+                x: newX, 
+                y: newY, 
+                mana: Math.max(0, player.mana - skill.manaCost) 
+              }
+            : player
+        ));
+        
+        // Start cooldown
+        setSkillCooldowns(prev => ({ ...prev, [skillId]: skill.cooldown }));
+        
+        // Handle cooldown countdown
+        const cooldownInterval = setInterval(() => {
+          setSkillCooldowns(prev => {
+            const newCooldown = Math.max(0, prev[skillId] - 100);
+            if (newCooldown === 0) {
+              clearInterval(cooldownInterval);
+            }
+            return { ...prev, [skillId]: newCooldown };
+          });
+        }, 100);
+        
+        console.log('Shadow Exchange: Jin-Woo teleported to new position');
+      }
       return;
     }
     
@@ -571,7 +603,7 @@ export function DungeonRaidSystem11({
               </div>
 
               {/* Monarch Rune Radial Menu */}
-              <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
+              <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 pointer-events-none z-50">
                 <AnimatePresence>
                   {monarchRuneOpen && (
                     <motion.div
@@ -579,8 +611,9 @@ export function DungeonRaidSystem11({
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
+                      className="pointer-events-auto"
                     >
-                      <div className="relative w-48 h-48">
+                      <div className="relative w-48 h-48 pointer-events-none">
                         {availableShadows.map((shadow, index) => {
                           const angle = (index * 120) - 90;
                           const radius = 60;
@@ -598,7 +631,7 @@ export function DungeonRaidSystem11({
                                   summonShadowSoldier(shadow.id);
                                 }
                               }}
-                              className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs z-50 ${
+                              className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs z-50 pointer-events-auto ${
                                 canSummon 
                                   ? 'border-purple-400 bg-purple-500/30 hover:bg-purple-500/50 cursor-pointer'
                                   : 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
