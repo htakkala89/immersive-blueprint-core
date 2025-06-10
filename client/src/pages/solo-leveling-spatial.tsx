@@ -809,26 +809,55 @@ export default function SoloLevelingSpatial() {
             onClick={handleChaHaeInInteraction}
           >
             <div className="relative">
-              {/* Soft Golden Aura - Design Specification */}
+              {/* Outer Pulsing Aura - Brings Life to the Presence */}
               <motion.div
-                className="w-16 h-16 rounded-full blur-sm"
+                className="w-20 h-20 rounded-full blur-md"
                 style={{
-                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.1) 50%, transparent 100%)'
+                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, rgba(245, 158, 11, 0.15) 40%, transparent 70%)'
                 }}
                 animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.4, 0.7, 0.4]
+                  scale: [1, 1.4, 1],
+                  opacity: [0.3, 0.8, 0.3]
                 }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Core Presence Dot */}
+              {/* Middle Glow Ring */}
               <motion.div
-                className="absolute inset-6 w-4 h-4 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-full shadow-lg"
-                animate={{
-                  opacity: [0.8, 1, 0.8]
+                className="absolute inset-2 w-16 h-16 rounded-full blur-sm"
+                style={{
+                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.2) 50%, transparent 100%)'
                 }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 0.9, 0.5]
+                }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+              />
+              
+              {/* Core Presence Dot with Enhanced Pulsing */}
+              <motion.div
+                className="absolute inset-6 w-8 h-8 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-full shadow-lg border border-yellow-200/50"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.9, 1, 0.9],
+                  boxShadow: [
+                    '0 0 8px rgba(251, 191, 36, 0.4)',
+                    '0 0 16px rgba(251, 191, 36, 0.6)',
+                    '0 0 8px rgba(251, 191, 36, 0.4)'
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+              />
+              
+              {/* Ripple Effect */}
+              <motion.div
+                className="absolute inset-0 w-20 h-20 rounded-full border border-amber-400/30"
+                animate={{
+                  scale: [1, 2, 1],
+                  opacity: [0.6, 0, 0.6]
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeOut" }}
               />
               
               {/* Hover Context - Only on Hover */}
