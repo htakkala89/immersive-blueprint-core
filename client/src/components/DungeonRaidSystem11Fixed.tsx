@@ -293,10 +293,13 @@ export function DungeonRaidSystem11Fixed({
       triggerBossStruggle();
     }
     
-    // Check for room clear
+    // Check for room clear or multi-wave progression
     if (enemies.every(e => e.health <= 0)) {
       setTimeout(() => {
-        if (currentRoom >= 6) {
+        if (currentRoom === 3 && currentWave === 1) {
+          // Arena chamber - spawn second wave
+          spawnSecondWave();
+        } else if (currentRoom >= 7) {
           setGamePhase('victory'); // Final victory
         } else {
           setGamePhase('room_clear');
@@ -327,7 +330,7 @@ export function DungeonRaidSystem11Fixed({
     // Generate exits based on current room
     const exits = [];
     
-    if (currentRoom < 5) { // Not final room
+    if (currentRoom < 7) { // Not final room
       // Main path forward
       exits.push({
         id: 'forward',
@@ -542,13 +545,28 @@ export function DungeonRaidSystem11Fixed({
             isStunned: false // This guard patrols
           }
         ];
-        setTimeout(() => triggerStealthChallenge(), 1500);
+        setTimeout(() => {
+          setStealthChallenge({
+            active: true,
+            guardPosition: 50,
+            playerHidden: false,
+            detectionLevel: 0
+          });
+          addToCombatLog("Cha Hae-In: 'That guard patrols this area. Stay in the shadows!'");
+        }, 1500);
         break;
         
       case 'antechamber':
         // Act III: Calm before storm - healing font
         newEnemies = [];
-        setTimeout(() => triggerHealingFont(), 1000);
+        setTimeout(() => {
+          setHealingFont({
+            active: true,
+            used: false
+          });
+          addToCombatLog("A mystical healing font glows before you. Touch it to restore your strength.");
+          setGamePhase('room_clear');
+        }, 1000);
         break;
         
       case 'boss_arena':
@@ -747,6 +765,65 @@ export function DungeonRaidSystem11Fixed({
       addToCombatLog("Cha Hae-In: 'More enemies incoming! Second wave!'");
       setMultiWaveActive(true);
     }
+  };
+
+  // Stealth challenge progression
+  useEffect(() => {
+    if (stealthChallenge && stealthChallenge.active) {
+      const interval = setInterval(() => {
+        setStealthChallenge(prev => {
+          if (!prev) return prev;
+          
+          const newPosition = (prev.guardPosition + 5) % 400;
+          let newDetection = prev.detectionLevel;
+          
+          if (prev.playerHidden) {
+            newDetection = Math.max(0, newDetection - 2);
+          } else {
+            newDetection = Math.min(100, newDetection + 3);
+          }
+          
+          // Success condition - stay hidden long enough
+          if (newDetection === 0 && prev.detectionLevel > 50) {
+            addToCombatLog("Cha Hae-In: 'Perfect! We've bypassed the guard!'");
+            setTimeout(() => {
+              setStealthChallenge(null);
+              setEnemies([]); // Remove guard
+              generateRoomExits();
+            }, 2000);
+            return { ...prev, guardPosition: newPosition, detectionLevel: 0 };
+          }
+          
+          // Failure condition - detected
+          if (newDetection >= 100) {
+            addToCombatLog("DETECTED! The guard attacks!");
+            setGamePhase('combat');
+            clearInterval(interval);
+            return null;
+          }
+          
+          return {
+            ...prev,
+            guardPosition: newPosition,
+            detectionLevel: newDetection
+          };
+        });
+      }, 100);
+      
+      return () => clearInterval(interval);
+    }
+  }, [stealthChallenge]);
+
+  // Reset room state between encounters
+  const resetRoomForNewEncounter = () => {
+    setCurrentWave(1);
+    setMultiWaveActive(false);
+    setEnvironmentalPuzzle(null);
+    setStealthChallenge(null);
+    setHealingFont(null);
+    setTrapAlert(null);
+    setBossStruggle(null);
+    setPuzzleRunes([]);
   };
 
   // Additional mechanics for trap, loot, struggle, etc.
@@ -1007,16 +1084,17 @@ export function DungeonRaidSystem11Fixed({
               <div className="flex items-center gap-2">
                 <div className="text-purple-400 text-xs font-bold">Room</div>
                 <div className="text-white text-sm font-bold">{currentRoom}</div>
-                <div className="text-gray-400 text-xs">/6</div>
+                <div className="text-gray-400 text-xs">/7</div>
                 
                 {/* Room Type Badge */}
                 <div className="px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-600/20 to-amber-500/20 text-purple-300 border border-purple-400/30">
                   {currentRoom === 1 && 'Entrance'}
-                  {currentRoom === 2 && 'Corridor'}
-                  {currentRoom === 3 && 'Chamber'}
-                  {currentRoom === 4 && 'Guardian'}
-                  {currentRoom === 5 && 'Antechamber'}
-                  {currentRoom === 6 && 'Boss'}
+                  {currentRoom === 2 && 'Trap Corridor'}
+                  {currentRoom === 3 && 'Arena Chamber'}
+                  {currentRoom === 4 && 'Puzzle Chamber'}
+                  {currentRoom === 5 && 'Stealth Section'}
+                  {currentRoom === 6 && 'Antechamber'}
+                  {currentRoom === 7 && 'Boss Arena'}
                 </div>
               </div>
               
@@ -1025,7 +1103,7 @@ export function DungeonRaidSystem11Fixed({
                 <motion.div
                   className="h-full bg-gradient-to-r from-purple-500 to-amber-500"
                   initial={{ width: 0 }}
-                  animate={{ width: `${(currentRoom / 6) * 100}%` }}
+                  animate={{ width: `${(currentRoom / 7) * 100}%` }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                 />
               </div>
@@ -1206,8 +1284,133 @@ export function DungeonRaidSystem11Fixed({
         </motion.div>
       )}
 
+      {/* Environmental Puzzle Interface */}
+      {environmentalPuzzle && environmentalPuzzle.active && !environmentalPuzzle.completed && (
+        <motion.div
+          className="absolute inset-0 z-40 flex items-center justify-center bg-black/50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="bg-gray-900/90 rounded-lg p-6 border border-purple-500/50">
+            <h3 className="text-white text-xl font-bold mb-4 text-center">Ancient Rune Sequence</h3>
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              {[1, 2, 3, 4].map((runeIndex) => (
+                <motion.button
+                  key={runeIndex}
+                  className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center text-2xl font-bold ${
+                    environmentalPuzzle.playerInput.includes(runeIndex) 
+                      ? 'bg-purple-600 border-purple-400 text-white' 
+                      : 'bg-gray-700 border-gray-500 text-gray-300 hover:bg-gray-600'
+                  }`}
+                  onClick={() => handleEnvironmentalPuzzleInput(runeIndex)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {runeIndex}
+                </motion.button>
+              ))}
+            </div>
+            <div className="text-center text-sm text-gray-400">
+              Progress: {environmentalPuzzle.playerInput.length} / {environmentalPuzzle.sequence.length}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Stealth Challenge Interface */}
+      {stealthChallenge && stealthChallenge.active && (
+        <motion.div
+          className="absolute bottom-40 left-4 right-4 z-40"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="bg-gray-900/90 rounded-lg p-4 border border-red-500/50">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-white font-bold">Stealth Challenge</h3>
+              <div className="text-red-400 text-sm">
+                Detection: {Math.floor(stealthChallenge.detectionLevel)}%
+              </div>
+            </div>
+            
+            {/* Detection bar */}
+            <div className="w-full h-2 bg-gray-700 rounded mb-3">
+              <motion.div
+                className="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded"
+                animate={{ width: `${stealthChallenge.detectionLevel}%` }}
+                transition={{ duration: 0.1 }}
+              />
+            </div>
+            
+            {/* Hide/Show buttons */}
+            <div className="flex gap-2">
+              <motion.button
+                className={`px-4 py-2 rounded font-bold ${
+                  stealthChallenge.playerHidden 
+                    ? 'bg-green-600 text-white' 
+                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                }`}
+                onClick={() => handleStealthHiding(true)}
+                whileTap={{ scale: 0.95 }}
+              >
+                Hide in Shadows
+              </motion.button>
+              <motion.button
+                className={`px-4 py-2 rounded font-bold ${
+                  !stealthChallenge.playerHidden 
+                    ? 'bg-red-600 text-white' 
+                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                }`}
+                onClick={() => handleStealthHiding(false)}
+                whileTap={{ scale: 0.95 }}
+              >
+                Move Openly
+              </motion.button>
+            </div>
+            
+            {stealthChallenge.detectionLevel >= 100 && (
+              <div className="mt-2 text-red-400 text-sm font-bold">
+                DETECTED! Prepare for combat!
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Healing Font Interface */}
+      {healingFont && healingFont.active && !healingFont.used && (
+        <motion.div
+          className="absolute inset-0 z-40 flex items-center justify-center"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <motion.div
+            className="relative"
+            animate={{
+              boxShadow: [
+                "0 0 20px rgba(59, 130, 246, 0.6)",
+                "0 0 40px rgba(59, 130, 246, 0.8)",
+                "0 0 20px rgba(59, 130, 246, 0.6)"
+              ]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <motion.button
+              className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center text-6xl cursor-pointer border-4 border-white/50"
+              onClick={handleHealingFontUse}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              ⛲
+            </motion.button>
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 px-3 py-1 rounded text-white text-sm font-bold">
+              Healing Font
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
       {/* Room Clear State - Glowing Exit Portals */}
-      {gamePhase === 'room_clear' && (
+      {gamePhase === 'room_clear' && !environmentalPuzzle && !healingFont && (
         <AnimatePresence>
           {roomExits.map(exit => (
             <motion.div
