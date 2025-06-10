@@ -1670,7 +1670,7 @@ export default function SoloLevelingSpatial() {
         )}
         
         {/* Developer Menu */}
-        <div className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/90 backdrop-blur-sm text-white rounded-lg border border-purple-400/30 z-50 max-w-xs">
+        <div className="absolute top-6 right-24 bg-black/90 backdrop-blur-sm text-white rounded-lg border border-purple-400/30 z-40 max-w-xs">
           {/* Collapsible Header */}
           <div 
             className="flex items-center justify-between p-3 cursor-pointer hover:bg-white/10 transition-colors"
