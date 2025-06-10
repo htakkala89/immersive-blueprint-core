@@ -249,42 +249,40 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
               <h3 className="text-white font-semibold mb-4">
                 Items ({filteredItems.length})
               </h3>
-              <div className="grid grid-cols-8 gap-2 max-h-[calc(100vh-200px)] overflow-y-auto character-scrollbar">
-                <AnimatePresence mode="wait">
-                  <motion.div 
-                    key={activeFilter}
-                    className="contents"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {filteredItems.map((item, index) => (
-                      <motion.button
-                        key={item.id}
-                        onClick={() => handleItemSelect(item)}
-                        className={`aspect-square p-2 rounded-lg border-2 relative group ${getRarityColor(item.rarity)} ${
-                          selectedItem?.id === item.id ? 'ring-2 ring-purple-400' : ''
-                        }`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ 
-                          duration: 0.3,
-                          delay: index * 0.05, // Staggered animation
-                          ease: "easeOut"
-                        }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <div className="text-2xl">{item.icon}</div>
-                        <div className="absolute bottom-1 right-1 bg-slate-800/90 text-white text-xs px-1 py-0.5 rounded">
-                          {item.quantity > 1 ? `x${item.quantity}` : ''}
-                        </div>
-                      </motion.button>
-                    ))}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={activeFilter}
+                  className="grid grid-cols-8 gap-2 max-h-[calc(100vh-200px)] overflow-y-auto character-scrollbar"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {filteredItems.map((item, index) => (
+                    <motion.button
+                      key={item.id}
+                      onClick={() => handleItemSelect(item)}
+                      className={`aspect-square p-2 rounded-lg border-2 relative group ${getRarityColor(item.rarity)} ${
+                        selectedItem?.id === item.id ? 'ring-2 ring-purple-400' : ''
+                      }`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        duration: 0.3,
+                        delay: index * 0.05, // Staggered animation
+                        ease: "easeOut"
+                      }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div className="text-2xl">{item.icon}</div>
+                      <div className="absolute bottom-1 right-1 bg-slate-800/90 text-white text-xs px-1 py-0.5 rounded">
+                        {item.quantity > 1 ? `x${item.quantity}` : ''}
+                      </div>
+                    </motion.button>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
             </div>
 
             {/* Column 3: Item Details */}
