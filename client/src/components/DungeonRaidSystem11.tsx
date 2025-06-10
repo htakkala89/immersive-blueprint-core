@@ -1495,11 +1495,28 @@ export function DungeonRaidSystem11({
                                  skill.isCharging ? 'rgba(147, 51, 234, 0.6)' :
                                  'rgba(147, 51, 234, 0.3)'
                     }}
-                    onMouseDown={() => skill.type === 'charge_aoe' ? handleSkillHold(skill.id) : undefined}
-                    onMouseUp={() => skill.type === 'charge_aoe' ? handleSkillRelease(skill.id) : undefined}
-                    onTouchStart={() => skill.type === 'charge_aoe' ? handleSkillHold(skill.id) : undefined}
-                    onTouchEnd={() => skill.type === 'charge_aoe' ? handleSkillRelease(skill.id) : undefined}
-                    onClick={() => skill.type !== 'charge_aoe' ? handleSkillTap(skill.id) : undefined}
+                    onMouseDown={() => {
+                      console.log('Mouse down on skill:', skill.id, skill.type);
+                      if (skill.type === 'charge_aoe') handleSkillHold(skill.id);
+                    }}
+                    onMouseUp={() => {
+                      console.log('Mouse up on skill:', skill.id, skill.type);
+                      if (skill.type === 'charge_aoe') handleSkillRelease(skill.id);
+                    }}
+                    onTouchStart={() => {
+                      console.log('Touch start on skill:', skill.id, skill.type);
+                      if (skill.type === 'charge_aoe') handleSkillHold(skill.id);
+                    }}
+                    onTouchEnd={() => {
+                      console.log('Touch end on skill:', skill.id, skill.type);
+                      if (skill.type === 'charge_aoe') handleSkillRelease(skill.id);
+                    }}
+                    onClick={() => {
+                      console.log('Click on skill:', skill.id, skill.type);
+                      if (skill.type !== 'charge_aoe') {
+                        handleSkillTap(skill.id);
+                      }
+                    }}
                     whileTap={{ scale: 0.9 }}
                     animate={skill.flashRed ? { backgroundColor: '#dc2626' } : {}}
                   >
