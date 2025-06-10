@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Sofa, MapPin, Coffee, TreePine, ChefHat, Eye, Heart, Shield, Users, Bed, Building } from 'lucide-react';
+import { ShoppingBag, Sofa, MapPin, Coffee, TreePine, ChefHat, Eye, Heart, Shield, Users, Bed, Building, Zap } from 'lucide-react';
 
 interface InteractiveNode {
   id: string;
@@ -449,6 +449,7 @@ export function LocationInteractiveNodes({
 
   const baseNodes = LOCATION_NODES[locationId] || [];
   console.log('Base nodes for location', locationId, ':', baseNodes.map(n => n.id));
+  console.log('Total nodes found:', baseNodes.length);
   
   // System 3: Environmental State Management - Filter nodes based on context
   const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
@@ -569,6 +570,7 @@ export function LocationInteractiveNodes({
   };
 
   const handleNodeClick = (node: InteractiveNode) => {
+    alert(`Node clicked: ${node.id}`);
     console.log('NODE CLICK DETECTED:', node.id);
     console.log('Node details:', node);
     
