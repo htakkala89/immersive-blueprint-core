@@ -1,0 +1,57 @@
+System 4: Detailed Activity List
+
+Category 1: Casual Outings
+
+(Purpose: Building initial affection and creating early memories. Mostly low-to-medium cost.)
+
+Activity Name	Description	Unlock Condition	Energy Cost	Primary Outcome
+Grab a Coffee	Meet up at a local cafe for a quick, casual chat.	Available from Start	Low	Small Affection Gain
+Walk in Hangang Park	Take a relaxing stroll along the river. A good place for heartfelt conversations.	Affection Level 2+	Low	Small Affection Gain, Chance for new Memory
+Go Shopping for Gifts	Browse the Luxury Department Store together to find the perfect gift for her.	Unlocks System 7	Medium	Medium Affection Gain
+Visit an Arcade	Blow off some steam with competitive games and flashy lights.	Affection Level 3+	Medium	Fun Memory, Small Affection Gain
+See a Movie	Catch the latest action blockbuster at the theater.	Affection Level 4+	Medium	Shared Experience, Small Affection Gain
+Dinner at Myeongdong	Enjoy a date at a high-end restaurant in a bustling district.	Affection Level 5+, Player must have sufficient Gold	High	Large Affection Gain, New Memory Star
+Visit N Seoul Tower	Go to the iconic tower at night for a breathtaking view of the city.	Unlocked after a major story event	Medium	Major New Memory Star
+
+
+Export to Sheets
+Category 2: Training & Hunter Life
+
+(Purpose: Building a bond based on their shared identity as powerful hunters. Develops respect and teamwork.)
+
+Activity Name	Description	Unlock Condition	Energy Cost	Primary Outcome
+Sparring Session	A light, one-on-one duel at the Hunter Association training facility.	Available from Start	Medium	Mutual Respect, Small Affection Gain
+Review Raid Footage	Analyze footage from your last dungeon raid together to improve teamwork.	After first successful Raid	Low	Gameplay Buff (e.g., +5% Synergy gain on next raid)
+Clear a Low-Rank Gate	A "casual" hunt. Take down a C-Rank or D-Rank gate together for quick cash and practice.	Player Level 10+	High	Gold Gain, Medium Affection Gain
+Co-op Skill Training	Work together in a specialized training room to practice your Synergy Attack.	Synergy System Unlocked	Medium	Increases Synergy Gauge fill rate
+
+
+Export to Sheets
+Category 3: Home Life
+
+(Purpose: To build a sense of domestic partnership. Most of these activities are unlocked via System 13.)
+
+Activity Name	Description	Unlock Condition	Energy Cost	Primary Outcome
+Order Takeout	Too tired to cook? Order in and relax at home.	Unlocks her Apartment (Affection Level 6+)	Low	Restorative, Small Affection Gain
+Cook Dinner Together	Try to make a meal together in your upgraded kitchen. Success is not guaranteed!	Requires Tier 2 Apartment	Medium	Fun Memory, Medium Affection Gain
+Assemble New Furniture	You bought a new item from the store. Now for the real challenge: building it together.	After buying new furniture	Low	Fun/Frustrating Memory, Unlocks item for use
+Watch a Movie on the Couch	Cuddle up on your new sofa and watch a movie from your high-tech media center.	Requires Tier 2 Apt + Sofa/TV purchase	Low	Medium Affection Gain, Intimacy prerequisite
+Talk on the Balcony	Just spend some quiet time together, looking out at the city from your new home.	Requires Tier 2 or 3 Apartment	Low	Deep Conversation, Medium Affection Gain
+Swim in the Private Pool	Relax and unwind in the ultimate luxury of your penthouse pool.	Requires Tier 3 Penthouse	Medium	Intimacy prerequisite, New Memory Star
+
+
+Export to Sheets
+Category 4: Intimate
+
+(Purpose: The narrative payoff for a deep and trusting relationship. These have the highest unlock requirements.)
+
+Activity Name	Description	Unlock Condition	Energy Cost	Primary Outcome
+Give a Back Rub	After a long day of fighting, help her relax and ease her sore muscles.	Affection Level 7+	Low	Medium Affection Gain, Trust
+Cuddle All Morning	Spend a lazy morning in bed, just holding each other and talking.	Affection Level 8+, Tier 2 Apt	Low	Large Affection Gain, Intimacy
+Take a Shower Together	A deeply intimate and vulnerable moment in your luxurious new bathroom.	Affection Level 9+, Tier 2 Apt	Medium	High Affection Gain, Unlocks new dialogue
+A Passionate Night	A scene focused on intense passion and connection.	Affection Level 10+, Tier 2 Apt	High	Very High Affection Gain, New Memory Star
+Spend the Night Together	The full experience of making love and waking up together the next morning.	Max Affection, Tier 3 Penthouse	High	Ultimate Relationship Milestone
+
+
+Export to Sheets
+A Note on Progression: This list is a blueprint. These activities should be introduced to the player gradually. At the start, their "Day Planner" might only have 3-4 options. As they complete quests, deepen the relationship, and upgrade their home, new, more exciting cards will appear, creating a constant sense of forward momentum and new possibilities.

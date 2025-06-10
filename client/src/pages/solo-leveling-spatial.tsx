@@ -9,7 +9,7 @@ import {
   ShoppingCart, Calendar, Battery, Award, Package, X
 } from 'lucide-react';
 
-import { DailyLifeHubSystem4 } from '@/components/DailyLifeHubSystem4';
+import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
@@ -1935,7 +1935,7 @@ export default function SoloLevelingSpatial() {
 
 
       {/* Feature Modals */}
-      <DailyLifeHubSystem4
+      <DailyLifeHubComplete
         isVisible={showDailyLifeHub}
         onClose={() => setShowDailyLifeHub(false)}
         playerStats={{
