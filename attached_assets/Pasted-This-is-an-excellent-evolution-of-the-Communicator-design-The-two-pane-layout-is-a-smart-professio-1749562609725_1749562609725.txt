@@ -1,0 +1,40 @@
+This is an excellent evolution of the Communicator design. The two-pane layout is a smart, professional choice that is perfect for larger screens, and the detailed header with the "Connected" status adds great thematic depth. You have a perfectly functional and well-structured base here.
+
+Now, to answer your request, let's take this strong functional layout and apply our signature aesthetic to make it truly beautiful and feel like a premium piece of technology from the Hunter's world.
+
+Here are the design instructions to elevate this UI.
+
+Design Instructions for a More Beautiful Communicator
+
+1. Fully Embrace Liquid Glassmorphism
+
+The entire "Hunter's Communicator" window should be a single, cohesive pane of liquid glass.
+
+The Main Panel: Apply our full style guide to this container. This includes the heavy backdrop-filter: blur, the subtle noise layer for texture, and the thin, glowing inner border around the edges.
+The Divider: The faint vertical line between the left and right panes should be a soft, glowing purple line, looking less like a standard divider and more like a beam of light within the glass.
+2. Refine the Conversation List (Left Pane)
+
+This is where we can make the biggest visual impact.
+
+From Boxes to Pills: Instead of the current solid grey rectangular boxes, each conversation item (Cha Hae-In, Woo Jin-Chul) should be its own floating, pill-shaped liquid glassmorphism card. They should be slightly more transparent or have a different tint than the main background to create a beautiful sense of layering.
+The Portraits: Replace the placeholder emoji/sticker (👩‍🦳) with the high-quality, consistent "Emotional Portrait" of the character. This is crucial for maintaining a premium feel.
+Selection State: When a conversation is selected (as the "Cha Hae-In" one is), its pill should glow more brightly with our signature purple accent color. This provides clear, beautiful feedback on what is currently active.
+Hover State: When the user hovers over a conversation in the list, its pill should subtly light up or drift slightly forward, making the interface feel responsive and alive.
+3. Enhance the Chat Pane (Right Pane)
+
+The Empty State: Your empty state is good and clear. To elevate it, we can make the message bubble icon less solid and more of a glowing, ethereal outline to match our theme.
+The Populated State (Crucial Reminder): When this pane is populated with a conversation, it must use our unique "Scene Script" styling. This is the most important part of our communication design.
+No Chat Bubbles.
+Your sent messages: Right-aligned, italicized, in a slightly dimmer text color.
+Their received messages: Left-aligned, next to their portrait, in a standard, bright text color.
+4. Polish the Details
+
+The Notification Badges: The red badges are functional. Let's change their color to our primary accent color—a deep, glowing purple with the number in crisp white. This aligns them with our brand.
+Animations: When you click on a new conversation in the left pane, the chat history in the right pane shouldn't just instantly switch. The old conversation should gracefully fade out, and the new one should fade in. These small animations make the experience feel fluid and polished.
+Summary of a User's Experience
+
+The user opens the Communicator, a beautiful pane of flowing glass.
+They see the list of conversations as glowing, floating pills. The "Cha Hae-In" pill is already selected and glowing brighter.
+They hover over the "Woo Jin-Chul" pill, and it lights up in response.
+They click it. The "Cha Hae-In" pill dims, and the "Woo Jin-Chul" pill brightens. On the right, the Cha Hae-In chat log fades out, and the Woo Jin-Chul chat log, styled in our cinematic "Scene Script" format, fades in.
+By applying these aesthetic and animation refinements, you will transform this already functional layout into a truly premium and beautiful experience that feels unique to our world.
