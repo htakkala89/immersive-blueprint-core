@@ -828,6 +828,44 @@ RESPONSE INSTRUCTIONS:
         console.log("Voice generation failed:", error);
       }
       
+      // Affection Heart Detection System - System 2 Enhancement
+      let showAffectionHeart = false;
+      let affectionBonus = 0;
+      
+      // Detect special romantic moments that trigger the Affection Heart
+      const heartTriggers = [
+        // Exceptional romantic expressions
+        /\*heart|feelings?.*(?:you|jin-woo)|love.*(?:you|jin-woo)|care.*deeply/i,
+        // Perfect emotional reading moments
+        /\*blush.*deeply|\*trembl|shiver.*anticipation|breath.*catch/i,
+        // Meaningful connections and memories
+        /special.*(?:you|moment)|never.*forget|always.*remember/i,
+        // Deep appreciation and admiration
+        /admire.*(?:strength|dedication)|respect.*(?:greatly|deeply)|honor.*(?:know|fight)/i,
+        // Intimate vulnerability moments
+        /trust.*completely|vulnerable.*(?:you|around)|safe.*(?:with|you)/i
+      ];
+      
+      // Check if response contains heart-triggering content
+      if (heartTriggers.some(trigger => trigger.test(response))) {
+        showAffectionHeart = true;
+        affectionBonus = 3; // Significant affection bonus for heart moments
+        console.log(`💕 Affection Heart triggered by romantic moment!`);
+      }
+      
+      // Additional heart trigger for high-affection relationship milestones
+      if ((gameState.affection || 25) >= 70 && (
+        response.includes('Jin-Woo') && (
+          response.toLowerCase().includes('together') ||
+          response.toLowerCase().includes('future') ||
+          response.toLowerCase().includes('always')
+        )
+      )) {
+        showAffectionHeart = true;
+        affectionBonus = 2;
+        console.log(`💕 Affection Heart triggered by relationship milestone!`);
+      }
+
       // Generate dynamic thought prompts based on conversation context
       let dynamicPrompts;
       try {
@@ -843,12 +881,13 @@ RESPONSE INSTRUCTIONS:
         audioUrl,
         expression: expressionUpdate,
         thoughtPrompts: dynamicPrompts,
+        showAffectionHeart,
         gameState: updatedGameState.scheduledActivities ? {
           ...updatedGameState,
-          affection: Math.min(100, (gameState.affection || 25) + 1)
+          affection: Math.min(100, (gameState.affection || 25) + 1 + affectionBonus)
         } : {
           ...gameState,
-          affection: Math.min(100, (gameState.affection || 25) + 1)
+          affection: Math.min(100, (gameState.affection || 25) + 1 + affectionBonus)
         }
       });
     } catch (error) {

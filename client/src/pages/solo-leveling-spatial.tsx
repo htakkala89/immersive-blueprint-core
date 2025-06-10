@@ -156,6 +156,10 @@ export default function SoloLevelingSpatial() {
   const [scheduledActivities, setScheduledActivities] = useState<any[]>([]);
   const [showActivityNotification, setShowActivityNotification] = useState(false);
   
+  // System 2: Affection Heart System state
+  const [showAffectionHeart, setShowAffectionHeart] = useState(false);
+  const affectionHeartTimeout = useRef<NodeJS.Timeout | null>(null);
+  
   // System 5: Intimate Activity System state
   const [showIntimateActivity, setShowIntimateActivity] = useState(false);
   const [currentIntimateActivity, setCurrentIntimateActivity] = useState<{
@@ -841,6 +845,23 @@ export default function SoloLevelingSpatial() {
         }
       }
       
+      // System 2: Affection Heart System - Trigger heart animation
+      if (data.showAffectionHeart) {
+        // Clear any existing heart timeout
+        if (affectionHeartTimeout.current) {
+          clearTimeout(affectionHeartTimeout.current);
+        }
+        
+        // Show the affection heart with animation
+        setShowAffectionHeart(true);
+        console.log('💕 Affection Heart animation triggered!');
+        
+        // Hide the heart after 3 seconds with graceful fade
+        affectionHeartTimeout.current = setTimeout(() => {
+          setShowAffectionHeart(false);
+        }, 3000);
+      }
+      
       // Update thought prompts dynamically based on conversation context
       if (data.thoughtPrompts && Array.isArray(data.thoughtPrompts)) {
         console.log('🎭 Received dynamic prompts:', data.thoughtPrompts);
@@ -1516,6 +1537,91 @@ export default function SoloLevelingSpatial() {
                   Tap to interact
                 </div>
               </div>
+
+              {/* System 2: Affection Heart Animation */}
+              <AnimatePresence>
+                {showAffectionHeart && (
+                  <motion.div
+                    className="absolute -top-2 -right-2 z-40 pointer-events-none"
+                    initial={{ opacity: 0, scale: 0.5, y: 10 }}
+                    animate={{ 
+                      opacity: [0, 1, 1, 1, 0],
+                      scale: [0.5, 1.2, 1, 1, 0.8],
+                      y: [10, -5, 0, 0, -10]
+                    }}
+                    exit={{ opacity: 0, scale: 0.5, y: -20 }}
+                    transition={{ 
+                      duration: 3,
+                      times: [0, 0.1, 0.2, 0.8, 1],
+                      ease: "easeInOut"
+                    }}
+                  >
+                    {/* Outer Glow Effect */}
+                    <motion.div
+                      className="absolute inset-0 w-8 h-8 rounded-full blur-sm"
+                      style={{
+                        background: 'radial-gradient(circle, rgba(236, 72, 153, 0.6) 0%, rgba(219, 39, 119, 0.3) 50%, transparent 100%)'
+                      }}
+                      animate={{
+                        scale: [1, 1.5, 1],
+                        opacity: [0.6, 0.9, 0.6]
+                      }}
+                      transition={{ 
+                        duration: 1.5, 
+                        repeat: 1, 
+                        ease: "easeInOut" 
+                      }}
+                    />
+                    
+                    {/* Heart Icon with Shimmer */}
+                    <motion.div
+                      className="w-8 h-8 flex items-center justify-center text-pink-400"
+                      animate={{
+                        rotate: [0, -10, 10, 0],
+                        scale: [1, 1.1, 1]
+                      }}
+                      transition={{ 
+                        duration: 0.8, 
+                        repeat: 2, 
+                        ease: "easeInOut" 
+                      }}
+                    >
+                      <Heart 
+                        className="w-6 h-6 fill-pink-400 drop-shadow-lg" 
+                        style={{
+                          filter: 'drop-shadow(0 0 8px rgba(236, 72, 153, 0.8))'
+                        }}
+                      />
+                    </motion.div>
+                    
+                    {/* Sparkle Effects */}
+                    <motion.div
+                      className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full"
+                      animate={{
+                        opacity: [0, 1, 0],
+                        scale: [0.5, 1, 0.5]
+                      }}
+                      transition={{ 
+                        duration: 1, 
+                        delay: 0.5,
+                        ease: "easeInOut" 
+                      }}
+                    />
+                    <motion.div
+                      className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-pink-300 rounded-full"
+                      animate={{
+                        opacity: [0, 1, 0],
+                        scale: [0.5, 1, 0.5]
+                      }}
+                      transition={{ 
+                        duration: 1, 
+                        delay: 0.8,
+                        ease: "easeInOut" 
+                      }}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}
