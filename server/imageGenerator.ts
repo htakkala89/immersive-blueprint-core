@@ -599,6 +599,8 @@ function createLocationPrompt(location: string, timeOfDay: string): string {
     
     hongdae_cafe: `Cozy Korean artisan coffee house interior, wooden furniture, local artwork on walls, large windows, specialty coffee equipment, warm inviting atmosphere, indie café aesthetic, ${lighting}`,
     
+    luxury_department_store: `masterpiece, best quality, manhwa art style, sharp focus, detailed illustration — the interior of an ultra-modern, luxury department store in Gangnam, Seoul. The scene is empty of people. The focus is on the environment: beautiful glass display cases containing glowing jewelry, elegant mannequins wearing designer dresses, polished marble floors, and soft, warm recessed lighting. The mood is quiet, opulent, and exclusive, ${lighting}`,
+    
     hongdae_club: `Underground music venue interior, stage with sound equipment, dim atmospheric lighting, modern club design, Korean nightlife scene, entertainment district aesthetic, ${lighting}`,
     
     myeongdong_restaurant: `Traditional Korean restaurant interior, private dining rooms, elegant wooden furniture, traditional decorative elements, garden views, refined dining atmosphere, ${lighting}`,
