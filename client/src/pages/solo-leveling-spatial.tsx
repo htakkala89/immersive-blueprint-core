@@ -1803,6 +1803,14 @@ export default function SoloLevelingSpatial() {
             
             // Handle different node types with specific logic
             switch (nodeId) {
+              case 'red_gate_entrance':
+                // Enter the Red Gate dungeon for quest completion
+                console.log('🚪 RED GATE ENTRANCE TRIGGERED - Opening dungeon raid');
+                console.log('Current showDungeonRaid state:', showDungeonRaid);
+                alert('Red Gate clicked! Opening dungeon...');
+                setShowDungeonRaid(true);
+                console.log('Dungeon raid state set to true');
+                break;
               case 'jewelry_counter':
               case 'designer_apparel':
               case 'luxury_confections':
@@ -1872,19 +1880,7 @@ export default function SoloLevelingSpatial() {
                   y: 50
                 });
                 break;
-              case 'red_gate_entrance':
-                // Enter the Red Gate dungeon for quest completion
-                console.log('🚪 RED GATE ENTRANCE TRIGGERED - Opening dungeon raid');
-                console.log('Current showDungeonRaid state:', showDungeonRaid);
-                alert('Red Gate clicked! Opening dungeon...');
-                setShowDungeonRaid(true);
-                console.log('Dungeon raid state set to true');
-                console.log('After setting, showDungeonRaid should be:', true);
-                // Force re-render check
-                setTimeout(() => {
-                  console.log('Delayed check - showDungeonRaid state:', showDungeonRaid);
-                }, 100);
-                break;
+
               case 'mission_board':
                 // Opens lore panel with gate information
                 setShowQuestBoard(true);
