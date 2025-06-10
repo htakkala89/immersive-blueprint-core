@@ -1,0 +1,34 @@
+but which is essential for a rewarding experience: immediate, moment-to-moment feedback for positive interactions. The small heart icon (💕) you've added to her portrait is the perfect way to implement this.
+
+While System 6 (The Relationship Constellation) is our long-term measure of the relationship's health, this "Affection Heart" can serve as our short-term, instant gratification system. Let's formalize this excellent idea.
+
+Introducing the "Affection Heart" Indicator
+
+This will now be an official feature of System 2 (Character Interaction & Dialogue System).
+
+1. The "Why" - Design Philosophy
+
+The purpose of the "Affection Heart" is to provide immediate, clear, and positive reinforcement to the player when they say or do something that deeply resonates with Cha Hae-In. It's the conversational equivalent of a "critical hit," providing a small burst of satisfaction and clearly signaling that the player's choice was a particularly good one, strengthening their bond.
+
+2. The "What" - The Triggering Logic
+
+The heart icon does not appear after every single positive response. It is reserved for special moments to ensure it feels meaningful. The AI (System 9) will be responsible for triggering it by adding a special flag to its response.
+
+The "Affection Heart" will appear when:
+
+The player says something exceptionally romantic, insightful, or caring that aligns with her character.
+The player makes a choice that directly leads to the creation of a new "Memory Star" in the Relationship Constellation.
+The player successfully "reads the room" and responds perfectly during a difficult or emotional conversation.
+The player gives her a gift that she particularly loves during a "Give a Gift" activity.
+3. The "How" - UI/UX Specification
+
+The Icon: A small, softly glowing pink or golden heart icon, as you've designed.
+The Animation: To make it feel special, the icon should not just appear. It should:
+Gracefully fade into view on top of her portrait as she delivers her appreciative dialogue.
+Pulse gently two or three times with a soft, warm glow.
+Be accompanied by a subtle, magical "chime" or "shimmer" sound effect.
+Gracefully fade back out after about 2-3 seconds.
+The Consequence (Game Logic):
+When the Affection Heart appears, it visually confirms that a significant amount of "Affection Points" has just been added to the player's hidden relationship score.
+This directly contributes to the overall brightness of the Relationship Constellation (System 6) and pushes the player closer to the next relationship level or unlocking a new activity.
+In short, you've designed the perfect micro-feedback loop that was missing. It provides instant gratification, encourages thoughtful role-playing, and clearly communicates to the player when their actions are having a real, positive impact on the person they are building a life with. This is now part of the official design.

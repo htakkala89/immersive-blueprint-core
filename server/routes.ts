@@ -121,82 +121,71 @@ async function generateDynamicPrompts(chaResponse: string, userMessage: string, 
     const emotionalState = analyzeEmotionalCues(chaResponse);
     const locationContext = getLocationContext(context?.location);
     
-    const promptGenerationContext = `
-ADVANCED DYNAMIC PROMPT LOOP SYSTEM
-Generate 3 contextual thought prompts using deep conversation analytics.
+    const promptGenerationContext = `Create 3 dialogue options for Jin-Woo responding to Cha Hae-In.
 
-CONVERSATION ANALYSIS:
-User said: "${userMessage}"
-Cha Hae-In responded: "${chaResponse}"
+CONVERSATION:
+User: "${userMessage}"
+Cha Hae-In: "${chaResponse}"
 
-CONTEXTUAL ANALYTICS:
-- Conversation Tone: ${conversationTone}
-- Topic Flow: ${topicFlow}
-- Emotional State: ${emotionalState}
-- Location Context: ${locationContext}
-- Time: ${context?.timeOfDay || 'afternoon'}
-- Relationship Level: ${gameState.affection || 25}/100
+Create 3 natural responses Jin-Woo would say. Keep each under 50 characters.
 
-ADVANCED PROMPT RULES:
-1. Match her conversational energy and emotional state
-2. Build on topic momentum from her response
-3. Consider location-appropriate dialogue options
-4. Reflect relationship intimacy level
-5. Maintain Solo Leveling character authenticity
-6. Create natural conversation bridges
+Example format:
+1. That sounds challenging
+2. How do you handle it?
+3. You're very dedicated
 
-RESPONSE STRATEGIES:
-- If she's professional: Focus on hunter topics, missions, techniques
-- If she's playful: Match her energy with light conversation
-- If she's romantic: Acknowledge emotional moments appropriately
-- If she's analytical: Engage with technical hunter discussions
-
-Generate 3 contextually perfect prompts:`;
+Your 3 responses:`;
 
     const result = await model.generateContent(promptGenerationContext);
     const promptText = result.response.text().trim();
     
-    // Extract clean prompts from AI response - look for quoted dialogue or action prompts
+    // Extract numbered prompts from AI response
     const extractedPrompts: string[] = [];
     const lines = promptText.split('\n');
     
     for (const line of lines) {
       const trimmedLine = line.trim();
       
-      // Extract text within quotes
-      const quotedMatch = trimmedLine.match(/"([^"]+)"/);
-      if (quotedMatch && quotedMatch[1].length > 5 && quotedMatch[1].length < 80) {
-        extractedPrompts.push(quotedMatch[1]);
-        continue;
-      }
-      
-      // Extract text after ">" prompt markers
-      const promptMatch = trimmedLine.match(/>\s*"?([^"]+)"?/);
-      if (promptMatch && promptMatch[1].length > 5 && promptMatch[1].length < 80) {
-        extractedPrompts.push(promptMatch[1]);
-        continue;
-      }
-      
-      // Skip analysis text and look for clean prompt-like sentences
-      if (trimmedLine.length > 10 && trimmedLine.length < 60 && 
-          !trimmedLine.includes('Prompt') && 
-          !trimmedLine.includes('contextually') &&
-          !trimmedLine.includes('designed') &&
-          !trimmedLine.includes('analysis') &&
-          (trimmedLine.includes('?') || trimmedLine.includes('you') || trimmedLine.includes('me'))) {
-        extractedPrompts.push(trimmedLine);
+      // Look for numbered format: "1. [prompt]" or "1) [prompt]"
+      const numberedMatch = trimmedLine.match(/^\d+[.)]\s*(.+)$/);
+      if (numberedMatch && numberedMatch[1]) {
+        let prompt = numberedMatch[1].trim();
+        
+        // Remove brackets if present
+        prompt = prompt.replace(/^\[(.+)\]$/, '$1');
+        
+        // Only include reasonable prompts
+        if (prompt.length > 5 && prompt.length < 60) {
+          extractedPrompts.push(prompt);
+        }
       }
     }
     
-    // Use only the first 3 clean prompts
+    // Use the extracted prompts
     const cleanPrompts = extractedPrompts.slice(0, 3);
     
-    console.log(`🎭 Generated dynamic prompts:`, cleanPrompts);
-    return cleanPrompts.length === 3 ? cleanPrompts : [
-      "Tell me more about that",
-      "What do you think?", 
-      "That sounds interesting"
-    ];
+    console.log(`🎭 Raw AI response:`, JSON.stringify(promptText));
+    console.log(`🎭 All lines:`, lines);
+    console.log(`🎭 Extracted prompts:`, cleanPrompts);
+    
+    // If we have at least one good prompt, use them with fallbacks
+    if (cleanPrompts.length > 0) {
+      // Fill remaining slots with contextual fallbacks
+      while (cleanPrompts.length < 3) {
+        const fallbacks = generateFallbackPrompts(chaResponse, userMessage, context);
+        const unusedFallback = fallbacks.find(f => !cleanPrompts.includes(f));
+        if (unusedFallback) {
+          cleanPrompts.push(unusedFallback);
+        } else {
+          cleanPrompts.push("That's interesting");
+          break;
+        }
+      }
+      return cleanPrompts.slice(0, 3);
+    }
+    
+    // Complete fallback to contextual prompts
+    return generateFallbackPrompts(chaResponse, userMessage, context);
     
   } catch (error) {
     console.error("Dynamic prompt generation error:", error);
