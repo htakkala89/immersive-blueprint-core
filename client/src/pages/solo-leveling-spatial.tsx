@@ -1005,12 +1005,28 @@ export default function SoloLevelingSpatial() {
         </AnimatePresence>
       </motion.div>
       
-      {/* Dialogue System - Shared Moments */}
+      {/* Dialogue System - Enhanced Glassmorphism */}
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="fixed bottom-4 left-4 right-4 bg-slate-900/95 backdrop-blur-xl border-2 border-purple-400/50 rounded-2xl shadow-2xl z-[9999]"
-            style={{ maxHeight: '60vh' }}
+            className="fixed bottom-4 left-4 right-4 rounded-2xl shadow-2xl z-[9999]"
+            style={{ 
+              maxHeight: '60vh',
+              backdropFilter: 'blur(120px) saturate(300%)',
+              background: `
+                linear-gradient(135deg, 
+                  rgba(30, 41, 59, 0.95) 0%, 
+                  rgba(51, 65, 85, 0.85) 25%,
+                  rgba(30, 41, 59, 0.9) 50%,
+                  rgba(15, 23, 42, 0.95) 75%,
+                  rgba(30, 41, 59, 0.9) 100%
+                ),
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)
+              `,
+              border: '1px solid rgba(139, 92, 246, 0.3)'
+            }}
             initial={{ y: 100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
@@ -1018,22 +1034,43 @@ export default function SoloLevelingSpatial() {
           >
             <div className="p-3 flex flex-col h-full">
               
-              {/* Close Button */}
+              {/* Close Button - Enhanced Glassmorphism */}
               <motion.button
-                className="absolute top-2 right-2 w-8 h-8 bg-slate-800/60 hover:bg-slate-700/80 rounded-full flex items-center justify-center border border-slate-600/30 transition-colors z-[10000]"
+                className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-colors z-[10000]"
+                style={{
+                  backdropFilter: 'blur(40px) saturate(200%)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
                 onClick={exitFocusMode}
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ 
+                  scale: 1.1,
+                  background: 'rgba(255, 255, 255, 0.15)'
+                }}
                 whileTap={{ scale: 0.9 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                <X className="w-4 h-4 text-slate-300" />
+                <X className="w-4 h-4 text-white/80" />
               </motion.button>
               
-              {/* Dialogue Text - Scrollable */}
+              {/* Dialogue Text - Enhanced Glassmorphism */}
               <motion.div
-                className="bg-slate-800/60 border border-purple-400/30 rounded-lg p-4 flex-1 overflow-y-auto mb-3"
+                className="rounded-lg p-4 flex-1 overflow-y-auto mb-3"
+                style={{
+                  backdropFilter: 'blur(60px) saturate(200%)',
+                  background: `
+                    linear-gradient(135deg, 
+                      rgba(30, 41, 59, 0.4) 0%, 
+                      rgba(51, 65, 85, 0.3) 25%,
+                      rgba(30, 41, 59, 0.35) 50%,
+                      rgba(15, 23, 42, 0.4) 75%,
+                      rgba(30, 41, 59, 0.35) 100%
+                    )
+                  `,
+                  border: '1px solid rgba(139, 92, 246, 0.2)'
+                }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -1125,8 +1162,32 @@ export default function SoloLevelingSpatial() {
                     {thoughtPrompts.map((prompt, index) => (
                       <motion.button
                         key={index}
-                        className="bg-purple-600/30 hover:bg-purple-600/50 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap border border-purple-400/30 transition-colors"
-                        whileHover={{ scale: 1.05 }}
+                        className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
+                        style={{
+                          backdropFilter: 'blur(40px) saturate(180%)',
+                          background: `
+                            linear-gradient(135deg, 
+                              rgba(139, 92, 246, 0.25) 0%, 
+                              rgba(168, 85, 247, 0.2) 25%,
+                              rgba(139, 92, 246, 0.22) 50%,
+                              rgba(124, 58, 237, 0.25) 75%,
+                              rgba(139, 92, 246, 0.2) 100%
+                            )
+                          `,
+                          border: '1px solid rgba(139, 92, 246, 0.4)'
+                        }}
+                        whileHover={{ 
+                          scale: 1.05,
+                          background: `
+                            linear-gradient(135deg, 
+                              rgba(139, 92, 246, 0.4) 0%, 
+                              rgba(168, 85, 247, 0.35) 25%,
+                              rgba(139, 92, 246, 0.37) 50%,
+                              rgba(124, 58, 237, 0.4) 75%,
+                              rgba(139, 92, 246, 0.35) 100%
+                            )
+                          `
+                        }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handlePlayerResponse(prompt)}
                       >
@@ -1143,20 +1204,55 @@ export default function SoloLevelingSpatial() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
                 >
-                  <Input
+                  <input
                     value={playerInput}
                     onChange={(e) => setPlayerInput(e.target.value)}
                     placeholder="Speak from the heart..."
-                    className="flex-1 bg-slate-800/50 border-purple-400/30 text-white placeholder:text-slate-400 rounded-lg px-3 py-2 text-sm"
+                    className="flex-1 text-white placeholder:text-slate-400 rounded-lg px-3 py-2 text-sm border-0 outline-none"
+                    style={{
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      background: `
+                        linear-gradient(135deg, 
+                          rgba(30, 41, 59, 0.3) 0%, 
+                          rgba(51, 65, 85, 0.25) 25%,
+                          rgba(30, 41, 59, 0.28) 50%,
+                          rgba(15, 23, 42, 0.3) 75%,
+                          rgba(30, 41, 59, 0.25) 100%
+                        )
+                      `,
+                      border: '1px solid rgba(139, 92, 246, 0.3)'
+                    }}
                     onKeyPress={(e) => e.key === 'Enter' && handlePlayerResponse(playerInput)}
                   />
-                  <Button
+                  <motion.button
                     onClick={() => handlePlayerResponse(playerInput)}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg px-4 py-2"
+                    className="rounded-lg px-4 py-2 text-white disabled:opacity-50"
+                    style={{
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      background: `
+                        linear-gradient(135deg, 
+                          rgba(139, 92, 246, 0.6) 0%, 
+                          rgba(236, 72, 153, 0.5) 50%,
+                          rgba(139, 92, 246, 0.6) 100%
+                        )
+                      `,
+                      border: '1px solid rgba(139, 92, 246, 0.4)'
+                    }}
+                    whileHover={{
+                      background: `
+                        linear-gradient(135deg, 
+                          rgba(139, 92, 246, 0.8) 0%, 
+                          rgba(236, 72, 153, 0.7) 50%,
+                          rgba(139, 92, 246, 0.8) 100%
+                        )
+                      `,
+                      scale: 1.05
+                    }}
+                    whileTap={{ scale: 0.95 }}
                     disabled={!playerInput.trim() || isLoading}
                   >
                     <MessageCircle className="w-4 h-4" />
-                  </Button>
+                  </motion.button>
                 </motion.div>
               </div>
               
