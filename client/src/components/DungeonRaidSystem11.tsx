@@ -63,7 +63,7 @@ export function DungeonRaidSystem11({
   affectionLevel 
 }: RaidProps) {
   const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'victory' | 'defeat' | 'room_clear'>('prep');
-  const [currentRoom, setCurrentRoom] = useState(2);
+  const [currentRoom, setCurrentRoom] = useState(1);
   const [currentWave, setCurrentWave] = useState(1);
   const [roomExits, setRoomExits] = useState<Array<{
     id: string;
@@ -982,8 +982,8 @@ export function DungeonRaidSystem11({
       if (allEnemiesDefeated) {
         console.log(`🎯 ALL ENEMIES DEFEATED - Processing room advancement...`);
         
-        if (currentRoom === 3 && currentWave === 1) {
-          console.log('🔄 Room 3 Wave 1 complete - Spawning Wave 2');
+        if (currentRoom === 2 && currentWave === 1) {
+          console.log('🔄 Room 2 Wave 1 complete - Spawning Wave 2');
           setCurrentWave(2);
           setTimeout(() => {
             const waveEnemies = [
@@ -1123,6 +1123,18 @@ export function DungeonRaidSystem11({
                 </div>
               </div>
             </div>
+            
+            <Button
+              onClick={() => {
+                setGamePhase('combat');
+                generateRoomEnemies();
+                addToCombatLog("Entering the shadow dungeon...");
+                addToCombatLog("Cha Hae-In: 'Stay close, Jin-Woo. I can sense strong enemies ahead.'");
+              }}
+              className="w-full bg-gradient-to-r from-purple-600 to-red-600 hover:from-purple-700 hover:to-red-700 text-white py-3 text-lg font-bold"
+            >
+              Begin Raid
+            </Button>
           </div>
         </motion.div>
       )}
