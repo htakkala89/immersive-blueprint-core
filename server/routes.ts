@@ -151,8 +151,9 @@ Your 3 responses:`;
       if (numberedMatch && numberedMatch[1]) {
         let prompt = numberedMatch[1].trim();
         
-        // Remove brackets if present
+        // Remove brackets and quotes if present
         prompt = prompt.replace(/^\[(.+)\]$/, '$1');
+        prompt = prompt.replace(/^"(.+)"$/, '$1');
         
         // Only include reasonable prompts
         if (prompt.length > 5 && prompt.length < 60) {
