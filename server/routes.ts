@@ -146,7 +146,7 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
 
 // Function to create emotional prompts for Cha Hae-In based on her presence and emotional state
 function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOfDay: string): string {
-  const baseCharacterDescription = "Cha Hae-In from Solo Leveling anime, beautiful S-rank hunter with long blonde hair, striking blue eyes, wearing her signature hunter outfit or elegant casual clothing";
+  const baseCharacterDescription = "Cha Hae-In from Solo Leveling manhwa, beautiful Korean S-rank hunter with short blonde bob haircut and straight bangs, violet/purple eyes, pale skin, wearing her signature red and white hunter armor with gold accents or elegant casual clothing";
   
   const locationMappings: Record<string, string> = {
     hunter_association: "inside the Hunter Association headquarters with its modern glass architecture and professional atmosphere",

@@ -234,14 +234,14 @@ export async function generateAvatarExpressionImage(
     console.log(`🎭 Generating new avatar expression: ${expression} at ${location}`);
 
     const expressionPrompts = {
-      romantic: "Cha Hae-In with a soft romantic blush, gentle smile, warm loving eyes, golden blonde hair catching light, beautiful S-rank hunter in elegant outfit",
-      welcoming: "Cha Hae-In with bright welcoming smile, friendly warm expression, confident posture, golden blonde hair styled elegantly, professional hunter attire",
-      surprised: "Cha Hae-In with wide surprised eyes, slightly open mouth, raised eyebrows, golden blonde hair framing her face, caught off-guard expression",
-      amused: "Cha Hae-In with playful amused smile, mischievous glint in eyes, slight head tilt, golden blonde hair flowing, enjoying a good joke",
-      contemplative: "Cha Hae-In with thoughtful expression, hand near chin, focused intelligent eyes, golden blonde hair styled neatly, deep in thought",
-      concerned: "Cha Hae-In with worried furrowed brow, serious concerned expression, protective stance, golden blonde hair slightly tousled, ready for action",
-      focused: "Cha Hae-In with intense focused gaze, determined expression, confident professional posture, golden blonde hair perfectly styled, S-rank hunter aura",
-      neutral: "Cha Hae-In with calm neutral expression, professional demeanor, composed stance, golden blonde hair elegantly styled, poised hunter"
+      romantic: "Cha Hae-In with a soft romantic blush, gentle smile, warm loving eyes, short blonde bob haircut with bangs, purple/violet eyes, beautiful S-rank hunter in red and white armor with gold accents",
+      welcoming: "Cha Hae-In with bright welcoming smile, friendly warm expression, confident posture, short blonde bob haircut with bangs, purple/violet eyes, professional hunter attire",
+      surprised: "Cha Hae-In with wide surprised eyes, slightly open mouth, raised eyebrows, short blonde bob haircut with bangs, purple/violet eyes, caught off-guard expression",
+      amused: "Cha Hae-In with playful amused smile, mischievous glint in eyes, slight head tilt, short blonde bob haircut with bangs, purple/violet eyes, enjoying a good joke",
+      contemplative: "Cha Hae-In with thoughtful expression, hand near chin, focused intelligent eyes, short blonde bob haircut with bangs, purple/violet eyes, deep in thought",
+      concerned: "Cha Hae-In with worried furrowed brow, serious concerned expression, protective stance, short blonde bob haircut with bangs, purple/violet eyes, ready for action",
+      focused: "Cha Hae-In with intense focused gaze, determined expression, confident professional posture, short blonde bob haircut with bangs, purple/violet eyes, S-rank hunter aura",
+      neutral: "Cha Hae-In with calm neutral expression, professional demeanor, composed stance, short blonde bob haircut with bangs, purple/violet eyes, poised hunter"
     };
 
     const locationContexts = {
@@ -262,7 +262,7 @@ export async function generateAvatarExpressionImage(
     const locationContext = locationContexts[location as keyof typeof locationContexts] || locationContexts.hunter_association;
     const timeContext = timeContexts[timeOfDay as keyof typeof timeContexts] || timeContexts.afternoon;
 
-    const fullPrompt = `Portrait of ${expressionPrompt}, ${locationContext}, ${timeContext}, anime art style, Solo Leveling manhwa aesthetic, high quality detailed artwork, beautiful Korean female hunter, professional anime illustration, cinematic lighting, expressive face focus, upper body portrait`;
+    const fullPrompt = `Portrait of ${expressionPrompt}, ${locationContext}, ${timeContext}, Solo Leveling manhwa art style, anime illustration, Korean female S-rank hunter, short blonde bob cut with straight bangs, violet/purple eyes, pale skin, serious expression, red and white hunter armor with gold trim, cinematic lighting, upper body portrait, high quality anime artwork`;
 
     console.log(`🎨 Generating avatar with expression: ${expression}`);
     
