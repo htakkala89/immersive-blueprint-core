@@ -58,7 +58,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "This is nice... just talking like normal people for once.",
       position: { x: -120, y: 80, z: -50 },
       brightness: 0.7,
-      unlocked: affectionLevel >= 10
+      unlocked: affectionLevel >= 5
     },
     {
       id: 'hangang_walk',
@@ -68,7 +68,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "The city lights look beautiful from here... almost as beautiful as this moment.",
       position: { x: 100, y: -60, z: 30 },
       brightness: 0.9,
-      unlocked: affectionLevel >= 20
+      unlocked: affectionLevel >= 10
     },
     {
       id: 'first_raid_together',
@@ -78,7 +78,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "We make a good team. I feel like I can trust you with my life.",
       position: { x: -80, y: -120, z: 80 },
       brightness: 1.0,
-      unlocked: affectionLevel >= 30
+      unlocked: affectionLevel >= 15
     },
     {
       id: 'cooking_disaster',
@@ -88,7 +88,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "Well... at least we have takeout. And each other's company.",
       position: { x: 150, y: 100, z: -80 },
       brightness: 0.8,
-      unlocked: affectionLevel >= 40
+      unlocked: affectionLevel >= 20
     },
     {
       id: 'first_kiss',
@@ -98,7 +98,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "I've been waiting for this moment... I never want it to end.",
       position: { x: -50, y: 150, z: 60 },
       brightness: 1.2,
-      unlocked: affectionLevel >= 50
+      unlocked: affectionLevel >= 25
     },
     {
       id: 'movie_night',
@@ -108,7 +108,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "I don't care what we're watching. I just want to be close to you.",
       position: { x: 80, y: -80, z: -100 },
       brightness: 0.9,
-      unlocked: affectionLevel >= 60
+      unlocked: affectionLevel >= 30
     },
     {
       id: 'boss_raid_victory',
@@ -118,7 +118,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "We did it! Together, we're unstoppable!",
       position: { x: -150, y: -50, z: 120 },
       brightness: 1.5,
-      unlocked: affectionLevel >= 70
+      unlocked: affectionLevel >= 35
     },
     {
       id: 'intimate_evening',
@@ -128,7 +128,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "Being with you like this... it feels like home.",
       position: { x: 120, y: 80, z: -120 },
       brightness: 1.3,
-      unlocked: affectionLevel >= 80
+      unlocked: affectionLevel >= 40
     },
     {
       id: 'morning_after',
@@ -138,7 +138,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "Good morning, my love. Every day with you is a gift.",
       position: { x: -100, y: 120, z: -60 },
       brightness: 1.4,
-      unlocked: affectionLevel >= 90
+      unlocked: affectionLevel >= 45
     }
   ];
 
