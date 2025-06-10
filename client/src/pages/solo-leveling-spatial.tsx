@@ -99,17 +99,50 @@ export default function SoloLevelingSpatial() {
     setIsFocusMode(true);
     console.log('Focus mode activated');
     
-    // Step 2: UI transitions
+    // Step 2: Generate character image if not available
+    if (!emotionalImage) {
+      try {
+        const getEmotionalState = () => {
+          if (gameState.affection >= 80) return 'romantic_anticipation';
+          if (gameState.affection >= 60) return 'warm_welcoming';
+          if (gameState.affection >= 40) return 'professional_friendly';
+          return 'focused_professional';
+        };
+
+        const emotion = getEmotionalState();
+        const params = new URLSearchParams({
+          emotion,
+          location: playerLocation,
+          timeOfDay
+        });
+
+        const response = await fetch(`/api/chat-scene-image?${params}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.imageUrl) {
+            setEmotionalImage(data.imageUrl);
+          }
+        }
+      } catch (error) {
+        console.log('Character image generation skipped');
+      }
+    }
+    
+    // Step 3: UI transitions
     setTimeout(() => {
       console.log('Starting dialogue transitions...');
       setShowLivingPortrait(true);
       setChaHaeInExpression('recognition');
       
-      // Step 3: Generate context-aware dialogue
+      // Step 4: Generate context-aware dialogue
       const contextualDialogue = "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?";
       setCurrentDialogue(contextualDialogue);
       
-      // Step 4: Set thought prompts
+      // Step 5: Set thought prompts
       setThoughtPrompts([
         "Just wanted to see you.",
         "Anything interesting in the report?", 
@@ -1070,29 +1103,22 @@ export default function SoloLevelingSpatial() {
                         }}
                         transition={{ duration: 0.5 }}
                       >
-                        <img 
-                          src={`/api/chat-scene-image?emotion=${chaHaeInExpression === 'welcoming' ? 'romantic_anticipation' : chaHaeInExpression === 'focused' ? 'professional_focused' : 'peaceful_content'}&location=${gameState.currentScene}&timeOfDay=${timeOfDay}`}
-                          alt="Cha Hae-In"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.currentTarget;
-                            const fallback = target.nextElementSibling as HTMLDivElement;
-                            target.style.display = 'none';
-                            if (fallback) {
-                              fallback.style.display = 'flex';
-                              fallback.classList.remove('hidden');
-                            }
-                          }}
-                        />
-                        
-                        {/* Fallback Simple Portrait */}
-                        <div className="w-full h-full bg-gradient-to-b from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-pink-300/20 hidden items-center justify-center">
-                          <div className="text-pink-200 text-center">
-                            <div className="w-8 h-3 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-full mb-1 mx-auto" />
-                            <div className="w-6 h-6 bg-gradient-to-b from-pink-100 to-pink-200 rounded-full mx-auto mb-1" />
-                            <div className="w-5 h-4 bg-gradient-to-b from-blue-800 to-blue-900 rounded-b-lg mx-auto" />
+                        {emotionalImage ? (
+                          <img 
+                            src={emotionalImage}
+                            alt="Cha Hae-In"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-b from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-pink-300/20 flex items-center justify-center">
+                            <div className="text-pink-200 text-center">
+                              <div className="w-8 h-3 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-full mb-1 mx-auto" />
+                              <div className="w-6 h-6 bg-gradient-to-b from-pink-100 to-pink-200 rounded-full mx-auto mb-1" />
+                              <div className="w-5 h-4 bg-gradient-to-b from-blue-800 to-blue-900 rounded-b-lg mx-auto" />
+                            </div>
                           </div>
-                        </div>
+                        )}
+
                         
                         {/* Gradient Overlay for Depth */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
