@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Diamond, Heart, Gift, X } from 'lucide-react';
+import { Diamond, Heart, Gift, X, DoorOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface LuxuryItem {
@@ -142,25 +142,31 @@ export default function LuxuryDepartmentStore({
           {/* Atmospheric Store Interior Overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-amber-50/20 via-transparent to-slate-100/30" />
           
-          {/* Store Header */}
-          <div className="absolute top-0 left-0 right-0 p-6 bg-gradient-to-b from-black/30 to-transparent z-20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">Luxury Department Store</h1>
-                <p className="text-gray-600 dark:text-gray-300 italic">Browse our curated collection of premium gifts</p>
-              </div>
+          {/* Clean Minimalist Header */}
+          <div className="absolute top-0 left-0 right-0 p-6 z-20">
+            <div className="flex items-start justify-between">
+              {/* Left Side - Title and Exit Button */}
               <div className="flex items-center gap-4">
-                <div className="bg-white/80 dark:bg-black/50 backdrop-blur-md px-4 py-2 rounded-lg border border-gray-200/50">
-                  <span className="text-amber-600 font-bold">₩{currentGold.toLocaleString()}</span>
-                </div>
+                {/* Exit Button */}
                 <Button 
                   onClick={onClose}
                   variant="ghost" 
                   size="icon"
-                  className="text-gray-800 dark:text-white hover:bg-white/20 rounded-full"
+                  className="text-gray-700 dark:text-gray-300 hover:bg-white/20 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
                 >
-                  <X className="w-6 h-6" />
+                  <DoorOpen className="w-5 h-5" />
                 </Button>
+                
+                {/* Clean Title */}
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Luxury Department Store</h1>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm italic mt-1">Browse our curated collection of premium gifts</p>
+                </div>
+              </div>
+              
+              {/* Right Side - Gold Balance */}
+              <div className="bg-white/90 dark:bg-black/60 backdrop-blur-md px-4 py-2 rounded-lg border border-gray-200/50 shadow-lg">
+                <span className="text-amber-600 font-bold text-lg">₩{currentGold.toLocaleString()}</span>
               </div>
             </div>
           </div>
