@@ -266,29 +266,37 @@ export function DungeonRaidSystem11({
         baseDamage = 25 + Math.floor(Math.random() * 15); // 25-40 damage
         effectColor = 'from-red-500 to-purple-600';
         shakeIntensity = 'light';
-        // Red slash effect
+        // Red slash effect at enemy positions
         setScreenFlash('bg-red-500/30');
-        setSkillEffects(prev => [...prev, {
-          id: `mutilate-${Date.now()}`,
-          type: 'mutilate',
-          x: Math.random() * 800,
-          y: Math.random() * 600,
-          timestamp: Date.now()
-        }]);
+        enemies.forEach((enemy, index) => {
+          if (!enemy.isAlly) {
+            setSkillEffects(prev => [...prev, {
+              id: `mutilate-${Date.now()}-${index}`,
+              type: 'mutilate',
+              x: enemy.x - 30,
+              y: enemy.y - 30,
+              timestamp: Date.now()
+            }]);
+          }
+        });
         break;
       case 'violent_slash':
         baseDamage = 35 + Math.floor(Math.random() * 20); // 35-55 damage
         effectColor = 'from-orange-500 to-red-600';
         shakeIntensity = 'medium';
-        // Orange violent slash effect
+        // Orange violent slash effect at enemy positions
         setScreenFlash('bg-orange-500/40');
-        setSkillEffects(prev => [...prev, {
-          id: `violent-${Date.now()}`,
-          type: 'violent_slash',
-          x: Math.random() * 800,
-          y: Math.random() * 600,
-          timestamp: Date.now()
-        }]);
+        enemies.forEach((enemy, index) => {
+          if (!enemy.isAlly) {
+            setSkillEffects(prev => [...prev, {
+              id: `violent-${Date.now()}-${index}`,
+              type: 'violent_slash',
+              x: enemy.x - 40,
+              y: enemy.y - 40,
+              timestamp: Date.now()
+            }]);
+          }
+        });
         setCameraShake(true);
         setTimeout(() => setCameraShake(false), 300);
         break;
@@ -296,15 +304,19 @@ export function DungeonRaidSystem11({
         baseDamage = 50 + Math.floor(Math.random() * 25); // 50-75 damage
         effectColor = 'from-purple-600 to-indigo-800';
         shakeIntensity = 'heavy';
-        // Purple dominator effect
+        // Purple dominator effect at enemy positions
         setScreenFlash('bg-purple-600/50');
-        setSkillEffects(prev => [...prev, {
-          id: `dominator-${Date.now()}`,
-          type: 'dominators_touch',
-          x: Math.random() * 800,
-          y: Math.random() * 600,
-          timestamp: Date.now()
-        }]);
+        enemies.forEach((enemy, index) => {
+          if (!enemy.isAlly) {
+            setSkillEffects(prev => [...prev, {
+              id: `dominator-${Date.now()}-${index}`,
+              type: 'dominators_touch',
+              x: enemy.x - 60,
+              y: enemy.y - 60,
+              timestamp: Date.now()
+            }]);
+          }
+        });
         setScreenShake(true);
         setCameraShake(true);
         setTimeout(() => {
