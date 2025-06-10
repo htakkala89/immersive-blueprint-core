@@ -558,13 +558,43 @@ export function HunterCommunicatorSystem15({
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 50 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-2xl flex items-center justify-center z-50 p-4"
+      style={{
+        backdropFilter: 'blur(60px) saturate(180%)',
+        background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.4), rgba(0,0,0,0.7))'
+      }}
     >
       <motion.div
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
-        className="bg-slate-900 rounded-xl w-full max-w-4xl h-[600px] flex flex-col overflow-hidden shadow-2xl border border-slate-700"
+        className="w-full max-w-4xl h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
+        style={{
+          background: 'linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,41,59,0.75))',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '24px',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8)'
+        }}
       >
+        {/* Noise texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] pointer-events-none rounded-2xl"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            backgroundSize: '180px 180px'
+          }}
+        />
+        
+        {/* Inner glow border */}
+        <div 
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          style={{
+            background: 'linear-gradient(135deg, rgba(147,51,234,0.1), rgba(59,130,246,0.08))',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '24px',
+            boxShadow: 'inset 0 0 20px rgba(147,51,234,0.1)'
+          }}
+        />
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-800">
           <div className="flex items-center gap-3">
