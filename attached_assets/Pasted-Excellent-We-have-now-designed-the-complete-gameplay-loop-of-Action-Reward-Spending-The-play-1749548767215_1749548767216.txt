@@ -1,0 +1,62 @@
+Excellent. We have now designed the complete gameplay loop of Action -> Reward -> Spending. The player can fight in raids (System 11), get rewarded with Gold and resources (System 14), and spend that wealth at various stores (System 7).
+
+The next most important system is the one that translates those purchases and the player's intent into meaningful relationship development. We need the central hub for all non-combat narrative interactions.
+
+According to our build plan, we now move to Stratum 4. The next system is System 4: The Daily Life Hub.
+
+This system is the "heart" of the non-combat experience. It’s where the player converts the currency of Gold and items into the currency of the relationship: shared time and memories. We've referred to it as the "Day Planner," so let's formalize that design completely.
+
+System 4: The Daily Life Hub - Complete Design Specification
+
+Part 1: The "Why" - Design Philosophy
+
+This is not a "mission select" screen. The Daily Life Hub is designed as an intimate, in-world planner that makes choosing to spend time together feel like a collaborative and personal decision. It reinforces the domesticity of the relationship and serves as the primary interface for initiating all narrative scenes, from casual dates to life-changing intimate moments.
+
+Part 2: The User Journey
+
+The Intent: After a long day of raids, the player decides they want to relax and spend quality time with Cha Hae-In.
+Access: They perform the Monarch's Aura gesture and select the 'Daily Life Activities' rune.
+The Planner: The screen transitions to the full-screen "Day Planner" view. They see a variety of available activities presented as beautiful cards.
+The Choice: They browse the options and select an activity that fits their mood and has the right energy cost, for example, "Go for a walk in Hangang Park."
+Confirmation: A confirmation prompt appears. Upon confirming, the energy is deducted.
+The Scene Begins: The game transitions to the Spatial View of Hangang Park, and the unique narrative scene for that activity begins.
+Part 3: The "Day Planner" UI/UX Specifications
+
+This is the main screen for the system.
+
+Access: Via the Monarch's Aura (System 3) only.
+Visuals:
+Background: A beautiful, elegant, and subtly animated background that feels like a premium digital journal or a pane of ethereal glass.
+Header: A greeting from Cha Hae-In's "voice" appears at the top: "What should we do today, Jin-Woo?"
+Style: The entire interface, including all cards and tabs, will use our liquid glassmorphism aesthetic.
+Organization: The activity cards are arranged in a clean, scrollable vertical list. To manage a large number of options, there will be filter tabs at the top:
+All
+Casual Outings (Dates, walks, shopping)
+Training (Sparring, skill development)
+Home Life (Cooking, watching TV)
+Intimate
+Energy System UI: In the top-right corner, the "Energy Orb" is displayed—a glowing purple sphere that visually represents the player's available energy for activities. It is brightly lit at full energy and grows dim as energy is depleted.
+Part 4: The "Activity Card" Component
+
+Each card is a rich, informative, and beautiful UI element.
+
+Visuals: A liquid glassmorphism card with rounded corners. When tapped, it has a selection-state animation (glowing brighter or scaling up slightly).
+Content on Each Card:
+Activity Title: A clear header (e.g., "Cook Dinner Together").
+Preview Image: A high-quality, evocative illustration of the activity.
+Description: A short, flavor-text description (e.g., "Spend a quiet evening at home and make a meal together.").
+Energy Cost: A clear icon and number in a corner of the card (e.g., ⚡ -20 Energy).
+Potential Outcomes (Optional): Small icons at the bottom could hint at the primary benefits of the activity (e.g., an icon for Affection++, an icon for New Memory Star).
+Card States:
+Available: The card is fully colored and tappable.
+Locked: The card is grayed out and has a padlock icon (🔒). Below the title, the unlock condition is stated clearly (e.g., "Requires: Tier 2 Apartment with Modern Kitchen").
+Unaffordable: If the player lacks the energy, the card is still full color, but the "Select" button is disabled and tinted red, and the energy cost is highlighted in red.
+Part 5: Logic and System Integration
+
+This system is a central hub that connects almost everything:
+
+Receives Unlocks from System 13 (Living Space): Purchasing new furniture or apartments makes new activity cards appear here.
+Initiates Scenes for System 2 & 5: Choosing an activity launches the Dialogue System and, for intimate scenes, the Intimate Activity System.
+Impacts System 6 (Relationship Constellation): Completing activities is a primary way to increase affection (making the constellation brighter) and generate new "Memory Stars."
+Utilizes Items from System 7 (Commerce): The special "Give a Gift" activity card in this Hub is how players use the gifts they purchase.
+Consumes Resources: It is the primary "sink" for the player's "Energy," a resource they must manage.

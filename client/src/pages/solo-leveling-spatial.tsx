@@ -9,7 +9,7 @@ import {
   ShoppingCart, Calendar, Battery, Award, Package, X
 } from 'lucide-react';
 
-import { DailyLifeHubModal } from '@/components/DailyLifeHubModal';
+import { DailyLifeHubSystem4 } from '@/components/DailyLifeHubSystem4';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
@@ -41,6 +41,7 @@ interface GameState {
   maxEnergy?: number;
   experience?: number;
   maxExperience?: number;
+  apartmentTier?: number;
 }
 
 interface WorldLocation {
@@ -115,7 +116,8 @@ export default function SoloLevelingSpatial() {
     gold: 50000000,
     intimacyLevel: 1,
     energy: 80,
-    maxEnergy: 100
+    maxEnergy: 100,
+    apartmentTier: 2
   });
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('afternoon');
@@ -1933,18 +1935,54 @@ export default function SoloLevelingSpatial() {
 
 
       {/* Feature Modals */}
-      <DailyLifeHubModal
+      <DailyLifeHubSystem4
         isVisible={showDailyLifeHub}
         onClose={() => setShowDailyLifeHub(false)}
-        gameState={gameState}
-        onActivitySelect={(activity: any) => {
-          const activityId = typeof activity === 'string' ? activity : activity.id;
-          setActiveActivity(activityId);
-          setShowDailyLifeHub(false);
-          setShowIntimateModal(true);
+        playerStats={{
+          gold: gameState.gold || 0,
+          level: gameState.level || 1,
+          experience: gameState.experience || 0,
+          affectionLevel: (gameState.affection || 0) * 10,
+          energy: gameState.energy || 80,
+          maxEnergy: 100,
+          relationshipStatus: gameState.affection >= 5 ? 'married' : gameState.affection >= 4 ? 'engaged' : 'dating',
+          intimacyLevel: gameState.intimacyLevel || (gameState.affection * 10) || 0,
+          sharedMemories: (gameState.affection || 0) * 10,
+          livingTogether: gameState.affection >= 4,
+          daysTogether: (gameState.affection || 1) * 30,
+          apartmentTier: gameState.apartmentTier || 1,
+          hasModernKitchen: gameState.apartmentTier >= 2,
+          hasHomeGym: gameState.apartmentTier >= 3
         }}
-        onImageGenerated={(imageUrl) => setSceneImage(imageUrl)}
-        audioMuted={false}
+        timeOfDay={timeOfDay}
+        onActivitySelect={(activity) => {
+          setActiveActivity(activity.id);
+          setShowDailyLifeHub(false);
+          
+          // Route activity to appropriate system
+          if (activity.category === 'intimate') {
+            setShowIntimateModal(true);
+          } else if (activity.id === 'give_gift') {
+            setShowUnifiedShop(true);
+          } else if (activity.id === 'shopping_together') {
+            setShowLuxuryDepartmentStore(true);
+          } else {
+            // Handle other activities through dialogue system
+            setCurrentDialogue(`You and Cha Hae-In ${activity.description.toLowerCase()}`);
+            setDialogueActive(true);
+            setShowLivingPortrait(true);
+            
+            // Update game state based on activity
+            setGameState(prev => ({
+              ...prev,
+              energy: Math.max(0, (prev.energy || 80) - activity.energyCost),
+              affection: Math.min(100, prev.affection + (activity.affectionReward || 0)),
+              experience: (prev.experience || 0) + 50
+            }));
+            
+            generateSceneImage();
+          }
+        }}
       />
 
       <IntimateActivityModal
