@@ -416,17 +416,26 @@ export function WorldMapSystem8({
                       <motion.div
                         className={`w-6 h-6 rounded-full relative ${
                           location.state === 'locked' ? 'bg-gray-600' :
-                          location.state === 'presence' ? 'bg-purple-400' :
+                          location.state === 'presence' ? 'bg-yellow-400' :
                           location.state === 'quest' ? 'bg-yellow-400' :
                           location.state === 'gate' ? 'bg-red-400' : 'bg-purple-400'
                         }`}
-                        animate={location.state !== 'locked' ? {
-                          boxShadow: [
-                            '0 0 5px rgba(147, 51, 234, 0.6)',
-                            '0 0 15px rgba(147, 51, 234, 0.8)',
-                            '0 0 5px rgba(147, 51, 234, 0.6)'
-                          ]
-                        } : {}}
+                        animate={
+                          location.state === 'presence' ? {
+                            boxShadow: [
+                              '0 0 10px rgba(255, 215, 0, 0.6)',
+                              '0 0 20px rgba(255, 215, 0, 0.8)',
+                              '0 0 10px rgba(255, 215, 0, 0.6)'
+                            ]
+                          } :
+                          location.state !== 'locked' ? {
+                            boxShadow: [
+                              '0 0 5px rgba(147, 51, 234, 0.6)',
+                              '0 0 15px rgba(147, 51, 234, 0.8)',
+                              '0 0 5px rgba(147, 51, 234, 0.6)'
+                            ]
+                          } : {}
+                        }
                         transition={{ duration: 2, repeat: Infinity }}
                       >
                         {getLocationIcon(location.state, location.gateRank)}
@@ -447,8 +456,17 @@ export function WorldMapSystem8({
                             exit={{ opacity: 0, y: 5 }}
                             className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10"
                           >
-                            <div className="bg-black/80 backdrop-blur-sm px-3 py-2 rounded-lg text-white text-sm border border-white/30 shadow-lg">
-                              {location.name}
+                            <div className={`backdrop-blur-sm px-3 py-2 rounded-lg text-sm border shadow-lg ${
+                              location.state === 'presence' 
+                                ? 'bg-yellow-400/20 border-yellow-400/50 text-yellow-100'
+                                : 'bg-black/80 border-white/30 text-white'
+                            }`}>
+                              <div className="flex items-center gap-2">
+                                {location.name}
+                                {location.state === 'presence' && (
+                                  <span className="text-yellow-300 text-xs">✨ Cha Hae-In is here</span>
+                                )}
+                              </div>
                             </div>
                           </motion.div>
                         )}
