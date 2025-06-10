@@ -591,7 +591,12 @@ export default function SoloLevelingSpatial() {
       // Update thought prompts dynamically based on conversation context
       if (data.thoughtPrompts && Array.isArray(data.thoughtPrompts)) {
         console.log('🎭 Received dynamic prompts:', data.thoughtPrompts);
-        setThoughtPrompts(data.thoughtPrompts);
+        
+        // Visual transition: fade out old prompts, then fade in new ones
+        setThoughtPrompts([]); // Clear prompts briefly
+        setTimeout(() => {
+          setThoughtPrompts(data.thoughtPrompts);
+        }, 200); // Small delay for visual refresh
       }
       
       // Update scheduled activities if new ones were created

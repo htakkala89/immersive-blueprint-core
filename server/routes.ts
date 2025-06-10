@@ -611,7 +611,7 @@ RESPONSE INSTRUCTIONS:
       }
       
       // Generate dynamic thought prompts based on conversation context
-      const dynamicPrompts = await generateDynamicPrompts(response, message, context, gameState);
+      const dynamicPrompts = generateFallbackPrompts(response, message, context);
       
       res.json({ 
         response, 
