@@ -859,9 +859,14 @@ export function HunterCommunicatorSystem15({
                               )}
                             </div>
                             <p 
-                              className="text-sm text-slate-300 truncate mb-1"
+                              className="text-sm text-slate-300 mb-1 leading-relaxed"
                               style={{
-                                textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                                textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                wordBreak: 'break-word'
                               }}
                             >
                               {conversation.lastMessage.content}
@@ -1232,27 +1237,57 @@ export function HunterCommunicatorSystem15({
               </div>
             </>
           ) : (
-            /* System Alerts Tab */
+            /* Enhanced System Alerts Tab */
             <div className="flex-1 flex">
-              {/* Alerts List */}
-              <div className="w-1/2 border-r border-slate-700 bg-slate-800">
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-white mb-4">System Alerts</h3>
-                  <div className="space-y-2">
+              {/* Enhanced Alerts List */}
+              <div 
+                className="w-1/2 relative z-10"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
+                <div className="p-6">
+                  <h3 
+                    className="text-lg font-semibold text-white mb-6"
+                    style={{
+                      textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                      filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                    }}
+                  >
+                    System Alerts
+                  </h3>
+                  <div className="space-y-3">
                     {systemAlerts.map((alert) => (
                       <motion.div
                         key={alert.id}
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ 
+                          scale: 1.02,
+                          y: -2,
+                          transition: { duration: 0.2 }
+                        }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {
                           setSelectedAlert(alert.id);
                           markAlertAsRead(alert.id);
                         }}
-                        className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                          selectedAlert === alert.id 
-                            ? 'bg-blue-600' 
-                            : 'bg-slate-700 hover:bg-slate-600'
-                        } ${!alert.read ? 'border-l-4 border-blue-400' : ''}`}
+                        className="cursor-pointer transition-all duration-300"
+                        style={{
+                          background: selectedAlert === alert.id 
+                            ? 'linear-gradient(135deg, rgba(147,51,234,0.15), rgba(59,130,246,0.1))'
+                            : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                          backdropFilter: 'blur(15px)',
+                          border: selectedAlert === alert.id
+                            ? '1px solid rgba(147,51,234,0.3)'
+                            : '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '16px',
+                          padding: '16px',
+                          boxShadow: selectedAlert === alert.id
+                            ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 25px rgba(147,51,234,0.15), 0 0 20px rgba(147,51,234,0.1)'
+                            : 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)',
+                          borderLeft: !alert.read ? '3px solid rgba(59,130,246,0.8)' : 'none',
+                          borderLeftColor: !alert.read ? 'rgba(59,130,246,0.8)' : 'transparent'
+                        }}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -1279,62 +1314,199 @@ export function HunterCommunicatorSystem15({
                     ))}
                   </div>
                 </div>
+                
+                {/* Glowing Divider */}
+                <div 
+                  className="absolute top-0 right-0 bottom-0 w-px"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(147,51,234,0.6), rgba(59,130,246,0.4), rgba(147,51,234,0.6))',
+                    boxShadow: '0 0 8px rgba(147,51,234,0.4), 0 0 16px rgba(59,130,246,0.2)'
+                  }}
+                />
               </div>
 
-              {/* Alert Detail */}
-              <div className="flex-1 bg-slate-900">
+              {/* Enhanced Alert Detail */}
+              <div 
+                className="flex-1 relative z-10"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(15,23,42,0.2), rgba(30,41,59,0.1))',
+                  backdropFilter: 'blur(30px)'
+                }}
+              >
                 {selectedAlertData ? (
                   <div className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      {selectedAlertData.type === 'quest' && <Shield className="w-6 h-6 text-yellow-400" />}
-                      {selectedAlertData.type === 'announcement' && <Bell className="w-6 h-6 text-blue-400" />}
-                      {selectedAlertData.type === 'system' && <User className="w-6 h-6 text-green-400" />}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div 
+                        className="w-14 h-14 rounded-full flex items-center justify-center"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
+                        }}
+                      >
+                        {selectedAlertData.type === 'quest' && <Shield className="w-6 h-6 text-yellow-400" style={{ filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.4))' }} />}
+                        {selectedAlertData.type === 'announcement' && <Bell className="w-6 h-6 text-blue-400" style={{ filter: 'drop-shadow(0 0 6px rgba(96,165,250,0.4))' }} />}
+                        {selectedAlertData.type === 'system' && <User className="w-6 h-6 text-green-400" style={{ filter: 'drop-shadow(0 0 6px rgba(34,197,94,0.4))' }} />}
+                      </div>
                       <div>
-                        <h4 className="text-xl font-bold text-white">{selectedAlertData.title}</h4>
-                        <p className="text-sm text-slate-400">From: {selectedAlertData.sender}</p>
+                        <h4 
+                          className="text-xl font-bold text-white mb-1"
+                          style={{
+                            textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.1)',
+                            filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                          }}
+                        >
+                          {selectedAlertData.title}
+                        </h4>
+                        <p 
+                          className="text-sm text-slate-400"
+                          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                        >
+                          From: {selectedAlertData.sender}
+                        </p>
                       </div>
                     </div>
                     
-                    <div className="bg-slate-800 rounded-lg p-4 mb-6">
-                      <p className="text-slate-300 leading-relaxed">{selectedAlertData.content}</p>
+                    <div 
+                      className="rounded-xl p-6 mb-6"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                        backdropFilter: 'blur(15px)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)'
+                      }}
+                    >
+                      <p 
+                        className="text-slate-300 leading-relaxed text-base"
+                        style={{
+                          textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                          filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
+                        }}
+                      >
+                        {selectedAlertData.content}
+                      </p>
                     </div>
 
                     {selectedAlertData.questData && (
-                      <div className="bg-slate-800 rounded-lg p-4 mb-6">
-                        <h5 className="text-lg font-semibold text-white mb-3">Quest Details</h5>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div 
+                        className="rounded-xl p-6 mb-6"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                          backdropFilter: 'blur(15px)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)'
+                        }}
+                      >
+                        <h5 
+                          className="text-lg font-semibold text-white mb-6"
+                          style={{
+                            textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                            filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                          }}
+                        >
+                          Quest Details
+                        </h5>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <span className="text-sm text-slate-400">Rank:</span>
-                            <p className="text-white font-medium">{selectedAlertData.questData.rank}</p>
+                            <span 
+                              className="text-sm text-slate-400 block mb-2"
+                              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                            >
+                              Rank:
+                            </span>
+                            <p 
+                              className="text-white font-bold text-2xl"
+                              style={{
+                                textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                                filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                              }}
+                            >
+                              {selectedAlertData.questData.rank}
+                            </p>
                           </div>
                           <div>
-                            <span className="text-sm text-slate-400">Reward:</span>
-                            <p className="text-white font-medium">₩{selectedAlertData.questData.reward.toLocaleString()}</p>
+                            <span 
+                              className="text-sm text-slate-400 block mb-2"
+                              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                            >
+                              Reward:
+                            </span>
+                            <p 
+                              className="text-white font-bold text-2xl"
+                              style={{
+                                textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                                filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                              }}
+                            >
+                              ₩{selectedAlertData.questData.reward.toLocaleString()}
+                            </p>
                           </div>
                           <div className="md:col-span-2">
-                            <span className="text-sm text-slate-400">Location:</span>
-                            <p className="text-white font-medium">{selectedAlertData.questData.location}</p>
+                            <span 
+                              className="text-sm text-slate-400 block mb-2"
+                              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                            >
+                              Location:
+                            </span>
+                            <p 
+                              className="text-white font-bold text-lg"
+                              style={{
+                                textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
+                                filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                              }}
+                            >
+                              {selectedAlertData.questData.location}
+                            </p>
                           </div>
-                          <div className="md:col-span-2">
-                            <span className="text-sm text-slate-400">Description:</span>
-                            <p className="text-slate-300 mt-1">{selectedAlertData.questData.description}</p>
+                          <div className="md:col-span-2 mt-4">
+                            <span 
+                              className="text-sm text-slate-400 block mb-2"
+                              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                            >
+                              Description:
+                            </span>
+                            <p 
+                              className="text-slate-300 leading-relaxed"
+                              style={{
+                                textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                                filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
+                              }}
+                            >
+                              {selectedAlertData.questData.description}
+                            </p>
                           </div>
                         </div>
                       </div>
                     )}
 
                     {selectedAlertData.type === 'quest' && (
-                      <div className="flex gap-3">
+                      <div className="flex gap-4 mt-6">
                         <Button
                           onClick={() => acceptQuest(selectedAlertData.id)}
-                          className="bg-green-600 hover:bg-green-700 text-white"
+                          className="px-6 py-3 text-white font-medium transition-all duration-200 flex-1"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(34,197,94,0.8), rgba(22,163,74,0.9))',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '12px',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 0 16px rgba(34,197,94,0.3)',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                          }}
                         >
                           Accept Quest
                         </Button>
                         <Button
-                          variant="outline"
                           onClick={() => setSelectedAlert(null)}
-                          className="border-slate-600 text-slate-300 hover:bg-slate-800"
+                          className="px-6 py-3 text-slate-300 font-medium transition-all duration-200"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(100,116,139,0.4), rgba(71,85,105,0.5))',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '12px',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                          }}
                         >
                           Decline
                         </Button>
