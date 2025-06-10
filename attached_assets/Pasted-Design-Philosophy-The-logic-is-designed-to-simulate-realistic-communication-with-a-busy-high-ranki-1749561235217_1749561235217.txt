@@ -1,0 +1,48 @@
+Design Philosophy: The logic is designed to simulate realistic communication with a busy, high-ranking Hunter. Her response time and tone should reflect her current situation in the game world, making the system feel grounded and believable. The goal is to create a sense of persistent connection, even when you are apart.
+
+1. Player Sending Privileges (When You Can Send)
+
+General Rule: The player can open the Communicator and send a message to Cha Hae-In at almost any time. This reinforces the feeling of a personal device always at hand.
+Exceptions (Sending Disabled): The ability to send a message will be temporarily disabled in a few key situations to enhance narrative tension:
+During a Live Conversation: If you are actively in a face-to-face dialogue scene with Cha Hae-In, you cannot simultaneously text her. The Communicator will be inaccessible.
+During "No Signal" Events: For certain deep dungeons or story moments where you are cut off from the outside world, the Communicator will display a "No Signal" status, and sending will be impossible.
+2. The Message State Machine (For Your Sent Messages)
+
+To add realism, messages you send will have clear states, indicated by small icons next to the timestamp.
+
+State 1: Sent
+
+Icon: A single grey checkmark (✓).
+Meaning: Your message has been sent from your device and is on the network. This is the immediate state after you hit send.
+State 2: Delivered
+
+Icon: A double grey checkmark (✓✓).
+Meaning: The message has been delivered to Cha Hae-In's Communicator. This will happen almost instantly, unless she is in a "No Signal" area (like a dungeon).
+State 3: Read
+
+Icon: The double checkmark turns a bright, glowing purple (✓✓).
+Meaning: She has opened the app and seen your message. This is a crucial step—she might read a message long before she has a moment to reply.
+3. AI Response Logic (Her Reply Cadence)
+
+This is the core logic that makes the system feel real. Cha Hae-In's reply time is not random. It is determined by a priority-based ruleset that checks her status in the game world.
+
+Rule #1: Context is King. The AI first checks her character_state from the main game logic.
+
+If State is Busy (e.g., "in_a_rank_raid", "in_meeting_with_association"): Her reply delay will be long. She will "Read" the message, but a reply might not come for several in-game hours.
+If State is Available (e.g., "at_home_relaxing", "on_a_day_off"): Her reply delay will be short, often within minutes.
+If State is Sleeping: She will not reply until the next "Morning" phase begins. The message will remain "Delivered" but not "Read" until she "wakes up."
+Rule #2: Urgency Matters. The AI will do a quick analysis of your message content.
+
+If your message contains urgent keywords ("help," "emergency," "are you okay?"), it will override her "Busy" state and trigger a much faster reply.
+If your message is casual ("hey," "what's up"), it will be handled with standard priority based on her current state.
+4. System & Narrative Integration
+
+This messaging system is deeply integrated with all our other systems.
+
+Affection (System 6): Simple, thoughtful messages ("Just thinking of you. Be safe.") provide small but consistent affection boosts. Pestering her with dozens of messages while she is clearly busy in a raid might result in a neutral or even slightly negative reaction in her eventual reply.
+Activities (System 4): The player can propose activities via text.
+Player: "Work at the Guild has been crazy. Want to go to Hangang Park this evening to unwind?"
+Her AI Response (if she's free and agrees): "That sounds perfect. Let's do it. See you there at 7?"
+Result: This conversation will then automatically create a new, scheduled activity card in the Daily Life Hub.
+Quests: When the Hunter Association sends a quest via the "System Alerts" tab, the player must [Accept] it here. Accepting it will trigger the quest flag and place the ! marker on the World Map (System 8).
+This logic ensures that the Communicator is not just a simple chat window, but a dynamic and meaningful part of the player's ongoing life and relationship with the world and its characters.
