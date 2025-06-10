@@ -443,18 +443,11 @@ export function LocationInteractiveNodes({
   playerStats, 
   environmentalContext 
 }: LocationNodesProps) {
-  console.error('🚨 COMPONENT LOADED - LocationInteractiveNodes for:', locationId);
-  
   const [selectedNode, setSelectedNode] = useState<InteractiveNode | null>(null);
   const [showThoughtPrompt, setShowThoughtPrompt] = useState(false);
   const [nearbyNodes, setNearbyNodes] = useState<string[]>([]);
 
   const baseNodes = LOCATION_NODES[locationId] || [];
-  console.log('🔥 LOCATION NODES DEBUG 🔥');
-  console.log('Location ID:', locationId);
-  console.log('Base nodes:', baseNodes.map(n => n.id));
-  console.log('Total nodes found:', baseNodes.length);
-  console.log('Red Gate included?', baseNodes.some(n => n.id === 'red_gate_entrance'));
   
   // System 3: Environmental State Management - Filter nodes based on context
   const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
@@ -484,7 +477,9 @@ export function LocationInteractiveNodes({
     });
   };
 
-  const nodes = getEnvironmentallyAvailableNodes();
+  const nodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
+    arr.findIndex(n => n.id === node.id) === index
+  ); // Remove duplicates
 
   // System 3: Spatial Relationship Calculator
   const calculateNodeProximity = (node1: InteractiveNode, node2: InteractiveNode): number => {
@@ -630,25 +625,14 @@ export function LocationInteractiveNodes({
     });
   };
 
-  // Force render something visible for debugging
   return (
     <div className="absolute inset-0 pointer-events-none">
-      {/* DEBUG: Always visible indicator */}
-      <div className="absolute top-0 left-0 bg-red-500 text-white p-2 z-[9999] pointer-events-auto">
-        DEBUG: Component Loaded! Nodes={nodes.length}, Location={locationId}
-        <br/>Base: {baseNodes.length}, Red Gate: {baseNodes.some(n => n.id === 'red_gate_entrance') ? 'YES' : 'NO'}
-      </div>
-      
-      {/* TEST: Force render a test node */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
-        <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white font-bold pointer-events-auto cursor-pointer">
-          TEST
-        </div>
-      </div>
       {/* Interactive Nodes */}
       {nodes.map((node) => {
         const available = isNodeAvailable(node);
         const IconComponent = node.icon;
+        
+
 
         return (
           <motion.div
