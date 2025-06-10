@@ -333,19 +333,27 @@ export function DungeonRaidSystem11Fixed({
     }
     
     // Check for room clear or multi-wave progression
-    if (enemies.every(e => e.health <= 0)) {
-      setTimeout(() => {
+    setTimeout(() => {
+      const currentEnemies = enemies.filter(e => e.health > 0);
+      if (currentEnemies.length === 0) {
         if (currentRoom === 3 && currentWave === 1) {
           // Arena chamber - spawn second wave
           spawnSecondWave();
         } else if (currentRoom >= 7) {
           setGamePhase('victory'); // Final victory
         } else {
-          setGamePhase('room_clear');
-          generateRoomExits();
+          // Trigger spoils of war sequence
+          addToCombatLog("Victory! Collecting spoils...");
+          
+          // Fade out action bar and enter room clear state
+          setTimeout(() => {
+            setGamePhase('room_clear');
+            generateRoomExits();
+            addToCombatLog("Path forward revealed!");
+          }, 2000);
         }
-      }, 1000);
-    }
+      }
+    }, 500);
   };
 
   const showDamageNumber = (damage: number, x: number, y: number, isCritical: boolean) => {
@@ -1869,10 +1877,28 @@ export function DungeonRaidSystem11Fixed({
                   setTeamUpReady(false);
                   triggerCameraShake();
                   
-                  // Check for victory
-                  if (enemies.every(e => e.health <= 0)) {
-                    setTimeout(() => setGamePhase('victory'), 1000);
-                  }
+                  // Check for victory - trigger spoils sequence
+                  setTimeout(() => {
+                    const aliveEnemies = enemies.filter(e => e.health > 0);
+                    if (aliveEnemies.length === 0) {
+                      if (currentRoom >= 7) {
+                        setGamePhase('victory');
+                      } else {
+                        addToCombatLog("Victory! Collecting spoils...");
+                        
+                        // Generate loot for defeated enemies
+                        enemies.forEach(enemy => {
+                          generateLootDrop(enemy.x, enemy.y);
+                        });
+                        
+                        // Transition to room clear
+                        setTimeout(() => {
+                          setGamePhase('room_clear');
+                          generateRoomExits();
+                        }, 2500);
+                      }
+                    }
+                  }, 1000);
                 }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
