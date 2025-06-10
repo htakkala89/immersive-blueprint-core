@@ -390,6 +390,8 @@ export function DungeonRaidSystem11({
     return exits;
   }, [dungeonAct]);
 
+
+
   // Dungeon progression logic
   const progressToNextRoom = useCallback((exitId: string) => {
     setIsTransitioning(true);
@@ -442,22 +444,9 @@ export function DungeonRaidSystem11({
     }, 2000);
   }, [currentRoom, totalRooms, dungeonAct, generateRoomEnemies]);
 
-  // Special encounter generators
-  const generatePuzzleEncounter = useCallback(() => {
-    const sequence = [1, 3, 2, 4, 1]; // Example sequence
-    setPuzzleSequence(sequence);
-    setPlayerSequence([]);
-    
-    const runes = [
-      { id: 'rune_1', position: { x: 300, y: 150 }, isCorrect: false, isActivated: false, sequence: 1, glowing: true },
-      { id: 'rune_2', position: { x: 400, y: 150 }, isCorrect: false, isActivated: false, sequence: 2, glowing: false },
-      { id: 'rune_3', position: { x: 500, y: 150 }, isCorrect: false, isActivated: false, sequence: 3, glowing: false },
-      { id: 'rune_4', position: { x: 350, y: 220 }, isCorrect: false, isActivated: false, sequence: 4, glowing: false }
-    ];
-    setPuzzleRunes(runes);
-  }, []);
 
-  const generateTrapEncounter = useCallback(() => {
+
+  const generateSecondaryTrapEncounter = useCallback(() => {
     const skills = ['mutilate', 'violent_slash', 'dominators_touch'];
     const requiredSkill = skills[Math.floor(Math.random() * skills.length)];
     
