@@ -1722,7 +1722,13 @@ export default function SoloLevelingSpatial() {
                 onClick={() => setGameState(prev => ({ ...prev, gold: 999999999 }))}
                 className="px-2 py-1 rounded bg-yellow-600 hover:bg-yellow-700"
               >
-                Max Gold
+                999M
+              </button>
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, gold: 10000000000 }))}
+                className="px-2 py-1 rounded bg-yellow-500 hover:bg-yellow-600"
+              >
+                10B
               </button>
               <button 
                 onClick={() => setGameState(prev => ({ ...prev, level: 50, hunterRank: 'S-Rank' }))}
