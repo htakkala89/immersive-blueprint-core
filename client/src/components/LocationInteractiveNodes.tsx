@@ -129,9 +129,9 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       label: 'Park Bench',
       icon: TreePine,
       position: { x: 40, y: 60 },
-      thoughtPrompt: 'Suggest sitting for a while.',
-      outcome: 'Triggers unique heartfelt conversational scene about relaxing and their journey together.',
-      gameLogic: 'special_conversation_branch'
+      thoughtPrompt: 'Suggest we sit down for a while.',
+      outcome: 'Multi-turn conversational scene. Text: *You both find a quiet bench, sitting side-by-side as you watch the river flow.* Cha Hae-In becomes more reflective and personal.',
+      gameLogic: 'major_conversation_node_high_affection_memory_star'
     },
     {
       id: 'food_vendor_cart',
@@ -139,8 +139,17 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       icon: ChefHat,
       position: { x: 70, y: 35 },
       thoughtPrompt: 'Want to get some street food?',
-      outcome: 'Scene where they buy and share food. Costs small Gold amount, grants small affection boost.',
-      gameLogic: 'system_14_system_6_transaction'
+      outcome: 'Panel: *You buy two skewers of tteokbokki. [ - ₩5,000 ]. You share the spicy rice cakes while watching the river. She laughs as you get some sauce on your face, wiping it away for you.*',
+      gameLogic: 'small_gold_deduction_medium_affection_gain'
+    },
+    {
+      id: 'rivers_edge',
+      label: "River's Edge",
+      icon: Eye,
+      position: { x: 25, y: 80 },
+      thoughtPrompt: "Let's get a closer look at the river.",
+      outcome: 'Cinematic mode: UI fades away, camera pans across river to city skyline. Internal thought: *Looking at the calm river, it\'s easy to forget about the gates and the monsters... even for a moment.*',
+      gameLogic: 'atmospheric_cinematic_no_cost_no_affection'
     }
   ],
 

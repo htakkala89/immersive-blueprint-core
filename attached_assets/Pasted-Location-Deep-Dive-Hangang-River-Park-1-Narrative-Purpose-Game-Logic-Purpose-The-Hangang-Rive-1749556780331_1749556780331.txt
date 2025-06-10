@@ -1,0 +1,42 @@
+Location Deep Dive: Hangang River Park
+
+1. Narrative Purpose & Game Logic
+
+Purpose: The Hangang River Park serves as a primary "Casual Outing" destination. It is designed for low-stakes, high-reward emotional interactions. Unlike a formal dinner date, this location is about quiet moments, shared snacks, and deep conversations.
+Game Logic: Activities here will generally have a low-to-medium Energy cost but will provide a very reliable and significant Affection gain for the Relationship Constellation (System 6). It's a prime location for generating new "Memory Stars" early in the game.
+2. UI/UX: The Labeled Node System
+
+This mockup is a great exploration of how to present the nodes. To ensure a consistent user experience across all locations, we will integrate these points of interest into our final "Labeled Node" system.
+
+This means that instead of placing the icons and labels directly on the scene, the beautiful park view will remain completely unobstructed. The following interactive options will appear as clean, liquid glassmorphism "pills" stacked in a consistent region of the screen:
+
+[●] Park Bench
+[●] Food Vendor Cart
+[●] River's Edge
+This keeps the UI clean and the immersive view paramount.
+
+3. Detailed Node Breakdown: Actions & Outcomes
+
+Here is the full breakdown of what happens when the player interacts with each node.
+
+Node 1: [●] Park Bench
+
+Thought Prompt: "Suggest we sit down for a while."
+Outcome & Game Logic:
+This is a major conversational node. Tapping the prompt initiates a unique, multi-turn conversational scene branch that is only available in this location.
+Experience: The UI would show a text description like *You both find a quiet bench, sitting side-by-side as you watch the river flow.* Cha Hae-In's AI (System 9) is then prompted with a specific conversational theme about relaxing, the future, or memories. Her dialogue will be more reflective and personal here.
+Logic: This interaction costs a moderate amount of "Energy" but provides a high Affection gain and has a strong chance of creating a new, golden Memory Star in the Relationship Constellation.
+Node 2: [●] Food Vendor Cart
+
+Thought Prompt: "Want to get some street food?"
+Outcome & Game Logic:
+This is a smaller, charming "flavor" interaction. Tapping the prompt triggers a short, pre-scripted event.
+Experience: A small UI panel appears showing You buy two skewers of tteokbokki. [ - ₩5,000 ]. This is followed by a descriptive text panel: *You share the spicy rice cakes while watching the river. She laughs as you get some sauce on your face, wiping it away for you.*
+Logic: This action deducts a small amount of Gold from the Economy (System 14) and provides a guaranteed small-to-medium Affection gain.
+Node 3: [●] River's Edge
+
+Thought Prompt: "Let's get a closer look at the river."
+Outcome & Game Logic:
+This is an observation/atmosphere node. It's designed to deepen the player's immersion in the character's mindset.
+Experience: The UI (including the Labeled Nodes) fades away completely for a "cinematic mode." The camera performs a slow, gentle pan across the river towards the distant city skyline. Reflective, quiet music swells. A single line of italicized text appears on screen, representing Sung Jin-Woo's internal thought: *Looking at the calm river, it's easy to forget about the gates and the monsters... even for a moment.* After a few seconds, the UI fades back in.
+Logic: This action costs no Energy and provides no direct affection gain. Its purpose is purely narrative and atmospheric, reinforcing the central themes of the story.

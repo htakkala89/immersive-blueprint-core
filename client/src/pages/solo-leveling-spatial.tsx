@@ -350,6 +350,9 @@ export default function SoloLevelingSpatial() {
   // Elevator System - Floor Selection UI
   const [showFloorSelect, setShowFloorSelect] = useState(false);
   const [elevatorTransition, setElevatorTransition] = useState(false);
+  
+  // Cinematic Mode - For atmospheric River's Edge experience
+  const [cinematicMode, setCinematicMode] = useState(false);
 
   // Time and scheduling system
   const getCurrentTimeOfDay = () => {
@@ -1538,10 +1541,49 @@ export default function SoloLevelingSpatial() {
               case 'architectural_models':
                 setPlayerLocation('luxury_realtor');
                 break;
+              case 'park_bench':
+                // Major conversational node - high energy cost, high affection gain, memory star
+                setGameState(prev => ({
+                  ...prev,
+                  energy: Math.max(0, (prev.energy || 100) - 25),
+                  affection: Math.min(100, prev.affection + 8)
+                }));
+                handleChaHaeInInteraction();
+                console.log('Park bench conversation - Major relationship moment');
+                break;
+              case 'food_vendor_cart':
+                // Economic transaction with affection boost
+                if ((gameState.gold || 0) >= 5000) {
+                  setGameState(prev => ({
+                    ...prev,
+                    gold: Math.max(0, (prev.gold || 0) - 5000),
+                    affection: Math.min(100, prev.affection + 4)
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'food_sharing',
+                    action: 'You buy two skewers of tteokbokki. [- ₩5,000]. You share the spicy rice cakes while watching the river. She laughs as you get some sauce on your face, wiping it away for you.',
+                    name: 'Street Food Sharing',
+                    x: 70,
+                    y: 35
+                  });
+                  console.log('Food vendor purchase - Affection gained through sharing');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'insufficient_funds',
+                    action: 'You check your wallet but realize you don\'t have enough for the street food.',
+                    name: 'Food Vendor Cart',
+                    x: 70,
+                    y: 35
+                  });
+                }
+                break;
+              case 'rivers_edge':
+                // Atmospheric cinematic mode - no cost, no affection, pure atmosphere
+                setCinematicMode(true);
+                console.log('Entering cinematic mode - River edge contemplation');
+                break;
               case 'counter':
               case 'window_seat':
-              case 'park_bench':
-              case 'food_vendor_cart':
               case 'view_menu':
               case 'speak_sommelier':
               case 'observation_deck':
@@ -2526,6 +2568,50 @@ export default function SoloLevelingSpatial() {
         <div className="fixed inset-0 z-[60] flex">
           <div className="w-1/2 bg-gray-800 animate-in slide-in-from-left duration-700 ease-in-out"></div>
           <div className="w-1/2 bg-gray-800 animate-in slide-in-from-right duration-700 ease-in-out"></div>
+        </div>
+      )}
+
+      {/* Cinematic Mode - River's Edge Atmospheric Experience */}
+      {cinematicMode && (
+        <div className="fixed inset-0 z-[70] bg-black flex items-center justify-center">
+          <div className="relative w-full h-full overflow-hidden">
+            {/* Slow pan effect with current scene image */}
+            <motion.div
+              initial={{ scale: 1, x: 0 }}
+              animate={{ scale: 1.1, x: -100 }}
+              transition={{ duration: 8, ease: "easeInOut" }}
+              className="w-full h-full"
+            >
+              <img 
+                src={sceneImage || ''} 
+                alt="River view" 
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+            
+            {/* Contemplative text overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 3, duration: 2 }}
+              className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 text-center"
+            >
+              <p className="text-white/90 text-lg italic font-light max-w-2xl leading-relaxed">
+                Looking at the calm river, it's easy to forget about the gates and the monsters... even for a moment.
+              </p>
+            </motion.div>
+            
+            {/* Subtle close button after the experience */}
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.7 }}
+              transition={{ delay: 6, duration: 1 }}
+              onClick={() => setCinematicMode(false)}
+              className="absolute top-8 right-8 text-white/60 hover:text-white/90 transition-colors"
+            >
+              ✕
+            </motion.button>
+          </div>
         </div>
       )}
     </div>
