@@ -972,44 +972,50 @@ export function DungeonRaidSystem11({
       const allEnemiesDefeated = enemies.every(enemy => enemy.health <= 0);
       const livingEnemies = enemies.filter(enemy => enemy.health > 0);
       
-      // Debug logging
-      console.log(`Room ${currentRoom} Wave ${currentWave}: ${livingEnemies.length} enemies alive, ${enemies.length} total enemies`);
+      // Enhanced debug logging
+      console.log(`=== ROOM PROGRESSION CHECK ===`);
+      console.log(`Room: ${currentRoom}/7, Wave: ${currentWave}, Game Phase: ${gamePhase}`);
+      console.log(`Enemies: ${livingEnemies.length} alive / ${enemies.length} total`);
+      console.log(`All enemies defeated: ${allEnemiesDefeated}`);
       console.log('Enemy health states:', enemies.map(e => ({ id: e.id, health: e.health, maxHealth: e.maxHealth })));
       
-      if (allEnemiesDefeated && currentRoom === 3 && currentWave === 1) {
-        // Room 3 (Arena Chamber) has multi-wave combat
-        console.log('Room 3 Wave 1 complete, spawning Wave 2');
-        setCurrentWave(2);
-        setTimeout(() => {
-          const waveEnemies = [
-            {
-              id: 'wave2_orc_1',
-              name: 'Berserker Orc',
-              health: 110,
-              maxHealth: 110,
-              x: 450,
-              y: 310,
-              type: 'orc_warrior' as const
-            },
-            {
-              id: 'wave2_beast_1',
-              name: 'Alpha Shadow Beast',
-              health: 80,
-              maxHealth: 80,
-              x: 620,
-              y: 290,
-              type: 'shadow_beast' as const
-            }
-          ];
-          setEnemies(waveEnemies);
-          addToCombatLog("Cha Hae-In: 'More enemies incoming! Second wave!'");
-        }, 1000);
-      } else if (allEnemiesDefeated && (currentRoom !== 3 || currentWave === 2)) {
-        // All enemies defeated, room clear
-        console.log(`All enemies defeated in Room ${currentRoom} Wave ${currentWave}, transitioning to room clear`);
-        setGamePhase('room_clear');
-        generateRoomExits();
-        addToCombatLog("Room cleared! Exit portals are materializing...");
+      if (allEnemiesDefeated) {
+        console.log(`🎯 ALL ENEMIES DEFEATED - Processing room advancement...`);
+        
+        if (currentRoom === 3 && currentWave === 1) {
+          console.log('🔄 Room 3 Wave 1 complete - Spawning Wave 2');
+          setCurrentWave(2);
+          setTimeout(() => {
+            const waveEnemies = [
+              {
+                id: 'wave2_orc_1',
+                name: 'Berserker Orc',
+                health: 110,
+                maxHealth: 110,
+                x: 450,
+                y: 310,
+                type: 'orc_warrior' as const
+              },
+              {
+                id: 'wave2_beast_1',
+                name: 'Alpha Shadow Beast',
+                health: 80,
+                maxHealth: 80,
+                x: 620,
+                y: 290,
+                type: 'shadow_beast' as const
+              }
+            ];
+            setEnemies(waveEnemies);
+            addToCombatLog("Cha Hae-In: 'More enemies incoming! Second wave!'");
+            console.log('✅ Wave 2 enemies spawned');
+          }, 1000);
+        } else {
+          console.log(`✅ Room ${currentRoom} completely cleared - Advancing to room clear phase`);
+          setGamePhase('room_clear');
+          generateRoomExits();
+          addToCombatLog("Room cleared! Exit portals are materializing...");
+        }
       }
     }
   }, [enemies, gamePhase, currentRoom, currentWave]);
