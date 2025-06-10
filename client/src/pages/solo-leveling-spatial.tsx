@@ -1951,8 +1951,8 @@ export default function SoloLevelingSpatial() {
           livingTogether: gameState.affection >= 4,
           daysTogether: (gameState.affection || 1) * 30,
           apartmentTier: gameState.apartmentTier || 1,
-          hasModernKitchen: gameState.apartmentTier >= 2,
-          hasHomeGym: gameState.apartmentTier >= 3
+          hasModernKitchen: (gameState.apartmentTier ?? 1) >= 2,
+          hasHomeGym: (gameState.apartmentTier ?? 1) >= 3
         }}
         timeOfDay={timeOfDay}
         onActivitySelect={(activity) => {
