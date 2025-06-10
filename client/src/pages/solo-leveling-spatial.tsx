@@ -90,6 +90,7 @@ export default function SoloLevelingSpatial() {
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy'>('focused');
   const [showLivingPortrait, setShowLivingPortrait] = useState(false);
+  const [emotionalImage, setEmotionalImage] = useState<string | null>(null);
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
@@ -609,6 +610,31 @@ export default function SoloLevelingSpatial() {
   useEffect(() => {
     generateSceneImage();
   }, [playerLocation, timeOfDay]);
+
+  // Fetch emotional character image when she's present
+  useEffect(() => {
+    const fetchEmotionalImage = async () => {
+      if (currentLocationData.chaHaeInPresent && !emotionalImage) {
+        try {
+          const response = await fetch('/api/chat-scene-image', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.imageUrl) {
+              setEmotionalImage(data.imageUrl);
+            }
+          }
+        } catch (error) {
+          console.log('Character image generation skipped');
+        }
+      }
+    };
+
+    fetchEmotionalImage();
+  }, [currentLocationData.chaHaeInPresent, playerLocation, timeOfDay, emotionalImage]);
 
   // Time progression
   useEffect(() => {
