@@ -599,10 +599,9 @@ export function LocationInteractiveNodes({
     console.log('Node details:', node);
     
     // Red Gate bypasses ALL checks and goes directly to dungeon
-    if (node.id === 'red_gate_entrance') {
+    if (node.id === 'red_gate_entrance' || node.id === 'red_gate') {
       console.log('🚪 RED GATE NODE CLICKED - Direct execution path');
       console.log('Node details:', node);
-      alert('Red Gate clicked! About to call onNodeInteraction');
       console.log('Red Gate - bypassing thought prompt, going directly to dungeon');
       const memoryState = getNodeMemoryState(node);
       console.log('Memory state:', memoryState);
