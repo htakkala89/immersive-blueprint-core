@@ -417,7 +417,7 @@ export async function generateIntimateActivityImage(activityId: string, relation
 }
 
 // New function specifically for location-based scene generation
-export async function generateLocationSceneImage(location: string, timeOfDay: string): Promise<string | null> {
+export async function generateLocationSceneImage(location: string, timeOfDay: string, weather?: string): Promise<string | null> {
   try {
     const now = Date.now();
     if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
@@ -425,15 +425,15 @@ export async function generateLocationSceneImage(location: string, timeOfDay: st
     }
     lastImageGeneration = now;
 
-    const cacheKey = `location_${location}_${timeOfDay}`;
+    const cacheKey = `location_${location}_${timeOfDay}_${weather || 'clear'}`;
     const cached = imageCache.get(cacheKey);
     if (cached && (now - cached.timestamp) < CACHE_DURATION) {
       console.log('📸 Using cached image for location');
       return cached.url;
     }
 
-    const locationPrompt = createLocationPrompt(location, timeOfDay);
-    console.log(`🏢 Generating location scene for: ${location} at ${timeOfDay}`);
+    const locationPrompt = createLocationPrompt(location, timeOfDay, weather);
+    console.log(`🏢 Generating location scene for: ${location} at ${timeOfDay}${weather ? ` with ${weather} weather` : ''}`);
     
     const googleImage = await generateWithGoogleImagen(locationPrompt);
     if (googleImage) {
@@ -578,53 +578,63 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
   }
 }
 
-function createLocationPrompt(location: string, timeOfDay: string): string {
+function createLocationPrompt(location: string, timeOfDay: string, weather?: string): string {
   const baseStyle = "Solo Leveling manhwa art style by DUBU, detailed architectural environment, Korean setting, atmospheric lighting, cinematic composition, high quality background art";
   
-  // Time-based lighting modifiers
+  // Time-based lighting modifiers with enhanced specificity
   const lightingMap = {
-    morning: "soft golden morning light streaming through windows, warm sunrise glow, fresh morning atmosphere",
-    afternoon: "bright natural daylight, clear lighting, vibrant colors, bustling daytime activity", 
-    evening: "warm sunset lighting, golden hour ambiance, cozy evening atmosphere, soft shadows",
-    night: "dramatic nighttime lighting, city lights, neon signs, moonlight, atmospheric night scene"
+    morning: "soft golden morning light streaming through windows, warm sunrise glow, fresh morning atmosphere, early daylight filtering in",
+    afternoon: "bright natural daylight flooding the space, clear crisp lighting, vibrant colors, energetic midday illumination", 
+    evening: "warm sunset lighting casting long shadows, golden hour ambiance, cozy evening atmosphere, soft amber glow",
+    night: "dramatic nighttime lighting, artificial indoor lighting, city lights visible through windows, moonlight, atmospheric night scene"
+  };
+  
+  // Weather-based atmospheric effects
+  const weatherMap = {
+    clear: "clear skies, bright atmosphere, crisp visibility",
+    rain: "rain droplets on windows, wet reflective surfaces, overcast sky, moody atmospheric lighting, rain effects",
+    snow: "snow falling outside windows, winter atmosphere, soft white lighting, cold crisp air feel",
+    cloudy: "overcast cloudy sky, diffused natural lighting, soft shadows, muted atmospheric tone"
   };
   
   const lighting = lightingMap[timeOfDay as keyof typeof lightingMap] || lightingMap.afternoon;
+  const weatherEffect = weather ? weatherMap[weather as keyof typeof weatherMap] || "" : "";
+  const combinedAtmosphere = weatherEffect ? `${lighting}, ${weatherEffect}` : lighting;
   
   // Location-specific environment descriptions with proper indoor/outdoor distinction
   const locationPrompts = {
     // INDOOR LOCATIONS - Detailed interior spaces
-    hunter_association: `INDOOR SCENE: Korean Hunter Association headquarters interior, spacious modern lobby with marble floors, floor-to-ceiling glass windows, reception desk, holographic mission displays, high-tech equipment stations, professional government building atmosphere, polished surfaces, ${lighting}`,
+    hunter_association: `INDOOR SCENE: Korean Hunter Association headquarters interior, spacious modern lobby with marble floors, floor-to-ceiling glass windows, reception desk, holographic mission displays, high-tech equipment stations, professional government building atmosphere, polished surfaces, ${combinedAtmosphere}`,
     
-    luxury_department_store: `INDOOR SCENE: Ultra-luxury department store interior in Gangnam Seoul, pristine glass display cases with designer jewelry, elegant mannequins in haute couture, polished white marble floors, crystal chandeliers, boutique sections, upscale retail atmosphere, ${lighting}`,
+    luxury_department_store: `INDOOR SCENE: Ultra-luxury department store interior in Gangnam Seoul, pristine glass display cases with designer jewelry, elegant mannequins in haute couture, polished white marble floors, crystal chandeliers, boutique sections, upscale retail atmosphere, ${combinedAtmosphere}`,
     
-    gangnam_furnishings: `INDOOR SCENE: Premium furniture showroom interior, modern living room displays with designer sofas, bedroom sets with luxury bedding, contemporary home décor, polished concrete floors, sophisticated lighting, high-end furniture store atmosphere, ${lighting}`,
+    gangnam_furnishings: `INDOOR SCENE: Premium furniture showroom interior, modern living room displays with designer sofas, bedroom sets with luxury bedding, contemporary home décor, polished concrete floors, sophisticated lighting, high-end furniture store atmosphere, ${combinedAtmosphere}`,
     
-    luxury_realtor: `INDOOR SCENE: Exclusive real estate office interior, modern reception area, architectural model displays, floor-to-ceiling windows with city views, sleek conference tables, property brochures, professional luxury office atmosphere, ${lighting}`,
+    luxury_realtor: `INDOOR SCENE: Exclusive real estate office interior, modern reception area, architectural model displays, floor-to-ceiling windows with city views, sleek conference tables, property brochures, professional luxury office atmosphere, ${combinedAtmosphere}`,
     
-    hongdae_cafe: `INDOOR SCENE: Cozy Korean coffee shop interior, wooden tables and chairs, exposed brick walls, barista counter with espresso machines, local artwork displays, large street-facing windows, warm indie café atmosphere, ${lighting}`,
+    hongdae_cafe: `INDOOR SCENE: Cozy Korean coffee shop interior, wooden tables and chairs, exposed brick walls, barista counter with espresso machines, local artwork displays, large street-facing windows, warm indie café atmosphere, ${combinedAtmosphere}`,
     
-    myeongdong_restaurant: `INDOOR SCENE: Elegant Korean restaurant interior, private dining rooms with traditional wooden tables, paper screen dividers, decorative Korean elements, warm ambient lighting, refined dining atmosphere, ${lighting}`,
+    myeongdong_restaurant: `INDOOR SCENE: Elegant Korean restaurant interior, private dining rooms with traditional wooden tables, paper screen dividers, decorative Korean elements, warm ambient lighting, refined dining atmosphere, ${combinedAtmosphere}`,
     
-    training_facility: `INDOOR SCENE: Modern hunter training facility interior, large gymnasium with combat mats, weapon racks along walls, training dummies, exercise equipment, high ceilings, professional sports facility atmosphere, ${lighting}`,
+    training_facility: `INDOOR SCENE: Modern hunter training facility interior, large gymnasium with combat mats, weapon racks along walls, training dummies, exercise equipment, high ceilings, professional sports facility atmosphere, ${combinedAtmosphere}`,
     
-    chahaein_apartment: `INDOOR SCENE: Modern Korean apartment interior, comfortable living room with city view windows, contemporary furniture, kitchen area, personal decorations, cozy home atmosphere, ${lighting}`,
+    chahaein_apartment: `INDOOR SCENE: Modern Korean apartment interior, comfortable living room with city view windows, contemporary furniture, kitchen area, personal decorations, cozy home atmosphere, ${combinedAtmosphere}`,
     
-    player_apartment: `INDOOR SCENE: Modest Korean apartment interior, simple living space with basic furniture, small kitchen, personal belongings, starter apartment atmosphere, ${lighting}`,
+    player_apartment: `INDOOR SCENE: Modest Korean apartment interior, simple living space with basic furniture, small kitchen, personal belongings, starter apartment atmosphere, ${combinedAtmosphere}`,
     
-    // OUTDOOR LOCATIONS - External environments and landscapes
-    hangang_park: `OUTDOOR SCENE: Seoul Hangang River park landscape, wide walking paths along the riverbank, modern city skyline in background, green grass areas, park benches, recreational outdoor environment, ${lighting}`,
+    // OUTDOOR LOCATIONS - External environments and landscapes  
+    hangang_park: `OUTDOOR SCENE: Seoul Hangang River park landscape, wide walking paths along the riverbank, modern city skyline in background, green grass areas, park benches, recreational outdoor environment, ${combinedAtmosphere}`,
     
-    namsan_tower: `OUTDOOR SCENE: N Seoul Tower exterior on Namsan mountain, observation deck with panoramic Seoul city views, love lock fence, tourists viewing area, iconic tower structure against sky, ${lighting}`,
+    namsan_tower: `OUTDOOR SCENE: N Seoul Tower exterior on Namsan mountain, observation deck with panoramic Seoul city views, love lock fence, tourists viewing area, iconic tower structure against sky, ${combinedAtmosphere}`,
     
     // MIXED INDOOR/OUTDOOR - Spaces with both elements
-    gangnam_district: `OUTDOOR SCENE: Gangnam business district street view, modern skyscrapers, luxury shopping areas, wide sidewalks, urban Seoul atmosphere, ${lighting}`,
+    gangnam_district: `OUTDOOR SCENE: Gangnam business district street view, modern skyscrapers, luxury shopping areas, wide sidewalks, urban Seoul atmosphere, ${combinedAtmosphere}`,
     
-    hongdae_district: `OUTDOOR SCENE: Hongdae entertainment district street, trendy shops and cafés, young crowd areas, artistic murals, vibrant youth culture neighborhood, ${lighting}`,
+    hongdae_district: `OUTDOOR SCENE: Hongdae entertainment district street, trendy shops and cafés, young crowd areas, artistic murals, vibrant youth culture neighborhood, ${combinedAtmosphere}`,
     
-    jung_district: `OUTDOOR SCENE: Jung-gu historic district in Seoul, traditional and modern architecture mix, shopping streets, cultural landmarks, central Seoul atmosphere, ${lighting}`,
+    jung_district: `OUTDOOR SCENE: Jung-gu historic district in Seoul, traditional and modern architecture mix, shopping streets, cultural landmarks, central Seoul atmosphere, ${combinedAtmosphere}`,
     
-    yeongdeungpo_district: `OUTDOOR SCENE: Yeongdeungpo business district, government buildings, wide avenues, official district atmosphere, ${lighting}`
+    yeongdeungpo_district: `OUTDOOR SCENE: Yeongdeungpo business district, government buildings, wide avenues, official district atmosphere, ${combinedAtmosphere}`
   };
   
   const locationPrompt = locationPrompts[location as keyof typeof locationPrompts] || 

@@ -1143,7 +1143,8 @@ export default function SoloLevelingSpatial() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           location: playerLocation,
-          timeOfDay
+          timeOfDay,
+          weather
         })
       });
       
@@ -1156,10 +1157,10 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Generate initial scene
+  // Generate initial scene and regenerate on location, time, or weather changes
   useEffect(() => {
     generateSceneImage();
-  }, [playerLocation, timeOfDay]);
+  }, [playerLocation, timeOfDay, weather]);
 
   // Fetch emotional character image when she's present
   useEffect(() => {
@@ -1468,15 +1469,15 @@ export default function SoloLevelingSpatial() {
               case 'jewelry_counter':
               case 'designer_apparel':
               case 'luxury_confections':
-                setActiveView('luxury_department_store');
+                setPlayerLocation('luxury_department_store');
                 break;
               case 'living_room_collection':
               case 'bedroom_collection':
-                setActiveView('gangnam_furnishings');
+                setPlayerLocation('gangnam_furnishings');
                 break;
               case 'reception_desk':
               case 'architectural_models':
-                setActiveView('luxury_realtor');
+                setPlayerLocation('luxury_realtor');
                 break;
               case 'counter':
               case 'window_seat':

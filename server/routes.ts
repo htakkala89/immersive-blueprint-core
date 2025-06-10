@@ -441,11 +441,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Image generation endpoints
   app.post("/api/generate-scene-image", async (req, res) => {
     try {
-      const { prompt, gameState, location, timeOfDay } = req.body;
+      const { prompt, gameState, location, timeOfDay, weather } = req.body;
       
-      // Handle location-specific image generation
+      // Handle location-specific image generation with weather support
       if (location && timeOfDay) {
-        const imageUrl = await generateLocationSceneImage(location, timeOfDay);
+        const imageUrl = await generateLocationSceneImage(location, timeOfDay, weather);
         return res.json({ imageUrl });
       }
       
