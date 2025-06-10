@@ -289,10 +289,25 @@ export function DungeonRaidSystem11({
   };
 
   const summonShadowSoldier = (shadowId: string) => {
-    const shadow = availableShadows.find(s => s.id === shadowId);
-    const jinwoo = players.find(p => p.id === 'jinwoo');
-    
-    if (shadow && jinwoo && jinwoo.mana >= shadow.manaCost) {
+    try {
+      const shadow = availableShadows.find(s => s.id === shadowId);
+      const jinwoo = players.find(p => p.id === 'jinwoo');
+      
+      if (!shadow) {
+        console.error('Shadow not found:', shadowId);
+        return;
+      }
+      
+      if (!jinwoo) {
+        console.error('Jin-woo not found');
+        return;
+      }
+      
+      if (jinwoo.mana < shadow.manaCost) {
+        console.log('Not enough mana to summon', shadow.name);
+        return;
+      }
+
       // Consume mana
       setPlayers(prev => prev.map(player => 
         player.id === 'jinwoo' 
@@ -321,7 +336,9 @@ export function DungeonRaidSystem11({
       setScreenShake(true);
       setTimeout(() => setScreenShake(false), 300);
 
-      console.log(`Summoning: ${shadow.name} for ${shadow.manaCost} mana`);
+      console.log(`Successfully summoned: ${shadow.name} for ${shadow.manaCost} mana`);
+    } catch (error) {
+      console.error('Error summoning shadow soldier:', error);
     }
   };
 
@@ -623,12 +640,16 @@ export function DungeonRaidSystem11({
                           const canSummon = jinwoo && jinwoo.mana >= shadow.manaCost;
                           
                           return (
-                            <motion.button
+                            <button
                               key={shadow.id}
                               onClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
+                                console.log(`Attempting to summon ${shadow.name}, canSummon: ${canSummon}`);
                                 if (canSummon) {
                                   summonShadowSoldier(shadow.id);
+                                } else {
+                                  console.log('Cannot summon - insufficient mana or other issue');
                                 }
                               }}
                               className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs z-50 pointer-events-auto ${
@@ -640,12 +661,11 @@ export function DungeonRaidSystem11({
                                 left: `calc(50% + ${x}px - 32px)`,
                                 top: `calc(50% + ${y}px - 32px)`
                               }}
-                              whileHover={{ scale: canSummon ? 1.1 : 1 }}
-                              whileTap={{ scale: canSummon ? 0.9 : 1 }}
+                              disabled={!canSummon}
                             >
                               <div className="text-white font-bold">{shadow.name}</div>
                               <div className="text-blue-300">{shadow.manaCost}MP</div>
-                            </motion.button>
+                            </button>
                           );
                         })}
                         
