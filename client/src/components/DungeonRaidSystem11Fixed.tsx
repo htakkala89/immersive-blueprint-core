@@ -80,6 +80,15 @@ export function DungeonRaidSystem11({
     timestamp: number;
   }>>([]);
   const [skillCooldowns, setSkillCooldowns] = useState<Record<string, number>>({});
+  const [battlefieldTraps, setBattlefieldTraps] = useState<Array<{
+    id: string;
+    x: number;
+    y: number;
+    radius: number;
+    maxRadius: number;
+    phase: 'warning' | 'expanding' | 'active' | 'fading';
+    timestamp: number;
+  }>>([]);
   
   const battlefieldRef = useRef<HTMLDivElement>(null);
 
@@ -525,6 +534,130 @@ export function DungeonRaidSystem11({
     return () => clearInterval(enemyAttackInterval);
   }, [enemies, players]);
 
+  // Battlefield trap system
+  useEffect(() => {
+    const trapSpawnInterval = setInterval(() => {
+      if (battlefieldRef.current) {
+        const rect = battlefieldRef.current.getBoundingClientRect();
+        const x = Math.random() * (rect.width - 100) + 50;
+        const y = Math.random() * (rect.height - 100) + 50;
+        
+        const newTrap = {
+          id: `trap-${Date.now()}`,
+          x,
+          y,
+          radius: 0,
+          maxRadius: 80,
+          phase: 'warning' as const,
+          timestamp: Date.now()
+        };
+        
+        setBattlefieldTraps(prev => [...prev, newTrap]);
+        console.log('Battlefield trap spawned at', { x, y });
+      }
+    }, 8000); // Spawn trap every 8 seconds
+
+    return () => clearInterval(trapSpawnInterval);
+  }, []);
+
+  // Trap phase progression
+  useEffect(() => {
+    const progressInterval = setInterval(() => {
+      setBattlefieldTraps(prev => prev.map(trap => {
+        const age = Date.now() - trap.timestamp;
+        
+        if (trap.phase === 'warning' && age > 2000) {
+          return { ...trap, phase: 'expanding' as const };
+        } else if (trap.phase === 'expanding' && age > 4000) {
+          return { ...trap, phase: 'active' as const, radius: trap.maxRadius };
+        } else if (trap.phase === 'active' && age > 7000) {
+          return { ...trap, phase: 'fading' as const };
+        } else if (trap.phase === 'expanding') {
+          // Gradually expand radius
+          const expandProgress = (age - 2000) / 2000; // 2 seconds to expand
+          return { ...trap, radius: Math.min(trap.maxRadius * expandProgress, trap.maxRadius) };
+        }
+        
+        return trap;
+      }).filter(trap => {
+        const age = Date.now() - trap.timestamp;
+        return age < 8000; // Remove after 8 seconds total
+      }));
+    }, 100);
+
+    return () => clearInterval(progressInterval);
+  }, []);
+
+  // Trap damage detection
+  useEffect(() => {
+    const damageInterval = setInterval(() => {
+      const activeTraps = battlefieldTraps.filter(trap => trap.phase === 'active');
+      
+      if (activeTraps.length === 0) return;
+
+      // Check players
+      players.forEach(player => {
+        activeTraps.forEach(trap => {
+          const distance = Math.sqrt(
+            Math.pow(player.x - trap.x, 2) + Math.pow(player.y - trap.y, 2)
+          );
+          
+          if (distance <= trap.radius) {
+            const damage = Math.floor(Math.random() * 20) + 15; // 15-35 trap damage
+            
+            setPlayers(prev => prev.map(p => 
+              p.id === player.id 
+                ? { ...p, health: Math.max(0, p.health - damage) }
+                : p
+            ));
+
+            setDamageNumbers(prev => [...prev, {
+              id: `trap-damage-${player.id}-${Date.now()}`,
+              damage: damage,
+              x: player.x,
+              y: player.y,
+              timestamp: Date.now()
+            }]);
+
+            console.log(`${player.name} took ${damage} trap damage`);
+          }
+        });
+      });
+
+      // Check shadow soldiers
+      const shadowSoldiers = enemies.filter(e => e.isAlly);
+      shadowSoldiers.forEach(soldier => {
+        activeTraps.forEach(trap => {
+          const distance = Math.sqrt(
+            Math.pow(soldier.x - trap.x, 2) + Math.pow(soldier.y - trap.y, 2)
+          );
+          
+          if (distance <= trap.radius) {
+            const damage = Math.floor(Math.random() * 15) + 10; // 10-25 trap damage
+            
+            setEnemies(prev => prev.map(ally => 
+              ally.id === soldier.id 
+                ? { ...ally, health: Math.max(0, ally.health - damage) }
+                : ally
+            ).filter(ally => !ally.isAlly || ally.health > 0));
+
+            setDamageNumbers(prev => [...prev, {
+              id: `trap-damage-${soldier.id}-${Date.now()}`,
+              damage: damage,
+              x: soldier.x,
+              y: soldier.y,
+              timestamp: Date.now()
+            }]);
+
+            console.log(`${soldier.name} took ${damage} trap damage`);
+          }
+        });
+      });
+    }, 1000); // Check for trap damage every second
+
+    return () => clearInterval(damageInterval);
+  }, [battlefieldTraps, players, enemies]);
+
   if (!isVisible) return null;
 
   return (
@@ -675,6 +808,58 @@ export function DungeonRaidSystem11({
                         ></div>
                       )}
                     </div>
+                  </motion.div>
+                ))}
+
+                {/* Battlefield Traps */}
+                {battlefieldTraps.map(trap => (
+                  <motion.div
+                    key={trap.id}
+                    className="absolute pointer-events-none"
+                    style={{ left: trap.x - trap.radius, top: trap.y - trap.radius }}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ 
+                      scale: trap.phase === 'fading' ? 0 : 1,
+                      opacity: trap.phase === 'fading' ? 0 : 1
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Warning Phase - Pulsing Red Circle */}
+                    {trap.phase === 'warning' && (
+                      <div 
+                        className="rounded-full border-4 border-red-500 animate-pulse"
+                        style={{
+                          width: trap.maxRadius * 2,
+                          height: trap.maxRadius * 2,
+                          backgroundColor: 'rgba(239, 68, 68, 0.1)'
+                        }}
+                      />
+                    )}
+                    
+                    {/* Expanding Phase - Growing Orange Circle */}
+                    {trap.phase === 'expanding' && (
+                      <div 
+                        className="rounded-full border-4 border-orange-500"
+                        style={{
+                          width: trap.radius * 2,
+                          height: trap.radius * 2,
+                          backgroundColor: 'rgba(249, 115, 22, 0.2)',
+                          transition: 'all 0.1s ease-out'
+                        }}
+                      />
+                    )}
+                    
+                    {/* Active Phase - Solid Red Damage Zone */}
+                    {trap.phase === 'active' && (
+                      <div 
+                        className="rounded-full border-4 border-red-600 animate-pulse"
+                        style={{
+                          width: trap.radius * 2,
+                          height: trap.radius * 2,
+                          backgroundColor: 'rgba(220, 38, 38, 0.4)'
+                        }}
+                      />
+                    )}
                   </motion.div>
                 ))}
 
