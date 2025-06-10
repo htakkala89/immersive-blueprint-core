@@ -356,10 +356,10 @@ export function PlayerProgressionSystem16({
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">
           {activeTab === 'stats' && (
-            <div className="h-full p-6 overflow-y-auto character-scrollbar">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+            <div className="h-full p-6 overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full overflow-hidden">
                 {/* Player Info */}
-                <div className="space-y-6 h-fit">
+                <div className="space-y-6 overflow-y-auto character-scrollbar">
                   <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
                     <h3 className="text-xl font-bold text-white mb-4">Hunter Profile</h3>
                     <div className="space-y-3">
@@ -443,57 +443,61 @@ export function PlayerProgressionSystem16({
                 </div>
 
                 {/* Core Stats */}
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50 h-fit">
-                  <h3 className="text-xl font-bold text-white mb-6">Core Stats</h3>
-                  <div className="space-y-4 max-h-96 overflow-y-auto character-scrollbar">
-                    {Object.entries(playerData.stats).map(([statKey, value]) => {
-                      const IconComponent = getStatIcon(statKey as keyof CoreStats);
-                      const colorClass = getStatColor(statKey as keyof CoreStats);
-                      
-                      return (
-                        <div key={statKey} className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg border border-slate-600/30">
-                          <div className="flex items-center gap-3">
-                            <IconComponent className={`w-5 h-5 ${colorClass}`} />
-                            <div>
-                              <span className="text-white font-medium capitalize">{statKey}</span>
-                              <div className="text-xs text-slate-400">
-                                {statKey === 'strength' && 'Physical damage & carrying capacity'}
-                                {statKey === 'agility' && 'Attack speed & critical chance'}
-                                {statKey === 'vitality' && 'Health & defense'}
-                                {statKey === 'intelligence' && 'Mana & magical damage'}
-                                {statKey === 'sense' && 'Detection & weak point identification'}
+                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 flex flex-col max-h-full overflow-hidden">
+                  <div className="p-6 pb-4">
+                    <h3 className="text-xl font-bold text-white">Core Stats</h3>
+                  </div>
+                  <div className="flex-1 px-6 pb-6 overflow-y-auto character-scrollbar">
+                    <div className="space-y-4">
+                      {Object.entries(playerData.stats).map(([statKey, value]) => {
+                        const IconComponent = getStatIcon(statKey as keyof CoreStats);
+                        const colorClass = getStatColor(statKey as keyof CoreStats);
+                        
+                        return (
+                          <div key={statKey} className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                            <div className="flex items-center gap-3">
+                              <IconComponent className={`w-5 h-5 ${colorClass}`} />
+                              <div>
+                                <span className="text-white font-medium capitalize">{statKey}</span>
+                                <div className="text-xs text-slate-400">
+                                  {statKey === 'strength' && 'Physical damage & carrying capacity'}
+                                  {statKey === 'agility' && 'Attack speed & critical chance'}
+                                  {statKey === 'vitality' && 'Health & defense'}
+                                  {statKey === 'intelligence' && 'Mana & magical damage'}
+                                  {statKey === 'sense' && 'Detection & weak point identification'}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-3">
-                            <motion.span 
-                              className="text-2xl font-bold text-white"
-                              key={`${statKey}-${value}`}
-                              initial={{ scale: 1.2, color: '#fbbf24' }}
-                              animate={{ scale: 1, color: '#ffffff' }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              {value}
-                            </motion.span>
-                            {playerData.unspentStatPoints > 0 && (
-                              <motion.div
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
+                            
+                            <div className="flex items-center gap-3">
+                              <motion.span 
+                                className="text-2xl font-bold text-white"
+                                key={`${statKey}-${value}`}
+                                initial={{ scale: 1.2, color: '#fbbf24' }}
+                                animate={{ scale: 1, color: '#ffffff' }}
+                                transition={{ duration: 0.3 }}
                               >
-                                <Button
-                                  onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
-                                  size="sm"
-                                  className="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 w-8 h-8 p-0 shadow-lg border border-purple-400/30"
+                                {value}
+                              </motion.span>
+                              {playerData.unspentStatPoints > 0 && (
+                                <motion.div
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
                                 >
-                                  <Plus className="w-4 h-4" />
-                                </Button>
-                              </motion.div>
-                            )}
+                                  <Button
+                                    onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
+                                    size="sm"
+                                    className="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 w-8 h-8 p-0 shadow-lg border border-purple-400/30"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                  </Button>
+                                </motion.div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
