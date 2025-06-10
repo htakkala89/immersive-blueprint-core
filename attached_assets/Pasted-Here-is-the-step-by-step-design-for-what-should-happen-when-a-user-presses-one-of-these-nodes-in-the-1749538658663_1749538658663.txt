@@ -1,0 +1,52 @@
+Here is the step-by-step design for what should happen when a user presses one of these nodes in the Hunter Market.
+
+Design Philosophy: The Hunter Market is not a single, monolithic shop menu. It is a bustling, living marketplace. Each purple dot you've placed represents a specific vendor or stall within that market, each with their own specialty. This makes the space feel more real and interactive.
+
+The Step-by-Step User Experience Flow
+
+Let's walk through the process of the user tapping the leftmost purple dot.
+
+Step 1: The User's Action
+
+The user taps on the purple interactive dot located over the stall on the left side of the screen.
+Step 2: The "Thought Prompt" Appears
+
+Immediately upon tapping the dot, a "Thought Prompt" fades into view at the bottom of the screen. To make the world feel more intelligent, the prompt is descriptive and hints at the vendor's function.
+Example Prompt: Approach the Materials Trader.
+Step 3: The User Initiates Interaction
+
+The user taps the "Approach the Materials Trader" prompt to confirm their intent.
+Step 4: The Vendor Dialogue Begins
+
+This is where the interaction shifts from the world to a character. The camera might subtly zoom in on that part of the scene.
+The standard Dialogue UI opens, but instead of Cha Hae-In's portrait, it shows the portrait of the Materials Trader NPC (e.g., a grizzled, experienced-looking merchant).
+The vendor gives a unique, voiced greeting that establishes their role.
+Vendor Dialogue: "Fresh from a Gate? Let's see what rare cores you've brought me today. I pay top price for high-quality mana stones."
+
+Crucially, below the dialogue text, there will be a special, glowing "Trade" button, as defined in our Economy UI/UX (System 14).
+Step 5: Opening the Trade Interface
+
+The user taps the "Trade" button.
+The screen transitions from the Dialogue UI to the full-screen Vendor Interface.
+Step 6: The Transaction
+
+The user is now in the two-paned shop UI we designed previously.
+Left Pane: Shows the player's relevant inventory (Mana Crystals, Monster Cores, other sellable materials).
+Right Pane: The "Sell List" where the player adds items to sell.
+The player selects the items and quantity they wish to sell, sees the "Total Sale Value," and taps "Confirm Sale."
+A satisfying "transaction complete" sound effect plays, and the Gold is added to their account.
+Step 7: Concluding the Interaction
+
+After the transaction, the Vendor Interface closes, and the user is returned to the Dialogue UI.
+The vendor has a closing remark.
+Vendor Dialogue: "Pleasure doing business with you, Hunter Sung. Come back when you have more."
+
+The user can then tap a "Leave" button to close the dialogue and return to the main Spatial View of the market.
+Differentiating the Nodes
+
+Each dot on the screen would lead to a different vendor, making the market feel diverse:
+
+Dot 1 (Left): Could be the Materials Trader, who buys monster parts and mana crystals. This is where you convert raid loot into cash.
+Dot 2 (Middle): Could be the Equipment Smith, who sells basic and mid-tier hunter armor and weapons, and will buy the player's unwanted gear.
+Dot 3 (Right): Could be the Alchemist, who sells potions, elixirs, and other consumables.
+This approach transforms a simple "shop" into a living location with distinct characters and purposes, all while using the core interaction systems we've already designed.

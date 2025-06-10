@@ -19,6 +19,7 @@ import { MonarchArmory } from '@/components/MonarchArmory';
 import WorldMap from '@/components/WorldMap';
 import WealthDisplay from '@/components/WealthDisplay';
 import HunterMarket from '@/components/HunterMarket';
+import HunterMarketVendors from '@/components/HunterMarketVendors';
 import QuestBoard from '@/components/QuestBoard';
 
 interface GameState {
@@ -295,7 +296,7 @@ export default function SoloLevelingSpatial() {
   const [activeActivity, setActiveActivity] = useState<string | null>(null);
 
   // Economic system states
-  const [showHunterMarket, setShowHunterMarket] = useState(false);
+  const [showHunterMarketVendors, setShowHunterMarketVendors] = useState(false);
   const [showQuestBoard, setShowQuestBoard] = useState(false);
   const [recentTransactions, setRecentTransactions] = useState<Array<{
     id: string;
@@ -862,8 +863,8 @@ export default function SoloLevelingSpatial() {
 
   const handleEnvironmentalInteraction = async (interactionPoint: any) => {
     // Handle economic location interactions
-    if (playerLocation === 'hunter_market' && interactionPoint.id === 'sell_counter') {
-      setShowHunterMarket(true);
+    if (playerLocation === 'hunter_market') {
+      setShowHunterMarketVendors(true);
       return;
     }
     
