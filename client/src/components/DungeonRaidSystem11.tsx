@@ -229,26 +229,45 @@ export function DungeonRaidSystem11({
   }, [gamePhase, enemies]);
 
   const handleSkillTap = useCallback((skillId: string) => {
-    if (gamePhase !== 'combat') return;
+    console.log('🎯 SKILL BUTTON CLICKED:', skillId);
+    console.log('Game phase:', gamePhase);
+    console.log('Available skills:', skills.map(s => ({ id: s.id, cooldown: s.currentCooldown })));
+    
+    if (gamePhase !== 'combat') {
+      console.log('❌ Not in combat phase');
+      return;
+    }
     
     // Handle trap evasion first
     if (trapAlert?.active) {
+      console.log('🪤 Trap active, handling evasion');
       handleTrapEvasion(skillId);
       return;
     }
     
     const skill = skills.find(s => s.id === skillId);
-    if (!skill) return;
+    if (!skill) {
+      console.log('❌ Skill not found:', skillId);
+      return;
+    }
     
     const jinwoo = players.find(p => p.id === 'jinwoo');
-    if (!jinwoo) return;
+    if (!jinwoo) {
+      console.log('❌ Jin-Woo not found');
+      return;
+    }
+    
+    console.log('Skill details:', { id: skill.id, cooldown: skill.currentCooldown, manaCost: skill.manaCost });
+    console.log('Jin-Woo mana:', jinwoo.mana);
     
     if (skill.currentCooldown > 0) {
+      console.log('❌ Skill on cooldown:', skill.currentCooldown);
       triggerCameraShake();
       return;
     }
     
     if (jinwoo.mana < skill.manaCost) {
+      console.log('❌ Not enough mana');
       setSkills(prev => prev.map(s => 
         s.id === skillId ? { ...s, flashRed: true } : s
       ));
@@ -258,6 +277,7 @@ export function DungeonRaidSystem11({
       return;
     }
     
+    console.log('✅ Executing skill:', skillId);
     executeSkill(skill);
   }, [gamePhase, skills, players, trapAlert]);
 
