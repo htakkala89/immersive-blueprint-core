@@ -1909,11 +1909,15 @@ export default function SoloLevelingSpatial() {
       {/* Economic System Interfaces */}
       <HunterMarketVendors
         isVisible={showHunterMarketVendors}
-        onClose={() => setShowHunterMarketVendors(false)}
+        onClose={() => {
+          setShowHunterMarketVendors(false);
+          setSelectedVendor(null);
+        }}
         backgroundImage={sceneImage || undefined}
         inventory={gameState.inventory || []}
         currentGold={gameState.gold || 0}
         onSellItem={handleSellItem}
+        selectedVendor={selectedVendor}
       />
 
       <QuestBoard

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Package, Hammer, Beaker, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -65,12 +65,26 @@ export default function HunterMarketVendors({
   inventory,
   currentGold,
   onSellItem,
-  backgroundImage
+  backgroundImage,
+  selectedVendor: preselectedVendorId
 }: HunterMarketVendorsProps) {
   const [selectedVendor, setSelectedVendor] = useState<VendorNode | null>(null);
   const [showThoughtPrompt, setShowThoughtPrompt] = useState<VendorNode | null>(null);
   const [showDialogue, setShowDialogue] = useState(false);
   const [showTradeInterface, setShowTradeInterface] = useState(false);
+
+  // Handle direct vendor selection from props
+  useEffect(() => {
+    if (preselectedVendorId && isVisible) {
+      const vendor = VENDOR_NODES.find(v => v.id === preselectedVendorId);
+      if (vendor) {
+        setSelectedVendor(vendor);
+        setShowDialogue(true);
+        setShowThoughtPrompt(null);
+        setShowTradeInterface(false);
+      }
+    }
+  }, [preselectedVendorId, isVisible]);
 
   const handleNodeClick = (vendor: VendorNode) => {
     setShowThoughtPrompt(vendor);
