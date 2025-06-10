@@ -223,6 +223,38 @@ export default function SoloLevelingSpatial() {
   };
 
   const chaHaeInCurrentLocation = getChaHaeInLocation();
+
+  // Perspective-based scaling system per design specifications
+  const getCharacterScale = (position: { x: number; y: number }, location: string) => {
+    // Design spec: far side of table = 25-30% screen height (640-770px on iPhone 14 Pro)
+    // Design spec: foreground = 60-70% screen height (1500-1800px)
+    
+    // Y position determines depth: higher Y = further back = smaller
+    const depthFactor = Math.max(0.25, Math.min(0.7, 1 - (position.y / 100) * 0.45));
+    
+    // Location-specific scale adjustments based on spatial positioning
+    const locationScales = {
+      'hunter_association': 0.28, // Seated at desk, far side of table
+      'chahaein_apartment': 0.55, // Standing in room, medium distance
+      'myeongdong_restaurant': 0.32, // Seated at table, conversational distance
+      'hongdae_cafe': 0.45, // Standing/sitting at cafe, closer interaction
+    };
+    
+    const baseScale = locationScales[location as keyof typeof locationScales] || 0.3;
+    return baseScale * depthFactor;
+  };
+
+  // Convert screen percentage to actual pixel dimensions for proper scaling
+  const getCharacterDimensions = (position: { x: number; y: number }, location: string) => {
+    const scale = getCharacterScale(position, location);
+    const screenHeight = window.innerHeight || 812; // iPhone 14 Pro default
+    
+    // Calculate height based on design specifications
+    const characterHeight = Math.floor(screenHeight * scale);
+    const characterWidth = Math.floor(characterHeight * 0.6); // Maintain aspect ratio
+    
+    return { width: characterWidth, height: characterHeight };
+  };
   
   // Debug logging for character presence
   console.log('Current time:', timeOfDay);
@@ -682,8 +714,63 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
-        {/* Character Presence Indicator - Soft Golden Aura per Design Doc */}
-        {currentLocationData.chaHaeInPresent && (
+        {/* AI-Generated Character Image - Perspective-Based Scaling */}
+        {currentLocationData.chaHaeInPresent && emotionalImage && (
+          <motion.div
+            className="absolute cursor-pointer z-20 group"
+            style={{
+              left: `${currentLocationData.chaPosition.x}%`,
+              top: `${currentLocationData.chaPosition.y}%`,
+              transform: 'translate(-50%, -100%)', // Bottom-aligned for natural positioning
+              ...getCharacterDimensions(currentLocationData.chaPosition, playerLocation)
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleChaHaeInInteraction}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            {/* Character Portrait with Perspective Scaling */}
+            <div className="relative w-full h-full">
+              <img 
+                src={emotionalImage} 
+                alt="Cha Hae-In"
+                className="w-full h-full object-cover object-top rounded-lg shadow-xl"
+                style={{
+                  filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.3))'
+                }}
+              />
+              
+              {/* Soft Interactive Glow */}
+              <motion.div
+                className="absolute inset-0 rounded-lg"
+                style={{
+                  background: 'radial-gradient(circle at center, rgba(251, 191, 36, 0.1) 0%, transparent 60%)',
+                  boxShadow: '0 0 20px rgba(251, 191, 36, 0.2)'
+                }}
+                animate={{
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              />
+              
+              {/* Hover Context - Activity Info */}
+              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
+                <div className="bg-black/90 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-amber-400/30 shadow-xl">
+                  <div className="text-center">
+                    <div className="font-medium text-amber-300">Cha Hae-In</div>
+                    <div className="text-gray-300 text-xs mt-1">{currentLocationData.chaActivity}</div>
+                    <div className="text-amber-200 text-xs mt-1 font-medium">Tap to interact</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Fallback Presence Indicator - Only if no character image */}
+        {currentLocationData.chaHaeInPresent && !emotionalImage && (
           <motion.div
             className="absolute cursor-pointer z-20 group"
             style={{

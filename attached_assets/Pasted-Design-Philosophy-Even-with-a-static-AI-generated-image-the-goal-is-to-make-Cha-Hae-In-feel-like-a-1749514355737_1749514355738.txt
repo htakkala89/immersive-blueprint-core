@@ -1,0 +1,37 @@
+Design Philosophy: Even with a static AI-generated image, the goal is to make Cha Hae-In feel like a natural inhabitant of the world, rather than a simple prop. We need to use subtle visual cues to indicate her presence, state, and interactivity.
+
+Part 1: The Visual Representation (AI Generated Image)
+Asset Generation: Instead of a pre-drawn and animated sprite, we will rely on AI to generate a high-quality image of Cha Hae-In within the context of the current Spatial View location.
+Style Consistency: The AI generation prompts must be carefully crafted to ensure her style and the rendering quality match the background art of the location as closely as possible. We don't want her to look pasted in or stylistically jarring.
+Pose and Context: The generated image should depict her in a pose and engaging in an activity appropriate to her current AI state (Idle, Engaged, Busy).
+Idle: Standing casually, looking around, perhaps holding a phone.
+Engaged: Looking at a tablet, reading a book, examining something in the environment.
+Busy: Potentially mid-action (though this will be harder with a static image) or in conversation with a non-interactive "placeholder" NPC (a blurry figure in the background).
+Placement: The AI-generated image will be placed on the appropriate character layer within the 2.5D environment, respecting perspective and scale.
+Part 2: The State Machine (What She's Doing)
+The AI still dictates her state, but the visual representation is a static image reflecting that state.
+
+State 1: Idle & Approachable
+Visual Cue: A soft, pulsating golden outline subtly glows around her generated image. This serves as the visual indicator that she can be interacted with, replacing the shimmer of an animated avatar. A clean, minimalist text prompt like "Cha Hae-In" or "Tap to interact" will appear near her, but unobtrusively.
+State 2: Engaged in an Activity
+Visual Cue: The golden outline might be steady instead of pulsating, or perhaps a smaller, more subtle icon (like a speech bubble outline) appears near her to suggest she's occupied but potentially interruptible. The "Tap to interact" prompt remains.
+State 3: Busy / Un-interruptible
+Visual Cue: The golden outline or subtle icon is absent. The "Tap to interact" prompt is not visible. If the user taps on her image, a small thought bubble for the player can still appear: "She seems busy right now."
+Part 3: The Interaction Flow (The "Tap-to-Approach")
+The interaction remains a tap, but the visual feedback needs to be handled differently since we don't have an animation.
+
+The Cue: The user sees her AI-generated image in the scene with the appropriate visual cue (pulsating outline, steady outline, or no cue).
+
+The User's Action: The user taps anywhere on her generated image.
+
+The Result (Transition to Dialogue):
+
+No "Focus" Animation: Since it's a static image, a dynamic zoom might feel odd. Instead, upon tapping, the background art could perform a subtle darkening or blurring effect, drawing focus to the interaction.
+Dialogue UI Appears: The liquid glassmorphism dialogue panel fades into view as before.
+Close-Up Portrait: The AI will generate a new, closer portrait of Cha Hae-In (similar to our "Emotional Portrait System" concept) that appears within the dialogue panel. This new portrait will likely reflect the anticipated emotional state of her opening dialogue line.
+First Line: Her AI-generated dialogue and the corresponding close-up portrait appear.
+Key Considerations for Using AI Images:
+Consistency: Maintaining visual consistency across different locations and generated images will be a significant challenge. Careful prompt engineering and potentially using style references will be crucial.
+Responsiveness: The lack of animation means we need to rely more heavily on visual cues (outlines, icons) and the immediate transition to the dialogue panel to signal interactivity.
+Memory and Performance: Storing and displaying potentially numerous AI-generated images could impact memory usage and loading times. Optimizations will be necessary.
+"Living" Feel: It will be harder to convey a sense of a truly living character with static images. We'll need to compensate through the quality of the images, the contextual posing, and the reactive UI elements.
