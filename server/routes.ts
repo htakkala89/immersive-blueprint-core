@@ -902,15 +902,17 @@ RESPONSE INSTRUCTIONS:
       try {
         dynamicPrompts = await generateDynamicPrompts(response, message, context, gameState);
         
-        // Enhance prompts with narrative suggestions if available
+        // Enhance prompts with narrative suggestions if available (limit to 4 total)
         if (narrativeContext.suggestedResponses.length > 0) {
-          dynamicPrompts = [...dynamicPrompts, ...narrativeContext.suggestedResponses];
+          dynamicPrompts = [...dynamicPrompts, ...narrativeContext.suggestedResponses].slice(0, 4);
+        } else {
+          dynamicPrompts = dynamicPrompts.slice(0, 4);
         }
         
         console.log(`🎭 Dynamic prompts generated with narrative context:`, dynamicPrompts);
       } catch (error) {
         console.error("Dynamic prompt generation failed, using fallback:", error);
-        dynamicPrompts = generateFallbackPrompts(response, message, context);
+        dynamicPrompts = generateFallbackPrompts(response, message, context).slice(0, 4);
       }
       
       res.json({ 

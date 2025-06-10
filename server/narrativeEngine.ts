@@ -647,7 +647,7 @@ class NarrativeEngine {
     
     // Combine base responses with contextual ones, removing duplicates
     const allResponses = [...baseResponses, ...contextualResponses];
-    return Array.from(new Set(allResponses)).slice(0, 6); // Limit to 6 unique responses
+    return Array.from(new Set(allResponses)).slice(0, 1); // Limit to 1 unique response to allow 4 total prompts
   }
 
   // Utility methods for context extraction
