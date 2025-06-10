@@ -368,18 +368,28 @@ export default function SoloLevelingSpatial() {
   const [showWorldMap, setShowWorldMap] = useState(false);
   const [playerLocation, setPlayerLocation] = useState('hunter_association');
   const [gameTime, setGameTime] = useState(() => {
-    const now = new Date();
-    now.setHours(14, 0, 0, 0); // Set to 2 PM (afternoon)
-    return now;
+    return new Date(); // Use real-world time
   });
   
-  // Sync timeOfDay state with getCurrentTimeOfDay function
+  // Real-time clock synchronization
   useEffect(() => {
-    const currentCalculatedTime = getCurrentTimeOfDay();
-    if (currentCalculatedTime !== timeOfDay) {
-      setTimeOfDay(currentCalculatedTime);
-    }
-  }, [gameTime]);
+    const updateTime = () => {
+      const now = new Date();
+      setGameTime(now);
+      const currentCalculatedTime = getCurrentTimeOfDay();
+      if (currentCalculatedTime !== timeOfDay) {
+        setTimeOfDay(currentCalculatedTime);
+      }
+    };
+
+    // Update immediately
+    updateTime();
+    
+    // Update every minute to keep time synchronized
+    const timeInterval = setInterval(updateTime, 60000);
+    
+    return () => clearInterval(timeInterval);
+  }, []);
   
   const [showConstellation, setShowConstellation] = useState(false);
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
