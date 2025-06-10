@@ -126,10 +126,21 @@ const getRarityTextColor = (rarity: string) => {
 export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventorySystemProps) {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+  const [itemToDiscard, setItemToDiscard] = useState<InventoryItem | null>(null);
 
   const filteredItems = sampleInventory.filter(item => 
     activeFilter === 'all' || item.type === activeFilter
   );
+
+  const handleFilterChange = (newFilter: string) => {
+    setActiveFilter(newFilter);
+    setSelectedItem(null); // Clear selection when changing filters
+  };
+
+  const handleItemSelect = (item: InventoryItem) => {
+    setSelectedItem(item);
+  };
 
   const handleUseItem = (item: InventoryItem) => {
     console.log(`Using item: ${item.name}`);
@@ -139,6 +150,26 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
   const handleSellItem = (item: InventoryItem) => {
     console.log(`Selling item: ${item.name} for ₩${item.sellValue.toLocaleString()}`);
     // Implement sell item logic
+  };
+
+  const handleDiscardClick = (item: InventoryItem) => {
+    setItemToDiscard(item);
+    setShowDiscardConfirm(true);
+  };
+
+  const confirmDiscard = () => {
+    if (itemToDiscard) {
+      console.log(`Discarding ${itemToDiscard.quantity}x ${itemToDiscard.name}`);
+      // Implement discard logic
+      setShowDiscardConfirm(false);
+      setItemToDiscard(null);
+      setSelectedItem(null);
+    }
+  };
+
+  const cancelDiscard = () => {
+    setShowDiscardConfirm(false);
+    setItemToDiscard(null);
   };
 
   if (!isVisible) return null;
@@ -191,7 +222,7 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                 {filterCategories.map((category) => (
                   <motion.button
                     key={category.id}
-                    onClick={() => setActiveFilter(category.id)}
+                    onClick={() => handleFilterChange(category.id)}
                     className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
                       activeFilter === category.id
                         ? 'bg-purple-600/30 border border-purple-400/50 text-white'
@@ -219,25 +250,40 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                 Items ({filteredItems.length})
               </h3>
               <div className="grid grid-cols-6 gap-4 max-h-[calc(100vh-200px)] overflow-y-auto character-scrollbar">
-                {filteredItems.map((item) => (
-                  <motion.button
-                    key={item.id}
-                    onClick={() => setSelectedItem(item)}
-                    className={`aspect-square p-4 rounded-xl border-2 relative group ${getRarityColor(item.rarity)} ${
-                      selectedItem?.id === item.id ? 'ring-2 ring-purple-400' : ''
-                    }`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                <AnimatePresence mode="wait">
+                  <motion.div 
+                    key={activeFilter}
+                    className="contents"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <div className="text-4xl mb-2">{item.icon}</div>
-                    <div className="absolute bottom-2 right-2 bg-slate-800/90 text-white text-xs px-1.5 py-0.5 rounded">
-                      {item.quantity > 1 ? `x${item.quantity}` : ''}
-                    </div>
-                    <div className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs px-2 py-1 rounded-b ${getRarityTextColor(item.rarity)} bg-slate-800/90 opacity-0 group-hover:opacity-100 transition-opacity`}>
-                      {item.rarity}
-                    </div>
-                  </motion.button>
-                ))}
+                    {filteredItems.map((item, index) => (
+                      <motion.button
+                        key={item.id}
+                        onClick={() => handleItemSelect(item)}
+                        className={`aspect-square p-4 rounded-xl border-2 relative group ${getRarityColor(item.rarity)} ${
+                          selectedItem?.id === item.id ? 'ring-2 ring-purple-400' : ''
+                        }`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ 
+                          duration: 0.3,
+                          delay: index * 0.05, // Staggered animation
+                          ease: "easeOut"
+                        }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <div className="text-4xl mb-2">{item.icon}</div>
+                        <div className="absolute bottom-2 right-2 bg-slate-800/90 text-white text-xs px-1.5 py-0.5 rounded">
+                          {item.quantity > 1 ? `x${item.quantity}` : ''}
+                        </div>
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
 
@@ -312,6 +358,7 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
 
                     <Button
                       variant="outline"
+                      onClick={() => handleDiscardClick(selectedItem)}
                       className="w-full border-red-500/50 text-red-300 hover:bg-red-500/10"
                     >
                       Discard
@@ -330,6 +377,63 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
           </div>
         </motion.div>
       </motion.div>
+
+      {/* Safety Confirmation Modal for Discard Action */}
+      <AnimatePresence>
+        {showDiscardConfirm && itemToDiscard && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-slate-900/95 backdrop-blur-xl border border-red-500/30 rounded-2xl p-8 max-w-md mx-4 shadow-2xl"
+              style={{
+                backdropFilter: 'blur(40px) saturate(180%)',
+                borderImage: 'linear-gradient(135deg, rgba(239,68,68,0.3), rgba(239,68,68,0.1)) 1'
+              }}
+            >
+              {/* Warning Icon */}
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto bg-red-500/20 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <h3 className="text-white text-xl font-bold mb-2">Confirm Discard</h3>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Are you sure you want to discard{' '}
+                  <span className="text-white font-semibold">
+                    {itemToDiscard.quantity}x {itemToDiscard.name}
+                  </span>
+                  ? This action cannot be undone.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  onClick={cancelDiscard}
+                  variant="outline"
+                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700/50"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmDiscard}
+                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
+                >
+                  Confirm
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   );
 }
