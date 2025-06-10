@@ -616,7 +616,22 @@ export default function SoloLevelingSpatial() {
     const fetchEmotionalImage = async () => {
       if (currentLocationData.chaHaeInPresent && !emotionalImage) {
         try {
-          const response = await fetch('/api/chat-scene-image', {
+          // Determine Cha Hae-In's emotional state based on context
+          const getEmotionalState = () => {
+            if (gameState.affection >= 80) return 'romantic_anticipation';
+            if (gameState.affection >= 60) return 'warm_welcoming';
+            if (gameState.affection >= 40) return 'professional_friendly';
+            return 'focused_professional';
+          };
+
+          const emotion = getEmotionalState();
+          const params = new URLSearchParams({
+            emotion,
+            location: playerLocation,
+            timeOfDay
+          });
+
+          const response = await fetch(`/api/chat-scene-image?${params}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
           });
@@ -634,7 +649,7 @@ export default function SoloLevelingSpatial() {
     };
 
     fetchEmotionalImage();
-  }, [currentLocationData.chaHaeInPresent, playerLocation, timeOfDay, emotionalImage]);
+  }, [currentLocationData.chaHaeInPresent, playerLocation, timeOfDay, gameState.affection]);
 
   // Time progression
   useEffect(() => {
