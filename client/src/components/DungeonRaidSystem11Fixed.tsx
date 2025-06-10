@@ -448,6 +448,83 @@ export function DungeonRaidSystem11({
     return () => clearInterval(interval);
   }, [enemies, players]);
 
+  // Enemy counter-attack system
+  useEffect(() => {
+    const realEnemies = enemies.filter(e => !e.isAlly && e.health > 0);
+    const allAllies = [
+      ...players,
+      ...enemies.filter(e => e.isAlly)
+    ];
+    
+    if (realEnemies.length === 0 || allAllies.length === 0) return;
+
+    const enemyAttackInterval = setInterval(() => {
+      realEnemies.forEach(enemy => {
+        // Find nearest ally to attack
+        const nearestAlly = allAllies.reduce((nearest, ally) => {
+          const distToEnemy = Math.sqrt(
+            Math.pow(ally.x - enemy.x, 2) + Math.pow(ally.y - enemy.y, 2)
+          );
+          const distToNearest = nearest ? Math.sqrt(
+            Math.pow(nearest.x - enemy.x, 2) + Math.pow(nearest.y - enemy.y, 2)
+          ) : Infinity;
+          
+          return distToEnemy < distToNearest ? ally : nearest;
+        }, null as (Player | Enemy) | null);
+
+        if (nearestAlly) {
+          let damage = 0;
+          
+          // Different damage based on enemy type
+          switch (enemy.type) {
+            case 'shadow_beast':
+              damage = Math.floor(Math.random() * 12) + 8; // 8-20 damage
+              break;
+            case 'orc_warrior':
+              damage = Math.floor(Math.random() * 15) + 10; // 10-25 damage
+              break;
+            case 'boss':
+              damage = Math.floor(Math.random() * 25) + 20; // 20-45 damage
+              break;
+            default:
+              damage = Math.floor(Math.random() * 10) + 5; // 5-15 damage
+              break;
+          }
+
+          // Damage players
+          if ('id' in nearestAlly && (nearestAlly.id === 'jinwoo' || nearestAlly.id === 'chahaein')) {
+            setPlayers(prev => prev.map(player => 
+              player.id === nearestAlly.id 
+                ? { ...player, health: Math.max(0, player.health - damage) }
+                : player
+            ));
+          } 
+          // Damage shadow soldiers
+          else if ('isAlly' in nearestAlly && nearestAlly.isAlly) {
+            setEnemies(prev => prev.map(ally => 
+              ally.id === nearestAlly.id 
+                ? { ...ally, health: Math.max(0, ally.health - damage) }
+                : ally
+            ).filter(ally => !ally.isAlly || ally.health > 0)); // Remove dead shadow soldiers
+          }
+
+          // Show damage numbers
+          setDamageNumbers(prev => [...prev, {
+            id: `enemy-damage-${enemy.id}-${Date.now()}`,
+            damage: damage,
+            x: nearestAlly.x,
+            y: nearestAlly.y,
+            timestamp: Date.now()
+          }]);
+
+          console.log(`${enemy.name} dealt ${damage} damage to ${nearestAlly.name || 'ally'}`);
+        }
+      });
+    }, 3000); // Enemies attack every 3 seconds
+
+    return () => clearInterval(enemyAttackInterval);
+  }, [enemies, players]);
+
   if (!isVisible) return null;
 
   return (
