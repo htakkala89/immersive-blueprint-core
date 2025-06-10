@@ -108,8 +108,13 @@ export default function LuxuryDepartmentStore({
 }: LuxuryDepartmentStoreProps) {
   const [selectedItem, setSelectedItem] = useState<LuxuryItem | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const handleNodeClick = (item: LuxuryItem) => {
+    setSelectedItem(item);
+  };
+
+  const handleItemClick = (item: LuxuryItem) => {
     setSelectedItem(item);
   };
 
