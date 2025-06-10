@@ -46,6 +46,7 @@ export function WorldMapSystem8({
 }: WorldMapSystem8Props) {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [focusedZone, setFocusedZone] = useState<string | null>(null);
+  const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<LocationNode | null>(null);
   const [locationImage, setLocationImage] = useState<string | null>(null);
 
@@ -375,7 +376,10 @@ export function WorldMapSystem8({
                   transform: focusedZone === zone.id ? 'translateZ(10px) scale(1.02)' : 'translateZ(0px) scale(1)'
                 }}
                 onMouseEnter={() => setFocusedZone(zone.id)}
-                onMouseLeave={() => setFocusedZone(null)}
+                onMouseLeave={() => {
+                  setFocusedZone(null);
+                  setHoveredLocation(null);
+                }}
                 whileHover={{ scale: 1.02 }}
               >
                 {/* Zone Title */}
@@ -402,6 +406,8 @@ export function WorldMapSystem8({
                       top: `${location.position.y}%`
                     }}
                     onClick={() => handleLocationSelect(location)}
+                    onMouseEnter={() => setHoveredLocation(location.id)}
+                    onMouseLeave={() => setHoveredLocation(null)}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -432,16 +438,16 @@ export function WorldMapSystem8({
                         )}
                       </motion.div>
 
-                      {/* Location Label */}
+                      {/* Location Label - Only show for hovered location */}
                       <AnimatePresence>
-                        {focusedZone === zone.id && (
+                        {hoveredLocation === location.id && (
                           <motion.div
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 5 }}
-                            className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap"
+                            className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10"
                           >
-                            <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-white text-xs border border-white/20">
+                            <div className="bg-black/80 backdrop-blur-sm px-3 py-2 rounded-lg text-white text-sm border border-white/30 shadow-lg">
                               {location.name}
                             </div>
                           </motion.div>
