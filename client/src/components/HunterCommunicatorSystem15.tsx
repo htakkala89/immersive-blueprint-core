@@ -595,20 +595,56 @@ export function HunterCommunicatorSystem15({
             boxShadow: 'inset 0 0 20px rgba(147,51,234,0.1)'
           }}
         />
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-800">
+        {/* Enhanced Header */}
+        <div 
+          className="flex items-center justify-between p-6 relative z-20"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
+            backdropFilter: 'blur(20px)',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+          }}
+        >
           <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-blue-400" />
+            <Shield 
+              className="w-6 h-6" 
+              style={{
+                color: '#60a5fa',
+                filter: 'drop-shadow(0 0 8px rgba(96,165,250,0.4)) drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
+              }}
+            />
             <div>
-              <h2 className="text-xl font-bold text-white">Hunter's Communicator</h2>
-              <div className="flex items-center gap-2 text-sm text-slate-400">
-                <div className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400' : 'bg-red-400'}`} />
-                {connectionStatus === 'connected' ? 'Connected' : 'No Signal'}
+              <h2 
+                className="text-xl font-bold text-white"
+                style={{
+                  textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.1)',
+                  filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
+                }}
+              >
+                Hunter's Communicator
+              </h2>
+              <div className="flex items-center gap-2 text-sm text-slate-300">
+                <div 
+                  className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400' : 'bg-red-400'}`}
+                  style={{
+                    boxShadow: connectionStatus === 'connected' 
+                      ? '0 0 8px rgba(34,197,94,0.6), 0 0 16px rgba(34,197,94,0.3)'
+                      : '0 0 8px rgba(239,68,68,0.6), 0 0 16px rgba(239,68,68,0.3)'
+                  }}
+                />
+                <span style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
+                  {connectionStatus === 'connected' ? 'Connected' : 'No Signal'}
+                </span>
                 {playerLocation && (
                   <>
                     <span>•</span>
-                    <MapPin className="w-3 h-3" />
-                    <span>{playerLocation}</span>
+                    <MapPin 
+                      className="w-3 h-3" 
+                      style={{ filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))' }}
+                    />
+                    <span style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
+                      {playerLocation}
+                    </span>
                   </>
                 )}
               </div>
@@ -618,7 +654,13 @@ export function HunterCommunicatorSystem15({
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="text-slate-400 hover:text-white"
+            className="text-slate-400 hover:text-white transition-all duration-200"
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '8px'
+            }}
           >
             <X className="w-5 h-5" />
           </Button>
