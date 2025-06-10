@@ -497,7 +497,7 @@ export function DailyLifeHubComplete({
           </div>
 
           {/* Activity Cards Grid */}
-          <div className="flex-1 p-6 overflow-y-auto">
+          <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredActivities.map((activity) => {
                 const canAfford = playerStats.energy >= activity.energyCost;
