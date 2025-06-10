@@ -63,7 +63,7 @@ export function WorldMapSystem8({
           id: 'luxury_department_store',
           name: 'Luxury Department Store',
           description: 'High-end fashion and premium gifts',
-          position: { x: 15, y: 8 },
+          position: { x: 12, y: 6 },
           state: getLocationState('luxury_department_store'),
           atmosphere: 'Bustling with sophisticated shoppers'
         },
@@ -71,7 +71,7 @@ export function WorldMapSystem8({
           id: 'gangnam_furnishings',
           name: 'Gangnam Furnishings',
           description: 'Premium home decoration specialists',
-          position: { x: 8, y: 15 },
+          position: { x: 6, y: 14 },
           state: getLocationState('gangnam_furnishings'),
           atmosphere: 'Elegant showroom atmosphere'
         },
@@ -79,7 +79,7 @@ export function WorldMapSystem8({
           id: 'luxury_realtor',
           name: 'Luxury Realtor',
           description: 'Exclusive property investments',
-          position: { x: 20, y: 12 },
+          position: { x: 18, y: 10 },
           state: storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked',
           unlockCondition: 'Reach level 3 relationship',
           atmosphere: 'Professional and exclusive'
@@ -97,7 +97,7 @@ export function WorldMapSystem8({
           id: 'hongdae_cafe',
           name: 'Cozy Hongdae Cafe',
           description: 'Perfect spot for intimate conversations',
-          position: { x: 12, y: 9 },
+          position: { x: 8, y: 7 },
           state: getLocationState('hongdae_cafe'),
           atmosphere: 'Warm and romantic ambiance'
         },
@@ -105,7 +105,7 @@ export function WorldMapSystem8({
           id: 'hangang_park',
           name: 'Hangang River Park',
           description: 'Scenic riverside walks and picnics',
-          position: { x: 18, y: 14 },
+          position: { x: 16, y: 13 },
           state: getLocationState('hangang_park'),
           atmosphere: 'Peaceful evening breeze'
         }
@@ -122,7 +122,7 @@ export function WorldMapSystem8({
           id: 'myeongdong_restaurant',
           name: 'Myeongdong Restaurant',
           description: 'Traditional Korean fine dining',
-          position: { x: 10, y: 8 },
+          position: { x: 8, y: 6 },
           state: getLocationState('myeongdong_restaurant'),
           atmosphere: 'Elegant traditional setting'
         },
@@ -130,7 +130,7 @@ export function WorldMapSystem8({
           id: 'namsan_tower',
           name: 'N Seoul Tower',
           description: 'Romantic city views and love locks',
-          position: { x: 15, y: 12 },
+          position: { x: 16, y: 11 },
           state: playerAffection >= 5 ? getLocationState('namsan_tower') : 'locked',
           unlockCondition: 'Build deeper affection with Cha Hae-In',
           atmosphere: 'Breathtaking panoramic views'
@@ -148,7 +148,7 @@ export function WorldMapSystem8({
           id: 'hunter_association',
           name: 'Hunter Association HQ',
           description: 'Official hunter business and meetings',
-          position: { x: 9, y: 8 },
+          position: { x: 7, y: 6 },
           state: getLocationState('hunter_association'),
           atmosphere: 'Professional and bustling with activity'
         },
@@ -156,7 +156,7 @@ export function WorldMapSystem8({
           id: 'training_facility',
           name: 'Elite Training Center',
           description: 'Advanced combat training with Cha Hae-In',
-          position: { x: 14, y: 12 },
+          position: { x: 15, y: 12 },
           state: playerAffection >= 3 ? getLocationState('training_facility') : 'locked',
           unlockCondition: 'Gain Cha Hae-In\'s trust through missions',
           atmosphere: 'Intense training environment'
@@ -174,7 +174,7 @@ export function WorldMapSystem8({
           id: 'player_apartment',
           name: 'Your Apartment',
           description: 'Your private sanctuary',
-          position: { x: 8, y: 8 },
+          position: { x: 6, y: 6 },
           state: getLocationState('player_apartment'),
           atmosphere: 'Comfortable and personal'
         },
@@ -182,7 +182,7 @@ export function WorldMapSystem8({
           id: 'chahaein_apartment',
           name: 'Cha Hae-In\'s Apartment',
           description: 'Her intimate private space',
-          position: { x: 18, y: 15 },
+          position: { x: 18, y: 14 },
           state: playerAffection >= 7 ? getLocationState('chahaein_apartment') : 'locked',
           unlockCondition: 'Develop deep intimacy with Cha Hae-In',
           atmosphere: 'Warm and inviting sanctuary'
