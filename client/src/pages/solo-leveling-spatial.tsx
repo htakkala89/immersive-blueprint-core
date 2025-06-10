@@ -21,7 +21,7 @@ import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
-import { MonarchArmorySystem } from '@/components/MonarchArmorySystem';
+import { MonarchArmorySystemFixed } from '@/components/MonarchArmorySystemFixed';
 import WorldMap from '@/components/WorldMap';
 import WealthDisplay from '@/components/WealthDisplay';
 import HunterMarket from '@/components/HunterMarket';
@@ -2833,7 +2833,7 @@ export default function SoloLevelingSpatial() {
       />
 
       {/* Monarch's Armory System */}
-      <MonarchArmorySystem
+      <MonarchArmorySystemFixed
         isVisible={showMonarchArmory}
         onClose={() => setShowMonarchArmory(false)}
       />

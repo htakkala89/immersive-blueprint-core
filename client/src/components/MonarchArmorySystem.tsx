@@ -361,7 +361,62 @@ export function MonarchArmorySystem({ isVisible, onClose }: MonarchArmorySystemP
                 </div>
               </div>
             </div>
-                          key={slot.id}
+          ) : (
+            /* Shadow Forge Upgrade Mode */
+            <div className="p-6 h-full overflow-y-auto">
+              <div className="text-center mb-8">
+                <h3 className="text-3xl font-bold text-white mb-2">Shadow Forge</h3>
+                <p className="text-purple-300">Enhance your legendary equipment</p>
+              </div>
+              
+              {selectedItem && (
+                <div className="max-w-md mx-auto">
+                  <div className="bg-slate-800/50 rounded-2xl p-6 border border-purple-500/30">
+                    <div className="text-center mb-6">
+                      <div className={`w-24 h-24 mx-auto rounded-xl border-2 ${getRarityBorder(selectedItem.rarity)} flex items-center justify-center text-6xl mb-4`}>
+                        {selectedItem.icon}
+                      </div>
+                      <h4 className={`text-xl font-bold ${getRarityTextColor(selectedItem.rarity)}`}>
+                        {selectedItem.name}
+                      </h4>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <h5 className="text-white font-medium mb-2">Current Stats</h5>
+                        {Object.entries(selectedItem.stats).map(([stat, value]) => (
+                          <div key={stat} className="flex justify-between text-sm">
+                            <span className="text-slate-300 capitalize">{stat}:</span>
+                            <span className="text-green-400">+{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="flex gap-3 mt-6">
+                        <Button
+                          onClick={() => setUpgradeMode(false)}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Back
+                        </Button>
+                        <Button
+                          className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700"
+                        >
+                          Upgrade
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
                           className={`absolute w-12 h-12 rounded-lg border-2 border-dashed ${
                             equippedItem ? 'border-amber-400 bg-amber-400/20' : 'border-purple-400/50'
                           } flex items-center justify-center text-2xl cursor-pointer`}
