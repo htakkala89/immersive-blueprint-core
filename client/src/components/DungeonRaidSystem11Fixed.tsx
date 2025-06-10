@@ -1600,20 +1600,38 @@ export function DungeonRaidSystem11({
                 <div className="text-5xl font-bold text-yellow-400 mb-4">{deathState.revivalTimer}</div>
                 <p className="text-slate-300 text-sm">Will revive with 50% health</p>
                 
-                {/* Emergency Revival Button */}
-                {playerInventory.find(item => item.id === 'revival_stone' && item.quantity > 0) && (
-                  <div className="mt-4 mb-4">
-                    <Button
-                      onClick={() => useConsumableItem('revival_stone')}
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2"
-                    >
-                      💎 Use Revival Stone (Instant 75% HP)
-                    </Button>
-                    <p className="text-xs text-purple-300 mt-1">
-                      {playerInventory.find(item => item.id === 'revival_stone')?.quantity} stones remaining
-                    </p>
-                  </div>
-                )}
+                {/* Revival Options */}
+                <div className="mt-4 mb-4 space-y-3">
+                  {/* Emergency Revival Button */}
+                  {playerInventory.find(item => item.id === 'revival_stone' && item.quantity > 0) && (
+                    <div>
+                      <Button
+                        onClick={() => useConsumableItem('revival_stone')}
+                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 w-full"
+                      >
+                        💎 Use Revival Stone (Instant 75% HP)
+                      </Button>
+                      <p className="text-xs text-purple-300 mt-1 text-center">
+                        {playerInventory.find(item => item.id === 'revival_stone')?.quantity} stones remaining
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Give Up Button */}
+                  <Button
+                    onClick={() => {
+                      console.log('💀 Player chose to give up the dungeon raid');
+                      setGamePhase('complete');
+                      setTimeout(() => {
+                        onRaidComplete(false, []); // Failed raid
+                      }, 1000);
+                    }}
+                    variant="outline"
+                    className="border-red-500 text-red-400 hover:bg-red-500/20 hover:border-red-400 w-full"
+                  >
+                    Give Up Dungeon
+                  </Button>
+                </div>
                 
                 {/* Revival timer progress bar */}
                 <div className="mt-6 w-64 bg-gray-700 rounded-full h-2 mx-auto">
