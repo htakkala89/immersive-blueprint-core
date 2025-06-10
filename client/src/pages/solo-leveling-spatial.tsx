@@ -2826,6 +2826,18 @@ export default function SoloLevelingSpatial() {
         onClose={() => setShowNarrativeProgression(false)}
       />
 
+      {/* Monarch's Inventory System */}
+      <MonarchInventorySystem
+        isVisible={showInventory}
+        onClose={() => setShowInventory(false)}
+      />
+
+      {/* Monarch's Armory System */}
+      <MonarchArmorySystem
+        isVisible={showMonarchArmory}
+        onClose={() => setShowMonarchArmory(false)}
+      />
+
       {/* Simple Receptionist Dialogue Box - Liquid Glassmorphism */}
       {showReceptionistDialogue && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
