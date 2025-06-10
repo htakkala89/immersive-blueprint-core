@@ -482,18 +482,29 @@ export default function WorldMap({
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1 }}
-                className="relative overflow-hidden rounded-3xl border border-purple-400/30 shadow-2xl shadow-purple-500/20"
+                className="relative overflow-hidden rounded-3xl shadow-2xl shadow-black/40"
                 style={{
-                  backdropFilter: 'blur(80px) saturate(200%)',
+                  backdropFilter: 'blur(150px) saturate(400%)',
                   background: `
                     linear-gradient(135deg, 
-                      rgba(255,255,255,0.15) 0%, 
-                      rgba(255,255,255,0.05) 25%,
-                      rgba(139,92,246,0.08) 50%,
-                      rgba(255,255,255,0.03) 75%,
-                      rgba(255,255,255,0.08) 100%
+                      rgba(0, 0, 0, 0.7) 0%, 
+                      rgba(30, 41, 59, 0.65) 15%,
+                      rgba(139, 92, 246, 0.3) 30%,
+                      rgba(30, 41, 59, 0.6) 45%,
+                      rgba(59, 130, 246, 0.25) 60%,
+                      rgba(30, 41, 59, 0.65) 75%,
+                      rgba(0, 0, 0, 0.7) 100%
+                    ),
+                    linear-gradient(45deg, 
+                      rgba(255, 255, 255, 0.2) 0%, 
+                      rgba(255, 255, 255, 0.1) 25%,
+                      rgba(255, 255, 255, 0.05) 50%,
+                      rgba(255, 255, 255, 0.1) 75%,
+                      rgba(255, 255, 255, 0.15) 100%
                     )
-                  `
+                  `,
+                  border: '2px solid rgba(255, 255, 255, 0.6)',
+                  boxShadow: '0 16px 64px rgba(0, 0, 0, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.4)'
                 }}
               >
                 {/* Close Button */}
