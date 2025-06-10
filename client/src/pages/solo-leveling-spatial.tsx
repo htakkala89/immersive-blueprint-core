@@ -13,6 +13,7 @@ import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
+import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
@@ -170,6 +171,8 @@ export default function SoloLevelingSpatial() {
     content: string;
     timestamp: Date;
   }>>([]);
+
+  // System 8: World Map state - activeQuests defined below with other quest states
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
@@ -330,7 +333,7 @@ export default function SoloLevelingSpatial() {
     description: string;
     timestamp: string;
   }>>([]);
-  const [activeQuests, setActiveQuests] = useState<string[]>([]);
+  const [activeQuests, setActiveQuests] = useState<string[]>(['hunter_association']); // System 8: Active quest markers
 
   // System 7 Commerce - Store States
   const [showLuxuryDepartmentStore, setShowLuxuryDepartmentStore] = useState(false);
@@ -2223,14 +2226,15 @@ export default function SoloLevelingSpatial() {
         context={showHunterMarketVendors ? 'market' : showUnifiedShop ? 'vendor' : 'hidden'}
       />
 
-      <WorldMap
+      <WorldMapSystem8
         isVisible={showWorldMap}
         onClose={() => setShowWorldMap(false)}
         onLocationSelect={handleLocationTravel}
         currentTime={timeOfDay}
-        chaHaeInLocation={chaHaeInCurrentLocation}
+        chaHaeInLocation={chaHaeInCurrentLocation || ''}
         playerAffection={gameState.affection}
         storyProgress={gameState.level}
+        activeQuests={activeQuests}
       />
 
       {/* Economic System Interfaces */}

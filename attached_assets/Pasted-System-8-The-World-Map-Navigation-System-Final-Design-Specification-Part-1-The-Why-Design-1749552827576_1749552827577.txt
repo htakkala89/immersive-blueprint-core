@@ -1,0 +1,54 @@
+System 8: The World Map & Navigation System - Final Design Specification
+
+Part 1: The "Why" - Design Philosophy
+
+Travel within the game is not a simple menu selection; it is a strategic and narrative choice. The World Map is designed as the "Monarch's Seoul," a personal, ethereal projection of the city viewed from a private sanctum. This framing reinforces the player's power and provides at-a-glance strategic information (Where is Cha Hae-In? Where are my quests?), empowering them to make intentional decisions about where to go and why. Every journey should feel purposeful.
+
+Part 2: The "What" - Core Components & UI/UX
+
+This section details every visual and interactive element of the map system.
+
+A. The Main View: "Monarch's Seoul"
+
+Access: The World Map is accessed exclusively by opening the Monarch's Aura (System 3) and selecting the 'World Map' rune.
+Environment: Upon selection, the screen transitions to a full-screen view. The background is a dark, atmospheric, out-of-focus illustration of a grand hall or "Monarch's Sanctum," reinforcing the idea that the player is viewing a magical projection.
+Header Panel: A liquid glassmorphism panel in the top-left contains:
+Title: "Monarch's Seoul"
+Context: The current in-game time of day (e.g., Afternoon) and a descriptor (Ethereal Projection).
+Controls: A simple [+] and [-] for zoom in the bottom-right. An [X] in the top-right to close and return to the previous Spatial View.
+B. The Map Layout: Zoned Panels
+
+Visuals: Instead of a single flat map, the city is broken into several distinct, floating "zone" panels representing different districts (e.g., Gangnam, Hongdae). These panels have a dark, semi-transparent liquid glassmorphism style.
+Interaction (On-Focus Labels):
+By default, the location nodes inside the panels are unlabeled to maintain a clean, mysterious aesthetic.
+When the player's cursor (on PC) or finger hovers over or taps a zone panel, that panel glows brighter and drifts slightly forward. The text labels for all location nodes within that panel then gracefully fade into view.
+Moving focus away from the panel fades the labels out. This interaction model keeps the interface clean while making information readily available.
+C. The Location Node: The Points of Interest
+
+Visuals: Each location is represented by a glowing orb of light. Its appearance changes dynamically to provide crucial information.
+State	Visual Cue	Meaning & Purpose
+Default	A gently pulsing purple orb.	A known, accessible location.
+Presence	A soft, warm golden aura pulses around the orb.	Cha Hae-In is currently at this location. This is a key navigational guide for the player.
+Quest	A sharp, golden exclamation point rune (!) appears next to the orb.	An active quest objective is located here.
+Locked	The orb is dim, grayed-out, and has a clear padlock icon (🔒) over it.	The location is not yet accessible. Tapping it will show the unlock condition.
+Gate	A swirling, colored vortex icon. The color indicates the rank (e.g., Red for A-Rank).	A temporary dungeon entrance for combat (System 11).
+
+
+Export to Sheets
+D. The Location Card: The Confirmation Panel
+
+Trigger: Appears with a smooth animation when any unlocked node is tapped.
+Visuals: A large liquid glassmorphism panel that appears in the center of the screen, blurring the map behind it.
+Content (in order):
+Preview Image: A large, beautiful, high-quality image of the location's actual Spatial View art.
+Title: The Location Name (e.g., "Luxury Department Store").
+Description: A short, evocative description.
+Dynamic Atmosphere: A line of text describing the current mood (e.g., "Current Atmosphere: Bustling with shoppers").
+Presence Status: A clear text line: "Cha Hae-In is here" or "Cha Hae-In is not here."
+Action Button: A single, prominent "Travel" button.
+Part 3: The "How" - Logic and System Integration
+
+Progression: New locations and higher-rank Gates are unlocked primarily through Story Progression and achieving Relationship Milestones with Cha Hae-In. The player does not discover locations by exploration, but by narrative entitlement.
+Dynamic Data: The system must constantly update the state of all nodes in real-time. Cha Hae-In's location (the golden aura) will move from node to node throughout the day based on her schedule, making the map a living, breathing guide to the world.
+The Travel Transition: Tapping the "Travel" button initiates a fast, cinematic transition (~1.5 - 2 seconds), such as the "Shadow Dash" effect or a zoom into the preview image, which completely masks the loading of the new Spatial View (System 1).
+System Hub: This system is the central connective tissue. It is accessed by System 3 (Monarch's Aura) and leads the player to all other major systems and locations: narrative scenes (System 2), stores (System 7), dungeons (System 11), and their home (System 13).
