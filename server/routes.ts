@@ -10,6 +10,7 @@ import { log } from "./vite";
 import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -667,6 +668,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/chat", async (req, res) => {
     try {
       const { message, gameState, context } = req.body;
+      const playerId = gameState.playerId || 'default_player';
+      
+      // System 9: Generate contextual narrative analysis
+      const narrativeContext = narrativeEngine.generateContextualNarrative(playerId, `Player said: "${message}" at ${context?.location || 'unknown location'}`);
       
       // Check if user is proposing an activity
       const activityProposal = ActivityProposalSystem.detectActivityProposal(message, gameState);
@@ -870,11 +875,37 @@ RESPONSE INSTRUCTIONS:
         console.log(`💕 Affection Heart triggered by relationship milestone!`);
       }
 
-      // Generate dynamic thought prompts based on conversation context
+      // System 9: Record story memory for narrative continuity
+      const storyMemory: Omit<StoryMemory, 'id' | 'timestamp'> = {
+        event: `Conversation: Player: "${message}" | Cha Hae-In: "${response}"`,
+        location: context?.location || 'unknown',
+        participants: ['jin_woo', 'cha_hae_in'],
+        emotionalImpact: affectionBonus || 1,
+        storyTags: [
+          ...(showAffectionHeart ? ['romantic_moment', 'affection_gained'] : []),
+          ...(activityProposal.isActivityProposal ? ['activity_proposal'] : ['casual_conversation']),
+          ...(context?.location ? [`location_${context.location}`] : []),
+          ...(gameState.affection >= 70 ? ['high_affection'] : gameState.affection >= 40 ? ['medium_affection'] : ['low_affection'])
+        ],
+        consequences: [
+          ...(showAffectionHeart ? ['relationship_progress'] : []),
+          ...(updatedGameState.scheduledActivities && updatedGameState.scheduledActivities.length > (gameState.scheduledActivities?.length || 0) ? ['activity_scheduled'] : [])
+        ]
+      };
+      
+      narrativeEngine.addStoryMemory(playerId, storyMemory);
+
+      // Generate dynamic thought prompts with narrative context
       let dynamicPrompts;
       try {
         dynamicPrompts = await generateDynamicPrompts(response, message, context, gameState);
-        console.log(`🎭 Dynamic prompts generated successfully:`, dynamicPrompts);
+        
+        // Enhance prompts with narrative suggestions if available
+        if (narrativeContext.suggestedResponses.length > 0) {
+          dynamicPrompts = [...dynamicPrompts, ...narrativeContext.suggestedResponses];
+        }
+        
+        console.log(`🎭 Dynamic prompts generated with narrative context:`, dynamicPrompts);
       } catch (error) {
         console.error("Dynamic prompt generation failed, using fallback:", error);
         dynamicPrompts = generateFallbackPrompts(response, message, context);
@@ -897,6 +928,30 @@ RESPONSE INSTRUCTIONS:
     } catch (error) {
       console.error("Chat error:", error);
       res.status(500).json({ error: "Failed to process chat" });
+    }
+  });
+
+  // System 9: Get Narrative Context
+  app.get("/api/narrative-context/:playerId", async (req, res) => {
+    try {
+      const { playerId } = req.params;
+      const narrativeContext = narrativeEngine.getStoryContext(playerId);
+      
+      res.json({
+        ...narrativeContext,
+        recentMemories: narrativeContext.storyMemories.slice(-10), // Last 10 memories
+        currentChapter: narrativeContext.activeStoryArcs[0]?.currentChapter || 1,
+        storyTitle: narrativeContext.activeStoryArcs[0]?.title || 'The Hunter\'s Heart',
+        emotionalSummary: narrativeContext.emotionalStates.cha_hae_in ? {
+          dominantMood: Object.entries(narrativeContext.emotionalStates.cha_hae_in.currentMood)
+            .sort(([,a], [,b]) => b - a)[0],
+          relationshipLevel: Object.entries(narrativeContext.emotionalStates.cha_hae_in.relationshipDynamics)
+            .sort(([,a], [,b]) => b - a)[0]
+        } : null
+      });
+    } catch (error) {
+      console.error("Narrative context error:", error);
+      res.status(500).json({ error: "Failed to retrieve narrative context" });
     }
   });
 
