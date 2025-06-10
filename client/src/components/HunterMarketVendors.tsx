@@ -23,6 +23,7 @@ interface HunterMarketVendorsProps {
   currentGold: number;
   onSellItem: (itemId: string, quantity: number, totalValue: number) => void;
   backgroundImage?: string;
+  selectedVendor?: string | null;
 }
 
 const VENDOR_NODES: VendorNode[] = [

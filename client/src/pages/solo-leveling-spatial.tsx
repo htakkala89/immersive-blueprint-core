@@ -297,6 +297,7 @@ export default function SoloLevelingSpatial() {
 
   // Economic system states
   const [showHunterMarketVendors, setShowHunterMarketVendors] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [showQuestBoard, setShowQuestBoard] = useState(false);
   const [recentTransactions, setRecentTransactions] = useState<Array<{
     id: string;
@@ -513,9 +514,9 @@ export default function SoloLevelingSpatial() {
       chaPosition: { x: 35, y: 45 },
       chaExpression: 'focused' as const,
       interactiveElements: [
-        { id: 'sell_counter', name: 'Vendor - Sell Items', position: { x: 70, y: 40 }, action: 'Sell valuable resources' },
-        { id: 'equipment_stall', name: 'Equipment Vendor', position: { x: 25, y: 50 }, action: 'Browse hunter gear' },
-        { id: 'rare_materials', name: 'Rare Materials', position: { x: 60, y: 60 }, action: 'Examine exotic items' }
+        { id: 'materials_trader', name: 'Materials Trader', position: { x: 25, y: 50 }, action: 'Trade rare materials and monster drops' },
+        { id: 'equipment_smith', name: 'Equipment Smith', position: { x: 70, y: 40 }, action: 'Browse weapons and armor upgrades' },
+        { id: 'alchemist_vendor', name: 'Alchemist', position: { x: 60, y: 65 }, action: 'Purchase potions and enhancement items' }
       ]
     },
 
@@ -874,10 +875,15 @@ export default function SoloLevelingSpatial() {
   };
 
   const handleEnvironmentalInteraction = async (interactionPoint: any) => {
-    // Handle economic location interactions
+    // Handle specific Hunter Market vendor interactions
     if (playerLocation === 'hunter_market') {
-      setShowHunterMarketVendors(true);
-      return;
+      if (interactionPoint.id === 'materials_trader' || 
+          interactionPoint.id === 'equipment_smith' || 
+          interactionPoint.id === 'alchemist_vendor') {
+        setSelectedVendor(interactionPoint.id);
+        setShowHunterMarketVendors(true);
+        return;
+      }
     }
     
     if (playerLocation === 'hunter_association' && interactionPoint.id === 'mission_board') {
