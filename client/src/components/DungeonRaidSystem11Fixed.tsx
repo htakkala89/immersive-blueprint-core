@@ -595,12 +595,16 @@ export function DungeonRaidSystem11({
       
       if (activeTraps.length === 0) return;
 
+      console.log(`Checking trap damage - ${activeTraps.length} active traps`);
+
       // Check players
       players.forEach(player => {
         activeTraps.forEach(trap => {
           const distance = Math.sqrt(
             Math.pow(player.x - trap.x, 2) + Math.pow(player.y - trap.y, 2)
           );
+          
+          console.log(`Player ${player.name} distance to trap: ${distance}, trap radius: ${trap.radius}`);
           
           if (distance <= trap.radius) {
             const damage = Math.floor(Math.random() * 20) + 15; // 15-35 trap damage
@@ -619,7 +623,11 @@ export function DungeonRaidSystem11({
               timestamp: Date.now()
             }]);
 
-            console.log(`${player.name} took ${damage} trap damage`);
+            // Screen shake for trap damage
+            setScreenShake(true);
+            setTimeout(() => setScreenShake(false), 200);
+
+            console.log(`${player.name} took ${damage} trap damage at distance ${distance}`);
           }
         });
       });
@@ -865,7 +873,10 @@ export function DungeonRaidSystem11({
                   <motion.div
                     key={trap.id}
                     className="absolute pointer-events-none"
-                    style={{ left: trap.x - trap.radius, top: trap.y - trap.radius }}
+                    style={{ 
+                      left: trap.x - (trap.phase === 'warning' ? trap.maxRadius : trap.radius), 
+                      top: trap.y - (trap.phase === 'warning' ? trap.maxRadius : trap.radius) 
+                    }}
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ 
                       scale: trap.phase === 'fading' ? 0 : 1,
@@ -908,6 +919,13 @@ export function DungeonRaidSystem11({
                           backgroundColor: 'rgba(220, 38, 38, 0.4)'
                         }}
                       />
+                    )}
+                    
+                    {/* Debug Info */}
+                    {trap.phase === 'active' && (
+                      <div className="absolute top-0 left-0 text-xs text-white bg-black/50 p-1 rounded">
+                        {Math.round(trap.x)},{Math.round(trap.y)} r:{Math.round(trap.radius)}
+                      </div>
                     )}
                   </motion.div>
                 ))}
