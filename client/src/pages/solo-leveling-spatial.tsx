@@ -1702,11 +1702,63 @@ export default function SoloLevelingSpatial() {
           </motion.div>
         )}
         
+        {/* Quest Objective Indicator */}
+        {gameState.activeQuests?.some(quest => quest.targetLocation === playerLocation) && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute top-20 left-4 right-4 z-50"
+          >
+            <div
+              className="bg-yellow-500/20 backdrop-blur-xl border border-yellow-400/50 rounded-2xl p-4"
+              style={{ 
+                boxShadow: '0 0 20px rgba(255, 215, 0, 0.3)',
+                background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 193, 7, 0.1))'
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
+                  <Target className="w-4 h-4 text-black" />
+                </div>
+                <div>
+                  <h3 className="text-yellow-200 font-semibold text-sm">Quest Objective Available</h3>
+                  <p className="text-yellow-300/80 text-xs">Look for glowing interaction points to progress your mission</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Enhanced Interactive Nodes System */}
         <LocationInteractiveNodes
           locationId={playerLocation}
           onNodeInteraction={(nodeId, thoughtPrompt, outcome) => {
             console.log('Node interaction:', { nodeId, thoughtPrompt, outcome });
+            
+            // Check if this interaction progresses an active quest
+            const activeQuestAtLocation = gameState.activeQuests?.find(quest => 
+              quest.targetLocation === playerLocation
+            );
+            
+            if (activeQuestAtLocation) {
+              // Update quest progress
+              setGameState(prev => ({
+                ...prev,
+                activeQuests: prev.activeQuests?.map(quest => 
+                  quest.id === activeQuestAtLocation.id 
+                    ? { ...quest, progress: Math.min(100, (quest.progress || 0) + 25) }
+                    : quest
+                ) || []
+              }));
+              
+              // Show quest progress notification
+              setTimeout(() => {
+                setShowActivityScheduled(true);
+                setTimeout(() => setShowActivityScheduled(false), 3000);
+              }, 1000);
+              
+              console.log(`Quest progress: ${activeQuestAtLocation.title} advanced by interaction`);
+            }
             
             // Handle different node types with specific logic
             switch (nodeId) {
