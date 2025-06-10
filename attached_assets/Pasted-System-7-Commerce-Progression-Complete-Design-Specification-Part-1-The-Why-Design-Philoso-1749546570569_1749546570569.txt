@@ -1,0 +1,60 @@
+System 7: Commerce & Progression - Complete Design Specification
+
+Part 1: The "Why" - Design Philosophy
+
+Shopping is not a menu; it is an immersive, in-world activity. The player should feel like they are exploring the city and visiting high-end establishments to acquire items. This turns a simple transaction into a world-building and role-playing opportunity, giving players a tangible reason to engage with the environments we are building.
+
+Part 2: The "What" - The Store Locations
+
+Different needs require visiting different, specialized locations. The player will travel to these using the World Map (System 8).
+
+The Hunter Market:
+Purpose: The primary hub for all things hunter-related. This is where you go for function over form.
+Vendors within: Materials Trader (to sell monster parts), Equipment Smith (to buy/sell common gear), Alchemist (to buy potions).
+The Luxury Department Store:
+Purpose: For high-end, relationship-focused gifts.
+Wares: Jewelry, designer clothing, premium chocolates, and other items designed to grant a large affection boost when gifted to Cha Hae-In.
+Gangnam Modern Furnishings:
+Purpose: The store for upgrading your Living Space (System 13).
+Wares: High-end furniture (sofas, beds), decorations (art, plants), and technology (entertainment systems).
+The Luxury Realtor:
+Purpose: A special, high-end location for making the most significant purchases in the game.
+Wares: The listings for the Tier 2 High-Rise and Tier 3 Penthouse apartments.
+Part 3: The "How" - The Shopping User Experience
+
+This is the step-by-step flow for a player who wants to buy a gift.
+
+The Intent: The player decides to buy a nice necklace for Cha Hae-In.
+Travel: The player opens the World Map, selects the "Luxury Department Store" node, and taps "Travel."
+Arrival: They arrive in the Spatial View of the department store—a sleek, brightly lit, high-end interior.
+Browse: The player pans their view. Instead of a menu, they see items displayed beautifully on shelves, in glass cases, or on mannequins. Each item is an interactive object.
+Selection: The player taps directly on a necklace displayed in a glass case.
+Inspection: The game transitions to the "Item Inspection View."
+Part 4: The Buying Interface - The "Item Inspection View"
+
+This is the core UI for all purchases. It appears as a large modal window, using our liquid glassmorphism style over a blurred background of the store.
+
+Layout: A clean, two-column layout.
+
+Left Column (The Showcase): This area is dominated by a beautiful, interactive 3D model of the item (rendered by the embedded Unity engine). The player can tap and drag to rotate the item 360 degrees, inspecting it from all angles.
+Right Column (The Details):
+Item Name: "Starlight Sapphire Necklace"
+Flavor Text: An evocative description (e.g., "A brilliant-cut sapphire said to hold the light of a captured star. It hums with faint mana.").
+Effect: A clear description of its purpose (e.g., "A special gift. Greatly increases affection with Cha Hae-In.").
+Price: The cost in Gold, displayed clearly (₩ 45,000,000).
+Action Button: A single, large, prominent "Purchase" button at the bottom of the right column.
+
+Post-Purchase UX: When the player taps "Purchase," a swift, satisfying animation occurs:
+
+A "transaction complete" chime and haptic buzz fire.
+The Gold amount is deducted from their contextual currency display.
+The 3D model of the item on the left animates, perhaps glowing brightly before shrinking and flying to the corner of the screen, indicating it has been added to the player's inventory.
+The player is then returned to the store's Spatial View to continue Browse.
+Part 5: Narrative & System Integration
+
+This system is a crucial hub that connects many others:
+
+It is the primary Gold sink for the Economy (System 14).
+Items purchased here (gifts) are the fuel for the "Give a Gift" activity in the Daily Life Hub (System 4).
+Successful gifts directly increase affection, which is visualized in the Relationship Constellation (System 6).
+Furniture purchased here directly triggers the visual upgrades in the Living Space (System 13).

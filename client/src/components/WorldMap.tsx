@@ -277,9 +277,55 @@ const LOCATIONS: Location[] = [
     }
   },
   {
+    id: 'luxury_department_store',
+    name: 'Luxury Department Store',
+    description: 'Premium boutique specializing in high-end gifts, jewelry, and designer accessories for discerning tastes.',
+    x: 60,
+    y: 45,
+    unlocked: true,
+    district: 'gangnam',
+    image: '/api/placeholder/400/250',
+    timeOfDayMood: {
+      morning: 'Exclusive morning shopping for VIP clients',
+      afternoon: 'Peak hours with elegant displays and personal shoppers',
+      evening: 'Refined atmosphere for evening gift selection',
+      night: 'Closed - private appointments only'
+    },
+    chaHaeInSchedule: {
+      morning: 15,
+      afternoon: 25,
+      evening: 20,
+      night: 0
+    }
+  },
+  {
+    id: 'gangnam_furnishings',
+    name: 'Gangnam Modern Furnishings',
+    description: 'Designer furniture showroom featuring contemporary pieces for sophisticated living spaces.',
+    x: 70,
+    y: 55,
+    unlocked: false,
+    unlockCondition: 'Own Tier 2+ Living Space',
+    requiredStoryProgress: 3,
+    district: 'gangnam',
+    image: '/api/placeholder/400/250',
+    timeOfDayMood: {
+      morning: 'Showroom displays with morning light highlighting modern designs',
+      afternoon: 'Busy consultations with interior design specialists',
+      evening: 'Ambient lighting showcasing furniture in home-like settings',
+      night: 'Closed - design consultations by appointment'
+    },
+    chaHaeInSchedule: {
+      morning: 10,
+      afternoon: 20,
+      evening: 15,
+      night: 0
+    }
+  },
+  {
     id: 'luxury_realtor',
-    name: 'Luxury Realtor',
-    description: 'High-end real estate office specializing in premium properties for successful hunters.',
+    name: 'Seoul Luxury Realty',
+    description: 'Exclusive real estate office specializing in premium properties for successful hunters.',
     x: 75,
     y: 30,
     unlocked: false,
@@ -289,8 +335,8 @@ const LOCATIONS: Location[] = [
     image: '/api/placeholder/400/250',
     timeOfDayMood: {
       morning: 'Professional atmosphere with property consultations',
-      afternoon: 'Busy showings of luxury apartments',
-      evening: 'Private viewings for VIP clients',
+      afternoon: 'Private showings of luxury apartments',
+      evening: 'Exclusive viewings for VIP clients',
       night: 'Closed - by appointment only'
     },
     chaHaeInSchedule: {
