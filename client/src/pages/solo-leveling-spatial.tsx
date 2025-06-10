@@ -28,6 +28,7 @@ import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
+import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSystem9';
 
 interface GameState {
   level: number;
@@ -178,6 +179,12 @@ export default function SoloLevelingSpatial() {
   }>>([]);
 
   // System 8: World Map state - activeQuests defined below with other quest states
+
+  // System 9: AI Narrative Engine state
+  const [showNarrativeProgression, setShowNarrativeProgression] = useState(false);
+  const [storyFlags, setStoryFlags] = useState<string[]>(['beginning_journey']);
+  const [visitHistory, setVisitHistory] = useState<Record<string, number>>({});
+  const [chaHaeInPresent, setChaHaeInPresent] = useState(true);
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
