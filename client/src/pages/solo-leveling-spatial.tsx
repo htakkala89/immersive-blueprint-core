@@ -682,7 +682,7 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
-        {/* Character Presence Indicator - Subtle Blue Dot for Cha Hae-In */}
+        {/* Character Presence Indicator - Soft Golden Aura per Design Doc */}
         {currentLocationData.chaHaeInPresent && (
           <motion.div
             className="absolute cursor-pointer z-20 group"
@@ -691,73 +691,43 @@ export default function SoloLevelingSpatial() {
               top: `${currentLocationData.chaPosition.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.8 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={handleChaHaeInInteraction}
           >
             <div className="relative">
-              {/* Subtle Blue Presence Dot */}
+              {/* Soft Golden Aura - Design Specification */}
               <motion.div
-                className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full shadow-lg border-2 border-blue-300/60 backdrop-blur-sm"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  boxShadow: [
-                    '0 4px 15px rgba(59, 130, 246, 0.4)',
-                    '0 6px 20px rgba(59, 130, 246, 0.6)',
-                    '0 4px 15px rgba(59, 130, 246, 0.4)'
-                  ]
+                className="w-16 h-16 rounded-full blur-sm"
+                style={{
+                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.1) 50%, transparent 100%)'
                 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                {/* Character Initial */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">C</span>
-                </div>
-                
-                {/* Presence Ring */}
-                <motion.div
-                  className="absolute inset-0 rounded-full border border-yellow-400/50"
-                  animate={{ 
-                    opacity: [0.4, 0.8, 0.4],
-                    scale: [1, 1.15, 1]
-                  }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                />
-              </motion.div>
-              
-              {/* Soft Aura */}
-              <motion.div
-                className="absolute inset-0 bg-blue-400/15 rounded-full blur-md"
-                animate={{ 
-                  scale: [1, 1.4, 1], 
-                  opacity: [0.3, 0.1, 0.3] 
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.4, 0.7, 0.4]
                 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Activity Tooltip - Shows on Hover */}
+              {/* Core Presence Dot */}
               <motion.div
-                className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30"
-                initial={{ y: 5 }}
-              >
-                <div className="bg-black/95 backdrop-blur-md text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap border border-blue-400/30 shadow-xl max-w-48">
+                className="absolute inset-6 w-4 h-4 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-full shadow-lg"
+                animate={{
+                  opacity: [0.8, 1, 0.8]
+                }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              />
+              
+              {/* Hover Context - Only on Hover */}
+              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
+                <div className="bg-black/90 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-amber-400/30 shadow-xl">
                   <div className="text-center">
-                    <div className="font-medium text-blue-300">Cha Hae-In</div>
+                    <div className="font-medium text-amber-300">Cha Hae-In</div>
                     <div className="text-gray-300 text-xs mt-1">{currentLocationData.chaActivity}</div>
-                    <div className="text-blue-200 text-xs mt-1 font-medium">Tap to interact</div>
+                    <div className="text-amber-200 text-xs mt-1 font-medium">Tap to interact</div>
                   </div>
                 </div>
-              </motion.div>
-              
-              {/* Simple Name Label */}
-              <motion.div
-                className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded border border-blue-400/20 shadow-lg"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <span className="text-blue-300 font-medium">Cha Hae-In</span>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         )}
