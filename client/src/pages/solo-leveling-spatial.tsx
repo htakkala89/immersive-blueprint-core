@@ -184,6 +184,9 @@ export default function SoloLevelingSpatial() {
     timestamp: Date;
   }>>([]);
 
+  // System 3: Quest Log state
+  const [showQuestLog, setShowQuestLog] = useState(false);
+
   // System 8: World Map state - activeQuests defined below with other quest states
 
   // System 9: AI Narrative Engine state
@@ -1334,6 +1337,21 @@ export default function SoloLevelingSpatial() {
     console.log('New message sent:', conversationId, message);
   };
 
+  // Quest tracking and management handlers
+  const handleQuestTrack = (questId: string) => {
+    console.log(`Tracking quest ${questId} on World Map`);
+    setShowWorldMap(true);
+  };
+
+  const handleQuestAbandon = (questId: string) => {
+    setGameState(prev => ({
+      ...prev,
+      activeQuests: (prev.activeQuests || []).filter(q => q.id !== questId)
+    }));
+    setActiveQuests(prev => prev.filter(q => (typeof q === 'object' ? q.id : q) !== questId));
+    console.log(`Quest ${questId} abandoned`);
+  };
+
   // Simulate asynchronous notifications
   useEffect(() => {
     const interval = setInterval(() => {
@@ -2246,7 +2264,7 @@ export default function SoloLevelingSpatial() {
           {[
             { icon: User, label: 'Armory', color: 'text-purple-300', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
             { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
-            { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowUnifiedShop(true); setMonarchAuraVisible(false); } },
+            { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowQuestLog(true); setMonarchAuraVisible(false); } },
             { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
@@ -2579,6 +2597,19 @@ export default function SoloLevelingSpatial() {
         onClose={() => setShowCommunicator(false)}
         onQuestAccept={handleQuestAccept}
         onNewMessage={handleNewMessage}
+        playerLocation={gameState.currentScene}
+        timeOfDay={timeOfDay}
+        activeQuests={gameState.activeQuests || []}
+      />
+
+      {/* System 3: Quest Log - Accessed via Monarch's Aura */}
+      <QuestLogSystem3
+        isVisible={showQuestLog}
+        onClose={() => setShowQuestLog(false)}
+        activeQuests={gameState.activeQuests || []}
+        completedQuests={gameState.completedQuests || []}
+        onQuestTrack={handleQuestTrack}
+        onQuestAbandon={handleQuestAbandon}
       />
 
       {/* System 9: AI Narrative Engine - Story Progression Display */}
