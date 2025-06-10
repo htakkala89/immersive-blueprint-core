@@ -285,7 +285,7 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
               <AnimatePresence mode="wait">
                 <motion.div 
                   key={activeFilter}
-                  className="grid grid-cols-4 gap-4 max-h-[calc(100vh-240px)] overflow-y-auto character-scrollbar pr-2"
+                  className="grid grid-cols-2 gap-6 max-h-[calc(100vh-240px)] overflow-y-auto character-scrollbar pr-2"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
