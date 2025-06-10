@@ -376,7 +376,7 @@ export function LocationInteractiveNodes({ locationId, onNodeInteraction, player
         return (
           <motion.div
             key={node.id}
-            className={`absolute pointer-events-auto cursor-pointer ${
+            className={`absolute pointer-events-auto cursor-pointer z-40 ${
               available ? 'opacity-100' : 'opacity-40'
             }`}
             style={{

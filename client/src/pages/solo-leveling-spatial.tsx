@@ -417,7 +417,7 @@ export default function SoloLevelingSpatial() {
       backgroundImage: '/api/scenes/hunter_association.jpg',
       chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_association',
       chaActivity: 'reviewing mission reports at her desk',
-      chaPosition: { x: 60, y: 40 },
+      chaPosition: { x: 40, y: 60 },
       chaExpression: 'focused' as const,
       interactiveElements: [
         { id: 'cha_desk', name: 'Cha Hae-In at her desk', position: { x: 60, y: 45 }, action: 'Approach Cha Hae-In' },
@@ -1373,14 +1373,14 @@ export default function SoloLevelingSpatial() {
         {/* Cha Hae-In Presence Indicator - Golden Breathing Node */}
         {(chaHaeInCurrentLocation === playerLocation) && (
           <motion.div
-            className="absolute cursor-pointer z-40 group"
+            className="absolute cursor-pointer z-30 group"
             style={{
               left: `${currentLocationData.chaPosition.x}%`,
               top: `${currentLocationData.chaPosition.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleChaHaeInInteraction}
           >
             <div className="relative">
