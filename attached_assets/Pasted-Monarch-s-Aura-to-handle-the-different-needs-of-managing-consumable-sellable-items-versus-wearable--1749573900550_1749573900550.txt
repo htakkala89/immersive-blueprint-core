@@ -1,0 +1,54 @@
+Monarch's Aura, to handle the different needs of managing consumable/sellable items versus wearable gear.
+
+Here is the complete, detailed breakdown for both systems.
+
+Part 1: The Inventory System
+
+Design Philosophy: The inventory is the player's personal stash. It must be clean, highly organized, and visually appealing, allowing the player to quickly find what they need without friction. It is a functional tool wrapped in our premium aesthetic.
+
+Access: The player opens the Monarch's Aura (System 3) and selects the 'Inventory' rune (the gem icon).
+UI/UX Specifications: The Inventory Screen
+
+This opens a full-screen UI panel using our liquid glassmorphism style.
+
+Layout: A classic and effective three-column layout is recommended for clarity.
+
+Column 1 (Filters): A vertical list of filter tabs to keep the inventory organized.
+Column 2 (Item Grid): The main view showing the items themselves.
+Column 3 (Item Details): An initially empty pane that populates when an item is selected.
+Filter Tabs (Column 1):
+
+All Items
+Consumables (Potions, Elixirs, Buff items)
+Valuable Resources (Mana Crystals, Monster Cores for selling)
+Quest Items
+Gifts (Items purchased from the department store for Cha Hae-In)
+The Item Grid (Column 2):
+
+A clean grid of squares. Each square displays a high-quality icon for the item and a number in the corner indicating the quantity (x99).
+The Item Details Panel (Column 3):
+
+When the user taps an item from the grid, this pane populates with:
+A large, detailed view of the item (a high-res icon or a simple 3D model).
+Item Name: "High-Grade Mana Potion"
+Item Type: "Consumable"
+Description: Flavor text (e.g., "A potent elixir that rapidly replenishes one's mana reserves.").
+Effect: A clear description of its function (e.g., "Restores 1000 MP over 5 seconds.").
+Sell Value: The price it can be sold for at a vendor (₩ 50,000).
+Action Buttons: Contextual buttons like [Use], [Discard], or [Register to Hotkey] (if we implement a potion hotkey in the raid UI).
+Part 2: The Equipment System (System 12: The Monarch's Armory)
+
+Design Philosophy: Equipping gear should be a cinematic, tactile experience that emphasizes the power and prestige of the artifacts you've earned. This is not a simple "paper doll" screen; it is your personal armory.
+
+Access: The player opens the Monarch's Aura (System 3) → Selects the 'Character' rune → Taps the "View Armory" button. This experience is built in the Unity Engine for full 3D interactivity.
+UI/UX Specifications: The Armory Scene
+
+Environment: A dark, ethereal "shadow dimension." A softly lit platform is in the center, where a full, high-quality 3D model of Sung Jin-Woo stands with a confident idle animation.
+Interaction (Drag-and-Drop):
+Inventory Carousel: At the bottom of the screen is a horizontal, cover-flow style carousel of all equippable gear in your inventory, represented by their own 3D models.
+Equipping: The player taps and drags an item model from the carousel and drops it directly onto the corresponding area of the main character model.
+Visual Feedback: The drop triggers a flash of purple light and a satisfying sound effect. The gear on the 3D model instantly updates to the new item. Any changes to Core Stats animate on screen as glowing text before fading.
+The "Shadow Forge" (Upgrading):
+Tapping any equipped item and selecting "Upgrade" transitions to this view. The item floats in the center of the screen. The user drags required materials from a small inventory panel onto the item to "feed" it, culminating in a dramatic upgrade animation.
+The Relationship Hook:
+To be clear: This screen is for managing your own gear. Gifting equipment to Cha Hae-In is a narrative action handled through the "Give a Gift" activity in the Daily Life Hub (System 4) to maintain the focus on relationship building.

@@ -20,6 +20,8 @@ import { RelationshipConstellationSystem6 } from '@/components/RelationshipConst
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
+import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
+import { MonarchArmorySystem } from '@/components/MonarchArmorySystem';
 import WorldMap from '@/components/WorldMap';
 import WealthDisplay from '@/components/WealthDisplay';
 import HunterMarket from '@/components/HunterMarket';
@@ -423,6 +425,8 @@ export default function SoloLevelingSpatial() {
     console.log('🎯 DUNGEON RAID STATE CHANGED:', showDungeonRaid);
   }, [showDungeonRaid]);
   const [showArmory, setShowArmory] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
+  const [showMonarchArmory, setShowMonarchArmory] = useState(false);
   const [activeActivity, setActiveActivity] = useState<string | null>(null);
 
   // Economic system states
@@ -2440,15 +2444,16 @@ export default function SoloLevelingSpatial() {
         <div className="fixed top-20 right-6 w-48 bg-purple-800/60 backdrop-blur-xl border border-white/40 rounded-xl p-4 z-[9998] shadow-2xl" style={{ backdropFilter: 'blur(40px) saturate(180%)', borderImage: 'linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1)) 1' }}>
           <div className="text-white text-lg mb-3 font-semibold drop-shadow-lg">Monarch's Aura</div>
           {[
-            { icon: User, label: 'Armory', color: 'text-purple-300', onClick: () => { setShowArmory(true); setMonarchAuraVisible(false); } },
+            { icon: Package, label: 'Inventory', color: 'text-purple-300', onClick: () => { setShowInventory(true); setMonarchAuraVisible(false); } },
+            { icon: Crown, label: 'Armory', color: 'text-amber-300', onClick: () => { setShowMonarchArmory(true); setMonarchAuraVisible(false); } },
             { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
             { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowQuestLog(true); setMonarchAuraVisible(false); } },
             { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
-            { icon: Crown, label: 'Character', color: 'text-amber-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
-            { icon: Brain, label: 'Story Progress', color: 'text-purple-300', onClick: () => { setShowNarrativeProgression(true); setMonarchAuraVisible(false); } }
+            { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
+            { icon: Brain, label: 'Story Progress', color: 'text-violet-300', onClick: () => { setShowNarrativeProgression(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
             <button
               key={item.label}
