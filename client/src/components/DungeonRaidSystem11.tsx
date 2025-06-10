@@ -466,7 +466,7 @@ export function DungeonRaidSystem11({
     }
   }, [synergyGauge]);
 
-  // Cooldown timer
+  // Cooldown timer with visual pie wipe animation
   useEffect(() => {
     const interval = setInterval(() => {
       setSkills(prev => prev.map(skill => ({
@@ -477,6 +477,38 @@ export function DungeonRaidSystem11({
 
     return () => clearInterval(interval);
   }, []);
+
+  // Cha Hae-In AI behavior - proactive targeting
+  useEffect(() => {
+    if (gamePhase === 'combat') {
+      const interval = setInterval(() => {
+        const chahaein = players.find(p => p.id === 'chahaein');
+        const jinwoo = players.find(p => p.id === 'jinwoo');
+        const aliveEnemies = enemies.filter(e => e.health > 0);
+        
+        if (chahaein && jinwoo && aliveEnemies.length > 0) {
+          // Cha Hae-In automatically attacks same target as player or helps when player is in danger
+          const damage = Math.floor(Math.random() * 25) + 15;
+          const targetEnemy = aliveEnemies[0];
+          
+          setEnemies(prev => prev.map(e => 
+            e.id === targetEnemy.id ? { ...e, health: Math.max(0, e.health - damage) } : e
+          ));
+          
+          showDamageNumber(damage, targetEnemy.x + 20, targetEnemy.y, false);
+          addToCombatLog(`Cha Hae-In strikes ${targetEnemy.name} for ${damage} damage!`);
+          setSynergyGauge(prev => Math.min(100, prev + 8));
+          
+          // Check for victory
+          if (enemies.every(e => e.health <= 0)) {
+            setTimeout(() => setGamePhase('victory'), 1000);
+          }
+        }
+      }, 3000); // Cha Hae-In attacks every 3 seconds
+      
+      return () => clearInterval(interval);
+    }
+  }, [gamePhase, players, enemies]);
 
   // Mana regeneration
   useEffect(() => {
@@ -778,13 +810,30 @@ export function DungeonRaidSystem11({
                       }`} 
                     />
                     
-                    {/* Cooldown Overlay */}
+                    {/* Cooldown Overlay with Pie Wipe Animation */}
                     {isOnCooldown && (
-                      <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">
-                          {Math.ceil(skill.currentCooldown / 1000)}
-                        </span>
-                      </div>
+                      <>
+                        <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">
+                            {Math.ceil(skill.currentCooldown / 1000)}
+                          </span>
+                        </div>
+                        {/* Radial cooldown progress */}
+                        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 64 64">
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="30"
+                            fill="none"
+                            stroke="rgba(255, 255, 255, 0.3)"
+                            strokeWidth="2"
+                            strokeDasharray={`${(1 - skill.currentCooldown / skill.cooldown) * 188} 188`}
+                            strokeDashoffset="0"
+                            transform="rotate(-90 32 32)"
+                            className="transition-all duration-100"
+                          />
+                        </svg>
+                      </>
                     )}
                     
                     {/* Charge Progress */}
