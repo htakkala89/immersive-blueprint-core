@@ -448,8 +448,11 @@ export function LocationInteractiveNodes({
   const [nearbyNodes, setNearbyNodes] = useState<string[]>([]);
 
   const baseNodes = LOCATION_NODES[locationId] || [];
-  console.log('Base nodes for location', locationId, ':', baseNodes.map(n => n.id));
+  console.log('🔥 LOCATION NODES DEBUG 🔥');
+  console.log('Location ID:', locationId);
+  console.log('Base nodes:', baseNodes.map(n => n.id));
   console.log('Total nodes found:', baseNodes.length);
+  console.log('Red Gate included?', baseNodes.some(n => n.id === 'red_gate_entrance'));
   
   // System 3: Environmental State Management - Filter nodes based on context
   const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
