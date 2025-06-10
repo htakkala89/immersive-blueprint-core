@@ -1635,6 +1635,31 @@ export default function SoloLevelingSpatial() {
             </div>
           </div>
 
+          {/* Story Progress Controls */}
+          <div className="mb-3">
+            <div className="text-xs text-gray-300 mb-1">Story Progress: {gameState.storyProgress || 0}</div>
+            <div className="flex gap-1 text-xs">
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, storyProgress: 0 }))}
+                className="px-2 py-1 rounded bg-gray-600 hover:bg-gray-700"
+              >
+                0
+              </button>
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, storyProgress: 3 }))}
+                className="px-2 py-1 rounded bg-green-600 hover:bg-green-700"
+              >
+                3
+              </button>
+              <button 
+                onClick={() => setGameState(prev => ({ ...prev, storyProgress: 5 }))}
+                className="px-2 py-1 rounded bg-purple-600 hover:bg-purple-700"
+              >
+                5
+              </button>
+            </div>
+          </div>
+
           {/* Time Period Override */}
           <div className="mb-3">
             <div className="text-xs text-gray-300 mb-1">Time: {timeOfDay}</div>
