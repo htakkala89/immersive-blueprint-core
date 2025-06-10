@@ -80,6 +80,11 @@ export default function SoloLevelingSpatial() {
   const [narrativeLensActive, setNarrativeLensActive] = useState(false);
   const [sceneImage, setSceneImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<Array<{
+    type: 'user' | 'cha_hae_in';
+    text: string;
+    timestamp: Date;
+  }>>([]);
   const spatialViewRef = useRef<HTMLDivElement>(null);
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -522,6 +527,13 @@ export default function SoloLevelingSpatial() {
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
     
+    // Add user message to conversation history
+    setConversationHistory(prev => [...prev, {
+      type: 'user',
+      text: message,
+      timestamp: new Date()
+    }]);
+    
     setPlayerInput('');
     setIsLoading(true);
     
@@ -544,6 +556,13 @@ export default function SoloLevelingSpatial() {
       
       const data = await response.json();
       setCurrentDialogue(data.response);
+      
+      // Add Cha Hae-In's response to conversation history
+      setConversationHistory(prev => [...prev, {
+        type: 'cha_hae_in',
+        text: data.response,
+        timestamp: new Date()
+      }]);
       
       if (data.gameState) {
         setGameState(data.gameState);
@@ -1133,18 +1152,52 @@ export default function SoloLevelingSpatial() {
                   </motion.div>
                   
                   <div className="flex-1">
-                    {isLoading ? (
-                      <div className="flex items-center gap-2 text-slate-400">
+                    {/* Cinematic Script-Style Conversation History */}
+                    <div className="space-y-3 max-h-48 overflow-y-auto">
+                      {conversationHistory.map((entry, index) => (
                         <motion.div
-                          className="w-2 h-2 bg-pink-400 rounded-full"
-                          animate={{ opacity: [1, 0.3, 1] }}
-                          transition={{ duration: 1, repeat: Infinity }}
-                        />
-                        <span>Cha Hae-In is responding...</span>
-                      </div>
-                    ) : (
-                      <p className="text-white leading-relaxed">{currentDialogue}</p>
-                    )}
+                          key={index}
+                          className={`flex ${entry.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          {entry.type === 'user' ? (
+                            // User messages: Right-aligned, italic, no bubble, ethereal color
+                            <div className="max-w-[85%] text-right">
+                              <p className="text-slate-300/80 italic leading-relaxed text-sm">
+                                {entry.text}
+                              </p>
+                            </div>
+                          ) : (
+                            // Cha Hae-In messages: Left-aligned, bright white, script-like
+                            <div className="max-w-[85%]">
+                              <p className="text-white leading-relaxed font-medium">
+                                {entry.text}
+                              </p>
+                            </div>
+                          )}
+                        </motion.div>
+                      ))}
+                      
+                      {/* Current Response Loading Indicator */}
+                      {isLoading && (
+                        <motion.div
+                          className="flex justify-start"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                        >
+                          <div className="flex items-center gap-2 text-slate-400">
+                            <motion.div
+                              className="w-2 h-2 bg-pink-400 rounded-full"
+                              animate={{ opacity: [1, 0.3, 1] }}
+                              transition={{ duration: 1, repeat: Infinity }}
+                            />
+                            <span className="italic text-sm">Cha Hae-In is responding...</span>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.div>
