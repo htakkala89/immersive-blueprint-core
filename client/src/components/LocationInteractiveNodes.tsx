@@ -573,26 +573,7 @@ export function LocationInteractiveNodes({
     console.log('NODE CLICK DETECTED:', node.id);
     console.log('Node details:', node);
     
-    // Check requirements
-    if (node.requirements) {
-      for (const req of node.requirements) {
-        if (req === 'apartment_tier_2' && playerStats.apartmentTier < 2) {
-          return; // Node not available
-        }
-        if (req === 'padlock_item') {
-          // Check inventory for padlock - simplified for now
-          // This would connect to actual inventory system
-        }
-      }
-    }
-
-    // Check spatial exclusions
-    const spatialState = getNodeSpatialState(node);
-    if (spatialState.isExcluded) {
-      return; // Node is blocked by conflicting nearby node
-    }
-
-    // Red Gate bypasses thought prompt and goes directly to dungeon
+    // Red Gate bypasses ALL checks and goes directly to dungeon
     if (node.id === 'red_gate_entrance') {
       console.log('🚪 RED GATE NODE CLICKED - Direct execution path');
       console.log('Node details:', node);
@@ -608,6 +589,25 @@ export function LocationInteractiveNodes({
       onNodeInteraction(node.id, memoryState.thoughtPrompt, memoryState.outcome);
       console.log('onNodeInteraction call completed');
       return;
+    }
+
+    // Check requirements for other nodes
+    if (node.requirements) {
+      for (const req of node.requirements) {
+        if (req === 'apartment_tier_2' && playerStats.apartmentTier < 2) {
+          return; // Node not available
+        }
+        if (req === 'padlock_item') {
+          // Check inventory for padlock - simplified for now
+          // This would connect to actual inventory system
+        }
+      }
+    }
+
+    // Check spatial exclusions for other nodes
+    const spatialState = getNodeSpatialState(node);
+    if (spatialState.isExcluded) {
+      return; // Node is blocked by conflicting nearby node
     }
 
     setSelectedNode(node);
