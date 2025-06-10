@@ -2405,7 +2405,12 @@ export default function SoloLevelingSpatial() {
 
       {/* Monarch's Aura - Compact Clean Menu */}
       {monarchAuraVisible && (
-        <div className="fixed top-20 right-6 w-40 liquid-glass-enhanced rounded-lg p-2 z-[9998] shadow-2xl">
+        <div className="fixed top-20 right-6 w-40 bg-black/20 backdrop-blur-xl border border-white/30 rounded-lg p-2 z-[9998] shadow-2xl" 
+             style={{ 
+               background: 'rgba(255, 255, 255, 0.08)', 
+               backdropFilter: 'blur(40px) saturate(180%)', 
+               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+             }}>
           <div className="text-white text-sm mb-2 font-medium text-center opacity-80">Systems</div>
           {[
             { icon: Package, label: 'Inventory', color: 'text-purple-300', onClick: () => { setShowInventory(true); setMonarchAuraVisible(false); } },
