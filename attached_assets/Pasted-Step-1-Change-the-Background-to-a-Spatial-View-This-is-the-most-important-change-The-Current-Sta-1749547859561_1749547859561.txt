@@ -1,0 +1,47 @@
+Step 1: Change the Background to a Spatial View
+
+This is the most important change.
+
+The Current State: The background is a generic blur.
+The Fix: Replace the background entirely with a high-quality, atmospheric image of the store's interior. Imagine a sleek, modern boutique with beautiful lighting. On one side, there are glass display cases with jewelry. On the other, elegant mannequins are wearing designer clothes. This image should have a sense of depth and place. This immediately makes the user feel like they have arrived somewhere.
+Step 2: Make the Items Part of the Scene
+
+Instead of floating abstract cards, the items for sale should be visible within the store environment.
+
+The Current State: Abstract, labeled rectangles floating in space.
+The Fix: We will use our established interactive node system.
+In the new background image, find the "Designer Evening Dress" on a mannequin. Place one of our glowing purple dots directly on it.
+Find the "Starlight Sapphire Necklace" inside its glass display case in the background. Place another glowing purple dot on that.
+Do this for 3-5 featured items in the scene. The floating rectangles with text are now removed entirely.
+Step 3: Redefine the User Interaction Flow
+
+This new design creates a much more engaging "browse and discover" experience.
+
+Arrival: The user enters the "Luxury Department Store" and is presented with the beautiful Spatial View of the boutique interior.
+Browse: They can pan the view slightly. Their eyes are drawn to the glowing purple dots on the items displayed in the scene.
+Selection: Their curiosity is piqued. They tap the purple dot on the "Starlight Sapphire Necklace" glistening in its case.
+Inspection: Tapping the dot triggers the main event: the "Item Inspection View" opens.
+Step 4: Design the "Item Inspection View"
+
+This is the pop-up modal that appears after tapping an item. This is where the information from your current mockup will live.
+
+The Panel: A large liquid glassmorphism panel animates into the center of the screen, blurring the store background behind it.
+Layout (Two-Column):
+Left Side (The Showcase): This area is dedicated to a large, beautiful, and interactive 3D model of the necklace. The user can rotate it and see it from all angles.
+Right Side (The Details): This is where you put the text information.
+Item Name: "Starlight Sapphire Necklace"
+Description: "A brilliant-cut sapphire said to hold the light of a captured star..."
+Effect: "A special gift. Greatly increases affection."
+Price: ₩ 45,000,000
+Action Button: A prominent "Purchase" button.
+Summary of the Fix
+
+Before (Current Mockup)	After (The Immersive Design)
+An abstract menu of floating text boxes.	A beautiful image of a store interior.
+User reads a list of items.	User visually browses items displayed in the scene.
+User taps a text box.	User taps a glowing dot on an item that catches their eye.
+Information is scattered.	Tapping an item opens a dedicated, premium "Inspection View" with a 3D model and all relevant details.
+
+
+Export to Sheets
+By following these steps, you transform this from a simple webpage into an immersive experience that aligns perfectly with our design goals. You've already got all the right data on the screen; now we just need to place it inside the simulated world.

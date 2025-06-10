@@ -107,9 +107,9 @@ export default function LuxuryDepartmentStore({
   backgroundImage 
 }: LuxuryDepartmentStoreProps) {
   const [selectedItem, setSelectedItem] = useState<LuxuryItem | null>(null);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
-  const handleItemClick = (item: LuxuryItem) => {
+  const handleNodeClick = (item: LuxuryItem) => {
     setSelectedItem(item);
   };
 
@@ -127,12 +127,6 @@ export default function LuxuryDepartmentStore({
       case 'premium': return 'from-green-600 to-blue-600';
       default: return 'from-gray-600 to-gray-700';
     }
-  };
-
-  const getDisplayIcon = (displayType: string, category: string) => {
-    if (displayType === 'case') return <Diamond className="w-3 h-3" />;
-    if (displayType === 'mannequin') return <ShoppingBag className="w-3 h-3" />;
-    return <Gift className="w-3 h-3" />;
   };
 
   if (!isVisible) return null;
@@ -179,12 +173,19 @@ export default function LuxuryDepartmentStore({
             </div>
           </div>
 
-          {/* Store Interior - Interactive Spatial View */}
-          <div className="relative w-full h-full pt-24 pb-6 px-6">
-            {/* Luxury Store Environment */}
-            <div className="relative w-full h-full bg-gradient-to-b from-slate-50/90 to-slate-100/90 dark:from-slate-800/90 dark:to-slate-900/90 rounded-xl backdrop-blur-sm border border-white/20">
+          {/* Store Interior - Clean Refined Layout */}
+          <div className="relative w-full h-full pt-20 pb-8 px-8">
+            {/* Elegant Store Environment */}
+            <div className="relative w-full h-full bg-gradient-to-b from-gray-100/95 to-gray-50/95 dark:from-slate-800/95 dark:to-slate-900/95 rounded-2xl backdrop-blur-md border border-white/30">
               
-              {/* Beautiful Store Displays - Items on Shelves, Glass Cases, and Mannequins */}
+              {/* Refined Store Header */}
+              <div className="absolute top-6 left-0 right-0 text-center z-10">
+                <p className="text-gray-600 dark:text-gray-300 italic text-lg font-light">
+                  "Browse our curated collection of premium gifts"
+                </p>
+              </div>
+              
+              {/* Premium Item Displays - Clean Glass Cases, Elegant Mannequins, and Refined Shelves */}
               {LUXURY_ITEMS.map((item) => (
                 <motion.div
                   key={item.id}
@@ -200,31 +201,32 @@ export default function LuxuryDepartmentStore({
                   onHoverStart={() => setHoveredItem(item.id)}
                   onHoverEnd={() => setHoveredItem(null)}
                 >
-                  {/* Display Type - Glass Case */}
+                  {/* Display Type - Refined Glass Case */}
                   {item.displayType === 'case' && (
                     <div className="relative">
-                      {/* Glass Case Base */}
-                      <div className="w-32 h-20 bg-gradient-to-b from-slate-100/80 to-slate-200/60 rounded-lg border-2 border-white/40 backdrop-blur-sm shadow-xl">
-                        {/* Glass Top */}
-                        <div className="absolute inset-x-1 top-1 bottom-6 bg-gradient-to-br from-white/30 to-transparent rounded-md border border-white/50" />
+                      {/* Elegant Glass Display Case */}
+                      <div className="w-40 h-28 bg-gradient-to-b from-white/90 to-gray-100/80 rounded-xl border border-gray-200/60 backdrop-blur-sm shadow-2xl overflow-hidden">
+                        {/* Glass Reflection Effect */}
+                        <div className="absolute inset-x-2 top-2 bottom-8 bg-gradient-to-br from-white/40 via-transparent to-white/20 rounded-lg border border-white/60" />
                         
-                        {/* Item Inside Case */}
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        {/* Premium Item Display */}
+                        <div className="absolute inset-0 flex items-center justify-center pt-2">
                           <motion.div
-                            className={`w-8 h-8 bg-gradient-to-br ${getRarityColor(item.rarity)} rounded-full flex items-center justify-center shadow-lg`}
-                            animate={{ rotateY: 360 }}
-                            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                            className={`w-12 h-12 bg-gradient-to-br ${getRarityColor(item.rarity)} rounded-full flex items-center justify-center shadow-xl border-2 border-white/30`}
+                            animate={{ rotateY: [0, 360] }}
+                            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
                           >
-                            <Diamond className="w-4 h-4 text-white" />
+                            <Diamond className="w-6 h-6 text-white drop-shadow-lg" />
                           </motion.div>
                         </div>
                         
-                        {/* Luxury Lighting */}
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-yellow-300/60 to-transparent" />
+                        {/* Sophisticated Lighting */}
+                        <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-20 h-2 bg-gradient-to-r from-transparent via-amber-200/80 to-transparent rounded-full" />
+                        <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-blue-200/40 to-transparent" />
                       </div>
                       
-                      {/* Case Label */}
-                      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/70 px-2 py-1 rounded text-white text-xs font-medium">
+                      {/* Elegant Name Plate */}
+                      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-gray-800 to-gray-700 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-lg border border-gray-600/50">
                         {item.name}
                       </div>
                     </div>
