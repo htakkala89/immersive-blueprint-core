@@ -115,23 +115,39 @@ export const ScheduledActivity = z.object({
   conversationContext: z.string().optional(),
 });
 
-// Economic System Data Types
+// Quest System Data Types
 export const Quest = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
-  location: z.string(),
-  difficulty: z.enum(['E', 'D', 'C', 'B', 'A', 'S']),
-  reward: z.object({
+  longDescription: z.string(),
+  rank: z.enum(['E', 'D', 'C', 'B', 'A', 'S']),
+  type: z.enum(['gate_clearance', 'monster_hunt', 'escort', 'investigation', 'emergency']),
+  sender: z.string(),
+  targetLocation: z.string(),
+  objectives: z.array(z.object({
+    id: z.string(),
+    description: z.string(),
+    completed: z.boolean(),
+    progress: z.number().optional(),
+    target: z.number().optional()
+  })),
+  rewards: z.object({
     gold: z.number(),
     experience: z.number(),
     items: z.array(z.string()).optional(),
+    affection: z.number().optional()
   }),
-  requirements: z.object({
-    level: z.number().optional(),
-    completedQuests: z.array(z.string()).optional(),
-  }).optional(),
-  status: z.enum(['available', 'active', 'completed', 'failed']),
+  timeLimit: z.number().optional(), // hours
+  difficulty: z.number().min(1).max(10),
+  status: z.enum(['received', 'accepted', 'in_progress', 'completed', 'failed', 'expired']),
+  acceptedAt: z.string().optional(), // ISO date string
+  completedAt: z.string().optional(), // ISO date string
+  receivedAt: z.string(), // ISO date string
+  estimatedDuration: z.number(), // hours
+  prerequisites: z.array(z.string()).optional(),
+  isUrgent: z.boolean().default(false),
+  guildSupport: z.boolean().default(false)
 });
 
 export const MarketItem = z.object({

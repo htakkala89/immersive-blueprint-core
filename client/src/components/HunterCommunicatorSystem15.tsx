@@ -52,9 +52,21 @@ interface SystemAlert {
   read: boolean;
   questData?: {
     rank: string;
+    type: string;
     reward: number;
     location: string;
     description: string;
+    longDescription: string;
+    objectives: Array<{
+      id: string;
+      description: string;
+      completed: boolean;
+    }>;
+    timeLimit?: number;
+    difficulty: number;
+    estimatedDuration: number;
+    isUrgent: boolean;
+    guildSupport: boolean;
   };
 }
 
@@ -69,12 +81,14 @@ interface CharacterState {
 interface HunterCommunicatorSystem15Props {
   isVisible: boolean;
   onClose: () => void;
-  onQuestAccept: (questId: string) => void;
+  onQuestAccept: (questData: any) => void;
   onNewMessage: (conversationId: string, message: string) => void;
   onActivityProposed?: (activity: any) => void;
+  onQuestDecline?: (questId: string) => void;
   playerLocation?: string;
   timeOfDay?: string;
   chaHaeInState?: CharacterState;
+  activeQuests?: any[];
 }
 
 export function HunterCommunicatorSystem15({
@@ -343,10 +357,73 @@ export function HunterCommunicatorSystem15({
       type: 'quest',
       read: false,
       questData: {
-        rank: 'B-Rank',
+        rank: 'B',
+        type: 'gate_clearance',
         reward: 35000000,
-        location: 'Hongdae District, Seoul',
-        description: 'A red gate has materialized near Hongik University. Initial reconnaissance suggests Orc-type monsters with a possible elite variant. Estimated clearance time: 2-3 hours. Guild support available upon request.'
+        location: 'hongdae_cafe',
+        description: 'Clear B-Rank Red Gate in Hongdae District',
+        longDescription: 'A red gate has materialized near Hongik University. Initial reconnaissance suggests Orc-type monsters with a possible elite variant. Estimated clearance time: 2-3 hours. Guild support available upon request.',
+        objectives: [
+          {
+            id: 'obj_1',
+            description: 'Enter the Red Gate',
+            completed: false
+          },
+          {
+            id: 'obj_2', 
+            description: 'Eliminate all monsters (0/15)',
+            completed: false
+          },
+          {
+            id: 'obj_3',
+            description: 'Defeat the Gate Boss',
+            completed: false
+          }
+        ],
+        timeLimit: 6,
+        difficulty: 7,
+        estimatedDuration: 3,
+        isUrgent: true,
+        guildSupport: true
+      }
+    },
+    {
+      id: 'quest_002',
+      title: 'Investigation: Missing Hunter Reports',
+      sender: 'Hunter Association',
+      content: 'Three C-Rank hunters have gone missing during routine dungeon runs. Investigate their last known locations.',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      type: 'quest',
+      read: false,
+      questData: {
+        rank: 'C',
+        type: 'investigation',
+        reward: 8500000,
+        location: 'myeongdong_restaurant',
+        description: 'Investigate missing hunter reports',
+        longDescription: 'Three C-Rank hunters - Kim Min-jun, Park So-young, and Lee Hyun-woo - have failed to report back from their assigned dungeons. Their last known locations were in the Myeongdong area. Investigate their disappearance and determine if foul play is involved.',
+        objectives: [
+          {
+            id: 'obj_1',
+            description: 'Interview witnesses at last known locations',
+            completed: false
+          },
+          {
+            id: 'obj_2',
+            description: 'Examine the dungeons they entered',
+            completed: false
+          },
+          {
+            id: 'obj_3',
+            description: 'File comprehensive report',
+            completed: false
+          }
+        ],
+        timeLimit: 24,
+        difficulty: 5,
+        estimatedDuration: 8,
+        isUrgent: false,
+        guildSupport: false
       }
     }
   ]);
@@ -427,7 +504,47 @@ export function HunterCommunicatorSystem15({
   };
 
   const acceptQuest = (questId: string) => {
-    onQuestAccept(questId);
+    const alert = systemAlerts.find(a => a.id === questId);
+    if (alert && alert.questData) {
+      // Create full quest object for System 3 Quest Log
+      const questData = {
+        id: questId,
+        title: alert.title,
+        description: alert.questData.description,
+        longDescription: alert.questData.longDescription,
+        rank: alert.questData.rank,
+        type: alert.questData.type,
+        sender: alert.sender,
+        targetLocation: alert.questData.location,
+        objectives: alert.questData.objectives,
+        rewards: {
+          gold: alert.questData.reward,
+          experience: Math.floor(alert.questData.reward * 0.1),
+          items: [],
+          affection: alert.questData.type === 'escort' ? 5 : 0
+        },
+        timeLimit: alert.questData.timeLimit,
+        difficulty: alert.questData.difficulty,
+        status: 'accepted' as const,
+        acceptedAt: new Date().toISOString(),
+        receivedAt: alert.timestamp.toISOString(),
+        estimatedDuration: alert.questData.estimatedDuration,
+        prerequisites: [],
+        isUrgent: alert.questData.isUrgent,
+        guildSupport: alert.questData.guildSupport
+      };
+
+      // Pass complete quest data to parent component for integration with System 3 & 8
+      onQuestAccept(questData);
+      
+      // Remove from alerts and mark as accepted
+      setSystemAlerts(prev => prev.filter(a => a.id !== questId));
+      setSelectedAlert(null);
+    }
+  };
+
+  const declineQuest = (questId: string) => {
+    setSystemAlerts(prev => prev.filter(a => a.id !== questId));
     setSelectedAlert(null);
   };
 

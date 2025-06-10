@@ -524,7 +524,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           sense: 10
         },
         skills: [],
-        scheduledActivities: []
+        scheduledActivities: [],
+        activeQuests: [],
+        completedQuests: []
       };
 
       // Use the existing dual-generator system
