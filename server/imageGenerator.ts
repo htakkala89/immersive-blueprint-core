@@ -8,7 +8,7 @@ const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPE
 
 // Rate limiting for image generation
 let lastImageGeneration = 0;
-const IMAGE_GENERATION_COOLDOWN = 1000; // 1 second between generations
+const IMAGE_GENERATION_COOLDOWN = 500; // 0.5 seconds between generations for better responsiveness
 
 // Image cache to reduce generation times
 const imageCache = new Map<string, { url: string; timestamp: number }>();
