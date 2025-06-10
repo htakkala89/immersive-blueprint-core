@@ -1048,7 +1048,7 @@ export function DungeonRaidSystem11Fixed({
             e.id === targetEnemy.id ? { ...e, health: Math.max(0, e.health - finalDamage) } : e
           ));
           
-          showDamageNumber(finalDamage, targetEnemy.x + 20, targetEnemy.y, isStunnedTarget);
+          showDamageNumber(finalDamage, targetEnemy.x + 20, targetEnemy.y, Boolean(isStunnedTarget));
           
           if (isStunnedTarget) {
             addToCombatLog(`Cha Hae-In exploits the opening for ${finalDamage} damage!`);
@@ -1075,9 +1075,12 @@ export function DungeonRaidSystem11Fixed({
           const attackingEnemy = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
           
           // Create telegraph warning
+          const attackTypes: ('attack' | 'charge' | 'slam')[] = ['attack', 'charge', 'slam'];
+          const randomType = attackTypes[Math.floor(Math.random() * attackTypes.length)];
+          
           const telegraph = {
             enemyId: attackingEnemy.id,
-            type: Math.random() < 0.5 ? 'attack' : Math.random() < 0.7 ? 'charge' : 'slam' as const,
+            type: randomType,
             dangerZone: {
               x: jinwoo.x - 30,
               y: jinwoo.y - 20,
