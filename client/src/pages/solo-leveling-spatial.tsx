@@ -1832,10 +1832,10 @@ export default function SoloLevelingSpatial() {
             console.log('🔍 SWITCH STATEMENT - Processing nodeId:', nodeId);
             switch (nodeId) {
               case 'red_gate_entrance':
+              case 'red_gate':
                 // Enter the Red Gate dungeon for quest completion
                 console.log('🚪 RED GATE ENTRANCE CASE MATCHED - Opening dungeon raid');
                 console.log('Current showDungeonRaid state:', showDungeonRaid);
-                alert('Red Gate clicked! Opening dungeon...');
                 setShowDungeonRaid(true);
                 console.log('Dungeon raid state set to true');
                 console.log('🎯 Red Gate case executed successfully');
