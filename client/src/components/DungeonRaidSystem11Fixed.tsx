@@ -216,7 +216,7 @@ export function DungeonRaidSystem11({
       const aliveEnemies = enemies.filter(e => !e.isAlly && e.health > 0);
       
       if (aliveEnemies.length === 0) {
-        console.log(`Room ${currentRoom} cleared!`);
+        console.log(`🏆 ROOM ${currentRoom} CLEARED! Moving to next room...`);
         
         if (currentRoom === totalRooms) {
           // Dungeon complete
