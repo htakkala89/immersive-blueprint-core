@@ -63,6 +63,10 @@ export function DungeonRaidSystem11({
   affectionLevel 
 }: RaidProps) {
   const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'victory' | 'defeat' | 'room_clear'>('prep');
+  
+  // Debug logging for game phase
+  console.log('🎮 Current game phase:', gamePhase);
+  console.log('🎮 Component isVisible:', isVisible);
   const [currentRoom, setCurrentRoom] = useState(1);
   const [currentWave, setCurrentWave] = useState(1);
   const [roomExits, setRoomExits] = useState<Array<{
