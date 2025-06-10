@@ -29,6 +29,7 @@ import GangnamFurnishings from '@/components/GangnamFurnishings';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
 import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSystem9';
+import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 
 interface GameState {
   level: number;
@@ -48,6 +49,8 @@ interface GameState {
   maxExperience?: number;
   apartmentTier?: number;
   playerId?: string;
+  activeQuests?: any[];
+  completedQuests?: any[];
 }
 
 interface WorldLocation {
@@ -123,7 +126,9 @@ export default function SoloLevelingSpatial() {
     intimacyLevel: 1,
     energy: 80,
     maxEnergy: 100,
-    apartmentTier: 2
+    apartmentTier: 2,
+    activeQuests: [],
+    completedQuests: []
   });
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('afternoon');
@@ -1306,9 +1311,23 @@ export default function SoloLevelingSpatial() {
   }, [timeOfDay]);
 
   // System 15: Notification handlers
-  const handleQuestAccept = (questId: string) => {
-    console.log('Quest accepted:', questId);
-    setNotifications(prev => prev.filter(n => n.id !== questId));
+  const handleQuestAccept = (questData: any) => {
+    console.log('Quest accepted from System 15:', questData);
+    
+    // Add to active quests in game state for System 3 Quest Log
+    setGameState(prev => ({
+      ...prev,
+      activeQuests: [...(prev.activeQuests || []), questData]
+    }));
+    
+    // Update active quests for System 8 World Map tracking
+    setActiveQuests(prev => [...prev, questData]);
+    
+    // Mark quest location on world map with golden exclamation point
+    console.log(`Quest location "${questData.targetLocation}" marked on World Map with golden (!) indicator`);
+    
+    // Quest is now available in Monarch's Aura Quest Log (System 3)
+    console.log(`"${questData.title}" added to Quest Log - Access via Monarch's Aura > Quests tab`);
   };
 
   const handleNewMessage = (conversationId: string, message: string) => {
