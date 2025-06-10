@@ -2403,10 +2403,10 @@ export default function SoloLevelingSpatial() {
       
 
 
-      {/* Monarch's Aura - Simple Dropdown Menu */}
+      {/* Monarch's Aura - Compact Clean Menu */}
       {monarchAuraVisible && (
-        <div className="fixed top-20 right-6 w-48 bg-purple-800/60 backdrop-blur-xl border border-white/40 rounded-xl p-4 z-[9998] shadow-2xl" style={{ backdropFilter: 'blur(40px) saturate(180%)', borderImage: 'linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1)) 1' }}>
-          <div className="text-white text-lg mb-3 font-semibold drop-shadow-lg">Monarch's Aura</div>
+        <div className="fixed top-20 right-6 w-40 bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg p-2 z-[9998] shadow-2xl" style={{ backdropFilter: 'blur(20px)' }}>
+          <div className="text-white text-sm mb-2 font-medium text-center opacity-80">Systems</div>
           {[
             { icon: Package, label: 'Inventory', color: 'text-purple-300', onClick: () => { setShowInventory(true); setMonarchAuraVisible(false); } },
             { icon: Crown, label: 'Armory', color: 'text-amber-300', onClick: () => { setShowMonarchArmory(true); setMonarchAuraVisible(false); } },
@@ -2421,11 +2421,11 @@ export default function SoloLevelingSpatial() {
           ].map((item, index) => (
             <button
               key={item.label}
-              className="w-full flex items-center gap-3 p-3 rounded-lg text-white hover:bg-white/20 transition-all mb-2 bg-white/5 border border-white/10"
+              className="w-full flex items-center gap-2 p-2 rounded text-white hover:bg-white/10 transition-all mb-1"
               onClick={item.onClick}
             >
-              <item.icon className={`w-6 h-6 ${item.color} drop-shadow-lg`} />
-              <span className="text-sm font-medium drop-shadow-sm">{item.label}</span>
+              <item.icon className={`w-4 h-4 ${item.color}`} />
+              <span className="text-xs font-medium">{item.label}</span>
             </button>
           ))}
         </div>
