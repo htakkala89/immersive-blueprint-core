@@ -646,22 +646,69 @@ export default function SoloLevelingSpatial() {
     },
 
     // Player's Personal Space
-    player_apartment: {
-      id: 'player_apartment',
-      name: 'Your Apartment',
-      description: 'Your modest but comfortable home base in Seoul',
-      backgroundImage: '/api/scenes/player_apartment.jpg',
-      chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
-      chaActivity: 'relaxing on your couch, looking comfortable in your space',
-      chaPosition: { x: 40, y: 55 },
-      chaExpression: 'loving' as const,
-      interactiveElements: [
-        { id: 'bedroom', name: 'Bedroom', position: { x: 20, y: 30 }, action: 'Lead her to the bedroom' },
-        { id: 'couch_intimate', name: 'Living Room Couch', position: { x: 45, y: 60 }, action: 'Make love on the couch' },
-        { id: 'kitchen_counter', name: 'Kitchen Counter', position: { x: 70, y: 40 }, action: 'Intimate kitchen encounter' },
-        { id: 'shower_room', name: 'Bathroom', position: { x: 80, y: 25 }, action: 'Shower together' }
-      ]
-    },
+    player_apartment: (() => {
+      const apartmentTier = gameState.apartmentTier || 1;
+      
+      // Dynamic apartment based on tier
+      if (apartmentTier >= 3) {
+        // Tier 3: Hannam-dong Penthouse
+        return {
+          id: 'player_apartment',
+          name: 'Hannam-dong Penthouse',
+          description: 'Your luxurious penthouse with panoramic city views and premium amenities',
+          backgroundImage: '/api/scenes/hannam_penthouse.jpg',
+          chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
+          chaActivity: 'admiring the city skyline from your floor-to-ceiling windows',
+          chaPosition: { x: 50, y: 45 },
+          chaExpression: 'loving' as const,
+          interactiveElements: [
+            { id: 'master_bedroom', name: 'Master Suite', position: { x: 20, y: 25 }, action: 'Private penthouse bedroom' },
+            { id: 'infinity_pool', name: 'Infinity Pool', position: { x: 75, y: 30 }, action: 'Romantic pool encounter' },
+            { id: 'wine_cellar', name: 'Wine Cellar', position: { x: 15, y: 65 }, action: 'Intimate wine tasting' },
+            { id: 'panoramic_balcony', name: 'City View Balcony', position: { x: 85, y: 50 }, action: 'Passionate balcony moments' },
+            { id: 'luxury_bathroom', name: 'Marble Bathroom', position: { x: 45, y: 70 }, action: 'Luxurious bath together' },
+            { id: 'private_elevator', name: 'Private Elevator', position: { x: 60, y: 80 }, action: 'Elevator intimacy' }
+          ]
+        };
+      } else if (apartmentTier >= 2) {
+        // Tier 2: Gangnam High-Rise
+        return {
+          id: 'player_apartment',
+          name: 'Gangnam High-Rise',
+          description: 'Your upscale apartment in Seoul\'s premier district with modern amenities',
+          backgroundImage: '/api/scenes/gangnam_apartment.jpg',
+          chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
+          chaActivity: 'enjoying the sophisticated atmosphere of your upgraded home',
+          chaPosition: { x: 45, y: 50 },
+          chaExpression: 'loving' as const,
+          interactiveElements: [
+            { id: 'modern_bedroom', name: 'Modern Bedroom', position: { x: 25, y: 30 }, action: 'Stylish bedroom romance' },
+            { id: 'city_view_couch', name: 'City View Living Room', position: { x: 55, y: 55 }, action: 'Intimate moments with city lights' },
+            { id: 'designer_kitchen', name: 'Designer Kitchen', position: { x: 70, y: 35 }, action: 'Kitchen counter passion' },
+            { id: 'luxury_shower', name: 'Rain Shower', position: { x: 80, y: 25 }, action: 'Steamy shower romance' },
+            { id: 'rooftop_access', name: 'Rooftop Garden', position: { x: 40, y: 20 }, action: 'Garden terrace intimacy' }
+          ]
+        };
+      } else {
+        // Tier 1: Basic Apartment
+        return {
+          id: 'player_apartment',
+          name: 'Your Apartment',
+          description: 'Your modest but comfortable home base in Seoul',
+          backgroundImage: '/api/scenes/player_apartment.jpg',
+          chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
+          chaActivity: 'relaxing on your couch, looking comfortable in your space',
+          chaPosition: { x: 40, y: 55 },
+          chaExpression: 'loving' as const,
+          interactiveElements: [
+            { id: 'bedroom', name: 'Bedroom', position: { x: 20, y: 30 }, action: 'Lead her to the bedroom' },
+            { id: 'couch_intimate', name: 'Living Room Couch', position: { x: 45, y: 60 }, action: 'Make love on the couch' },
+            { id: 'kitchen_counter', name: 'Kitchen Counter', position: { x: 70, y: 40 }, action: 'Intimate kitchen encounter' },
+            { id: 'shower_room', name: 'Bathroom', position: { x: 80, y: 25 }, action: 'Shower together' }
+          ]
+        };
+      }
+    })(),
 
     // System 7 Commerce Locations
     luxury_department_store: {
@@ -1658,6 +1705,7 @@ export default function SoloLevelingSpatial() {
           <div className="mb-3">
             <div className="text-xs text-gray-300 mb-1">Gold: ₩{(gameState.gold || 0).toLocaleString()}</div>
             <div className="text-xs text-yellow-300 mb-1">Type: {typeof gameState.gold} | Raw: {gameState.gold}</div>
+            <div className="text-xs text-purple-300 mb-1">Apartment Tier: {gameState.apartmentTier || 1}</div>
           </div>
 
           {/* Story Progress Controls */}
