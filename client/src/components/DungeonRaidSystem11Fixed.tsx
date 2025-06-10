@@ -373,12 +373,11 @@ export function DungeonRaidSystem11({
               : enemy
           ).filter(enemy => enemy.health > 0));
 
-          setFloatingDamage(prev => [...prev, {
+          setDamageNumbers(prev => [...prev, {
             id: `cha-damage-${Date.now()}`,
             damage: damage,
             x: nearestEnemy.x,
             y: nearestEnemy.y,
-            color: 'text-blue-400',
             timestamp: Date.now()
           }]);
         }
@@ -415,12 +414,11 @@ export function DungeonRaidSystem11({
               : enemy
           ).filter(enemy => enemy.health > 0));
 
-          setFloatingDamage(prev => [...prev, {
+          setDamageNumbers(prev => [...prev, {
             id: `shadow-damage-${shadowSoldier.id}-${Date.now()}`,
             damage: damage,
             x: nearestEnemyToShadow.x,
             y: nearestEnemyToShadow.y,
-            color: 'text-purple-400',
             timestamp: Date.now()
           }]);
 
