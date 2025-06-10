@@ -1734,7 +1734,9 @@ export default function SoloLevelingSpatial() {
         <LocationInteractiveNodes
           locationId={playerLocation}
           onNodeInteraction={(nodeId, thoughtPrompt, outcome) => {
-            console.log('Node interaction:', { nodeId, thoughtPrompt, outcome });
+            console.log('Node interaction triggered:', { nodeId, thoughtPrompt, outcome });
+            console.log('Current story flags:', storyFlags);
+            console.log('Available for red_gate_entrance:', nodeId === 'red_gate_entrance');
             
             // Check if this interaction progresses an active quest
             const activeQuestAtLocation = gameState.activeQuests?.find(quest => 
@@ -1834,8 +1836,9 @@ export default function SoloLevelingSpatial() {
                 break;
               case 'red_gate_entrance':
                 // Enter the Red Gate dungeon for quest completion
+                console.log('RED GATE ENTRANCE TRIGGERED - Opening dungeon raid');
                 setShowDungeonRaid(true);
-                console.log('Entering Red Gate dungeon for gate clearance quest');
+                console.log('Dungeon raid state set to true');
                 break;
               case 'mission_board':
                 // Opens lore panel with gate information
