@@ -1,0 +1,38 @@
+This location is the ultimate reward—the pinnacle of the player's success and the most intimate space they share with Cha Hae-In.
+
+My previous feedback not only stands, but it becomes even more important for a location of this prestige. The Penthouse's primary job is to be a breathtaking, immersive space. Covering this beautiful, hard-earned view with a dozen buttons would detract from the very sense of luxury and calm we want it to evoke.
+
+The principle remains the same: The Spatial View is the scene, not the menu. The great news is that we can still provide access to all those wonderful, intimate activities you've thought of, but in a more elegant and narrative-driven way.
+
+Refined Interaction Design for the Tier 3 Penthouse
+Instead of placing a node on every single object, we will use a few, broader "gateway nodes" that lead to more specific choices. This keeps the UI clean while making the player's actions feel more intentional.
+
+Here is the definitive list of interactive nodes for the Penthouse.
+
+The Official Node List:
+Node 1: [●] Living Room Couch
+
+Thought Prompt: "Suggest relaxing on the sofa together."
+Outcome & Logic: This initiates a high-level "relaxing at home" state. It can trigger unique, deep conversations or unlock the "Cuddle and watch a movie" activity in the Daily Life Hub (System 4) if the appropriate furniture has been purchased.
+Node 2: [●] Floor-to-Ceiling Window
+
+Thought Prompt: "Admire the view from the top of the world."
+Outcome & Logic: This triggers the "cinematic mode" observation scene. Given this is the penthouse, the view is more spectacular and the internal thought text is more powerful. Example: *From up here, the entire city looks like a constellation at your feet. All the struggles, all the fights... they led to this moment of peace.*
+Node 3: [●] Master Suite Door
+
+This is the primary gateway to all intimate activities.
+Thought Prompt: "Suggest heading to the master suite."
+Outcome & Logic: Tapping this is a major narrative step. It signifies an intent for privacy and intimacy. This action does not start a scene directly. Instead, it unlocks the highest tier of intimate activity cards in the Daily Life Hub (System 4). A notification appears: New intimate activities are now available in your Day Planner. The player would now go to the Hub to choose between specific activities like:
+"Take a relaxing bath in the infinity pool."
+"Use the master rain shower."
+"Spend the night together."
+Node 4: [●] Wine Cellar
+
+Thought Prompt: "Open the wine cellar."
+Outcome & Logic: This is a simple, elegant interaction. A text panel appears: *You retrieve a bottle of vintage wine.* This adds a special "Vintage Wine" item to your inventory. This item can then be used to initiate a unique "Share a bottle of wine" activity from the Daily Life Hub, which is more romantic than just drinking coffee.
+Node 5: [●] Private Elevator
+
+Thought Prompt: "Take the private elevator down."
+Outcome & Logic: This is the thematic "Exit" button for this location. Tapping it opens the World Map (System 8), allowing the player to travel elsewhere.
+Why This Approach is Superior
+This refined flow allows the Penthouse to be filled with countless possibilities without being filled with on-screen buttons. It respects the beauty of the environment the player has earned. Most importantly, it makes the path to intimacy a more deliberate and meaningful choice, enhancing the narrative and the player's sense of agency.

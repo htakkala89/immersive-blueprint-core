@@ -748,8 +748,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat endpoint with activity proposal system integration and mature content handling
   app.post("/api/chat", async (req, res) => {
     try {
-      const { message, gameState, context } = req.body;
+      const { 
+        message, 
+        gameState, 
+        context, 
+        conversationHistory, 
+        characterState, 
+        isUrgent, 
+        proposedActivity, 
+        communicatorMode 
+      } = req.body;
       const playerId = gameState.playerId || 'default_player';
+      
+      // Handle communicator mode with conversation continuity
+      if (communicatorMode && conversationHistory) {
+        console.log('📱 Hunter\'s Communicator mode - maintaining conversation continuity');
+        
+        const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
+        
+        const model = genAI.getGenerativeModel({ 
+          model: "gemini-1.5-flash",
+          safetySettings: [
+            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
+          ]
+        });
+
+        // Build conversation context for continuity
+        const conversationContext = {
+          affectionLevel: Math.floor((characterState?.affectionLevel || 25) / 20),
+          currentScene: characterState?.location || 'hunter_association',
+          timeOfDay: context?.timeOfDay || 'afternoon',
+          recentActivity: characterState?.activity,
+          mood: 'focused',
+          userBehavior: 'positive'
+        };
+
+        const personalityPrompt = getPersonalityPrompt(conversationContext);
+        
+        // Build conversation history for context
+        const historyContext = conversationHistory.slice(-6).map((msg: any) => 
+          `${msg.senderName}: ${msg.content}`
+        ).join('\n');
+
+        const fullPrompt = `${personalityPrompt}
+
+HUNTER'S COMMUNICATOR CONVERSATION:
+You are continuing an ongoing conversation with Jin-Woo through the Hunter's Communicator messaging system.
+
+Current Status: ${characterState?.status || 'available'}
+Current Activity: ${characterState?.activity || 'reviewing reports at the Association'}
+Location: ${characterState?.location || 'hunter_association'}
+Time: ${context?.timeOfDay || 'afternoon'}
+
+Recent conversation history:
+${historyContext}
+
+Jin-Woo just sent: "${message}"
+
+${isUrgent ? 'This message seems urgent - respond accordingly.' : ''}
+${proposedActivity ? `Jin-Woo proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
+
+IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses. Keep your response conversational and authentic to Cha Hae-In's character - professional but warm, strong but caring. Vary your responses based on the conversation history.
+
+Respond naturally as if you're texting Jin-Woo back:`;
+
+        const result = await model.generateContent(fullPrompt);
+        const response = result.response.text();
+
+        return res.json({
+          response: response.trim(),
+          gameState: updatedGameState || gameState,
+          expression: 'focused'
+        });
+      }
       
       // System 9: Generate contextual narrative analysis
       const narrativeContext = narrativeEngine.generateContextualNarrative(playerId, `Player said: "${message}" at ${context?.location || 'unknown location'}`);

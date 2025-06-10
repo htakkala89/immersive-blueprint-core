@@ -172,8 +172,65 @@ export function HunterCommunicatorSystem15({
     }
   };
 
-  // Generate AI response based on context
-  const generateAIResponse = (playerMessage: string, isUrgent: boolean, proposedActivity: any): string => {
+  // Generate AI response with conversation continuity
+  const generateAIResponse = async (playerMessage: string, isUrgent: boolean, proposedActivity: any): Promise<string> => {
+    try {
+      // Get current conversation history
+      const currentConversation = conversations.find(conv => conv.id === selectedConversation);
+      const chatHistory = currentConversation?.messages || [];
+      
+      // Build context for AI
+      const contextualPrompt = buildConversationContext(playerMessage, chatHistory, isUrgent, proposedActivity);
+      
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: contextualPrompt,
+          characterName: 'Cha Hae-In',
+          conversationHistory: chatHistory.slice(-10), // Last 10 messages for context
+          characterState: chaState,
+          isUrgent,
+          proposedActivity,
+          communicatorMode: true
+        })
+      });
+
+      const data = await response.json();
+      return data.response || generateFallbackResponse(playerMessage, isUrgent, proposedActivity);
+    } catch (error) {
+      console.error('Error generating AI response:', error);
+      return generateFallbackResponse(playerMessage, isUrgent, proposedActivity);
+    }
+  };
+
+  // Build conversation context for AI
+  const buildConversationContext = (playerMessage: string, chatHistory: Message[], isUrgent: boolean, proposedActivity: any): string => {
+    let context = `You are Cha Hae-In from Solo Leveling. You're having an ongoing conversation with Sung Jin-Woo through the Hunter's Communicator. 
+
+Current Status: ${chaState.status}
+Current Activity: ${chaState.activity}
+Location: ${chaState.location}
+Affection Level: ${chaState.affectionLevel}/100
+Time: ${timeOfDay}
+
+IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses.
+
+Recent conversation history:
+${chatHistory.slice(-6).map(msg => `${msg.senderName}: ${msg.content}`).join('\n')}
+
+Jin-Woo just said: "${playerMessage}"
+
+${isUrgent ? 'This message seems urgent - respond accordingly.' : ''}
+${proposedActivity ? `Jin-Woo proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
+
+Respond as Cha Hae-In would naturally continue this conversation. Keep it authentic to her character - professional but warm, strong but caring. Vary your responses and build on the conversation history.`;
+
+    return context;
+  };
+
+  // Fallback response system
+  const generateFallbackResponse = (playerMessage: string, isUrgent: boolean, proposedActivity: any): string => {
     if (isUrgent) {
       return "I'm in the middle of something important, but I saw your message. Are you alright? I can step away if you need me.";
     }
@@ -186,7 +243,7 @@ export function HunterCommunicatorSystem15({
       }
     }
 
-    // Context-aware casual responses
+    // Context-aware casual responses as fallback
     const casualResponses: Record<string, string[]> = {
       available: [
         "Just finished up here. How's your day going?",
@@ -267,32 +324,40 @@ export function HunterCommunicatorSystem15({
     // Schedule AI response
     const responseDelay = calculateResponseDelay(isUrgent);
     if (responseDelay > 0) {
-      setTimeout(() => {
-        const aiResponse = generateAIResponse(content, isUrgent, proposedActivity);
-        const responseMessage: Message = {
-          id: `msg_${Date.now()}_ai`,
-          senderId: 'cha_hae_in',
-          senderName: 'Cha Hae-In',
-          content: aiResponse,
-          timestamp: new Date(),
-          read: false,
-          state: 'delivered'
-        };
+      setTimeout(async () => {
+        try {
+          setIsTyping(true);
+          const aiResponse = await generateAIResponse(content, isUrgent, proposedActivity);
+          
+          const responseMessage: Message = {
+            id: `msg_${Date.now()}_ai`,
+            senderId: 'cha_hae_in',
+            senderName: 'Cha Hae-In',
+            content: aiResponse,
+            timestamp: new Date(),
+            read: false,
+            state: 'delivered'
+          };
 
-        setConversations(prev => prev.map(conv => 
-          conv.id === selectedConversation 
-            ? {
-                ...conv,
-                messages: [...conv.messages, responseMessage],
-                lastMessage: responseMessage,
-                unreadCount: conv.unreadCount + 1
-              }
-            : conv
-        ));
+          setConversations(prev => prev.map(conv => 
+            conv.id === selectedConversation 
+              ? {
+                  ...conv,
+                  messages: [...conv.messages, responseMessage],
+                  lastMessage: responseMessage,
+                  unreadCount: conv.unreadCount + 1
+                }
+              : conv
+          ));
 
-        // Trigger activity proposal if detected
-        if (proposedActivity && onActivityProposed) {
-          onActivityProposed(proposedActivity);
+          // Trigger activity proposal if detected
+          if (proposedActivity && onActivityProposed) {
+            onActivityProposed(proposedActivity);
+          }
+        } catch (error) {
+          console.error('Error generating AI response:', error);
+        } finally {
+          setIsTyping(false);
         }
       }, responseDelay);
     }
