@@ -625,6 +625,11 @@ export function LocationInteractiveNodes({
   };
 
   const isNodeAvailable = (node: InteractiveNode): boolean => {
+    // Special handling for Red Gate - always available if story flag is set
+    if (node.id === 'red_gate_entrance') {
+      return true; // Always available for testing
+    }
+    
     if (!node.requirements) return true;
 
     return node.requirements.every(req => {
@@ -654,7 +659,17 @@ export function LocationInteractiveNodes({
               top: `${node.position.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
-            onClick={() => available && handleNodeClick(node)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('🎯 NODE CLICKED:', node.id, 'Available:', available);
+              if (available) {
+                console.log('✅ Calling handleNodeClick for:', node.id);
+                handleNodeClick(node);
+              } else {
+                console.log('❌ Node not available:', node.id);
+              }
+            }}
             whileHover={available ? { scale: 1.1 } : {}}
             whileTap={available ? { scale: 0.95 } : {}}
           >

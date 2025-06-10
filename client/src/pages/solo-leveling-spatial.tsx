@@ -51,6 +51,12 @@ interface GameState {
   playerId?: string;
   activeQuests?: any[];
   completedQuests?: any[];
+  storyFlags?: {
+    redGateUnlocked?: boolean;
+    dungeonAccessGranted?: boolean;
+    tutorialCompleted?: boolean;
+    firstMissionActive?: boolean;
+  };
 }
 
 interface WorldLocation {
