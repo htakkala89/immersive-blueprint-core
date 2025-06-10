@@ -731,7 +731,7 @@ export function DungeonRaidSystem11({
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col p-6">
+          <div className="flex flex-col p-6" style={{ height: 'calc(90vh - 140px)' }}>
             {/* Intro Phase */}
             {gamePhase === 'intro' && (
               <motion.div
@@ -852,7 +852,7 @@ export function DungeonRaidSystem11({
 
             {/* Combat Phase */}
             {gamePhase === 'combat' && (
-              <div className="flex-1 flex flex-col">
+              <div className="flex flex-col h-full">
                 {/* Player Status */}
                 <div className="flex justify-between mb-4">
                   {players.map(player => (
@@ -892,8 +892,8 @@ export function DungeonRaidSystem11({
                 <div 
                   ref={battlefieldRef}
                   onClick={handleBattlefieldTap}
-                  className="flex-1 relative bg-slate-700/30 rounded-xl border border-slate-600/50 cursor-crosshair overflow-hidden"
-                  style={{ minHeight: '400px' }}
+                  className="relative bg-slate-700/30 rounded-xl border border-slate-600/50 cursor-crosshair overflow-hidden mb-4 flex-grow"
+                  style={{ height: '280px', maxHeight: '280px' }}
                 >
                   {/* Players */}
                   {players.map(player => (
@@ -992,8 +992,8 @@ export function DungeonRaidSystem11({
                   </AnimatePresence>
                 </div>
 
-                {/* Action Bar */}
-                <div className="flex justify-center gap-4 mb-4">
+                {/* Action Bar - Always visible */}
+                <div className="flex justify-center gap-4 py-4 bg-slate-800/30 rounded-lg">
                   {skills.map((skill, index) => (
                     <motion.button
                       key={skill.id}
