@@ -62,7 +62,16 @@ export function DungeonRaidSystem11Fixed({
   playerLevel, 
   affectionLevel 
 }: RaidProps) {
-  const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'victory' | 'defeat'>('prep');
+  const [gamePhase, setGamePhase] = useState<'prep' | 'combat' | 'room_clear' | 'shadow_dash' | 'victory' | 'defeat'>('prep');
+  const [currentRoom, setCurrentRoom] = useState(1);
+  const [roomExits, setRoomExits] = useState<Array<{
+    id: string;
+    direction: 'forward' | 'treasure' | 'boss';
+    position: { x: number; y: number };
+    glowing: boolean;
+  }>>([]);
+  const [shadowDashAnimation, setShadowDashAnimation] = useState(false);
+  const [warpTunnelActive, setWarpTunnelActive] = useState(false);
   const [synergyGauge, setSynergyGauge] = useState(0);
   const [teamUpReady, setTeamUpReady] = useState(false);
   const [combatLog, setCombatLog] = useState<string[]>([]);
@@ -266,9 +275,16 @@ export function DungeonRaidSystem11Fixed({
       triggerBossStruggle();
     }
     
-    // Check for victory
+    // Check for room clear
     if (enemies.every(e => e.health <= 0)) {
-      setTimeout(() => setGamePhase('victory'), 1000);
+      setTimeout(() => {
+        if (currentRoom >= 6) {
+          setGamePhase('victory'); // Final victory
+        } else {
+          setGamePhase('room_clear');
+          generateRoomExits();
+        }
+      }, 1000);
     }
   };
 
@@ -287,6 +303,177 @@ export function DungeonRaidSystem11Fixed({
 
   const addToCombatLog = (message: string) => {
     setCombatLog(prev => [...prev.slice(-4), message]);
+  };
+
+  const generateRoomExits = () => {
+    // Generate exits based on current room
+    const exits = [];
+    
+    if (currentRoom < 5) { // Not final room
+      // Main path forward
+      exits.push({
+        id: 'forward',
+        direction: 'forward' as const,
+        position: { x: 700, y: 200 },
+        glowing: true
+      });
+      
+      // Optional treasure room (30% chance)
+      if (Math.random() < 0.3) {
+        exits.push({
+          id: 'treasure',
+          direction: 'treasure' as const,
+          position: { x: 650, y: 120 },
+          glowing: true
+        });
+      }
+    } else {
+      // Boss room
+      exits.push({
+        id: 'boss',
+        direction: 'boss' as const,
+        position: { x: 700, y: 200 },
+        glowing: true
+      });
+    }
+    
+    setRoomExits(exits);
+    
+    // Auto-materialize exits after spoils absorption
+    setTimeout(() => {
+      setRoomExits(prev => prev.map(exit => ({ ...exit, glowing: true })));
+    }, 2000);
+  };
+
+  const handleExitChoice = (exitId: string) => {
+    const exit = roomExits.find(e => e.id === exitId);
+    if (!exit) return;
+    
+    // Start Shadow Dash sequence
+    setShadowDashAnimation(true);
+    setGamePhase('shadow_dash');
+    
+    // Step 1: Jin-Woo turns toward exit and dissolves
+    setTimeout(() => {
+      setWarpTunnelActive(true);
+    }, 500);
+    
+    // Step 2: Warp tunnel effect
+    setTimeout(() => {
+      // Progress to next room
+      if (exit.direction === 'forward') {
+        setCurrentRoom(prev => prev + 1);
+      } else if (exit.direction === 'boss') {
+        setCurrentRoom(6); // Boss room
+      }
+      
+      // Reset room state
+      resetRoomState();
+    }, 1500);
+    
+    // Step 3: Materialize in new room
+    setTimeout(() => {
+      setWarpTunnelActive(false);
+      setShadowDashAnimation(false);
+      setGamePhase('combat');
+      setRoomExits([]);
+      
+      // Generate new enemies for new room
+      generateRoomEnemies();
+    }, 2000);
+  };
+
+  const resetRoomState = () => {
+    // Reset combat state for new room
+    setSynergyGauge(0);
+    setTeamUpReady(false);
+    setCombatLog([]);
+    setLootDrops([]);
+    setTrapAlert(null);
+    setBossStruggle(null);
+    setPuzzleRunes([]);
+    
+    // Reset player positions
+    setPlayers(prev => prev.map(player => ({
+      ...player,
+      health: Math.min(player.maxHealth, player.health + 10), // Small heal between rooms
+      mana: Math.min(player.maxMana, player.mana + 20)
+    })));
+  };
+
+  const generateRoomEnemies = () => {
+    const roomTypes = {
+      1: 'entrance',
+      2: 'corridor',
+      3: 'chamber',
+      4: 'guardian',
+      5: 'antechamber',
+      6: 'boss'
+    };
+    
+    const roomType = roomTypes[currentRoom as keyof typeof roomTypes];
+    let newEnemies: Enemy[] = [];
+    
+    if (roomType === 'boss') {
+      // Final boss room
+      newEnemies = [{
+        id: 'final_boss',
+        name: 'Shadow Sovereign',
+        health: 300,
+        maxHealth: 300,
+        x: 600,
+        y: 280,
+        type: 'boss'
+      }];
+    } else if (roomType === 'guardian') {
+      // Mini-boss room
+      newEnemies = [
+        {
+          id: 'guardian',
+          name: 'Stone Guardian',
+          health: 120,
+          maxHealth: 120,
+          x: 580,
+          y: 300,
+          type: 'boss'
+        },
+        {
+          id: 'minion1',
+          name: 'Shadow Minion',
+          health: 40,
+          maxHealth: 40,
+          x: 520,
+          y: 320,
+          type: 'shadow_beast'
+        },
+        {
+          id: 'minion2',
+          name: 'Shadow Minion',
+          health: 40,
+          maxHealth: 40,
+          x: 640,
+          y: 320,
+          type: 'shadow_beast'
+        }
+      ];
+    } else {
+      // Regular rooms with escalating difficulty
+      const baseEnemies = Math.min(currentRoom + 1, 4);
+      for (let i = 0; i < baseEnemies; i++) {
+        newEnemies.push({
+          id: `enemy_${currentRoom}_${i}`,
+          name: currentRoom > 3 ? 'Elite Orc' : currentRoom > 1 ? 'Orc Warrior' : 'Shadow Beast',
+          health: 60 + (currentRoom * 10),
+          maxHealth: 60 + (currentRoom * 10),
+          x: 500 + (i * 60),
+          y: 300 + (Math.random() * 40 - 20),
+          type: currentRoom > 3 ? 'orc_warrior' : 'shadow_beast'
+        });
+      }
+    }
+    
+    setEnemies(newEnemies);
+    addToCombatLog(`Entered Room ${currentRoom} - ${roomType.charAt(0).toUpperCase() + roomType.slice(1)}`);
   };
 
   // Additional mechanics for trap, loot, struggle, etc.
@@ -491,14 +678,17 @@ export function DungeonRaidSystem11Fixed({
   // Game initialization
   useEffect(() => {
     if (isVisible && gamePhase === 'prep') {
+      setCurrentRoom(1);
+      generateRoomEnemies();
       setTimeout(() => {
         setGamePhase('combat');
-        addToCombatLog("Combat begins! Use skills strategically!");
+        addToCombatLog("Entering the Shadow Dungeon - Room 1!");
       }, 2000);
     }
     
     if (!isVisible) {
       setGamePhase('prep');
+      setCurrentRoom(1);
       setCombatLog([]);
       setSynergyGauge(0);
       setTeamUpReady(false);
@@ -508,6 +698,9 @@ export function DungeonRaidSystem11Fixed({
       setBossStruggle(null);
       setPuzzleRunes([]);
       setSynergyChimeReady(false);
+      setRoomExits([]);
+      setShadowDashAnimation(false);
+      setWarpTunnelActive(false);
     }
   }, [isVisible, gamePhase]);
 
@@ -520,15 +713,52 @@ export function DungeonRaidSystem11Fixed({
       exit={{ opacity: 0, scale: 0.9 }}
       className="fixed inset-0 z-[9999] bg-gradient-to-b from-gray-900 via-red-950 to-black overflow-hidden"
     >
-      {/* Minimized Corner UI */}
+      {/* Room Progress Indicator */}
       <div className="absolute top-2 left-2 z-30">
-        <div className="backdrop-blur-md bg-black/70 rounded-lg px-2 py-1 border border-purple-500/40 text-xs">
-          <div className="text-white font-bold">Shadow Dungeon</div>
-          <div className="flex gap-2">
-            <span className="text-red-400">B-Rank</span>
-            <span className="text-purple-400">Floor 15</span>
+        <motion.div
+          className="backdrop-blur-md bg-black/70 rounded-lg px-3 py-2 border border-purple-500/40"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-xs">
+              <div className="text-white font-bold">Shadow Dungeon</div>
+              <div className="flex gap-2">
+                <span className="text-red-400">B-Rank</span>
+                <span className="text-purple-400">Floor 15</span>
+              </div>
+            </div>
+            
+            <div className="border-l border-purple-500/40 pl-3">
+              <div className="flex items-center gap-2">
+                <div className="text-purple-400 text-xs font-bold">Room</div>
+                <div className="text-white text-sm font-bold">{currentRoom}</div>
+                <div className="text-gray-400 text-xs">/6</div>
+                
+                {/* Room Type Badge */}
+                <div className="px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-600/20 to-amber-500/20 text-purple-300 border border-purple-400/30">
+                  {currentRoom === 1 && 'Entrance'}
+                  {currentRoom === 2 && 'Corridor'}
+                  {currentRoom === 3 && 'Chamber'}
+                  {currentRoom === 4 && 'Guardian'}
+                  {currentRoom === 5 && 'Antechamber'}
+                  {currentRoom === 6 && 'Boss'}
+                </div>
+              </div>
+              
+              {/* Progress Bar */}
+              <div className="mt-1 w-20 h-1 bg-gray-700 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-purple-500 to-amber-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(currentRoom / 6) * 100}%` }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="absolute top-2 right-2 z-30">
@@ -702,6 +932,222 @@ export function DungeonRaidSystem11Fixed({
           </AnimatePresence>
         </motion.div>
       )}
+
+      {/* Room Clear State - Glowing Exit Portals */}
+      {gamePhase === 'room_clear' && (
+        <AnimatePresence>
+          {roomExits.map(exit => (
+            <motion.div
+              key={exit.id}
+              className="absolute cursor-pointer"
+              style={{ left: exit.position.x, top: exit.position.y }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              onClick={() => handleExitChoice(exit.id)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              {/* Glowing Portal Base */}
+              <motion.div
+                className="w-16 h-16 rounded-full relative"
+                animate={{
+                  boxShadow: [
+                    "0 0 20px rgba(147, 51, 234, 0.6)",
+                    "0 0 40px rgba(147, 51, 234, 0.8)",
+                    "0 0 20px rgba(147, 51, 234, 0.6)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {/* Portal Ring */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-amber-500 p-1">
+                  <div className="w-full h-full rounded-full bg-black/80 flex items-center justify-center">
+                    {/* Portal Icon */}
+                    {exit.direction === 'forward' && (
+                      <motion.div
+                        className="text-white text-2xl"
+                        animate={{ x: [0, 3, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        →
+                      </motion.div>
+                    )}
+                    {exit.direction === 'treasure' && (
+                      <motion.div
+                        className="text-yellow-400 text-xl"
+                        animate={{ rotate: [0, 360] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
+                        💎
+                      </motion.div>
+                    )}
+                    {exit.direction === 'boss' && (
+                      <motion.div
+                        className="text-red-400 text-xl"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      >
+                        ⚔️
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Swirling Particles */}
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-purple-400/50"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                />
+              </motion.div>
+              
+              {/* Portal Label */}
+              <motion.div
+                className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 px-2 py-1 rounded text-white text-xs font-bold"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                {exit.direction === 'forward' && 'Continue'}
+                {exit.direction === 'treasure' && 'Treasure'}
+                {exit.direction === 'boss' && 'Boss'}
+              </motion.div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      )}
+
+      {/* Shadow Dash Transition */}
+      <AnimatePresence>
+        {shadowDashAnimation && (
+          <motion.div
+            className="absolute inset-0 z-40 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Jin-Woo Dissolving Animation */}
+            <motion.div
+              className="absolute"
+              style={{ left: players.find(p => p.id === 'jinwoo')?.x || 120, top: players.find(p => p.id === 'jinwoo')?.y || 320 }}
+              animate={{
+                scale: [1, 1.2, 0],
+                opacity: [1, 0.5, 0],
+                filter: [
+                  "blur(0px)",
+                  "blur(2px)",
+                  "blur(8px)"
+                ]
+              }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* Shadow Particles */}
+              {[...Array(12)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 bg-purple-600 rounded-full"
+                  style={{
+                    left: Math.random() * 40,
+                    top: Math.random() * 40
+                  }}
+                  animate={{
+                    x: [0, (Math.random() - 0.5) * 200],
+                    y: [0, (Math.random() - 0.5) * 200],
+                    opacity: [1, 0],
+                    scale: [1, 0]
+                  }}
+                  transition={{
+                    duration: 1,
+                    delay: i * 0.05
+                  }}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Warp Tunnel Effect */}
+      <AnimatePresence>
+        {warpTunnelActive && (
+          <motion.div
+            className="absolute inset-0 z-50 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Tunnel Background */}
+            <div className="absolute inset-0 bg-black" />
+            
+            {/* Warp Rings */}
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute border-4 border-purple-500/30 rounded-full"
+                style={{
+                  width: 100 + i * 60,
+                  height: 100 + i * 60,
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)'
+                }}
+                animate={{
+                  scale: [1, 2, 3],
+                  opacity: [0.8, 0.4, 0],
+                  borderColor: [
+                    "rgba(147, 51, 234, 0.8)",
+                    "rgba(251, 191, 36, 0.6)",
+                    "rgba(147, 51, 234, 0.2)"
+                  ]
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  delay: i * 0.1,
+                  ease: "linear"
+                }}
+              />
+            ))}
+            
+            {/* Speed Lines */}
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent"
+                style={{
+                  height: Math.random() * 200 + 50,
+                  left: Math.random() * 100 + '%',
+                  top: Math.random() * 100 + '%',
+                  rotate: Math.random() * 360
+                }}
+                animate={{
+                  x: [0, (Math.random() - 0.5) * 2000],
+                  opacity: [0, 1, 0]
+                }}
+                transition={{
+                  duration: 0.5,
+                  repeat: Infinity,
+                  delay: Math.random() * 0.5
+                }}
+              />
+            ))}
+            
+            {/* Room Transition Text */}
+            <motion.div
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-2xl font-bold"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <div className="text-center">
+                <div className="text-purple-400">Shadow Dash</div>
+                <div className="text-sm text-gray-300 mt-2">Entering Room {currentRoom + 1}</div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Dynamic Synergy Gauge - Corner to Center */}
       <motion.div 

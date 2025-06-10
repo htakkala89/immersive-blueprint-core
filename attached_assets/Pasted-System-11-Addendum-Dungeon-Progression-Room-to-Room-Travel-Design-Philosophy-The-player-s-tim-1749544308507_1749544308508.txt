@@ -1,0 +1,37 @@
+System 11 (Addendum): Dungeon Progression & Room-to-Room Travel
+
+Design Philosophy: The player's time is valuable. We will eliminate the tedious "walking down empty hallways" common in many RPGs. Progression through a dungeon should be a series of clear, decisive actions that lead to immediate, exciting results. The transition between rooms should be a fast, cinematic, and empowering experience that reinforces the Monarch's power.
+
+The Step-by-Step UX Flow for Dungeon Progression
+
+Here is what happens after a player successfully clears a room (defeats all enemies, solves a puzzle, etc.).
+
+Step 1: The "Room Clear" State
+
+After the last enemy is defeated, the "Spoils of War" reward sequence plays (Gold and Resource icons are absorbed). The combat UI (the Action Bar) fades away. The dungeon room is now in a safe, quiet state.
+Step 2: The Exits Materialize
+
+At all possible exits from the current 2.5D scene, a new, glowing interactive icon will materialize.
+Visual Cue: This will be a distinct, glowing purple arrow (->) or a small, swirling Gate icon. This icon will pulse gently, indicating it is a point of progression.
+Player Choice: If there is only one path forward, only one icon will appear. If the dungeon has a branching path (e.g., a main path and an optional treasure room), two icons will appear at different exits.
+Step 3: The Player Makes a Choice
+
+The player taps on the glowing exit icon for the path they wish to take. There is no need to move their character to the exit first. The tap itself is the command.
+Step 4: The "Shadow Dash" Cinematic Transition
+
+Tapping the exit icon does not trigger a simple fade-to-black or a loading screen. It triggers a quick, stylish cinematic transition (~1.5 - 2 seconds).
+The Animation:
+Sung Jin-Woo's character model instantly turns towards the chosen exit.
+He performs a unique "Shadow Dash" animation, dissolving into a stream of black and purple particles that rushes off-screen in the chosen direction. This is thematically perfect for the Shadow Monarch.
+The screen is momentarily filled with a "warp tunnel" effect—a fast-moving vortex of purple energy and abstract dungeon architecture blurring past. This is our "corridor." It provides the feeling of rapid movement without needing a playable space.
+The Arrival:
+The warp effect resolves. The new dungeon room fades in.
+Sung Jin-Woo's character re-materializes in a flash of shadow particles at the entrance of the new room.
+The combat UI fades back in, and the next encounter begins.
+Why This System is the Right Choice
+
+Respects the Constraint: It completely removes the need for manual walking, solving the core problem you identified.
+Fast-Paced and Engaging: It keeps the player in the action. There is no boring downtime. The flow is always Challenge -> Reward -> Choice -> Next Challenge.
+Thematically Rich: Using a "Shadow Dash" reinforces the character's unique powers and makes moving through a dungeon feel powerful and cool, not like a chore.
+Maintains Player Agency: By presenting choices at branching paths, the player still feels in control of their exploration, even without direct character movement.
+This "Cinematic Transition" system ensures that progression through a dungeon is just as dynamic, polished, and immersive as the combat itself.
