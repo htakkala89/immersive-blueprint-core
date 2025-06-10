@@ -853,27 +853,23 @@ export default function SoloLevelingSpatial() {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeOut" }}
               />
               
-              {/* Always Visible Presence Label */}
+              {/* Compact Presence Label - Right Side */}
               <motion.div
-                className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 pointer-events-none z-30 whitespace-nowrap"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                className="absolute top-0 left-24 pointer-events-none z-30 whitespace-nowrap"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
               >
-                <div className="bg-black/80 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-amber-400/40 shadow-xl">
-                  <div className="text-center">
-                    <div className="font-medium text-amber-300">Cha Hae-In</div>
-                    <div className="text-gray-300 text-xs mt-1">{currentLocationData.chaActivity}</div>
-                  </div>
+                <div className="bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded border border-amber-400/30 shadow-lg">
+                  <div className="font-medium text-amber-300 text-xs">Cha Hae-In</div>
+                  <div className="text-gray-300 text-xs">{currentLocationData.chaActivity}</div>
                 </div>
               </motion.div>
 
-              {/* Enhanced Hover Context */}
-              <div className="absolute -bottom-24 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
-                <div className="bg-amber-900/90 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-lg border border-amber-400/50 shadow-xl">
-                  <div className="text-center">
-                    <div className="text-amber-200 text-xs font-medium">Tap to interact</div>
-                  </div>
+              {/* Hover Interaction Hint */}
+              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
+                <div className="bg-amber-900/80 backdrop-blur-sm text-amber-200 text-xs px-2 py-1 rounded border border-amber-400/40 shadow-lg">
+                  Tap to interact
                 </div>
               </div>
             </div>
