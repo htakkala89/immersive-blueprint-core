@@ -1327,7 +1327,7 @@ export function HunterCommunicatorSystem15({
 
               {/* Enhanced Alert Detail */}
               <div 
-                className="flex-1 relative z-10"
+                className="flex-1 relative z-10 overflow-y-auto custom-scrollbar"
                 style={{
                   background: 'linear-gradient(135deg, rgba(15,23,42,0.2), rgba(30,41,59,0.1))',
                   backdropFilter: 'blur(30px)'
