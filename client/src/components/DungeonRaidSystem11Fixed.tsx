@@ -620,71 +620,58 @@ export function DungeonRaidSystem11({
               </div>
 
               {/* Monarch Rune Radial Menu */}
-              <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 pointer-events-none z-50">
-                <AnimatePresence>
-                  {monarchRuneOpen && (
-                    <motion.div
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="pointer-events-auto"
-                    >
-                      <div className="relative w-48 h-48 pointer-events-none">
-                        {availableShadows.map((shadow, index) => {
-                          const angle = (index * 120) - 90;
-                          const radius = 60;
-                          const x = Math.cos(angle * Math.PI / 180) * radius;
-                          const y = Math.sin(angle * Math.PI / 180) * radius;
-                          const jinwoo = players.find(p => p.id === 'jinwoo');
-                          const canSummon = jinwoo && jinwoo.mana >= shadow.manaCost;
-                          
-                          return (
-                            <button
-                              key={shadow.id}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log(`Attempting to summon ${shadow.name}, canSummon: ${canSummon}`);
-                                if (canSummon) {
-                                  summonShadowSoldier(shadow.id);
-                                } else {
-                                  console.log('Cannot summon - insufficient mana or other issue');
-                                }
-                              }}
-                              className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs z-50 pointer-events-auto ${
-                                canSummon 
-                                  ? 'border-purple-400 bg-purple-500/30 hover:bg-purple-500/50 cursor-pointer'
-                                  : 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
-                              }`}
-                              style={{
-                                left: `calc(50% + ${x}px - 32px)`,
-                                top: `calc(50% + ${y}px - 32px)`
-                              }}
-                              disabled={!canSummon}
-                            >
-                              <div className="text-white font-bold">{shadow.name}</div>
-                              <div className="text-blue-300">{shadow.manaCost}MP</div>
-                            </button>
-                          );
-                        })}
-                        
-                        <motion.button
-                          onClick={() => setCommandMode(!commandMode)}
-                          className="absolute w-12 h-12 rounded-full border-2 border-yellow-400 bg-yellow-400/20 flex items-center justify-center"
-                          style={{
-                            left: 'calc(50% - 24px)',
-                            top: 'calc(50% - 24px)'
+              {monarchRuneOpen && (
+                <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-50">
+                  <div className="relative w-48 h-48">
+                    {availableShadows.map((shadow, index) => {
+                      const angle = (index * 120) - 90;
+                      const radius = 60;
+                      const x = Math.cos(angle * Math.PI / 180) * radius;
+                      const y = Math.sin(angle * Math.PI / 180) * radius;
+                      const jinwoo = players.find(p => p.id === 'jinwoo');
+                      const canSummon = jinwoo && jinwoo.mana >= shadow.manaCost;
+                      
+                      return (
+                        <button
+                          key={shadow.id}
+                          onClick={() => {
+                            console.log(`Attempting to summon ${shadow.name}, canSummon: ${canSummon}`);
+                            if (canSummon) {
+                              summonShadowSoldier(shadow.id);
+                            } else {
+                              console.log('Cannot summon - insufficient mana');
+                            }
                           }}
-                          whileHover={{ scale: 1.1 }}
+                          className={`absolute w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center text-xs ${
+                            canSummon 
+                              ? 'border-purple-400 bg-purple-500/30 hover:bg-purple-500/50 cursor-pointer'
+                              : 'border-slate-600 bg-slate-700/50 opacity-50 cursor-not-allowed'
+                          }`}
+                          style={{
+                            left: `calc(50% + ${x}px - 32px)`,
+                            top: `calc(50% + ${y}px - 32px)`
+                          }}
+                          disabled={!canSummon}
                         >
-                          <Users className="w-5 h-5 text-yellow-300" />
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                          <div className="text-white font-bold">{shadow.name}</div>
+                          <div className="text-blue-300">{shadow.manaCost}MP</div>
+                        </button>
+                      );
+                    })}
+                    
+                    <button
+                      onClick={() => setMonarchRuneOpen(false)}
+                      className="absolute w-12 h-12 rounded-full border-2 border-yellow-400 bg-yellow-400/20 flex items-center justify-center"
+                      style={{
+                        left: 'calc(50% - 24px)',
+                        top: 'calc(50% - 24px)'
+                      }}
+                    >
+                      <Users className="w-5 h-5 text-yellow-300" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </motion.div>
