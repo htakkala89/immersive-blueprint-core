@@ -975,9 +975,15 @@ export function DungeonRaidSystem11({
   useEffect(() => {
     if (gamePhase === 'combat' && enemies.length > 0) {
       const allEnemiesDefeated = enemies.every(enemy => enemy.health <= 0);
+      const livingEnemies = enemies.filter(enemy => enemy.health > 0);
+      
+      // Debug logging
+      console.log(`Room ${currentRoom} Wave ${currentWave}: ${livingEnemies.length} enemies alive, ${enemies.length} total enemies`);
+      console.log('Enemy health states:', enemies.map(e => ({ id: e.id, health: e.health, maxHealth: e.maxHealth })));
       
       if (allEnemiesDefeated && currentRoom === 3 && currentWave === 1) {
         // Room 3 (Arena Chamber) has multi-wave combat
+        console.log('Room 3 Wave 1 complete, spawning Wave 2');
         setCurrentWave(2);
         const waveEnemies = [
           {
@@ -1003,6 +1009,7 @@ export function DungeonRaidSystem11({
         addToCombatLog("Cha Hae-In: 'More enemies incoming! Second wave!'");
       } else if (allEnemiesDefeated && (currentRoom !== 3 || currentWave === 2)) {
         // All enemies defeated, room clear
+        console.log('All enemies defeated, transitioning to room clear');
         setGamePhase('room_clear');
         generateRoomExits();
         addToCombatLog("Room cleared! Exit portals are materializing...");
