@@ -467,15 +467,28 @@ export function PlayerProgressionSystem16({
                           </div>
                           
                           <div className="flex items-center gap-3">
-                            <span className="text-2xl font-bold text-white">{value}</span>
+                            <motion.span 
+                              className="text-2xl font-bold text-white"
+                              key={`${statKey}-${value}`}
+                              initial={{ scale: 1.2, color: '#fbbf24' }}
+                              animate={{ scale: 1, color: '#ffffff' }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              {value}
+                            </motion.span>
                             {playerData.unspentStatPoints > 0 && (
-                              <Button
-                                onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
-                                size="sm"
-                                className="bg-purple-600 hover:bg-purple-700 w-8 h-8 p-0"
+                              <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
                               >
-                                <Plus className="w-4 h-4" />
-                              </Button>
+                                <Button
+                                  onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
+                                  size="sm"
+                                  className="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 w-8 h-8 p-0 shadow-lg border border-purple-400/30"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </motion.div>
                             )}
                           </div>
                         </div>
