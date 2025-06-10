@@ -216,9 +216,7 @@ const LOCATIONS: Location[] = [
     description: 'An authentic dining experience where premium marbled beef sizzles over charcoal grills, creating memories over shared meals.',
     x: 55,
     y: 60,
-    unlocked: false,
-    unlockCondition: 'Complete first date scenario',
-    requiredAffection: 40,
+    unlocked: true,
     district: 'myeongdong',
     image: '/api/placeholder/400/250',
     timeOfDayMood: {
@@ -415,23 +413,37 @@ export default function WorldMap({
                     </div>
                   </div>
 
-                  {/* Location Label */}
+                  {/* Always Visible Location Label */}
                   <motion.div
-                    className="absolute top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30"
-                    initial={{ y: 5 }}
-                    whileHover={{ y: 0 }}
+                    className="absolute top-8 left-1/2 transform -translate-x-1/2 pointer-events-none z-30"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + Math.random() * 0.2 }}
                   >
-                    <div className="bg-black/95 backdrop-blur-md text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap border border-purple-400/30 shadow-xl">
-                      <div className="flex items-center gap-2">
-                        <span>{location.name}</span>
-                      </div>
+                    <div 
+                      className="text-white text-xs px-2 py-1 rounded-lg whitespace-nowrap shadow-xl text-center"
+                      style={{
+                        backdropFilter: 'blur(40px) saturate(200%)',
+                        background: `
+                          linear-gradient(135deg, 
+                            rgba(0, 0, 0, 0.8) 0%, 
+                            rgba(30, 41, 59, 0.7) 25%,
+                            rgba(0, 0, 0, 0.75) 50%,
+                            rgba(15, 23, 42, 0.8) 75%,
+                            rgba(0, 0, 0, 0.75) 100%
+                          )
+                        `,
+                        border: '1px solid rgba(139, 92, 246, 0.4)'
+                      }}
+                    >
+                      <div className="font-medium">{location.name}</div>
                       {state === 'locked' && location.unlockCondition && (
                         <div className="text-gray-400 text-xs mt-1">
                           {location.unlockCondition}
                         </div>
                       )}
                       {isPresent && (
-                        <div className="text-xs text-yellow-300 mt-1 flex items-center gap-1">
+                        <div className="text-xs text-yellow-300 mt-1 flex items-center justify-center gap-1">
                           <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
                           Cha Hae-In is here
                         </div>
