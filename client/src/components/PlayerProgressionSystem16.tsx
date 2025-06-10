@@ -356,7 +356,7 @@ export function PlayerProgressionSystem16({
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">
           {activeTab === 'stats' && (
-            <div className="h-full p-6 overflow-y-auto">
+            <div className="h-full p-6 overflow-y-auto character-scrollbar">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Player Info */}
                 <div className="space-y-6">
@@ -619,7 +619,7 @@ export function PlayerProgressionSystem16({
                   initial={{ x: 400, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: 400, opacity: 0 }}
-                  className="w-96 bg-slate-800/95 border-l border-slate-700/50 p-6 overflow-y-auto"
+                  className="w-96 bg-slate-800/95 border-l border-slate-700/50 p-6 overflow-y-auto constellation-scrollbar"
                 >
                   <div className="space-y-6">
                     {/* Skill Header */}
