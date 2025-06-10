@@ -658,6 +658,55 @@ export function DungeonRaidSystem11({
     return () => clearInterval(damageInterval);
   }, [battlefieldTraps, players, enemies]);
 
+  // Enemy respawn system
+  useEffect(() => {
+    const realEnemies = enemies.filter(e => !e.isAlly && e.health > 0);
+    
+    if (realEnemies.length === 0) {
+      // Spawn new wave of enemies after 3 seconds
+      const respawnTimer = setTimeout(() => {
+        if (battlefieldRef.current) {
+          const rect = battlefieldRef.current.getBoundingClientRect();
+          
+          const newEnemies = [
+            {
+              id: `enemy-${Date.now()}-1`,
+              name: 'Shadow Beast',
+              health: 120,
+              maxHealth: 120,
+              x: Math.random() * (rect.width - 100) + 50,
+              y: Math.random() * (rect.height - 100) + 50,
+              type: 'shadow_beast' as const
+            },
+            {
+              id: `enemy-${Date.now()}-2`,
+              name: 'Orc Warrior',
+              health: 100,
+              maxHealth: 100,
+              x: Math.random() * (rect.width - 100) + 50,
+              y: Math.random() * (rect.height - 100) + 50,
+              type: 'orc_warrior' as const
+            },
+            {
+              id: `enemy-${Date.now()}-3`,
+              name: 'Shadow Soldier',
+              health: 90,
+              maxHealth: 90,
+              x: Math.random() * (rect.width - 100) + 50,
+              y: Math.random() * (rect.height - 100) + 50,
+              type: 'shadow_soldier' as const
+            }
+          ];
+          
+          setEnemies(prev => [...prev.filter(e => e.isAlly), ...newEnemies]);
+          console.log('New enemy wave spawned:', newEnemies.length, 'enemies');
+        }
+      }, 3000);
+      
+      return () => clearTimeout(respawnTimer);
+    }
+  }, [enemies]);
+
   if (!isVisible) return null;
 
   return (
