@@ -33,6 +33,8 @@ export const gameStates = pgTable("game_states", {
   stats: jsonb("stats").notNull().default({}).$type<z.infer<typeof CharacterStats>>(),
   skills: jsonb("skills").notNull().default([]).$type<z.infer<typeof Skill>[]>(),
   scheduledActivities: jsonb("scheduled_activities").notNull().default([]).$type<z.infer<typeof ScheduledActivity>[]>(),
+  activeQuests: jsonb("active_quests").notNull().default([]).$type<z.infer<typeof Quest>[]>(),
+  completedQuests: jsonb("completed_quests").notNull().default([]).$type<z.infer<typeof Quest>[]>(),
 });
 
 export const Choice = z.object({
