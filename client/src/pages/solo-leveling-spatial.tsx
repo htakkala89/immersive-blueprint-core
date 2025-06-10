@@ -901,7 +901,7 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
-        {/* Cha Hae-In Presence Indicator - Golden Glowing Dot */}
+        {/* Cha Hae-In Character Portrait - Always Visible */}
         {currentLocationData.chaHaeInPresent && (
           <motion.div
             className="absolute cursor-pointer z-20 group"
@@ -910,79 +910,118 @@ export default function SoloLevelingSpatial() {
               top: `${currentLocationData.chaPosition.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleChaHaeInInteraction}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
           >
             <div className="relative">
-              {/* Outer Pulsing Aura - Brings Life to the Presence */}
+              {/* Character Portrait Container */}
               <motion.div
-                className="w-20 h-20 rounded-full blur-md"
+                className="w-24 h-32 rounded-xl overflow-hidden shadow-2xl border-2"
                 style={{
-                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, rgba(245, 158, 11, 0.15) 40%, transparent 70%)'
+                  backdropFilter: 'blur(20px) saturate(180%)',
+                  background: `
+                    linear-gradient(135deg, 
+                      rgba(139, 92, 246, 0.3) 0%, 
+                      rgba(236, 72, 153, 0.2) 100%
+                    )
+                  `,
+                  borderColor: chaHaeInExpression === 'romantic' ? 'rgba(236, 72, 153, 0.8)' :
+                              chaHaeInExpression === 'welcoming' ? 'rgba(16, 185, 129, 0.8)' :
+                              chaHaeInExpression === 'surprised' ? 'rgba(245, 158, 11, 0.8)' :
+                              chaHaeInExpression === 'amused' ? 'rgba(6, 182, 212, 0.8)' :
+                              chaHaeInExpression === 'contemplative' ? 'rgba(99, 102, 241, 0.8)' :
+                              chaHaeInExpression === 'concerned' ? 'rgba(239, 68, 68, 0.8)' :
+                              'rgba(139, 92, 246, 0.6)',
+                  boxShadow: `0 0 20px ${
+                    chaHaeInExpression === 'romantic' ? 'rgba(236, 72, 153, 0.4)' :
+                    chaHaeInExpression === 'welcoming' ? 'rgba(16, 185, 129, 0.4)' :
+                    chaHaeInExpression === 'surprised' ? 'rgba(245, 158, 11, 0.4)' :
+                    chaHaeInExpression === 'amused' ? 'rgba(6, 182, 212, 0.4)' :
+                    chaHaeInExpression === 'contemplative' ? 'rgba(99, 102, 241, 0.4)' :
+                    chaHaeInExpression === 'concerned' ? 'rgba(239, 68, 68, 0.4)' :
+                    'rgba(139, 92, 246, 0.3)'
+                  }`
                 }}
                 animate={{
-                  scale: [1, 1.4, 1],
-                  opacity: [0.3, 0.8, 0.3]
+                  borderColor: chaHaeInExpression === 'romantic' ? 'rgba(236, 72, 153, 0.8)' :
+                              chaHaeInExpression === 'welcoming' ? 'rgba(16, 185, 129, 0.8)' :
+                              chaHaeInExpression === 'surprised' ? 'rgba(245, 158, 11, 0.8)' :
+                              chaHaeInExpression === 'amused' ? 'rgba(6, 182, 212, 0.8)' :
+                              chaHaeInExpression === 'contemplative' ? 'rgba(99, 102, 241, 0.8)' :
+                              chaHaeInExpression === 'concerned' ? 'rgba(239, 68, 68, 0.8)' :
+                              'rgba(139, 92, 246, 0.6)'
                 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
-              
-              {/* Middle Glow Ring */}
-              <motion.div
-                className="absolute inset-2 w-16 h-16 rounded-full blur-sm"
-                style={{
-                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.2) 50%, transparent 100%)'
-                }}
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 0.9, 0.5]
-                }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-              />
-              
-              {/* Core Presence Dot with Enhanced Pulsing */}
-              <motion.div
-                className="absolute inset-6 w-8 h-8 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-full shadow-lg border border-yellow-200/50"
-                animate={{
-                  scale: [1, 1.1, 1],
-                  opacity: [0.9, 1, 0.9],
-                  boxShadow: [
-                    '0 0 8px rgba(251, 191, 36, 0.4)',
-                    '0 0 16px rgba(251, 191, 36, 0.6)',
-                    '0 0 8px rgba(251, 191, 36, 0.4)'
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-              />
-              
-              {/* Ripple Effect */}
-              <motion.div
-                className="absolute inset-0 w-20 h-20 rounded-full border border-amber-400/30"
-                animate={{
-                  scale: [1, 2, 1],
-                  opacity: [0.6, 0, 0.6]
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeOut" }}
-              />
-              
-              {/* Ultra-Compact Presence Label */}
-              <motion.div
-                className="absolute top-1 left-12 pointer-events-none z-30 whitespace-nowrap"
-                initial={{ opacity: 0, x: -5 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
+                transition={{ duration: 0.5 }}
               >
-                <div className="bg-black/60 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-sm border border-amber-400/20 shadow-md">
-                  <div className="font-medium text-amber-300" style={{ fontSize: '10px' }}>Cha Hae-In</div>
-                  <div className="text-gray-300" style={{ fontSize: '9px' }}>{currentLocationData.chaActivity}</div>
+                {(avatarImage || emotionalImage) ? (
+                  <img 
+                    src={(avatarImage || emotionalImage) as string}
+                    alt="Cha Hae-In"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-b from-slate-700/50 to-slate-800/50 backdrop-blur-sm flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-8 h-3 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-full mb-2 mx-auto" />
+                      <div className="w-6 h-6 bg-gradient-to-b from-pink-100 to-pink-200 rounded-full mx-auto mb-2" />
+                      <div className="w-5 h-4 bg-gradient-to-b from-blue-800 to-blue-900 rounded-b-lg mx-auto" />
+                      <div className="text-white text-xs mt-1">Cha Hae-In</div>
+                    </div>
+                  </div>
+                )}
+                
+                {isGeneratingAvatar && (
+                  <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                    <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  </div>
+                )}
+              </motion.div>
+              
+              {/* Expression Indicator */}
+              <motion.div 
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-slate-800 flex items-center justify-center text-xs"
+                animate={{
+                  backgroundColor: chaHaeInExpression === 'romantic' ? '#ec4899' :
+                                  chaHaeInExpression === 'welcoming' ? '#10b981' : 
+                                  chaHaeInExpression === 'surprised' ? '#f59e0b' :
+                                  chaHaeInExpression === 'amused' ? '#06b6d4' :
+                                  chaHaeInExpression === 'contemplative' ? '#6366f1' :
+                                  chaHaeInExpression === 'concerned' ? '#ef4444' :
+                                  chaHaeInExpression === 'focused' ? '#8b5cf6' : '#64748b'
+                }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                <span className="text-white text-sm">
+                  {chaHaeInExpression === 'romantic' ? '💕' : 
+                   chaHaeInExpression === 'welcoming' ? '😊' :
+                   chaHaeInExpression === 'surprised' ? '😲' :
+                   chaHaeInExpression === 'amused' ? '😄' :
+                   chaHaeInExpression === 'contemplative' ? '🤔' :
+                   chaHaeInExpression === 'concerned' ? '😟' :
+                   chaHaeInExpression === 'focused' ? '🎯' : '😐'}
+                </span>
+              </motion.div>
+              
+              {/* Name Label */}
+              <motion.div
+                className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-none z-30 whitespace-nowrap"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 1 }}
+              >
+                <div className="bg-black/80 backdrop-blur-sm text-white px-2 py-1 rounded border border-purple-400/30 shadow-lg">
+                  <div className="font-medium text-purple-300 text-xs">Cha Hae-In</div>
                 </div>
               </motion.div>
 
               {/* Hover Interaction Hint */}
-              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
-                <div className="bg-amber-900/80 backdrop-blur-sm text-amber-200 text-xs px-2 py-1 rounded border border-amber-400/40 shadow-lg">
-                  Tap to interact
+              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
+                <div className="bg-purple-900/80 backdrop-blur-sm text-purple-200 text-xs px-2 py-1 rounded border border-purple-400/40 shadow-lg">
+                  Click to chat
                 </div>
               </div>
             </div>
