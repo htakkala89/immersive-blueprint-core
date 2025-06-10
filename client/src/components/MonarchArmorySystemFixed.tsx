@@ -121,7 +121,7 @@ export function MonarchArmorySystemFixed({ isVisible, onClose }: MonarchArmorySy
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="absolute inset-4 bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl overflow-hidden"
+          className="absolute inset-4 bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl overflow-hidden flex flex-col"
           style={{
             background: 'radial-gradient(ellipse at center, rgba(30, 27, 75, 0.95) 0%, rgba(15, 23, 42, 0.95) 70%)',
             boxShadow: '0 0 80px rgba(147, 51, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
@@ -150,7 +150,7 @@ export function MonarchArmorySystemFixed({ isVisible, onClose }: MonarchArmorySy
 
           {!upgradeMode ? (
             /* Immersive 3D Armory Environment */
-            <div className="relative h-full overflow-hidden">
+            <div className="flex-1 relative overflow-hidden">
               {/* 3D Shadow Dimension Environment */}
               <div className="absolute inset-0">
                 {/* Dynamic Ethereal Background */}
@@ -189,10 +189,10 @@ export function MonarchArmorySystemFixed({ isVisible, onClose }: MonarchArmorySy
               </div>
 
               {/* Character Platform */}
-              <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-64 h-8 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent rounded-full blur-sm" />
+              <div className="absolute bottom-40 left-1/2 transform -translate-x-1/2 w-64 h-8 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent rounded-full blur-sm" />
               
               {/* 3D Character Model Placeholder */}
-              <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-80 flex items-center justify-center">
+              <div className="absolute bottom-40 left-1/2 transform -translate-x-1/2 w-48 h-64 flex items-center justify-center">
                 <motion.div
                   className="w-32 h-64 bg-gradient-to-b from-purple-600/30 to-purple-800/30 rounded-lg border border-purple-400/30 flex items-center justify-center relative"
                   animate={{
@@ -261,17 +261,17 @@ export function MonarchArmorySystemFixed({ isVisible, onClose }: MonarchArmorySy
               </motion.div>
 
               {/* Equipment Carousel at Bottom */}
-              <div className="absolute bottom-6 left-6 right-6 h-32">
-                <div className="bg-slate-900/90 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-4 h-full">
-                  <h3 className="text-white font-bold mb-3">Available Equipment</h3>
-                  <div className="flex gap-4 overflow-x-auto scrollbar-hide">
+              <div className="absolute bottom-2 left-6 right-6 h-24">
+                <div className="bg-slate-900/90 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-3 h-full">
+                  <h3 className="text-white font-bold mb-2 text-sm">Available Equipment</h3>
+                  <div className="flex gap-3 overflow-x-auto scrollbar-hide h-14">
                     {sampleEquipment.map((item, index) => (
                       <motion.div
                         key={item.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className={`min-w-20 h-20 rounded-xl border-2 ${getRarityBorder(item.rarity)} bg-slate-800/50 cursor-pointer flex items-center justify-center text-3xl relative group`}
+                        className={`min-w-14 h-14 rounded-xl border-2 ${getRarityBorder(item.rarity)} bg-slate-800/50 cursor-pointer flex items-center justify-center text-2xl relative group`}
                         whileHover={{ scale: 1.05, y: -5 }}
                         onClick={() => handleEquipItem(item, item.slot)}
                       >
