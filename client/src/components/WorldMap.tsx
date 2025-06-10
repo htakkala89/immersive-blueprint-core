@@ -513,22 +513,27 @@ export default function WorldMap({
                       </p>
                     </div>
 
-                    {/* Atmosphere Section - Enhanced Frosted Glass */}
+                    {/* Atmosphere Section - Maximum Readability Frosted Glass */}
                     <div 
                       className="rounded-xl p-4"
                       style={{
-                        backdropFilter: 'blur(80px) saturate(200%)',
+                        backdropFilter: 'blur(120px) saturate(300%)',
                         background: `
                           linear-gradient(135deg, 
-                            rgba(255, 255, 255, 0.15) 0%, 
-                            rgba(255, 255, 255, 0.08) 25%,
-                            rgba(139, 92, 246, 0.12) 50%,
-                            rgba(255, 255, 255, 0.06) 75%,
-                            rgba(255, 255, 255, 0.1) 100%
+                            rgba(0, 0, 0, 0.6) 0%, 
+                            rgba(30, 41, 59, 0.5) 25%,
+                            rgba(139, 92, 246, 0.2) 50%,
+                            rgba(30, 41, 59, 0.45) 75%,
+                            rgba(0, 0, 0, 0.55) 100%
+                          ),
+                          linear-gradient(45deg, 
+                            rgba(255, 255, 255, 0.1) 0%, 
+                            rgba(255, 255, 255, 0.05) 50%,
+                            rgba(255, 255, 255, 0.08) 100%
                           )
                         `,
-                        border: '1px solid rgba(255, 255, 255, 0.25)',
-                        boxShadow: '0 8px 32px rgba(139, 92, 246, 0.1)'
+                        border: '1px solid rgba(255, 255, 255, 0.4)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
                       }}
                     >
                       <div className="text-purple-300 text-xs font-medium mb-2 uppercase tracking-wide">
@@ -539,22 +544,27 @@ export default function WorldMap({
                       </div>
                     </div>
 
-                    {/* Presence Status - Enhanced Frosted Glass */}
+                    {/* Presence Status - Maximum Readability Frosted Glass */}
                     <div 
                       className="rounded-xl p-4"
                       style={{
-                        backdropFilter: 'blur(80px) saturate(200%)',
+                        backdropFilter: 'blur(120px) saturate(300%)',
                         background: `
                           linear-gradient(135deg, 
-                            rgba(255, 255, 255, 0.15) 0%, 
-                            rgba(255, 255, 255, 0.08) 25%,
-                            rgba(139, 92, 246, 0.12) 50%,
-                            rgba(255, 255, 255, 0.06) 75%,
-                            rgba(255, 255, 255, 0.1) 100%
+                            rgba(0, 0, 0, 0.6) 0%, 
+                            rgba(30, 41, 59, 0.5) 25%,
+                            rgba(139, 92, 246, 0.2) 50%,
+                            rgba(30, 41, 59, 0.45) 75%,
+                            rgba(0, 0, 0, 0.55) 100%
+                          ),
+                          linear-gradient(45deg, 
+                            rgba(255, 255, 255, 0.1) 0%, 
+                            rgba(255, 255, 255, 0.05) 50%,
+                            rgba(255, 255, 255, 0.08) 100%
                           )
                         `,
-                        border: '1px solid rgba(255, 255, 255, 0.25)',
-                        boxShadow: '0 8px 32px rgba(139, 92, 246, 0.1)'
+                        border: '1px solid rgba(255, 255, 255, 0.4)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
                       }}
                     >
                       {chaHaeInLocation === selectedLocation.id ? (
@@ -576,7 +586,7 @@ export default function WorldMap({
                       )}
                     </div>
 
-                    {/* Travel Button - Enhanced Frosted Glass */}
+                    {/* Travel Button - Maximum Readability Frosted Glass */}
                     <motion.button
                       onClick={() => {
                         onLocationSelect(selectedLocation);
@@ -584,35 +594,56 @@ export default function WorldMap({
                       }}
                       className="w-full text-white font-medium py-3 rounded-xl transition-all duration-300 disabled:opacity-50"
                       style={{
-                        backdropFilter: 'blur(60px) saturate(180%)',
+                        backdropFilter: 'blur(120px) saturate(300%)',
                         background: getLocationState(selectedLocation) === 'locked' 
                           ? `
                             linear-gradient(135deg, 
-                              rgba(107, 114, 128, 0.6) 0%, 
-                              rgba(75, 85, 99, 0.5) 50%,
-                              rgba(107, 114, 128, 0.6) 100%
+                              rgba(0, 0, 0, 0.7) 0%, 
+                              rgba(75, 85, 99, 0.6) 25%,
+                              rgba(107, 114, 128, 0.5) 50%,
+                              rgba(75, 85, 99, 0.6) 75%,
+                              rgba(0, 0, 0, 0.7) 100%
+                            ),
+                            linear-gradient(45deg, 
+                              rgba(255, 255, 255, 0.08) 0%, 
+                              rgba(255, 255, 255, 0.04) 50%,
+                              rgba(255, 255, 255, 0.06) 100%
                             )
                           `
                           : `
                             linear-gradient(135deg, 
-                              rgba(139, 92, 246, 0.8) 0%, 
-                              rgba(59, 130, 246, 0.7) 50%,
-                              rgba(139, 92, 246, 0.8) 100%
+                              rgba(139, 92, 246, 0.9) 0%, 
+                              rgba(124, 58, 237, 0.8) 25%,
+                              rgba(59, 130, 246, 0.8) 50%,
+                              rgba(124, 58, 237, 0.8) 75%,
+                              rgba(139, 92, 246, 0.9) 100%
+                            ),
+                            linear-gradient(45deg, 
+                              rgba(255, 255, 255, 0.15) 0%, 
+                              rgba(255, 255, 255, 0.08) 50%,
+                              rgba(255, 255, 255, 0.12) 100%
                             )
                           `,
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
-                        boxShadow: '0 8px 32px rgba(139, 92, 246, 0.2)'
+                        border: '1px solid rgba(255, 255, 255, 0.5)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
                       }}
                       whileHover={getLocationState(selectedLocation) !== 'locked' ? {
                         scale: 1.02,
                         background: `
                           linear-gradient(135deg, 
-                            rgba(139, 92, 246, 0.9) 0%, 
-                            rgba(59, 130, 246, 0.8) 50%,
-                            rgba(139, 92, 246, 0.9) 100%
+                            rgba(139, 92, 246, 1) 0%, 
+                            rgba(124, 58, 237, 0.9) 25%,
+                            rgba(59, 130, 246, 0.9) 50%,
+                            rgba(124, 58, 237, 0.9) 75%,
+                            rgba(139, 92, 246, 1) 100%
+                          ),
+                          linear-gradient(45deg, 
+                            rgba(255, 255, 255, 0.2) 0%, 
+                            rgba(255, 255, 255, 0.1) 50%,
+                            rgba(255, 255, 255, 0.15) 100%
                           )
                         `,
-                        boxShadow: '0 12px 40px rgba(139, 92, 246, 0.3)'
+                        boxShadow: '0 12px 40px rgba(139, 92, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
                       } : {}}
                       whileTap={{ scale: 0.98 }}
                       disabled={getLocationState(selectedLocation) === 'locked'}
