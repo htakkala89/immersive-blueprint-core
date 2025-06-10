@@ -2934,6 +2934,42 @@ export default function SoloLevelingSpatial() {
           </div>
         </div>
       )}
+
+      {/* System 11: Dungeon Raid System */}
+      {showDungeonRaid && (
+        <DungeonRaidSystem11
+          isVisible={showDungeonRaid}
+          onClose={() => setShowDungeonRaid(false)}
+          onRaidComplete={(success, loot) => {
+            console.log('Raid completed:', { success, loot });
+            setShowDungeonRaid(false);
+            
+            if (success) {
+              // Add loot and experience
+              setGameState(prev => ({
+                ...prev,
+                gold: (prev.gold || 0) + 50000000,
+                experience: (prev.experience || 0) + 5000
+              }));
+              
+              // Complete the red gate quest
+              const redGateQuest = gameState.activeQuests?.find(q => q.id === 'red_gate_emergency');
+              if (redGateQuest) {
+                setGameState(prev => ({
+                  ...prev,
+                  activeQuests: prev.activeQuests?.filter(q => q.id !== 'red_gate_emergency') || [],
+                  completedQuests: [
+                    ...(prev.completedQuests || []),
+                    { ...redGateQuest, status: 'completed' as const, completedAt: new Date().toISOString() }
+                  ]
+                }));
+              }
+            }
+          }}
+          playerLevel={gameState.level || 1}
+          affectionLevel={gameState.affection || 0}
+        />
+      )}
     </div>
   );
 }
