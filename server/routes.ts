@@ -834,16 +834,20 @@ RESPONSE INSTRUCTIONS:
       
       // Detect special romantic moments that trigger the Affection Heart
       const heartTriggers = [
-        // Exceptional romantic expressions
-        /\*heart|feelings?.*(?:you|jin-woo)|love.*(?:you|jin-woo)|care.*deeply/i,
-        // Perfect emotional reading moments
-        /\*blush.*deeply|\*trembl|shiver.*anticipation|breath.*catch/i,
-        // Meaningful connections and memories
-        /special.*(?:you|moment)|never.*forget|always.*remember/i,
-        // Deep appreciation and admiration
-        /admire.*(?:strength|dedication)|respect.*(?:greatly|deeply)|honor.*(?:know|fight)/i,
-        // Intimate vulnerability moments
-        /trust.*completely|vulnerable.*(?:you|around)|safe.*(?:with|you)/i
+        // Heart-related expressions and physical reactions
+        /heart.*(?:pound|hammer|beat|skip|flutter)|pulse.*(?:quick|race)/i,
+        // Deep emotional expressions
+        /\*blush.*deeply|\*trembl|shiver|breath.*catch|\*gasp/i,
+        // Love and feelings expressions
+        /feelings?.*(?:you|jin-woo)|love.*(?:you|jin-woo)|care.*deeply/i,
+        // Meaningful connections and special moments
+        /special.*(?:you|moment)|never.*forget|always.*remember|treasure/i,
+        // Vulnerability and trust moments
+        /trust.*completely|vulnerable|safe.*(?:with|around).*you/i,
+        // Future together expressions
+        /together.*always|future.*(?:us|together)|always.*(?:you|jin-woo)/i,
+        // Physical intimacy indicators
+        /close.*(?:you|jin-woo)|touch|embrace|hold.*(?:me|close)/i
       ];
       
       // Check if response contains heart-triggering content
