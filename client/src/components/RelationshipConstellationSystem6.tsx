@@ -58,7 +58,7 @@ const generateConstellation = (affectionLevel: number, memories: MemoryStar[]): 
       keyQuote: "This is nice... just talking like normal people for once.",
       position: { x: -80, y: 60, z: 0 },
       brightness: 0.7,
-      unlocked: affectionLevel >= 5
+      unlocked: affectionLevel >= 10
     },
     {
       id: 'hangang_walk',

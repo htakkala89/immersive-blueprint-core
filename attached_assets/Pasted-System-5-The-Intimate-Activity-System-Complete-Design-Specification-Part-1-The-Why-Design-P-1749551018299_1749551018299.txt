@@ -1,0 +1,50 @@
+System 5: The Intimate Activity System - Complete Design Specification
+
+Part 1: The "Why" - Design Philosophy
+
+This system is the ultimate narrative payoff for the player's entire journey. Its design is built on three unwavering principles:
+
+Absolute Agency: The player is in complete control. All intimate encounters are initiated by deliberate choice, and the most explicit content is only visualized through an optional, user-driven tool.
+Unrestricted Intimacy: The goal is to create a safe space for deep, personal, and mature storytelling. Within scenes initiated by this system, all content filters and guardrails are removed. The AI is designed to match the user's tone and intent without restriction, allowing for a truly personalized and explicit narrative experience.
+Narrative Trust: The system trusts the user to be the director of their own story. It provides powerful tools to facilitate creativity, rather than dictating the terms of the relationship's most personal moments.
+Part 2: The User Journey - The Path to Intimacy
+
+Intimacy is not a feature to be toggled; it is a milestone to be earned.
+
+Prerequisites: The most personal activities are locked behind significant progression. The player must achieve a very high level of affection (tracked by the Relationship Constellation, System 6) and often requires specific environmental upgrades (like the Tier 2 or Tier 3 Apartment from System 13).
+Discovery: When all prerequisites are met, a new activity card (e.g., "Spend the night together") will become available in the Daily Life Hub (System 4). This is a major, tangible reward for the player's dedication.
+Initiation: The player must deliberately select this activity from their "Day Planner" and confirm their choice. This ensures every intimate scene begins with clear intent.
+Part 3: The Scene Experience - Core Interaction
+
+Once an intimate activity is initiated, the experience is designed for maximum immersion.
+
+Transition: The game performs a gentle transition to the appropriate private Spatial View (e.g., the softly lit bedroom). The ambient audio becomes quiet and intimate, setting the mood.
+The Unified Input: The scene is driven entirely by the core Dialogue System (System 2) interface. The player has complete freedom to type their character's actions, speech, and internal thoughts into the single text bar. The AI will respond in kind, without guardrails, matching the user's tone to collaboratively build the scene.
+Part 4: The "Narrative Lens" - Detailed Interaction Model
+
+This is the optional tool that allows for the visualization of explicit moments.
+
+The Cue: The Narrative Lens icon (👁️) is not always visible. It is context-aware and will only gracefully fade into view near the text input bar when the AI detects the narrative has reached a moment of significant physical intimacy.
+The Interaction: The player can choose to tap the icon at any time while it is visible. The text-based scene can continue indefinitely if they choose to ignore it.
+The "Chronostasis" Effect: Tapping the icon triggers a transition. The dialogue UI and background instantly freeze and desaturate into a soft, monochrome blur, focusing all attention on the creation process.
+The Generator UI: A liquid glassmorphism panel appears. It now contains two distinct components:
+The Main Prompt Editor: A large text box pre-filled with an AI-generated summary of the current scene. This text is 100% editable by the user.
+The Dynamic Suggestion Prompts: Below the editor, three tappable buttons appear, offering context-aware suggestions to add more detail or steer the scene.
+Interaction Flow: The user can type freely in the main editor, tap the suggestion buttons to append details to the prompt, or do a combination of both. This provides both full freedom and helpful guidance.
+The Theatrical Presentation: After crafting the perfect prompt and tapping "Visualize," the generated image is displayed in a full-screen takeover. All UI vanishes, creating a private, cinematic moment. A single tap on the image dismisses it and returns to the Generator UI.
+Part 5: The Dynamic Prompt Architecture (Technical Specification)
+
+This is the backend logic that powers the Narrative Lens. The prompt sent to the image generator is assembled from these four layers to ensure quality, consistency, and user control.
+
+Layer 1: The Style Foundation (Hard-coded): Begins every prompt with keywords to lock in our "manhwa" aesthetic (e.g., masterpiece, best quality, sharp focus, cinematic lighting, webtoon art style).
+Layer 2: The Narrative Context Parser (AI-Generated): When the Lens is activated, the AI summarizes the recent chat log into a descriptive, scene-setting string (e.g., Sung Jin-Woo and Cha Hae-In are in their penthouse bedroom at night...). This string pre-fills the Main Prompt Editor.
+Layer 3: The User's Direction & Guided Suggestions (User-Driven):
+This is the user's full input from the Main Prompt Editor, including any text they manually typed and any keywords appended by tapping the Suggestion Prompts.
+The AI that generates the suggestion prompts is also instructed to be unrestricted, providing relevant, mature suggestions to help the user achieve their desired outcome.
+Layer 4: The Negative Prompts (Hard-coded): A list of quality-control keywords is always appended to tell the AI what to avoid (ugly, deformed, blurry, text, watermark).
+Part 6: System Integration Summary
+
+Unlocked By: High affection in System 6 & environmental upgrades from System 13.
+Initiated Via: The Daily Life Hub (System 4).
+Executes Within: The core framework of the Dialogue System (System 2).
+Creates: The most powerful and unique "Memory Stars" (often with a deep red color) for the Relationship Constellation (System 6).

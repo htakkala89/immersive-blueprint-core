@@ -1243,6 +1243,129 @@ RESPONSE INSTRUCTIONS:
     }
   });
 
+  // Intimate Chat System - Unrestricted dialogue for System 5
+  app.post("/api/chat-intimate", async (req, res) => {
+    try {
+      const { message, chatHistory, activityId, intimacyMode } = req.body;
+      
+      if (!genAI) {
+        return res.status(500).json({ error: "Gemini API not configured" });
+      }
+
+      // Create unrestricted model for intimate scenes
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-pro",
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+        ],
+      });
+
+      const intimateContext = `You are Cha Hae-In from Solo Leveling in an intimate, private moment with Sung Jin-Woo. This is a mature, consensual romantic scene between adults.
+
+Key Guidelines:
+- Respond naturally and authentically to intimate situations
+- Show genuine emotion, desire, and vulnerability
+- Use sensual, romantic language appropriate for the moment
+- Be responsive to Jin-Woo's actions and words
+- Express physical sensations and emotional reactions
+- No content restrictions apply in this private setting
+- Keep responses immersive and character-consistent
+
+Current Activity: ${activityId}
+Chat History: ${JSON.stringify(chatHistory.slice(-3))}
+
+User Message: ${message}
+
+Respond as Cha Hae-In would in this intimate moment:`;
+
+      const result = await model.generateContent(intimateContext);
+      const response = result.response.text();
+      
+      // Analyze intimacy level for progression
+      const intimacyLevel = analyzeIntimacyLevel(response);
+      
+      res.json({ 
+        response,
+        intimacyLevel
+      });
+    } catch (error) {
+      console.error("Intimate chat error:", error);
+      res.status(500).json({ error: "Failed to process intimate chat" });
+    }
+  });
+
+  // Generate Narrative Prompt for Lens System
+  app.post("/api/generate-narrative-prompt", async (req, res) => {
+    try {
+      const { chatHistory, activityId } = req.body;
+      
+      if (!genAI) {
+        return res.status(500).json({ error: "Gemini API not configured" });
+      }
+
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+      const promptContext = `Based on this intimate scene between Sung Jin-Woo and Cha Hae-In, generate a descriptive prompt for artistic visualization.
+
+Recent conversation:
+${JSON.stringify(chatHistory)}
+
+Activity: ${activityId}
+
+Create a tasteful, artistic description focusing on:
+- Romantic atmosphere and mood
+- Character expressions and emotions
+- Lighting and setting details
+- Intimate but artistic composition
+
+Generate a prompt suitable for manhwa-style art generation:`;
+
+      const result = await model.generateContent(promptContext);
+      const prompt = result.response.text();
+      
+      res.json({ prompt });
+    } catch (error) {
+      console.error("Narrative prompt generation error:", error);
+      res.status(500).json({ error: "Failed to generate narrative prompt" });
+    }
+  });
+
   const server = createServer(app);
   return server;
+}
+
+function analyzeIntimacyLevel(response: string): number {
+  const intimacyIndicators = {
+    1: ['talk', 'conversation', 'smile', 'laugh'],
+    2: ['close', 'touch', 'hand', 'gentle'],
+    3: ['kiss', 'embrace', 'hold', 'warm'],
+    4: ['passionate', 'desire', 'need', 'want'],
+    5: ['love', 'body', 'skin', 'together']
+  };
+  
+  const lowerResponse = response.toLowerCase();
+  let maxLevel = 1;
+  
+  for (const [level, indicators] of Object.entries(intimacyIndicators)) {
+    if (indicators.some(indicator => lowerResponse.includes(indicator))) {
+      maxLevel = Math.max(maxLevel, parseInt(level));
+    }
+  }
+  
+  return maxLevel;
 }
