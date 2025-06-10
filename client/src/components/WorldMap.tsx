@@ -295,7 +295,7 @@ export default function WorldMap({
 
   return (
     <div className="fixed inset-0 z-[9999] flex">
-      {/* Enhanced Liquid Glassmorphism Background - Full Coverage */}
+      {/* Complete Opacity Background - Maximum Coverage */}
       <div 
         className="absolute inset-0 cursor-pointer"
         onClick={onClose}
@@ -303,17 +303,20 @@ export default function WorldMap({
           backdropFilter: 'blur(120px) saturate(300%)',
           background: `
             linear-gradient(135deg, 
-              rgba(0, 0, 0, 0.85) 0%, 
-              rgba(30, 41, 59, 0.8) 15%,
-              rgba(139, 92, 246, 0.25) 30%,
-              rgba(30, 41, 59, 0.75) 45%,
-              rgba(59, 130, 246, 0.2) 60%,
-              rgba(30, 41, 59, 0.8) 75%,
-              rgba(0, 0, 0, 0.85) 100%
+              rgba(0, 0, 0, 0.95) 0%, 
+              rgba(15, 23, 42, 0.92) 10%,
+              rgba(30, 41, 59, 0.9) 20%,
+              rgba(139, 92, 246, 0.4) 35%,
+              rgba(30, 41, 59, 0.88) 50%,
+              rgba(59, 130, 246, 0.35) 65%,
+              rgba(30, 41, 59, 0.9) 80%,
+              rgba(15, 23, 42, 0.92) 90%,
+              rgba(0, 0, 0, 0.95) 100%
             ),
-            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 60%),
-            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 60%),
-            radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.18) 0%, transparent 60%)
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, rgba(0, 0, 0, 0.6) 70%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.25) 0%, rgba(0, 0, 0, 0.6) 70%),
+            radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.28) 0%, rgba(0, 0, 0, 0.6) 70%),
+            rgba(0, 0, 0, 0.7)
           `
         }}
       />
