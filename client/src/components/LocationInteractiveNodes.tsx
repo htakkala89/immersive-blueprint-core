@@ -53,7 +53,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'jewelry_counter',
       label: 'Jewelry Counter',
       icon: ShoppingBag,
-      position: { x: 25, y: 40 },
+      position: { x: 20, y: 30 },
       thoughtPrompt: 'Browse the jewelry collection.',
       outcome: 'Opens the Item Inspection View displaying a featured necklace with cycling through all available jewelry gifts.',
       gameLogic: 'system_7_item_inspection'
@@ -62,7 +62,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'designer_apparel',
       label: 'Designer Apparel',
       icon: ShoppingBag,
-      position: { x: 65, y: 35 },
+      position: { x: 75, y: 25 },
       thoughtPrompt: 'Look at the designer clothing.',
       outcome: 'Opens the Item Inspection View for a featured designer dress with cycling through clothing gifts.',
       gameLogic: 'system_7_item_inspection'
@@ -71,7 +71,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'luxury_confections',
       label: 'Luxury Confections',
       icon: ShoppingBag,
-      position: { x: 45, y: 65 },
+      position: { x: 45, y: 75 },
       thoughtPrompt: 'See the artisan chocolates.',
       outcome: 'Opens the Item Inspection View for premium chocolate box with cycling through confectionary gifts.',
       gameLogic: 'system_7_item_inspection'
@@ -84,7 +84,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'living_room_collection',
       label: 'Living Room Collection',
       icon: Sofa,
-      position: { x: 30, y: 45 },
+      position: { x: 25, y: 35 },
       thoughtPrompt: 'Look at the sofas and tables.',
       outcome: 'Opens the Item Inspection View for featured sofa with cycling through living room furniture.',
       gameLogic: 'system_7_system_13_integration'
@@ -93,7 +93,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bedroom_collection',
       label: 'Bedroom Collection',
       icon: Bed,
-      position: { x: 70, y: 50 },
+      position: { x: 75, y: 60 },
       thoughtPrompt: 'Browse the bedroom sets.',
       outcome: 'Opens the Item Inspection View for featured bed frame with cycling through bedroom furniture.',
       gameLogic: 'system_7_system_13_integration'
@@ -106,7 +106,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'reception_desk',
       label: 'Reception Desk',
       icon: Users,
-      position: { x: 40, y: 35 },
+      position: { x: 30, y: 25 },
       thoughtPrompt: 'Speak with the realtor.',
       outcome: 'Initiates dialogue scene with Realtor NPC presenting available properties for sale.',
       gameLogic: 'npc_dialogue_realtor'
@@ -115,7 +115,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'architectural_models',
       label: 'Architectural Models',
       icon: Building,
-      position: { x: 60, y: 60 },
+      position: { x: 70, y: 70 },
       thoughtPrompt: 'Examine the property listings.',
       outcome: 'Opens special UI panel showing detailed Tier 2/3 apartment listing with exterior image and purchase option.',
       gameLogic: 'property_listing_ui'
@@ -128,7 +128,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'counter',
       label: 'Counter',
       icon: Coffee,
-      position: { x: 75, y: 35 },
+      position: { x: 80, y: 25 },
       thoughtPrompt: 'Order drinks for us.',
       outcome: 'You approach the counter to order beverages. Choosing her preferred drink correctly provides a bonus.',
       gameLogic: 'cafe_ordering_system',
@@ -153,7 +153,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'window_seat',
       label: 'Window Seat',
       icon: Eye,
-      position: { x: 25, y: 45 },
+      position: { x: 20, y: 65 },
       thoughtPrompt: 'Suggest we take the window seat.',
       outcome: 'You both settle into comfortable seats with a peaceful view. This unlocks deeper conversation topics.',
       gameLogic: 'intimate_conversation_unlock',
@@ -182,7 +182,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'park_bench',
       label: 'Park Bench',
       icon: TreePine,
-      position: { x: 40, y: 60 },
+      position: { x: 50, y: 45 },
       thoughtPrompt: 'Suggest we sit down for a while.',
       outcome: 'Multi-turn conversational scene. Text: *You both find a quiet bench, sitting side-by-side as you watch the river flow.* Cha Hae-In becomes more reflective and personal.',
       gameLogic: 'major_conversation_node_high_affection_memory_star'
@@ -191,7 +191,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'food_vendor_cart',
       label: 'Food Vendor Cart',
       icon: ChefHat,
-      position: { x: 70, y: 35 },
+      position: { x: 80, y: 20 },
       thoughtPrompt: 'Want to get some street food?',
       outcome: 'Panel: *You buy two skewers of tteokbokki. [ - ₩5,000 ]. You share the spicy rice cakes while watching the river. She laughs as you get some sauce on your face, wiping it away for you.*',
       gameLogic: 'small_gold_deduction_medium_affection_gain'
@@ -200,7 +200,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'rivers_edge',
       label: "River's Edge",
       icon: Eye,
-      position: { x: 25, y: 80 },
+      position: { x: 20, y: 75 },
       thoughtPrompt: "Let's get a closer look at the river.",
       outcome: 'Cinematic mode: UI fades away, camera pans across river to city skyline. Internal thought: *Looking at the calm river, it\'s easy to forget about the gates and the monsters... even for a moment.*',
       gameLogic: 'atmospheric_cinematic_no_cost_no_affection'
@@ -213,7 +213,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'view_menu',
       label: 'View the Menu',
       icon: ChefHat,
-      position: { x: 35, y: 45 },
+      position: { x: 25, y: 35 },
       thoughtPrompt: 'Let\'s look at the menu.',
       outcome: 'Opens beautiful menu UI. Player and Cha Hae-In comment on dishes, leading to choice influencing dinner dialogue.',
       gameLogic: 'menu_ui_dialogue_influence'
@@ -222,7 +222,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'speak_sommelier',
       label: 'Speak with the Sommelier',
       icon: Users,
-      position: { x: 65, y: 30 },
+      position: { x: 75, y: 65 },
       thoughtPrompt: 'Ask the sommelier for a recommendation.',
       outcome: 'Short dialogue with NPC recommending wine. Ordering costs Gold but provides larger affection boost.',
       gameLogic: 'npc_dialogue_system_14_system_6'
@@ -235,7 +235,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'observation_deck',
       label: 'Observation Deck',
       icon: Eye,
-      position: { x: 50, y: 30 },
+      position: { x: 50, y: 20 },
       thoughtPrompt: 'Let\'s look at the view.',
       outcome: 'UI fades for cinematic mode showing panoramic city view with romantic music and special conversation.',
       gameLogic: 'cinematic_mode_special_scene'
@@ -244,7 +244,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'wall_of_locks',
       label: 'The Wall of Locks',
       icon: Heart,
-      position: { x: 40, y: 70 },
+      position: { x: 30, y: 75 },
       thoughtPrompt: 'Should we add our own lock?',
       outcome: 'Key relationship scene. With Padlock item, add lock together creating unique high-value Memory Star.',
       gameLogic: 'system_6_memory_star_creation',
