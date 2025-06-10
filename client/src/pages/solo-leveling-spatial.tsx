@@ -346,6 +346,10 @@ export default function SoloLevelingSpatial() {
     dialogue: string;
     position: { x: number; y: number };
   } | null>(null);
+  
+  // Elevator System - Floor Selection UI
+  const [showFloorSelect, setShowFloorSelect] = useState(false);
+  const [elevatorTransition, setElevatorTransition] = useState(false);
 
   // Time and scheduling system
   const getCurrentTimeOfDay = () => {
@@ -393,6 +397,39 @@ export default function SoloLevelingSpatial() {
       "I overheard that someone found a rare material vendor hidden in the back alleys of Hongdae."
     ];
     return dialogues[Math.floor(Math.random() * dialogues.length)];
+  };
+
+  // Elevator floor selection handler
+  const handleFloorSelection = async (floorId: string) => {
+    setShowFloorSelect(false);
+    setElevatorTransition(true);
+    
+    // Play elevator ding sound (placeholder for now)
+    console.log('🛗 Elevator ding sound effect');
+    
+    // Wait for transition animation
+    setTimeout(() => {
+      // Handle different floor destinations
+      switch (floorId) {
+        case 'main_hall':
+          // Already here, just close transition
+          break;
+        case 'training_center':
+          console.log('Traveling to Elite Training Center (Floor 10)');
+          // Could change location state here for different floor views
+          break;
+        case 'guild_master_office':
+          console.log('Traveling to Guild Master Office (Floor 25)');
+          // Could unlock based on player rank/story progress
+          break;
+        case 'rooftop_helipad':
+          console.log('Rooftop Helipad - Access Denied');
+          // Locked floor - show access denied message
+          break;
+      }
+      
+      setElevatorTransition(false);
+    }, 1500); // 1.5 second transition
   };
 
   // Perspective-based scaling system per design specifications
@@ -1530,15 +1567,9 @@ export default function SoloLevelingSpatial() {
                 console.log('Guild Employee Ji-Hoon providing rumor/hint');
                 break;
               case 'elevator_bank':
-                // Floor navigation system - could unlock higher floors based on rank
-                handleEnvironmentalInteraction({
-                  id: nodeId,
-                  action: 'Access restricted upper floors with advanced facilities',
-                  name: 'Association Elevator',
-                  x: 45,
-                  y: 70
-                });
-                console.log('Using elevator to access upper floors');
+                // Floor selection UI - opens sleek navigation panel
+                setShowFloorSelect(true);
+                console.log('Opening floor selection UI');
                 break;
               case 'sparring_ring':
               case 'combat_analytics':
@@ -2404,6 +2435,95 @@ export default function SoloLevelingSpatial() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Floor Selection UI - Sleek Liquid Glassmorphism Panel */}
+      {showFloorSelect && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-in slide-in-from-bottom-4 duration-300">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white text-lg">🛗</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">Floor Selection</h3>
+                  <p className="text-white/70 text-sm">Hunter Association HQ</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowFloorSelect(false)}
+                className="text-white/60 hover:text-white/90 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Floor List */}
+            <div className="space-y-3">
+              <button
+                onClick={() => handleFloorSelection('main_hall')}
+                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 text-left transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                  <div>
+                    <p className="text-white font-medium">Main Hall & Lobby</p>
+                    <p className="text-white/60 text-sm">You are here</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleFloorSelection('training_center')}
+                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 text-left transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-blue-400"></div>
+                  <div>
+                    <p className="text-white font-medium">Elite Training Center</p>
+                    <p className="text-white/60 text-sm">Floor 10</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleFloorSelection('guild_master_office')}
+                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 text-left transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-purple-400"></div>
+                  <div>
+                    <p className="text-white font-medium">Office of Guild Master Woo Jin-Chul</p>
+                    <p className="text-white/60 text-sm">Floor 25</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                disabled
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-left opacity-50 cursor-not-allowed"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                  <div>
+                    <p className="text-white font-medium">Rooftop Helipad</p>
+                    <p className="text-white/60 text-sm">Locked</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Elevator Transition - Door Closing Effect */}
+      {elevatorTransition && (
+        <div className="fixed inset-0 z-[60] flex">
+          <div className="w-1/2 bg-gray-800 animate-in slide-in-from-left duration-700 ease-in-out"></div>
+          <div className="w-1/2 bg-gray-800 animate-in slide-in-from-right duration-700 ease-in-out"></div>
         </div>
       )}
     </div>
