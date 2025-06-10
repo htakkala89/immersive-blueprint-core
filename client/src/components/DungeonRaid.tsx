@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sword, Shield, Zap, Heart, X, Crown } from 'lucide-react';
+import { Sword, Shield, Zap, Heart, X, Crown, Target, Wind, Flame, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Enemy {
@@ -11,6 +11,11 @@ interface Enemy {
   x: number;
   y: number;
   type: 'shadow_beast' | 'orc_warrior' | 'boss';
+  isStunned?: boolean;
+  statusEffects?: Array<{
+    type: 'poison' | 'stun' | 'burning';
+    duration: number;
+  }>;
 }
 
 interface Player {
@@ -23,6 +28,34 @@ interface Player {
   x: number;
   y: number;
   isActive: boolean;
+  statusEffects?: Array<{
+    type: 'poison' | 'stun' | 'burning';
+    duration: number;
+  }>;
+}
+
+interface Skill {
+  id: string;
+  name: string;
+  icon: any;
+  cooldown: number;
+  manaCost: number;
+  type: 'launcher' | 'dash' | 'charge_aoe' | 'special';
+  currentCooldown: number;
+  isCharging?: boolean;
+  chargeTime?: number;
+}
+
+interface ShadowSoldier {
+  id: string;
+  name: string;
+  type: 'tank' | 'assassin' | 'mage';
+  manaCost: number;
+  isActive: boolean;
+  x: number;
+  y: number;
+  health: number;
+  maxHealth: number;
 }
 
 interface RaidProps {
@@ -45,6 +78,100 @@ export function DungeonRaid({
   const [teamUpReady, setTeamUpReady] = useState(false);
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [combatLog, setCombatLog] = useState<string[]>([]);
+  const [commandMode, setCommandMode] = useState(false);
+  const [cameraShake, setCameraShake] = useState(false);
+  const [damageNumbers, setDamageNumbers] = useState<Array<{
+    id: string;
+    damage: number;
+    x: number;
+    y: number;
+    isCritical: boolean;
+  }>>([]);
+  const [lootDrops, setLootDrops] = useState<Array<{
+    id: string;
+    amount: number;
+    x: number;
+    y: number;
+  }>>([]);
+  
+  // Touch-based skill system - 4 slot action bar
+  const [skills, setSkills] = useState<Skill[]>([
+    {
+      id: 'mutilate',
+      name: 'Mutilate',
+      icon: Target,
+      cooldown: 3000,
+      manaCost: 15,
+      type: 'launcher',
+      currentCooldown: 0
+    },
+    {
+      id: 'violent_slash',
+      name: 'Violent Slash',
+      icon: Wind,
+      cooldown: 5000,
+      manaCost: 20,
+      type: 'dash',
+      currentCooldown: 0
+    },
+    {
+      id: 'dominators_touch',
+      name: "Dominator's Touch",
+      icon: Flame,
+      cooldown: 8000,
+      manaCost: 35,
+      type: 'charge_aoe',
+      currentCooldown: 0,
+      isCharging: false,
+      chargeTime: 0
+    },
+    {
+      id: 'shadow_exchange',
+      name: 'Shadow Exchange',
+      icon: Crown,
+      cooldown: 12000,
+      manaCost: 50,
+      type: 'special',
+      currentCooldown: 0
+    }
+  ]);
+  
+  // Shadow soldier system
+  const [shadowSoldiers, setShadowSoldiers] = useState<ShadowSoldier[]>([
+    {
+      id: 'igris',
+      name: 'Igris',
+      type: 'tank',
+      manaCost: 30,
+      isActive: false,
+      x: 0,
+      y: 0,
+      health: 120,
+      maxHealth: 120
+    },
+    {
+      id: 'iron',
+      name: 'Iron',
+      type: 'assassin',
+      manaCost: 25,
+      isActive: false,
+      x: 0,
+      y: 0,
+      health: 80,
+      maxHealth: 80
+    },
+    {
+      id: 'tank',
+      name: 'Tank',
+      type: 'mage',
+      manaCost: 35,
+      isActive: false,
+      x: 0,
+      y: 0,
+      health: 100,
+      maxHealth: 100
+    }
+  ]);
   
   const [players, setPlayers] = useState<Player[]>([
     {

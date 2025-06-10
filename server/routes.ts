@@ -689,6 +689,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
       } else {
+        // Check for mature content intent first
+        const isMatureRequest = detectMatureContentIntent(message);
+        
+        if (isMatureRequest) {
+          console.log('🔞 Mature content request detected - generating explicit content');
+          
+          // Generate intimate image based on user request
+          try {
+            const matureImageUrl = await generateIntimateActivityImage(
+              'custom_intimate',
+              gameState.relationshipStatus || 'dating',
+              gameState.intimacyLevel || 5,
+              message
+            );
+            
+            if (matureImageUrl) {
+              console.log('✅ Explicit content generated successfully');
+              
+              // Return explicit content response with generated image
+              return res.json({
+                response: `*Cha Hae-In responds passionately to your request* ${message.includes('show me') || message.includes('picture') ? 'Here, let me show you exactly what you want to see...' : 'Mmm, Jin-Woo... I want that too...'} *her breathing becomes heavier as she fulfills your desire*`,
+                gameState: {
+                  ...updatedGameState,
+                  intimacyLevel: Math.min(10, (gameState.intimacyLevel || 5) + 1)
+                },
+                expression: 'romantic',
+                imageUrl: matureImageUrl,
+                dynamicPrompts: ['That was incredible...', 'I love being with you like this', 'What would you like to do next?']
+              });
+            }
+          } catch (error) {
+            console.log('⚠️ Mature content generation failed:', error);
+          }
+        }
+        
         // Regular conversation flow
         const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
         
@@ -897,6 +932,56 @@ RESPONSE INSTRUCTIONS:
     } catch (error) {
       console.error("Scene image generation error:", error);
       res.status(500).json({ error: "Failed to generate scene image" });
+    }
+  });
+
+  // Direct mature content generation API - No restrictions
+  app.post("/api/generate-mature-content", async (req, res) => {
+    try {
+      const { userRequest, relationshipStatus, intimacyLevel, location } = req.body;
+      
+      if (!userRequest) {
+        return res.status(400).json({ error: "User request is required" });
+      }
+      
+      console.log(`🔞 Processing explicit content request: "${userRequest}"`);
+      
+      // Generate mature content based on user's exact request
+      const maturePrompt = generateMatureContentPrompt(userRequest, intimacyLevel || 5);
+      console.log(`📝 Generated mature prompt: ${maturePrompt}`);
+      
+      const imageUrl = await generateIntimateActivityImage(
+        'user_custom_request',
+        relationshipStatus || 'dating',
+        intimacyLevel || 5,
+        userRequest
+      );
+      
+      // Generate contextual mature response
+      const matureResponses = [
+        `*Cha Hae-In fulfills your request with passion* Here's exactly what you wanted to see, Jin-Woo... *her eyes are filled with desire*`,
+        `*She responds to your desires without hesitation* I love showing you everything, Jin-Woo... *her breathing becomes heavy*`,
+        `*Cha Hae-In eagerly satisfies your request* This is for you, my love... *she moves closer with anticipation*`,
+        `*Her cheeks flush as she grants your wish* Anything for you, Jin-Woo... *she whispers seductively*`
+      ];
+      
+      const response = matureResponses[Math.floor(Math.random() * matureResponses.length)];
+      
+      if (imageUrl) {
+        res.json({ 
+          imageUrl,
+          response,
+          intimacyBoost: true
+        });
+      } else {
+        res.json({
+          response: `*Cha Hae-In responds passionately* ${response}`,
+          intimacyBoost: true
+        });
+      }
+    } catch (error) {
+      console.error("Mature content generation error:", error);
+      res.status(500).json({ error: "Failed to generate mature content" });
     }
   });
 

@@ -1,0 +1,52 @@
+System 11 (Final Touch-Based Design): The Dungeon Raid
+
+Design Philosophy: Combat is a relationship-building activity disguised as a high-stakes battle. The focus is on teamwork, synergy with Cha Hae-In, and making the player feel like the powerful Shadow Monarch through a fluid, touch-based interface.
+
+Part 1: The Touch-Based Control Scheme
+
+All interactions are designed to be simple, direct taps and holds, easily accessible to a player's thumbs.
+
+Movement: Tap an area on the ground to move to that position.
+Basic Attack: Tap directly on an enemy to auto-move into range and execute your basic attack combo.
+The Action Bar: A clean, minimalist liquid glassmorphism bar at the bottom of the screen with 4 slots for skills.
+Slot	Skill	Touch Interaction	Description
+1	Launcher Skill	Tap	A quick upward slash that sends enemies airborne (e.g., Mutilate).
+2	Dash Skill	Tap	A fast forward thrust that can also be used for evasion (e.g., Violent Slash).
+3	Charge AoE Skill	Tap and Hold	Charges a powerful area-of-effect attack (e.g., Dominator's Touch). A charge meter fills over the button; releasing your finger unleashes the attack.
+4	Special/Flex Skill	Tap	A utility or powerful damage skill that can be swapped out in the Armory.
+
+
+Export to Sheets
+Button UI States:
+Ready: The icon is fully colored and bright.
+On Cooldown: The icon is grayed out, and a numeric countdown or a radial "pie wipe" animation shows the remaining time.
+Not Enough Mana: The icon flashes red or has a red tint when tapped.
+Part 2: Deep Dive into Core Mechanics
+
+A. The Combat Stage & Camera
+
+Camera Logic: The camera follows the player with a slight "lazy" delay to feel smooth. It will automatically zoom out when a large boss enters the arena to keep both the player and the boss in frame. The camera will perform a subtle micro-shake on heavy impacts or when the player takes damage to add weight to the action.
+Health & Mana Auras (Expanded Detail):
+Health Depletion: As a character takes damage, their aura will decrease in size and saturation. At critical health (<25%), the aura begins to flicker and pulse rapidly, providing a clear visual danger warning.
+Healing: When healed, the aura emits a bright green pulse and smoothly expands back to its full size.
+Mana: Player mana is represented by a thin, glowing blue ring that encircles the purple health aura at their feet. It depleles clockwise and regenerates slowly over time or with specific actions.
+B. Cha Hae-In's AI & The Synergy System (Expanded Detail)
+
+AI Behavior: Cha Hae-In's AI is proactive. Her primary target will be the same enemy the player is attacking to facilitate teamwork. If the player is stunned or rooted, her AI will switch to a defensive priority, attempting to draw aggro from enemies attacking the player.
+Synergy Gauge: This small, golden circular gauge will fill with a swirling, liquid-like energy. When it's full, it emits a clear, resonant chime audio cue and pulses with bright light.
+Team-Up Attack Button: The button that appears is a large, glowing orb of intertwined purple and gold energy. When tapped, it triggers the cinematic sequence. After use, the gauge visibly empties with a draining animation.
+C. The Shadow Soldier System (Expanded Detail)
+
+UI/UX: Tapping the Monarch Rune at the bottom of the screen causes the radial menu to animate open in a swift, circular motion (~200ms). Each slice of the radial menu clearly shows the soldier's portrait, name, and the mana cost to summon them.
+Commanding: After summoning, the player can tap the Monarch Rune again to switch to "Command Mode." In this mode, tapping a location on the ground will command all active shadows to focus their attack on that spot.
+Part 3: Detailed Encounter Breakdowns
+
+Traps: When a trap is triggered, a large, glowing icon representing the required skill (e.g., the "Dash" icon) will flash in the center of the screen. The player has a short window (~1 second) to tap the corresponding skill button on their Action Bar to evade.
+Puzzles: For a rune sequence puzzle, the runes on the door will glow. The player taps the runes in the correct order. If correct, a rune stays lit. If incorrect, it flashes red with a harsh "fail" sound effect, and the sequence resets.
+Boss Mechanics ("Struggle Mini-Game"): The cinematic begins. A large, complex rune appears center-screen with an empty progress bar around it. The UI prompts the user to "Rapidly Tap!" As they tap the area, the bar fills with crackling purple energy. Success or failure is determined by filling the bar before the timer runs out.
+Part 4: Expanded UI/UX Specifications
+
+Damage Numbers: When an enemy is hit, small, white damage numbers will arc up and fade away. Critical hits will be larger, yellow, and have a slight screen-shake effect.
+Status Effects: When a character is stunned, poisoned, etc., a small, clear icon representing the status (dizzy stars for stun, green bubbles for poison) appears and rotates slowly just below their health aura.
+Loot Drops: When lesser enemies are defeated, small gold coin icons (₩) will fly out of them and magnetically attract to the player, auto-looting them with a satisfying chime.
+This touch-based design is robust, ready for web-on-phone testing, and retains all the depth and detail required for an engaging combat experience.
