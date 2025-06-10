@@ -443,6 +443,8 @@ export function LocationInteractiveNodes({
   playerStats, 
   environmentalContext 
 }: LocationNodesProps) {
+  console.error('🚨 COMPONENT LOADED - LocationInteractiveNodes for:', locationId);
+  
   const [selectedNode, setSelectedNode] = useState<InteractiveNode | null>(null);
   const [showThoughtPrompt, setShowThoughtPrompt] = useState(false);
   const [nearbyNodes, setNearbyNodes] = useState<string[]>([]);
@@ -630,6 +632,10 @@ export function LocationInteractiveNodes({
 
   return (
     <div className="absolute inset-0 pointer-events-none">
+      {/* DEBUG: Visible indicator that component is loaded */}
+      <div className="absolute top-0 left-0 bg-red-500 text-white p-2 z-50 pointer-events-auto">
+        DEBUG: Nodes={nodes.length}, Location={locationId}
+      </div>
       {/* Interactive Nodes */}
       {nodes.map((node) => {
         const available = isNodeAvailable(node);
