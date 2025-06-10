@@ -904,118 +904,88 @@ export default function SoloLevelingSpatial() {
         {/* Weather Effects Layer */}
         {getWeatherOverlay()}
         
-        {/* Cha Hae-In Presence Indicator - Enhanced Golden Breathing Node */}
+        {/* Cha Hae-In Presence Indicator - Golden Breathing Node */}
         {currentLocationData.chaHaeInPresent && (
           <motion.div
-            className="absolute cursor-pointer z-30 group"
+            className="absolute cursor-pointer z-20 group"
             style={{
               left: `${currentLocationData.chaPosition.x}%`,
               top: `${currentLocationData.chaPosition.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.85 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={handleChaHaeInInteraction}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
           >
             <div className="relative">
-              {/* Outer Pulsing Aura - More Visible */}
+              {/* Outer Pulsing Aura - Breathing Effect */}
               <motion.div
-                className="w-28 h-28 rounded-full"
+                className="w-20 h-20 rounded-full blur-md"
                 style={{
-                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.2) 40%, rgba(255, 193, 7, 0.1) 70%, transparent 100%)',
-                  filter: 'blur(8px)'
+                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, rgba(245, 158, 11, 0.15) 40%, transparent 70%)'
                 }}
                 animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.4, 0.9, 0.4]
+                  scale: [1, 1.4, 1],
+                  opacity: [0.3, 0.8, 0.3]
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Middle Glow Ring - Enhanced */}
+              {/* Middle Glow Ring */}
               <motion.div
-                className="absolute inset-3 w-22 h-22 rounded-full"
+                className="absolute inset-2 w-16 h-16 rounded-full blur-sm"
                 style={{
-                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, rgba(245, 158, 11, 0.3) 50%, transparent 100%)',
-                  filter: 'blur(4px)'
+                  background: 'radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.2) 50%, transparent 100%)'
                 }}
                 animate={{
-                  scale: [1, 1.15, 1],
-                  opacity: [0.6, 1, 0.6]
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 0.9, 0.5]
                 }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
               />
               
-              {/* Core Presence Dot - Larger and Brighter */}
+              {/* Core Presence Dot with Enhanced Pulsing */}
               <motion.div
-                className="absolute inset-8 w-12 h-12 bg-gradient-to-br from-amber-200 via-yellow-400 to-amber-600 rounded-full shadow-2xl border-2 border-yellow-100/70"
+                className="absolute inset-6 w-8 h-8 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-full shadow-lg border border-yellow-200/50"
                 animate={{
-                  scale: [1, 1.08, 1],
-                  opacity: [0.95, 1, 0.95],
+                  scale: [1, 1.1, 1],
+                  opacity: [0.9, 1, 0.9],
                   boxShadow: [
-                    '0 0 12px rgba(251, 191, 36, 0.6), 0 0 24px rgba(245, 158, 11, 0.3)',
-                    '0 0 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(245, 158, 11, 0.4)',
-                    '0 0 12px rgba(251, 191, 36, 0.6), 0 0 24px rgba(245, 158, 11, 0.3)'
+                    '0 0 8px rgba(251, 191, 36, 0.4)',
+                    '0 0 16px rgba(251, 191, 36, 0.6)',
+                    '0 0 8px rgba(251, 191, 36, 0.4)'
                   ]
                 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
               />
               
-              {/* Inner Light Core */}
+              {/* Ripple Effect */}
               <motion.div
-                className="absolute inset-10 w-8 h-8 bg-gradient-to-br from-yellow-200 to-amber-300 rounded-full"
+                className="absolute inset-0 w-20 h-20 rounded-full border border-amber-400/30"
                 animate={{
-                  opacity: [0.8, 1, 0.8]
-                }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              />
-              
-              {/* Ripple Effect - Multiple Layers */}
-              <motion.div
-                className="absolute inset-0 w-28 h-28 rounded-full border-2 border-amber-400/40"
-                animate={{
-                  scale: [1, 2.2, 1],
-                  opacity: [0.7, 0, 0.7]
+                  scale: [1, 2, 1],
+                  opacity: [0.6, 0, 0.6]
                 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeOut" }}
               />
               
+              {/* Context Box - Compact Info */}
               <motion.div
-                className="absolute inset-2 w-24 h-24 rounded-full border border-yellow-300/50"
-                animate={{
-                  scale: [1, 1.8, 1],
-                  opacity: [0.5, 0, 0.5]
-                }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: "easeOut", delay: 0.5 }}
-              />
-              
-              {/* Context Box - Enhanced Visibility */}
-              <motion.div
-                className="absolute top-2 left-16 pointer-events-none z-40 whitespace-nowrap"
-                initial={{ opacity: 0, x: -10, scale: 0.8 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ duration: 0.8, delay: 1.2 }}
+                className="absolute top-1 left-12 pointer-events-none z-30 whitespace-nowrap"
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
               >
-                <div 
-                  className="px-2 py-1 rounded-md border shadow-lg"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 41, 59, 0.7) 100%)',
-                    borderColor: 'rgba(251, 191, 36, 0.4)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  <div className="font-semibold text-amber-300 text-xs">Cha Hae-In</div>
-                  <div className="text-gray-300 text-xs">{currentLocationData.chaActivity}</div>
+                <div className="bg-black/60 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-sm border border-amber-400/20 shadow-md">
+                  <div className="font-medium text-amber-300" style={{ fontSize: '10px' }}>Cha Hae-In</div>
+                  <div className="text-gray-300" style={{ fontSize: '9px' }}>{currentLocationData.chaActivity}</div>
                 </div>
               </motion.div>
 
-              {/* Hover Interaction Hint - Enhanced */}
-              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-40 whitespace-nowrap">
-                <div className="bg-amber-900/90 backdrop-blur-sm text-amber-100 text-sm px-3 py-1.5 rounded-lg border border-amber-400/60 shadow-xl">
-                  Click to interact
+              {/* Hover Interaction Hint */}
+              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 whitespace-nowrap">
+                <div className="bg-amber-900/80 backdrop-blur-sm text-amber-200 text-xs px-2 py-1 rounded border border-amber-400/40 shadow-lg">
+                  Tap to interact
                 </div>
               </div>
             </div>
