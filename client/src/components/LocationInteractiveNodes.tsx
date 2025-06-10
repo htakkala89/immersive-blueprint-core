@@ -86,22 +86,34 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       outcome: 'Steamy shower romance',
       gameLogic: 'system_5_intimate_activity'
     },
-    // Tier 2 - Gangnam High-Rise (5 nodes)
+    // Tier 2 - Gangnam High-Rise (5 nodes) - Organized by zones
+    // Private Quarters Zone
     {
       id: 'modern_bedroom',
-      label: 'Modern Bedroom',
+      label: 'Master Bedroom',
       icon: Bed,
-      position: { x: 15, y: 25 },
+      position: { x: 20, y: 30 },
       thoughtPrompt: 'Stylish bedroom romance',
       outcome: 'Intimate moments in your upgraded bedroom',
       gameLogic: 'system_5_intimate_activity',
       requirements: ['apartment_tier_2']
     },
     {
+      id: 'luxury_shower',
+      label: 'Executive Bathroom',
+      icon: Shield,
+      position: { x: 20, y: 60 },
+      thoughtPrompt: 'Steamy shower romance',
+      outcome: 'Luxurious shower experience together',
+      gameLogic: 'system_5_intimate_activity',
+      requirements: ['apartment_tier_2']
+    },
+    // Social Zone
+    {
       id: 'city_view_couch',
-      label: 'City View Living Room',
+      label: 'Panoramic Lounge',
       icon: Sofa,
-      position: { x: 45, y: 70 },
+      position: { x: 50, y: 45 },
       thoughtPrompt: 'Intimate moments with city lights',
       outcome: 'Romance with stunning city views',
       gameLogic: 'system_5_intimate_activity',
@@ -109,29 +121,20 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
     },
     {
       id: 'designer_kitchen',
-      label: 'Designer Kitchen',
+      label: 'Gourmet Kitchen',
       icon: ChefHat,
-      position: { x: 75, y: 50 },
+      position: { x: 80, y: 30 },
       thoughtPrompt: 'Kitchen counter passion',
       outcome: 'Intimate encounter in your designer kitchen',
       gameLogic: 'system_5_intimate_activity',
       requirements: ['apartment_tier_2']
     },
-    {
-      id: 'luxury_shower',
-      label: 'Rain Shower',
-      icon: Shield,
-      position: { x: 85, y: 15 },
-      thoughtPrompt: 'Steamy shower romance',
-      outcome: 'Luxurious shower experience together',
-      gameLogic: 'system_5_intimate_activity',
-      requirements: ['apartment_tier_2']
-    },
+    // Outdoor Zone
     {
       id: 'rooftop_access',
-      label: 'Rooftop Garden',
+      label: 'Private Terrace',
       icon: TreePine,
-      position: { x: 30, y: 10 },
+      position: { x: 80, y: 70 },
       thoughtPrompt: 'Garden terrace intimacy',
       outcome: 'Romance under the stars on your private rooftop',
       gameLogic: 'system_5_intimate_activity',
