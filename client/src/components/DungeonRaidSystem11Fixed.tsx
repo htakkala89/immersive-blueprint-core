@@ -342,6 +342,96 @@ export function DungeonRaidSystem11({
     }
   };
 
+  // Auto-attack system for all allies
+  useEffect(() => {
+    const shadowSoldiers = enemies.filter(e => e.isAlly);
+    const realEnemies = enemies.filter(e => !e.isAlly);
+    
+    if (realEnemies.length === 0) return;
+
+    const interval = setInterval(() => {
+      // Cha Hae-In auto-attack
+      const chahaein = players.find(p => p.id === 'chahaein');
+      if (chahaein && realEnemies.length > 0) {
+        const nearestEnemy = realEnemies.reduce((nearest, enemy) => {
+          const distToCha = Math.sqrt(
+            Math.pow(enemy.x - chahaein.x, 2) + Math.pow(enemy.y - chahaein.y, 2)
+          );
+          const distToNearest = nearest ? Math.sqrt(
+            Math.pow(nearest.x - chahaein.x, 2) + Math.pow(nearest.y - chahaein.y, 2)
+          ) : Infinity;
+          
+          return distToCha < distToNearest ? enemy : nearest;
+        }, null as Enemy | null);
+
+        if (nearestEnemy) {
+          const damage = Math.floor(Math.random() * 15) + 10;
+          
+          setEnemies(prev => prev.map(enemy => 
+            enemy.id === nearestEnemy.id 
+              ? { ...enemy, health: Math.max(0, enemy.health - damage) }
+              : enemy
+          ).filter(enemy => enemy.health > 0));
+
+          setFloatingDamage(prev => [...prev, {
+            id: `cha-damage-${Date.now()}`,
+            damage: damage,
+            x: nearestEnemy.x,
+            y: nearestEnemy.y,
+            color: 'text-blue-400',
+            timestamp: Date.now()
+          }]);
+        }
+      }
+
+      // Shadow Soldiers auto-attack
+      shadowSoldiers.forEach(shadowSoldier => {
+        const nearestEnemyToShadow = realEnemies.reduce((nearest, enemy) => {
+          const distToShadow = Math.sqrt(
+            Math.pow(enemy.x - shadowSoldier.x, 2) + Math.pow(enemy.y - shadowSoldier.y, 2)
+          );
+          const distToNearest = nearest ? Math.sqrt(
+            Math.pow(nearest.x - shadowSoldier.x, 2) + Math.pow(nearest.y - shadowSoldier.y, 2)
+          ) : Infinity;
+          
+          return distToShadow < distToNearest ? enemy : nearest;
+        }, null as Enemy | null);
+
+        if (nearestEnemyToShadow) {
+          let damage = 0;
+          
+          // Different damage based on shadow soldier type
+          if (shadowSoldier.name === 'Igris') {
+            damage = Math.floor(Math.random() * 20) + 15; // 15-35 damage
+          } else if (shadowSoldier.name === 'Tank') {
+            damage = Math.floor(Math.random() * 15) + 10; // 10-25 damage
+          } else if (shadowSoldier.name === 'Iron') {
+            damage = Math.floor(Math.random() * 12) + 8;  // 8-20 damage
+          }
+          
+          setEnemies(prev => prev.map(enemy => 
+            enemy.id === nearestEnemyToShadow.id 
+              ? { ...enemy, health: Math.max(0, enemy.health - damage) }
+              : enemy
+          ).filter(enemy => enemy.health > 0));
+
+          setFloatingDamage(prev => [...prev, {
+            id: `shadow-damage-${shadowSoldier.id}-${Date.now()}`,
+            damage: damage,
+            x: nearestEnemyToShadow.x,
+            y: nearestEnemyToShadow.y,
+            color: 'text-purple-400',
+            timestamp: Date.now()
+          }]);
+
+          console.log(`${shadowSoldier.name} dealt ${damage} damage to ${nearestEnemyToShadow.name}`);
+        }
+      });
+    }, 2500); // Attack every 2.5 seconds
+
+    return () => clearInterval(interval);
+  }, [enemies, players]);
+
   if (!isVisible) return null;
 
   return (
