@@ -1497,10 +1497,35 @@ export default function SoloLevelingSpatial() {
                 });
                 break;
               case 'mission_board':
+                // Opens lore panel with gate information
+                setShowQuestBoard(true);
+                console.log('Opening mission board with gate alerts and world lore');
+                break;
               case 'receptionist':
+                // NPC dialogue with hints and rumors
+                handleEnvironmentalInteraction({
+                  id: nodeId,
+                  action: 'The receptionist shares valuable hunter gossip and gameplay tips',
+                  name: 'Guild Receptionist',
+                  x: 65,
+                  y: 45
+                });
+                console.log('Talking to receptionist for rumors and hints');
+                break;
+              case 'elevator_bank':
+                // Floor navigation system - could unlock higher floors based on rank
+                handleEnvironmentalInteraction({
+                  id: nodeId,
+                  action: 'Access restricted upper floors with advanced facilities',
+                  name: 'Association Elevator',
+                  x: 45,
+                  y: 70
+                });
+                console.log('Using elevator to access upper floors');
+                break;
               case 'sparring_ring':
               case 'combat_analytics':
-                // Hunter Association interactions
+                // Training facility interactions
                 handleEnvironmentalInteraction({
                   id: nodeId,
                   action: thoughtPrompt,
