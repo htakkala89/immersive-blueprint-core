@@ -1,0 +1,34 @@
+EXPLICIT CHA HAE-IN PROMPT EXAMPLE
+=====================================
+
+Basic Structure:
+masterpiece, best quality, detailed, [MAIN_CONTENT], Solo Leveling manhwa art style, romantic scene, beautiful lighting
+
+Example Explicit Prompt:
+"masterpiece, best quality, detailed, Cha Hae-In from Solo Leveling with beautiful long silver hair, wearing white lace lingerie, sitting on silk bed sheets, intimate bedroom setting with soft moonlight, seductive pose with gentle smile, bare shoulders, elegant and sensual, romantic atmosphere, detailed fabric textures, glowing skin, passionate expression, tender moment"
+
+Advanced Intimate Scene Prompt:
+"masterpiece, best quality, detailed, Cha Hae-In Solo Leveling beautiful silver-haired hunter, passionate intimate moment, wearing sheer white nightgown, bedroom setting with candlelight, romantic embrace pose, tender loving expression, soft skin textures, elegant curves, sensual lighting, detailed fabric transparency, emotional connection, adult romantic scene, high detail anime art style"
+
+Character-Specific Elements:
+- Long silver/white hair (signature feature)
+- Golden/amber eyes 
+- Elegant S-rank hunter physique
+- Confident yet tender expressions
+- White/silver color themes
+- Korean beauty standards
+- Manhwa art style consistency
+
+Negative Prompt (automatically added):
+"purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, low quality, blurry, distorted anatomy, wrong proportions"
+
+Current NovelAI Settings:
+- Model: nai-diffusion-3
+- Sampler: k_dpmpp_2m (optimized for detail)
+- Steps: 28 (balanced quality/speed)
+- CFG Scale: 7 (prevents over-saturation)
+- SMEA: enabled (enhanced composition)
+- Resolution: 832x1216 (portrait format)
+
+Usage in Game:
+The system automatically enhances prompts and handles explicit content generation for intimate activities in the spatial romance experience.
