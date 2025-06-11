@@ -510,80 +510,14 @@ export function IntimateActivitySystem5({
                 />
                 
                 <div className="flex gap-2">
-                  {/* Narrative Lens Button - Enhanced with enticing effects */}
-                  <motion.div className="relative">
-                    <motion.button
-                      onClick={activateNarrativeLens}
-                      className="text-pink-400 hover:bg-pink-500/30 border border-pink-400/50 relative overflow-hidden backdrop-blur-sm p-2 rounded-lg bg-transparent"
-                      title="Visualize Scene"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-pink-500/30 via-purple-500/30 to-pink-500/30"
-                        animate={{ 
-                          backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                          opacity: [0.3, 0.7, 0.3]
-                        }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        style={{ backgroundSize: '200% 200%' }}
-                      />
-                      
-                      <motion.div
-                        className="absolute inset-0 rounded-lg"
-                        animate={{ 
-                          boxShadow: [
-                            '0 0 10px rgba(236, 72, 153, 0.3)',
-                            '0 0 25px rgba(236, 72, 153, 0.6)',
-                            '0 0 35px rgba(168, 85, 247, 0.4)',
-                            '0 0 25px rgba(236, 72, 153, 0.6)',
-                            '0 0 10px rgba(236, 72, 153, 0.3)'
-                          ]
-                        }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                      />
-                      
-                      <motion.div
-                        animate={{ 
-                          scale: [1, 1.1, 1]
-                        }}
-                        transition={{ 
-                          scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-                        }}
-                      >
-                        <Eye className="w-5 h-5 relative z-10" />
-                      </motion.div>
-                    </motion.button>
-                    
-                    {/* Floating sparkles around the button */}
-                    <motion.div
-                      className="absolute -inset-2 pointer-events-none"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      {[...Array(6)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          className="absolute w-1 h-1 bg-pink-400 rounded-full"
-                          style={{
-                            top: `${20 + Math.sin(i * 60 * Math.PI / 180) * 20}%`,
-                            left: `${50 + Math.cos(i * 60 * Math.PI / 180) * 30}%`
-                          }}
-                          animate={{
-                            scale: [0, 1, 0],
-                            opacity: [0, 1, 0],
-                            rotate: [0, 180, 360]
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            delay: i * 0.3,
-                            ease: "easeInOut"
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  </motion.div>
+                  {/* Narrative Lens Button - Static effects only */}
+                  <button
+                    onClick={activateNarrativeLens}
+                    className="text-pink-400 hover:bg-pink-500/30 border border-pink-400/50 relative overflow-hidden backdrop-blur-sm p-2 rounded-lg bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-pink-500/20 shadow-lg shadow-pink-500/30"
+                    title="Visualize Scene"
+                  >
+                    <Eye className="w-5 h-5 relative z-10" />
+                  </button>
                   
                   <Button
                     onClick={sendMessage}
