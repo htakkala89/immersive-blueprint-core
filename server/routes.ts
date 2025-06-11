@@ -1725,11 +1725,64 @@ Generate a prompt suitable for manhwa-style art generation:`;
         throw lastError || new Error('All NovelAI endpoints failed');
       }
 
-      const imageBuffer = await response.arrayBuffer();
-      const base64Image = Buffer.from(imageBuffer).toString('base64');
-      const imageUrl = `data:image/png;base64,${base64Image}`;
+      // Check response format and handle appropriately
+      const contentType = response.headers.get('content-type');
+      console.log('NovelAI response content-type:', contentType);
 
-      res.json({ imageUrl });
+      // NovelAI typically returns ZIP files containing images
+      if (contentType && (contentType.includes('application/zip') || contentType.includes('application/octet-stream'))) {
+        const zipBuffer = await response.arrayBuffer();
+        
+        // Extract the first image from the ZIP file
+        try {
+          const AdmZip = require('adm-zip');
+          const zip = new AdmZip(Buffer.from(zipBuffer));
+          const zipEntries = zip.getEntries();
+          
+          if (zipEntries.length > 0) {
+            const imageEntry = zipEntries.find(entry => 
+              entry.entryName.endsWith('.png') || 
+              entry.entryName.endsWith('.jpg') || 
+              entry.entryName.endsWith('.jpeg')
+            );
+            
+            if (imageEntry) {
+              const imageBuffer = imageEntry.getData();
+              const base64Image = imageBuffer.toString('base64');
+              const imageUrl = `data:image/png;base64,${base64Image}`;
+              console.log('Successfully extracted image from ZIP');
+              res.json({ imageUrl });
+            } else {
+              throw new Error('No image found in ZIP file');
+            }
+          } else {
+            throw new Error('Empty ZIP file received');
+          }
+        } catch (zipError) {
+          console.error('ZIP extraction error:', zipError);
+          throw new Error('Failed to extract image from ZIP');
+        }
+      } else if (contentType && contentType.includes('application/json')) {
+        // Handle JSON response format
+        const jsonData = await response.json();
+        console.log('NovelAI JSON response keys:', Object.keys(jsonData));
+        
+        if (jsonData.image) {
+          const imageUrl = `data:image/png;base64,${jsonData.image}`;
+          res.json({ imageUrl });
+        } else if (jsonData.images && jsonData.images.length > 0) {
+          const imageUrl = `data:image/png;base64,${jsonData.images[0]}`;
+          res.json({ imageUrl });
+        } else {
+          throw new Error('No image data found in JSON response');
+        }
+      } else {
+        // Handle direct binary image response
+        const imageBuffer = await response.arrayBuffer();
+        const base64Image = Buffer.from(imageBuffer).toString('base64');
+        const imageUrl = `data:image/png;base64,${base64Image}`;
+        res.json({ imageUrl });
+      }
     } catch (error) {
       console.error("NovelAI generation error:", error);
       
