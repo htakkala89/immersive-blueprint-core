@@ -224,26 +224,17 @@ export async function generateLocationSceneImage(location: string, timeOfDay: st
     const locationPrompt = createLocationPrompt(location, timeOfDay, weather);
     console.log(`🏢 Generating location scene for: ${location} at ${timeOfDay}${weather ? ` with ${weather} weather` : ''}`);
     
-    // Use OpenAI for location scenes (non-mature content)
-    if (openai) {
-      try {
-        const response = await openai.images.generate({
-          model: "dall-e-3",
-          prompt: locationPrompt,
-          n: 1,
-          size: "1024x1024",
-          quality: "standard",
-        });
-        
-        const imageUrl = response.data?.[0]?.url;
-        if (imageUrl) {
-          console.log('✅ OpenAI generated location scene successfully');
-          imageCache.set(cacheKey, { url: imageUrl, timestamp: Date.now() });
-          return imageUrl;
-        }
-      } catch (openaiError) {
-        console.log('⚠️ OpenAI location generation failed:', (openaiError as Error)?.message || 'Unknown error');
+    // Use NovelAI for location scene generation
+    try {
+      const imageUrl = await generateWithNovelAI(locationPrompt);
+      
+      if (imageUrl) {
+        console.log('✅ NovelAI generated location scene successfully');
+        imageCache.set(cacheKey, { url: imageUrl, timestamp: Date.now() });
+        return imageUrl;
       }
+    } catch (novelError) {
+      console.log('⚠️ NovelAI location generation failed:', (novelError as Error)?.message || 'Unknown error');
     }
 
     return null;
@@ -294,25 +285,16 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     const scenePrompt = createScenePrompt(gameState);
     console.log(`🎬 Generating scene image for: ${gameState.currentScene}`);
     
-    // Use OpenAI for general scene images
-    if (openai) {
-      try {
-        const response = await openai.images.generate({
-          model: "dall-e-3",
-          prompt: scenePrompt,
-          n: 1,
-          size: "1024x1024",
-          quality: "standard",
-        });
-        
-        const imageUrl = response.data?.[0]?.url;
-        if (imageUrl) {
-          console.log('✅ OpenAI generated scene image successfully');
-          return imageUrl;
-        }
-      } catch (openaiError) {
-        console.log('⚠️ OpenAI scene generation failed:', (openaiError as Error)?.message || 'Unknown error');
+    // Use NovelAI for general scene images
+    try {
+      const imageUrl = await generateWithNovelAI(scenePrompt);
+      
+      if (imageUrl) {
+        console.log('✅ NovelAI generated scene image successfully');
+        return imageUrl;
       }
+    } catch (novelError) {
+      console.log('⚠️ NovelAI scene generation failed:', (novelError as Error)?.message || 'Unknown error');
     }
 
     return null;
@@ -394,4 +376,33 @@ function createAvatarPrompt(character: string, expression: string, emotion?: str
   }
   
   return `${baseStyle}, character portrait, ${expression} expression${emotion ? `, ${emotion} emotion` : ''}, detailed facial features, close-up view`;
+}
+
+export async function generateChatSceneImage(prompt: string, imageType: string): Promise<string | null> {
+  try {
+    const now = Date.now();
+    if (now - lastImageGeneration < IMAGE_GENERATION_COOLDOWN) {
+      return null;
+    }
+    lastImageGeneration = now;
+
+    console.log(`🎭 Generating chat scene image: ${imageType}`);
+    
+    // Use NovelAI for character portraits and emotional scenes
+    try {
+      const imageUrl = await generateWithNovelAI(prompt);
+      
+      if (imageUrl) {
+        console.log('✅ NovelAI generated chat scene image successfully');
+        return imageUrl;
+      }
+    } catch (novelError) {
+      console.log('⚠️ NovelAI chat scene generation failed:', (novelError as Error)?.message || 'Unknown error');
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error generating chat scene image:', error);
+    return null;
+  }
 }
