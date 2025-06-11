@@ -224,27 +224,18 @@ export async function generateLocationSceneImage(location: string, timeOfDay: st
     const locationPrompt = createLocationPrompt(location, timeOfDay, weather);
     console.log(`🏢 Generating location scene for: ${location} at ${timeOfDay}${weather ? ` with ${weather} weather` : ''}`);
     
-    // Use NovelAI for location scene generation
+    // Use Gemini for location scene generation
     try {
-      const imageUrl = await generateWithNovelAI(locationPrompt);
+      const { generateImageWithGemini } = await import('./geminiImageService');
+      const imageUrl = await generateImageWithGemini(locationPrompt);
       
       if (imageUrl) {
-        console.log('✅ NovelAI generated location scene successfully');
+        console.log('✅ Gemini generated location scene successfully');
         imageCache.set(cacheKey, { url: imageUrl, timestamp: Date.now() });
         return imageUrl;
       }
-    } catch (novelError) {
-      console.log('⚠️ NovelAI location generation failed:', (novelError as Error)?.message || 'Unknown error');
-    }
-
-    // Use existing assets as fallback
-    const { getAssetLocationImage } = await import('./assetImageService');
-    const assetImage = getAssetLocationImage(location, timeOfDay, weather);
-    
-    if (assetImage) {
-      console.log('📸 Using existing asset for location');
-      imageCache.set(cacheKey, { url: assetImage, timestamp: Date.now() });
-      return assetImage;
+    } catch (geminiError) {
+      console.log('⚠️ Gemini location generation failed:', (geminiError as Error)?.message || 'Unknown error');
     }
 
     return null;
@@ -295,16 +286,17 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     const scenePrompt = createScenePrompt(gameState);
     console.log(`🎬 Generating scene image for: ${gameState.currentScene}`);
     
-    // Use NovelAI for general scene images
+    // Use Gemini for general scene images
     try {
-      const imageUrl = await generateWithNovelAI(scenePrompt);
+      const { generateImageWithGemini } = await import('./geminiImageService');
+      const imageUrl = await generateImageWithGemini(scenePrompt);
       
       if (imageUrl) {
-        console.log('✅ NovelAI generated scene image successfully');
+        console.log('✅ Gemini generated scene image successfully');
         return imageUrl;
       }
-    } catch (novelError) {
-      console.log('⚠️ NovelAI scene generation failed:', (novelError as Error)?.message || 'Unknown error');
+    } catch (geminiError) {
+      console.log('⚠️ Gemini scene generation failed:', (geminiError as Error)?.message || 'Unknown error');
     }
 
     return null;
@@ -398,25 +390,17 @@ export async function generateChatSceneImage(prompt: string, imageType: string):
 
     console.log(`🎭 Generating chat scene image: ${imageType}`);
     
-    // Use NovelAI for character portraits and emotional scenes
+    // Use Gemini for character portraits and emotional scenes
     try {
-      const imageUrl = await generateWithNovelAI(prompt);
+      const { generateImageWithGemini } = await import('./geminiImageService');
+      const imageUrl = await generateImageWithGemini(prompt);
       
       if (imageUrl) {
-        console.log('✅ NovelAI generated chat scene image successfully');
+        console.log('✅ Gemini generated chat scene image successfully');
         return imageUrl;
       }
-    } catch (novelError) {
-      console.log('⚠️ NovelAI chat scene generation failed:', (novelError as Error)?.message || 'Unknown error');
-    }
-
-    // Use existing assets for character scenes
-    const { getAssetCharacterImage } = await import('./assetImageService');
-    const assetImage = getAssetCharacterImage(imageType);
-    
-    if (assetImage) {
-      console.log('📸 Using existing asset for character');
-      return assetImage;
+    } catch (geminiError) {
+      console.log('⚠️ Gemini chat scene generation failed:', (geminiError as Error)?.message || 'Unknown error');
     }
 
     return null;
