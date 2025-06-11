@@ -2635,41 +2635,297 @@ export default function SoloLevelingSpatial() {
                 console.log(`Bedroom gateway - Initiating ${selectedActivity} directly`);
                 break;
               case 'living_room_couch':
-                // Relaxing scene that can lead to cuddling activity
-                const hasFurniture = gameState.inventory?.some(item => 
-                  (typeof item === 'string' ? item : item.id)?.includes('luxury_sofa') ||
-                  (typeof item === 'string' ? item : item.id)?.includes('sectional')
+                // Primary conversational node - relaxing at home scene
+                const hasEntertainmentSystem = gameState.inventory?.some(item => 
+                  (typeof item === 'string' ? item : item.id)?.includes('monarch_entertainment') ||
+                  (typeof item === 'string' ? item : item.id)?.includes('entertainment_system')
                 );
                 
-                if (hasFurniture && gameState.unlockedActivities?.includes('cuddle_and_watch_movie')) {
-                  setActiveActivity('cuddle_and_watch_movie');
-                  setShowIntimateModal(true);
-                  console.log('Living room couch - Direct cuddling activity with luxury furniture');
-                } else if (gameState.unlockedActivities?.includes('cuddle_and_watch_movie')) {
-                  setActiveActivity('cuddle_and_watch_movie');
-                  setShowIntimateModal(true);
-                  console.log('Living room couch - Cuddling activity available');
-                } else {
-                  // Basic relaxation scene
+                if (hasEntertainmentSystem) {
+                  // Unlock movie activity in Daily Life Hub
+                  setGameState(prev => ({
+                    ...prev,
+                    unlockedActivities: [
+                      ...(prev.unlockedActivities || []),
+                      'watch_movie_together'
+                    ],
+                    affection: Math.min(100, prev.affection + 12)
+                  }));
                   handleEnvironmentalInteraction({
-                    id: 'couch_relaxation',
-                    action: 'You suggest relaxing on the sofa together. Cha Hae-In settles beside you with a content sigh. "This is nice," she says softly, leaning against your shoulder. The intimate proximity feels natural and comfortable.',
+                    id: 'couch_entertainment_unlock',
+                    action: 'You suggest relaxing on the sofa together. With the Monarch-Class Entertainment System, the experience becomes truly luxurious. "This is incredible," Cha Hae-In says, settling comfortably beside you. New movie activities are now available in your Day Planner.',
                     name: 'Living Room Couch',
                     x: 45,
                     y: 55
                   });
+                  console.log('Living room couch - Entertainment system unlocks movie activities with major affection gain');
+                } else {
+                  // Basic relaxation conversation scene
                   setGameState(prev => ({
                     ...prev,
                     affection: Math.min(100, prev.affection + 6)
                   }));
-                  console.log('Living room couch - Basic relaxation scene with affection gain');
+                  handleEnvironmentalInteraction({
+                    id: 'couch_relaxation',
+                    action: 'You suggest relaxing on the sofa together. Cha Hae-In settles beside you with a content sigh. "This is nice," she says softly, leaning against your shoulder. The comfortable intimacy feels natural and peaceful.',
+                    name: 'Living Room Couch',
+                    x: 45,
+                    y: 55
+                  });
+                  console.log('Living room couch - Primary conversational scene with affection gain');
                 }
+                break;
+              // Tier 2 - Gangnam High-Rise Apartment Nodes
+              case 'modern_kitchen':
+                // Direct cooking activity initiation
+                setGameState(prev => ({
+                  ...prev,
+                  energy: Math.max(0, (prev.energy || 100) - 20),
+                  affection: Math.min(100, prev.affection + 15)
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'cook_dinner_together',
+                  action: 'You suggest cooking something together. "I\'d love that," Cha Hae-In says with genuine enthusiasm. The kitchen becomes filled with laughter and delicious aromas as you work side by side. This shared experience brings you significantly closer together. [- 20 Energy] [Memory Star potential]',
+                  name: 'Cook Dinner Together',
+                  x: 35,
+                  y: 40
+                });
+                // Set cooking-specific thought prompts
+                setThoughtPrompts([
+                  "Let's try making Korean BBQ.",
+                  "How about homemade pasta?",
+                  "We should cook your favorite dish."
+                ]);
+                console.log('Cook dinner together - Major activity with high affection gain and energy cost');
+                break;
+              case 'bedroom_door':
+                // Gateway to mid-tier intimacy - direct transition
+                const tierTwoIntimateActivities = gameState.unlockedActivities || [];
+                let selectedTierTwoIntimate = 'passionate_night'; // Default mid-tier
+                
+                if (tierTwoIntimateActivities.includes('passionate_night')) selectedTierTwoIntimate = 'passionate_night';
+                else if (tierTwoIntimateActivities.includes('intimate_massage')) selectedTierTwoIntimate = 'intimate_massage';
+                else if (tierTwoIntimateActivities.includes('romantic_evening')) selectedTierTwoIntimate = 'romantic_evening';
+                else selectedTierTwoIntimate = 'bedroom_intimacy';
+                
+                setActiveActivity(selectedTierTwoIntimate);
+                setShowIntimateModal(true);
+                console.log(`Bedroom door gateway - Initiating mid-tier intimacy: ${selectedTierTwoIntimate}`);
+                break;
+              case 'balcony_door':
+                // Transition to unique Balcony Spatial View
+                setPlayerLocation('gangnam_balcony');
+                setCinematicMode(true);
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(100, prev.affection + 8)
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'balcony_transition',
+                  action: 'You suggest getting some fresh air on the balcony. Cha Hae-In nods and follows you outside. The city lights create a breathtaking panorama as you step into this intimate, elevated space overlooking Gangnam.',
+                  name: 'Balcony Transition',
+                  x: 80,
+                  y: 30
+                });
+                console.log('Balcony door - Transitioning to unique Balcony Spatial View');
+                break;
+              case 'city_view_balcony':
+                // Gateway: Cinematic romantic balcony scenes
+                setCinematicMode(true);
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(100, prev.affection + 8)
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'balcony_cinematic',
+                  action: 'You step onto the balcony overlooking the glittering Gangnam district. The city lights create a romantic ambiance as Cha Hae-In joins you. "The view from here never gets old," she says softly, standing close beside you in the evening breeze.',
+                  name: 'City View Balcony',
+                  x: 80,
+                  y: 30
+                });
+                console.log('Balcony cinematic mode - Romantic city view experience');
+                break;
+              case 'master_bedroom':
+                // Enhanced bedroom with luxury amenities
+                const tierTwoActivities = gameState.unlockedActivities || [];
+                let selectedTierTwoActivity = 'bedroom_intimacy';
+                
+                if (tierTwoActivities.includes('passionate_night')) selectedTierTwoActivity = 'passionate_night';
+                else if (tierTwoActivities.includes('intimate_massage')) selectedTierTwoActivity = 'intimate_massage';
+                else if (tierTwoActivities.includes('romantic_evening')) selectedTierTwoActivity = 'romantic_evening';
+                
+                setActiveActivity(selectedTierTwoActivity);
+                setShowIntimateModal(true);
+                console.log(`Tier 2 master bedroom - Initiating ${selectedTierTwoActivity}`);
+                break;
+              case 'luxury_bathroom':
+                // Gateway: Spa-like intimate activities
+                if (gameState.unlockedActivities?.includes('luxury_bath_together')) {
+                  setActiveActivity('luxury_bath_together');
+                  setShowIntimateModal(true);
+                  console.log('Luxury bathroom - Premium spa experience');
+                } else {
+                  setGameState(prev => ({
+                    ...prev,
+                    unlockedActivities: [
+                      ...(prev.unlockedActivities || []),
+                      'luxury_bath_together',
+                      'romantic_spa_night'
+                    ],
+                    affection: Math.min(100, prev.affection + 4)
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'bathroom_upgrade',
+                    action: 'The luxurious bathroom with its oversized soaking tub and rainfall shower creates a spa-like atmosphere. "This is incredible," Cha Hae-In says, admiring the elegant fixtures. New spa activities are now available.',
+                    name: 'Luxury Bathroom',
+                    x: 25,
+                    y: 70
+                  });
+                  console.log('Luxury bathroom activated - Spa activities unlocked');
+                }
+                break;
+              case 'home_office':
+                // Gateway: Professional bonding activities
+                setGameState(prev => ({
+                  ...prev,
+                  unlockedActivities: [
+                    ...(prev.unlockedActivities || []),
+                    'work_together',
+                    'strategy_planning',
+                    'hunter_business_discussion'
+                  ],
+                  affection: Math.min(100, prev.affection + 3)
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'home_office_setup',
+                  action: 'Your home office setup impresses Cha Hae-In with its professional equipment and organization. "You really have everything thought out," she observes approvingly. This space could be perfect for working on hunter business together.',
+                  name: 'Home Office',
+                  x: 60,
+                  y: 25
+                });
+                console.log('Home office activated - Professional activities unlocked');
+                break;
+              case 'wine_collection':
+                // Gateway: Add premium wine to inventory
+                setGameState(prev => ({
+                  ...prev,
+                  inventory: [
+                    ...(prev.inventory || []),
+                    {
+                      id: 'premium_wine',
+                      name: 'Premium Wine Collection',
+                      description: 'A curated selection of fine wines',
+                      type: 'luxury_item',
+                      rarity: 'rare'
+                    }
+                  ],
+                  unlockedActivities: [
+                    ...(prev.unlockedActivities || []),
+                    'wine_tasting_evening',
+                    'romantic_dinner_with_wine'
+                  ]
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'wine_collection_access',
+                  action: 'You showcase your wine collection to Cha Hae-In. Her knowledge of fine wines becomes apparent as she examines the labels with genuine appreciation. "You have excellent taste," she compliments. Perfect for special evenings together.',
+                  name: 'Wine Collection',
+                  x: 40,
+                  y: 65
+                });
+                console.log('Wine collection accessed - Premium wine added, romantic activities unlocked');
+                break;
+                
+              // Tier 3 - Monarch's Penthouse Nodes
+              case 'infinity_pool':
+                // Exclusive high-end swimming activity
+                setGameState(prev => ({
+                  ...prev,
+                  energy: Math.max(0, (prev.energy || 100) - 25),
+                  affection: Math.min(100, prev.affection + 18)
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'private_pool_swim',
+                  action: 'You suggest a swim in the private infinity pool. "This is incredible," Cha Hae-In breathes, looking out over the city skyline that seems to blend seamlessly with the water\'s edge. The exclusive experience brings you to new heights of intimacy. [- 25 Energy] [High Memory Star potential]',
+                  name: 'Infinity Pool',
+                  x: 60,
+                  y: 70
+                });
+                console.log('Infinity pool - Exclusive high-end activity with major affection gain');
+                break;
+              case 'artifact_display':
+                // Direct link to Relationship Constellation System
+                setShowRelationshipConstellation(true);
+                handleEnvironmentalInteraction({
+                  id: 'trophy_examination',
+                  action: 'You examine your collection of trophies and artifacts together. Each piece tells a story of your journey - the battles fought, the victories won, the moments shared. Cha Hae-In studies each item with reverence, remembering the experiences that brought you here.',
+                  name: 'Artifact Display',
+                  x: 30,
+                  y: 25
+                });
+                console.log('Artifact display - Opening Relationship Constellation with Memory Cards');
+                break;
+              case 'wine_cellar':
+                // Simple wine selection with inventory addition
+                if ((gameState.gold || 0) >= 25000) {
+                  setGameState(prev => ({
+                    ...prev,
+                    gold: Math.max(0, (prev.gold || 0) - 25000),
+                    inventory: [
+                      ...(prev.inventory || []),
+                      {
+                        id: 'vintage_wine',
+                        name: 'Vintage Wine',
+                        description: 'An exceptional bottle from your private collection',
+                        type: 'romantic_item',
+                        rarity: 'legendary'
+                      }
+                    ],
+                    unlockedActivities: [
+                      ...(prev.unlockedActivities || []),
+                      'share_vintage_wine'
+                    ]
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'wine_cellar_selection',
+                    action: 'You select a rare vintage from your private wine cellar. [- ₩25,000]. "This is from a legendary vineyard," you explain to Cha Hae-In as she admires the bottle. The vintage wine is now available for special occasions.',
+                    name: 'Wine Cellar',
+                    x: 20,
+                    y: 65
+                  });
+                  console.log('Wine cellar - Vintage wine selected and added to inventory');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'wine_cellar_browse',
+                    action: 'You browse your impressive wine collection together. Each bottle represents a significant investment, but the experience of sharing them would be priceless.',
+                    name: 'Wine Cellar',
+                    x: 20,
+                    y: 65
+                  });
+                }
+                break;
+              case 'master_suite':
+                // Ultimate gateway to highest-tier intimacy
+                setActiveActivity('spend_the_night_together');
+                setShowIntimateModal(true);
+                console.log('Master suite - Ultimate intimacy gateway: Spend the Night Together');
+                break;
+              case 'private_elevator':
+                // Smooth transition back to World Map
+                setShowWorldMap(true);
+                handleEnvironmentalInteraction({
+                  id: 'penthouse_exit',
+                  action: 'You take the private elevator down from your penthouse. The city awaits below, but the memories of this intimate space remain with you both.',
+                  name: 'Private Elevator',
+                  x: 50,
+                  y: 15
+                });
+                console.log('Private elevator - Transitioning back to World Map');
                 break;
               case 'vanity_table':
               case 'bookshelf':
               case 'window_view':
               case 'tea_station':
-                // Other intimate apartment interactions - enhance affection
+                // Other apartment interactions - enhance affection
                 setGameState(prev => ({
                   ...prev,
                   affection: Math.min(100, prev.affection + 2)
