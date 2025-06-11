@@ -67,12 +67,28 @@ class NovelAIProvider implements ImageProvider {
 
         if (response.ok) {
           const buffer = await response.arrayBuffer();
-          const base64Image = Buffer.from(buffer).toString('base64');
-          return {
-            success: true,
-            imageUrl: `data:image/png;base64,${base64Image}`,
-            provider: this.name
-          };
+          
+          // NovelAI returns images in ZIP format, extract the first image
+          try {
+            const AdmZip = require('adm-zip');
+            const zip = new AdmZip(Buffer.from(buffer));
+            const zipEntries = zip.getEntries();
+            
+            if (zipEntries.length > 0) {
+              const imageBuffer = zipEntries[0].getData();
+              const base64Image = imageBuffer.toString('base64');
+              return {
+                success: true,
+                imageUrl: `data:image/png;base64,${base64Image}`,
+                provider: this.name
+              };
+            }
+          } catch (zipError) {
+            console.log('Failed to extract ZIP from NovelAI response:', zipError);
+          }
+        } else {
+          const errorText = await response.text();
+          console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
         }
       } catch (error) {
         console.log(`NovelAI endpoint ${endpoint} failed:`, error);
