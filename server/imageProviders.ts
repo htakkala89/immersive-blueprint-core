@@ -37,7 +37,7 @@ class NovelAIProvider implements ImageProvider {
     
     const requestBody = {
       input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
-      model: 'nai-diffusion-3',
+      model: 'nai-diffusion-v4.5-Full',
       parameters: {
         width: 832,
         height: 1216,
