@@ -1324,6 +1324,50 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+  // Handle Item Inspection View purchases
+  const handleItemPurchase = (item: any) => {
+    const cost = item.price;
+    const affectionGain = item.affectionBonus;
+    const currentGold = gameState.gold || 0;
+    
+    if (currentGold >= cost) {
+      setGameState(prev => ({
+        ...prev,
+        gold: (prev.gold || 0) - cost,
+        affection: Math.min(100, prev.affection + affectionGain),
+        inventory: [...(prev.inventory || []), item.id]
+      }));
+      
+      // Update living space for furniture purchases
+      if (item.category === 'living_room' || item.category === 'bedroom') {
+        if (item.category === 'living_room') {
+          setGameState(prev => ({
+            ...prev,
+            apartmentTier: Math.max(prev.apartmentTier || 1, 2) // Upgrade to tier 2 minimum
+          }));
+        }
+        if (item.category === 'bedroom' && item.id === 'king_platform_bed') {
+          setGameState(prev => ({
+            ...prev,
+            apartmentTier: Math.max(prev.apartmentTier || 1, 3) // Upgrade to tier 3 for premium bedroom
+          }));
+        }
+      }
+      
+      // Generate response dialogue
+      handleEnvironmentalInteraction({
+        id: `purchase_${item.id}`,
+        action: `You purchase the ${item.name}. [- ₩${cost.toLocaleString()}]. ${item.chaHaeInReaction}`,
+        name: item.name,
+        x: 50,
+        y: 50
+      });
+      
+      console.log(`Purchased ${item.name} for ₩${cost.toLocaleString()} (+${affectionGain} affection)`);
+      setShowItemInspection(false); // Close the inspection view after purchase
+    }
+  };
+
   const handlePropertyPurchase = (property: any) => {
     const currentGold = gameState.gold || 0;
     console.log('Property purchase attempt:', {
@@ -3465,6 +3509,15 @@ export default function SoloLevelingSpatial() {
         }}
         backgroundImage={currentLocationData.backgroundImage}
         selectedVendor={selectedVendor}
+      />
+
+      {/* Item Inspection View - Commerce System */}
+      <ItemInspectionView
+        isOpen={showItemInspection}
+        onClose={() => setShowItemInspection(false)}
+        category={itemInspectionCategory}
+        playerGold={gameState.gold || 0}
+        onPurchase={handleItemPurchase}
       />
     </div>
   );
