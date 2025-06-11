@@ -1659,7 +1659,7 @@ Respond as Cha Hae-In would in this intimate moment:`;
       
       const novelAIPrompt = `${enhancedPrompt}, ${scenePrompt}, Solo Leveling manhwa art style by DUBU, webtoon illustration, Korean manhwa style`;
 
-      const negativePrompt = "low quality, worst quality, blurry, bad anatomy, deformed, disfigured, ugly, distorted, pixelated, jpeg artifacts, compression artifacts, watermark, signature, text, logo, username, monochrome, grainy, noise, oversaturated, undersaturated, overexposed, underexposed, bad hands, extra fingers, missing fingers, malformed limbs, mutation, poorly drawn, bad proportions, cropped, out of frame, duplicate, multiple views, split screen, border, frame";
+      const negativePrompt = qualityEnhancer.generateAdvancedNegativePrompt('general');
 
       // Add timeout to prevent hanging
       const controller = new AbortController();
@@ -1674,23 +1674,8 @@ Respond as Cha Hae-In would in this intimate moment:`;
             input: novelAIPrompt,
             model: 'nai-diffusion-3',
             parameters: {
-              width: 1344,
-              height: 768,
-              scale: 18,
-              sampler: 'k_dpmpp_2s_ancestral',
-              steps: 70,
-              seed: Math.floor(Math.random() * 4294967295),
-              n_samples: 1,
-              ucPreset: 0,
-              uc: negativePrompt,
-              qualityToggle: true,
-              sm: true,
-              sm_dyn: true,
-              dynamic_thresholding: true,
-              controlnet_strength: 1.0,
-              cfg_rescale: 0.7,
-              noise: 0.0,
-              strength: 0.85
+              ...qualityEnhancer.getOptimalParameters('intimate'),
+              uc: negativePrompt
             }
           }
         },
@@ -1702,23 +1687,8 @@ Respond as Cha Hae-In would in this intimate moment:`;
             model: 'nai-diffusion-3',
             action: 'generate',
             parameters: {
-              width: 1344,
-              height: 768,
-              scale: 18,
-              sampler: 'k_dpmpp_2s_ancestral',
-              steps: 70,
-              seed: Math.floor(Math.random() * 4294967295),
-              n_samples: 1,
-              ucPreset: 0,
-              uc: negativePrompt,
-              qualityToggle: true,
-              sm: true,
-              sm_dyn: true,
-              dynamic_thresholding: true,
-              controlnet_strength: 1.0,
-              cfg_rescale: 0.7,
-              noise: 0.0,
-              strength: 0.85
+              ...qualityEnhancer.getOptimalParameters('intimate'),
+              uc: negativePrompt
             }
           }
         }
