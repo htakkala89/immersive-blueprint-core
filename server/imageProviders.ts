@@ -30,9 +30,7 @@ class NovelAIProvider implements ImageProvider {
 
   async generate(prompt: string, options: any = {}): Promise<ImageGenerationResult> {
     const endpoints = [
-      'https://api.novelai.net/ai/generate-image',
-      'https://backend.novelai.net/ai/generate-image',
-      'https://novelai.net/api/ai/generate-image'
+      'https://image.novelai.net/ai/generate-image'
     ];
 
     const negativePrompt = "low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
