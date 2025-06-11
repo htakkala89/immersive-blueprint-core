@@ -43,16 +43,17 @@ class NovelAIProvider implements ImageProvider {
       parameters: {
         width: 832,
         height: 1216,
-        scale: 12,
-        sampler: 'k_euler_ancestral',
-        steps: 50,
+        scale: 7,
+        sampler: 'k_dpmpp_2m',
+        steps: 28,
         seed: Math.floor(Math.random() * 4294967295),
         n_samples: 1,
         ucPreset: 0,
         uc: negativePrompt,
         qualityToggle: true,
-        sm: false,
-        sm_dyn: false
+        sm: true,
+        sm_dyn: true,
+        cfg_rescale: 0.0
       }
     };
 
