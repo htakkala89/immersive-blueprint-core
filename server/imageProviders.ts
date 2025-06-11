@@ -159,7 +159,7 @@ class GoogleImagenProvider implements ImageProvider {
       const enhancedPrompt = `${prompt}. Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, character design errors`;
       
       const response = await fetch(
-        `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/imagegeneration@006:predict`,
+        `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`,
         {
           method: 'POST',
           headers: {
@@ -174,7 +174,8 @@ class GoogleImagenProvider implements ImageProvider {
               sampleCount: 1,
               aspectRatio: "1:1",
               safetyFilterLevel: "block_only_high",
-              personGeneration: "allow_adult"
+              personGeneration: "allow_adult",
+              outputMimeType: "image/png"
             }
           })
         }
