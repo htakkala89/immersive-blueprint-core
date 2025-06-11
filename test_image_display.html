@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NovelAI Image Display Test</title>
+</head>
+<body>
+    <h2>NovelAI Image Display Test</h2>
+    <button onclick="testImageGeneration()">Generate Test Image</button>
+    <div id="status"></div>
+    <div id="imageContainer"></div>
+
+    <script>
+    async function testImageGeneration() {
+        const status = document.getElementById('status');
+        const container = document.getElementById('imageContainer');
+        
+        status.innerHTML = 'Generating image...';
+        
+        try {
+            const response = await fetch('/api/generate-novelai-intimate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: 'test image generation',
+                    activityId: 'test',
+                    stylePreset: 'manhwa_intimate'
+                })
+            });
+            
+            const data = await response.json();
+            console.log('Response:', data);
+            
+            if (data.imageUrl) {
+                status.innerHTML = 'Image generated successfully!';
+                container.innerHTML = `<img src="${data.imageUrl}" style="max-width: 500px; max-height: 500px;" alt="Generated image" />`;
+            } else {
+                status.innerHTML = 'No image URL returned';
+                console.error('No imageUrl in response:', data);
+            }
+        } catch (error) {
+            status.innerHTML = 'Error: ' + error.message;
+            console.error('Error:', error);
+        }
+    }
+    </script>
+</body>
+</html>

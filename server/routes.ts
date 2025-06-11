@@ -1740,7 +1740,7 @@ Generate a prompt suitable for manhwa-style art generation:`;
           const zipEntries = zip.getEntries();
           
           if (zipEntries.length > 0) {
-            const imageEntry = zipEntries.find(entry => 
+            const imageEntry = zipEntries.find((entry: any) => 
               entry.entryName.endsWith('.png') || 
               entry.entryName.endsWith('.jpg') || 
               entry.entryName.endsWith('.jpeg')

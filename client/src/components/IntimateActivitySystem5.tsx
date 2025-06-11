@@ -214,12 +214,17 @@ export function IntimateActivitySystem5({
       
       if (data.imageUrl) {
         console.log('Setting generated image and fullscreen display');
-        setNarrativeLens(prev => ({
-          ...prev,
-          generatedImage: data.imageUrl,
-          showFullscreen: true,
-          isGenerating: false
-        }));
+        console.log('Image URL length:', data.imageUrl.length);
+        console.log('Image URL prefix:', data.imageUrl.substring(0, 50));
+        setNarrativeLens(prev => {
+          console.log('Previous state:', { showFullscreen: prev.showFullscreen, hasImage: !!prev.generatedImage });
+          return {
+            ...prev,
+            generatedImage: data.imageUrl,
+            showFullscreen: true,
+            isGenerating: false
+          };
+        });
       } else if (data.fallbackText) {
         // Handle fallback text when image generation fails
         const fallbackMessage = {
@@ -558,7 +563,14 @@ export function IntimateActivitySystem5({
 
         {/* Fullscreen Image Display */}
         <AnimatePresence>
-          {narrativeLens.showFullscreen && narrativeLens.generatedImage && (
+          {(() => {
+            console.log('Fullscreen render check:', { 
+              showFullscreen: narrativeLens.showFullscreen, 
+              hasImage: !!narrativeLens.generatedImage,
+              shouldShow: narrativeLens.showFullscreen && narrativeLens.generatedImage
+            });
+            return narrativeLens.showFullscreen && narrativeLens.generatedImage;
+          })() && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
