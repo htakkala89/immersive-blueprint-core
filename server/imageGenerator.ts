@@ -23,16 +23,38 @@ let currentMatureImageActive = false;
 let matureImageTimestamp = 0;
 const MATURE_IMAGE_PROTECTION_TIME = 30 * 1000; // 30 seconds protection
 
-function createContextualIntimatePrompt(gameState: GameState): string {
+function createContextualIntimatePrompt(gameState: GameState, activityId?: string): string {
+  // Determine location-based settings
+  const location = gameState.currentScene;
+  let locationSetting = "";
+  
+  if (location === 'player_apartment' && (gameState.apartmentTier || 1) >= 3) {
+    // Penthouse setting
+    locationSetting = "Ultra-luxury penthouse master suite with floor-to-ceiling windows, city lights backdrop, marble surfaces, infinity pool view, crystal chandeliers, Italian leather furnishings, premium modern architecture";
+  } else if (location === 'player_apartment' && (gameState.apartmentTier || 1) >= 2) {
+    // High-rise apartment
+    locationSetting = "Luxury high-rise apartment with panoramic city views, modern designer furnishings, sleek contemporary design, premium materials";
+  } else if (location === 'player_apartment') {
+    // Basic apartment
+    locationSetting = "Cozy apartment with warm lighting, comfortable furnishings, intimate atmosphere";
+  } else {
+    locationSetting = "Private intimate space with romantic ambiance";
+  }
+
   const activitySettings = {
-    shower_together: "Luxurious bathroom with glass shower, steam rising, soft lighting, Jin-Woo and Cha Hae-In sharing intimate shower moment, romantic atmosphere",
-    cuddle_together: "Cozy bedroom with soft lighting, comfortable bed with silky sheets, Jin-Woo and Cha Hae-In cuddling intimately, warm romantic glow",
-    bedroom_intimacy: "Romantic bedroom with candles, rose petals scattered on silk sheets, Jin-Woo and Cha Hae-In in intimate embrace, emotional connection",
-    make_love: "Private romantic sanctuary, Jin-Woo and Cha Hae-In in ultimate intimate moment, soft candlelight, deep emotional connection, tasteful romantic scene"
+    master_suite_intimacy: `${locationSetting}, master bedroom suite, ultimate luxury setting`,
+    infinity_pool_romance: `${locationSetting}, private infinity pool area, water reflections, luxury spa atmosphere`,
+    master_rain_shower: `${locationSetting}, premium rain shower with marble walls, steam and luxury spa ambiance`,
+    spend_the_night_together: `${locationSetting}, romantic bedroom setting with silk sheets and candlelight`,
+    penthouse_morning_together: `${locationSetting}, morning light streaming through floor-to-ceiling windows`,
+    shower_together: `${locationSetting}, luxurious bathroom with glass shower, steam rising, soft lighting`,
+    cuddle_together: `${locationSetting}, comfortable seating area for intimate cuddling`,
+    bedroom_intimacy: `${locationSetting}, romantic bedroom with warm lighting and intimate atmosphere`,
+    make_love: `${locationSetting}, ultimate intimate romantic setting`
   };
 
-  const setting = activitySettings[gameState.currentScene as keyof typeof activitySettings] || 
-    "Jin-Woo and Cha Hae-In in intimate romantic moment, soft lighting, emotional connection";
+  const setting = activitySettings[activityId as keyof typeof activitySettings] || 
+    `${locationSetting}, Jin-Woo and Cha Hae-In in intimate romantic moment, soft lighting, emotional connection`;
   
   return `${setting}, beautiful anime art style, Solo Leveling aesthetic, tasteful romantic artwork, emotional intimacy focus, Korean manhwa style characters, Jin-Woo with black hair, Cha Hae-In with golden blonde hair, mature romantic content`;
 }
@@ -379,7 +401,7 @@ export async function generateChatSceneImage(chatResponse: string, userMessage: 
   }
 }
 
-export async function generateIntimateActivityImage(activityId: string, relationshipStatus: string, intimacyLevel: number, specificAction?: string): Promise<string | null> {
+export async function generateIntimateActivityImage(activityId: string, relationshipStatus: string, intimacyLevel: number, specificAction?: string, gameState?: any): Promise<string | null> {
   console.log(`🔞 Generating explicit content for activity: ${activityId}${specificAction ? ` with action: ${specificAction}` : ''}`);
 
   // Rate limiting
@@ -391,7 +413,10 @@ export async function generateIntimateActivityImage(activityId: string, relation
 
   let prompt: string;
   
-  if (specificAction) {
+  if (specificAction && gameState) {
+    // Create contextual prompt using game state for proper location setting
+    prompt = createContextualIntimatePrompt(gameState, activityId);
+  } else if (specificAction) {
     // Create custom prompt based on specific user action
     prompt = createCustomIntimatePrompt(specificAction, relationshipStatus, intimacyLevel);
   } else {

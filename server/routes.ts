@@ -1528,7 +1528,7 @@ RESPONSE INSTRUCTIONS:
 
       // Create unrestricted model for intimate scenes
       const model = genAI.getGenerativeModel({ 
-        model: "gemini-pro",
+        model: "gemini-1.5-flash",
         safetySettings: [
           {
             category: HarmCategory.HARM_CATEGORY_HARASSMENT,

@@ -115,7 +115,7 @@ export function IntimateActivitySystem5({
     ];
     
     const hasIntimateContent = intimateKeywords.some(keyword => 
-      content.toLowerCase().includes(keyword)
+      content && content.toLowerCase().includes(keyword)
     );
     
     if (hasIntimateContent && !narrativeLens.isVisible) {

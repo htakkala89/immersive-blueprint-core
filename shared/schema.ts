@@ -23,6 +23,7 @@ export const gameStates = pgTable("game_states", {
   sharedMemories: integer("shared_memories").notNull().default(0),
   livingTogether: integer("living_together").notNull().default(0), // 0 = false, 1 = true
   daysTogether: integer("days_together").notNull().default(1),
+  apartmentTier: integer("apartment_tier").notNull().default(1),
   currentScene: text("current_scene").notNull().default("entrance"),
   choices: jsonb("choices").notNull().$type<Choice[]>(),
   sceneData: jsonb("scene_data").$type<SceneData>(),
