@@ -2921,6 +2921,18 @@ export default function SoloLevelingSpatial() {
                 });
                 console.log('Private elevator - Transitioning back to World Map');
                 break;
+              case 'kitchen_counter':
+                // Apartment tier 1 - Kitchen intimacy
+                setActiveActivity('kitchen_intimacy');
+                setShowIntimateModal(true);
+                console.log('Kitchen counter - Initiating intimate kitchen scene');
+                break;
+              case 'shower':
+                // Apartment tier 1 - Shower intimacy  
+                setActiveActivity('shower_together');
+                setShowIntimateModal(true);
+                console.log('Shower - Initiating shower together scene');
+                break;
               case 'vanity_table':
               case 'bookshelf':
               case 'window_view':

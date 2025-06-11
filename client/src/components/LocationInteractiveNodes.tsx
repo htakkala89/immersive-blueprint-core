@@ -51,23 +51,23 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
   player_apartment: [
     // Tier 1 - Basic Apartment (4 nodes)
     {
-      id: 'bedroom',
-      label: 'Bedroom',
+      id: 'bed',
+      label: 'Bed',
       icon: Bed,
       position: { x: 20, y: 30 },
-      thoughtPrompt: 'Lead her to the bedroom',
-      outcome: 'Intimate bedroom encounter',
-      gameLogic: 'system_5_intimate_activity',
+      thoughtPrompt: 'Suggest it\'s time to head to the bedroom',
+      outcome: 'Direct gateway to highest-tier unlocked intimate activity',
+      gameLogic: 'intimate_gateway_direct',
       requirements: ['apartment_tier_1']
     },
     {
-      id: 'couch_intimate',
+      id: 'living_room_couch',
       label: 'Living Room Couch',
       icon: Sofa,
       position: { x: 45, y: 60 },
-      thoughtPrompt: 'Make love on the couch',
-      outcome: 'Intimate living room encounter',
-      gameLogic: 'system_5_intimate_activity',
+      thoughtPrompt: 'Suggest relaxing on the sofa',
+      outcome: 'Relaxing scene that can lead to cuddling activity',
+      gameLogic: 'couch_relaxation_gateway',
       requirements: ['apartment_tier_1']
     },
     {
@@ -77,17 +77,17 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       position: { x: 70, y: 40 },
       thoughtPrompt: 'Intimate kitchen encounter',
       outcome: 'Kitchen counter passion',
-      gameLogic: 'system_5_intimate_activity',
+      gameLogic: 'intimate_activity_direct',
       requirements: ['apartment_tier_1']
     },
     {
-      id: 'shower_room',
-      label: 'Bathroom',
+      id: 'shower',
+      label: 'Shower',
       icon: Shield,
       position: { x: 80, y: 25 },
       thoughtPrompt: 'Shower together',
       outcome: 'Steamy shower romance',
-      gameLogic: 'system_5_intimate_activity',
+      gameLogic: 'intimate_activity_direct',
       requirements: ['apartment_tier_1']
     },
     // Tier 2 - Gangnam High-Rise (4 nodes) - Gateway approach
