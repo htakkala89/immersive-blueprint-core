@@ -110,16 +110,118 @@ export function HunterCommunicatorSystem15({
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'no_signal'>('connected');
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Default character state if not provided
-  const defaultChaState: CharacterState = {
+  // Dynamic character schedule based on time and day
+  const getDynamicCharacterState = (): CharacterState => {
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    // Weekend schedule
+    if (day === 0 || day === 6) {
+      if (hour >= 8 && hour < 11) {
+        return {
+          status: 'available',
+          activity: 'enjoying a quiet weekend morning',
+          location: 'chahaein_apartment',
+          affectionLevel: 25,
+          lastActiveTime: new Date()
+        };
+      } else if (hour >= 11 && hour < 14) {
+        return {
+          status: 'busy',
+          activity: 'personal training session',
+          location: 'training_facility',
+          affectionLevel: 25,
+          lastActiveTime: new Date()
+        };
+      } else if (hour >= 14 && hour < 18) {
+        return {
+          status: 'available',
+          activity: 'reading at home',
+          location: 'chahaein_apartment',
+          affectionLevel: 25,
+          lastActiveTime: new Date()
+        };
+      }
+    }
+    
+    // Weekday schedule
+    if (hour >= 6 && hour < 9) {
+      return {
+        status: 'available',
+        activity: 'morning preparation routine',
+        location: 'chahaein_apartment',
+        affectionLevel: 25,
+        lastActiveTime: new Date()
+      };
+    } else if (hour >= 9 && hour < 12) {
+      return {
+        status: 'busy',
+        activity: 'leading training sessions for new recruits',
+        location: 'hunter_association',
+        affectionLevel: 25,
+        lastActiveTime: new Date()
+      };
+    } else if (hour >= 12 && hour < 14) {
+      return {
+        status: 'available',
+        activity: 'lunch break and administrative work',
+        location: 'hunter_association',
+        affectionLevel: 25,
+        lastActiveTime: new Date()
+      };
+    } else if (hour >= 14 && hour < 17) {
+      return {
+        status: 'in_meeting',
+        activity: 'strategic planning meetings with department heads',
+        location: 'hunter_association',
+        affectionLevel: 25,
+        lastActiveTime: new Date()
+      };
+    } else if (hour >= 17 && hour < 19) {
+      return {
+        status: 'busy',
+        activity: 'reviewing gate reports and threat assessments',
+        location: 'hunter_association',
+        affectionLevel: 25,
+        lastActiveTime: new Date()
+      };
+    } else if (hour >= 19 && hour < 22) {
+      return {
+        status: 'available',
+        activity: 'personal time at home',
+        location: 'chahaein_apartment',
+        affectionLevel: 25,
+        lastActiveTime: new Date()
+      };
+    } else {
+      return {
+        status: 'sleeping',
+        activity: 'resting for tomorrow',
+        location: 'chahaein_apartment',
+        affectionLevel: 25,
+        lastActiveTime: new Date()
+      };
+    }
+    
+    // Default fallback
+    return {
+      status: 'available',
+      activity: 'reviewing reports at the Association',
+      location: 'hunter_association',
+      affectionLevel: 25,
+      lastActiveTime: new Date()
+    };
+  };
+
+  // Use provided character state or default fallback
+  const chaState = chaHaeInState || {
     status: 'available',
     activity: 'reviewing reports at the Association',
     location: 'hunter_association',
     affectionLevel: 25,
     lastActiveTime: new Date()
   };
-
-  const chaState = chaHaeInState || defaultChaState;
 
   // Message urgency detection
   const detectMessageUrgency = (content: string): boolean => {
@@ -373,43 +475,84 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     setCanSendMessages(hasSignal && selectedConversation !== null);
   }, [playerLocation, selectedConversation]);
 
-  // Sample conversations data
-  const [conversations, setConversations] = useState<Conversation[]>([
-    {
-      id: 'cha_hae_in',
-      participantId: 'cha_hae_in',
-      participantName: 'Cha Hae-In',
-      participantAvatar: '👩‍⚔️',
-      unreadCount: 1,
-      lastMessage: {
-        id: 'msg_1',
-        senderId: 'cha_hae_in',
-        senderName: 'Cha Hae-In',
-        content: 'Just thinking of you. Be safe in there.',
-        timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-        read: false
-      },
-      messages: [
-        {
-          id: 'msg_0',
-          senderId: 'player',
-          senderName: 'Jin-Woo',
-          content: 'Heading into the dungeon now. See you tonight?',
-          timestamp: new Date(Date.now() - 45 * 60 * 1000),
-          read: true,
-          state: 'read'
-        },
-        {
+
+
+  // Generate dynamic first message based on time and character state
+  const generateDynamicFirstMessage = (): string => {
+    const hour = new Date().getHours();
+    
+    // Time-based variations
+    if (hour >= 6 && hour < 12) {
+      // Morning messages
+      const morningMessages = [
+        "Good morning, Jin-Woo. I hope you slept well.",
+        "Starting the day with some training. How about you?",
+        "The Association is quiet this morning. Perfect for paperwork.",
+        "Just finished my morning routine. Ready for whatever today brings."
+      ];
+      return morningMessages[Math.floor(Math.random() * morningMessages.length)];
+    } else if (hour >= 12 && hour < 17) {
+      // Afternoon messages
+      const afternoonMessages = [
+        "Busy afternoon at the Association. Hope yours is going well.",
+        "Just wrapped up a meeting. These briefings never end.",
+        "Taking a quick break between training sessions.",
+        "The new recruits are showing promise. Reminds me of when we first met."
+      ];
+      return afternoonMessages[Math.floor(Math.random() * afternoonMessages.length)];
+    } else if (hour >= 17 && hour < 22) {
+      // Evening messages
+      const eveningMessages = [
+        "Long day at the Association. How was yours?",
+        "Finally done with today's reports. Time to unwind.",
+        "The city looks beautiful from my office right now.",
+        "Thinking about dinner plans. Any suggestions?"
+      ];
+      return eveningMessages[Math.floor(Math.random() * eveningMessages.length)];
+    } else {
+      // Night messages
+      const nightMessages = [
+        "Working late tonight. The Association never sleeps.",
+        "Quiet evening for once. Hope you're staying safe.",
+        "Just finished reviewing some gate reports. Concerning patterns.",
+        "Can't sleep. Too much on my mind about recent anomalies."
+      ];
+      return nightMessages[Math.floor(Math.random() * nightMessages.length)];
+    }
+  };
+
+  // Sample conversations data with dynamic first message
+  const [conversations, setConversations] = useState<Conversation[]>(() => {
+    const dynamicMessage = generateDynamicFirstMessage();
+    
+    return [
+      {
+        id: 'cha_hae_in',
+        participantId: 'cha_hae_in',
+        participantName: 'Cha Hae-In',
+        participantAvatar: '👩‍⚔️',
+        unreadCount: 1,
+        lastMessage: {
           id: 'msg_1',
           senderId: 'cha_hae_in',
           senderName: 'Cha Hae-In',
-          content: 'Just thinking of you. Be safe in there.',
-          timestamp: new Date(Date.now() - 30 * 60 * 1000),
+          content: dynamicMessage,
+          timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
           read: false
-        }
-      ]
-    }
-  ]);
+        },
+        messages: [
+          {
+            id: 'msg_1',
+            senderId: 'cha_hae_in',
+            senderName: 'Cha Hae-In',
+            content: dynamicMessage,
+            timestamp: new Date(Date.now() - 30 * 60 * 1000),
+            read: false
+          }
+        ]
+      }
+    ];
+  });
 
   // Sample system alerts
   const [systemAlerts, setSystemAlerts] = useState<SystemAlert[]>([
