@@ -1713,8 +1713,9 @@ Generate a prompt suitable for manhwa-style art generation:`;
             lastError = new Error(`NovelAI API error: ${response.status} - ${await response.text()}`);
           }
         } catch (err) {
-          console.log(`NovelAI API error with endpoint ${endpoint.url}:`, err.message);
-          lastError = err;
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          console.log(`NovelAI API error with endpoint ${endpoint.url}:`, errorMessage);
+          lastError = err instanceof Error ? err : new Error(String(err));
         }
       }
 

@@ -210,8 +210,10 @@ export function IntimateActivitySystem5({
       });
 
       const data = await response.json();
+      console.log('NovelAI response received:', { hasImageUrl: !!data.imageUrl, hasFallback: !!data.fallbackText });
       
       if (data.imageUrl) {
+        console.log('Setting generated image and fullscreen display');
         setNarrativeLens(prev => ({
           ...prev,
           generatedImage: data.imageUrl,
@@ -561,8 +563,11 @@ export function IntimateActivitySystem5({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black flex items-center justify-center z-[60]"
-              onClick={() => setNarrativeLens(prev => ({ ...prev, showFullscreen: false }))}
+              className="fixed inset-0 bg-black flex items-center justify-center z-[9999]"
+              onClick={() => {
+                console.log('Closing fullscreen image');
+                setNarrativeLens(prev => ({ ...prev, showFullscreen: false }));
+              }}
             >
               <motion.img
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -570,8 +575,22 @@ export function IntimateActivitySystem5({
                 exit={{ opacity: 0, scale: 0.9 }}
                 src={narrativeLens.generatedImage}
                 alt="Generated intimate scene"
-                className="max-w-full max-h-full object-contain"
+                className="max-w-full max-h-full object-contain cursor-pointer"
+                onLoad={() => console.log('Image loaded successfully')}
+                onError={(e) => console.error('Image failed to load:', e)}
               />
+              
+              {/* Close button for better UX */}
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setNarrativeLens(prev => ({ ...prev, showFullscreen: false }));
+                }}
+                className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white border-white/20"
+                size="sm"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </motion.div>
           )}
         </AnimatePresence>
