@@ -1624,35 +1624,53 @@ Respond as Cha Hae-In would in this intimate moment:`;
     }
   });
 
-  // Enhanced Image Generation for System 5 Narrative Lens
+  // Enhanced Image Generation for System 5 Narrative Lens - Mature Content Priority
   app.post("/api/generate-novelai-intimate", async (req, res) => {
     try {
       const { prompt: rawPrompt, activityId, stylePreset } = req.body;
       const prompt = String(rawPrompt || '');
       
-      // Use the new multi-provider image generation service
-      console.log("🎨 Generating narrative lens image with multiple providers...");
-      const result = await imageGenerationService.generateImage(prompt, 'novelai');
+      console.log("🔞 Generating mature content with NovelAI priority...");
       
-      if (result.success) {
-        console.log(`✅ Image generated successfully with ${result.provider}`);
-        return res.json({ 
-          imageUrl: result.imageUrl,
-          provider: result.provider
-        });
+      // Try NovelAI first for mature content generation
+      try {
+        const imageUrl = await generateWithNovelAI(prompt);
+        
+        if (imageUrl) {
+          console.log('✅ NovelAI generated mature content successfully');
+          return res.json({ 
+            imageUrl,
+            provider: 'NovelAI'
+          });
+        }
+      } catch (novelError) {
+        console.log('⚠️ NovelAI mature content generation failed, trying Google Imagen fallback:', (novelError as Error)?.message || 'Unknown error');
       }
 
-      console.log(`❌ Image generation failed: ${result.error}`);
+      // Fallback to Google Imagen for mature content
+      try {
+        const { generateImageWithImagen } = await import('./imagenService');
+        const imageUrl = await generateImageWithImagen(prompt);
+        
+        if (imageUrl) {
+          console.log('✅ Google Imagen generated mature content successfully (fallback)');
+          return res.json({ 
+            imageUrl,
+            provider: 'Google Imagen'
+          });
+        }
+      } catch (imagenError) {
+        console.log('⚠️ Google Imagen mature content generation failed:', (imagenError as Error)?.message || 'Unknown error');
+      }
       
       // Return fallback response with descriptive text
       return res.json({ 
         imageUrl: null,
         fallbackText: "The intimate moment unfolds with tender passion, their connection deepening as they lose themselves in each other's embrace.",
-        error: result.error,
-        availableProviders: await imageGenerationService.getAvailableProviders()
+        error: "Image generation temporarily unavailable"
       });
     } catch (error) {
-      console.error("Image generation error:", error);
+      console.error("Mature content generation error:", error);
       
       res.status(500).json({ 
         imageUrl: null,
