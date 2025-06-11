@@ -2614,25 +2614,35 @@ export default function SoloLevelingSpatial() {
                 break;
               // Your Apartment & Cha Hae-In's Apartment - Direct Intimacy Gateway Nodes
               case 'bed':
-                // Direct gateway to highest-tier intimate activity
+                // Direct gateway respecting relationship progress
                 const unlockedActivities = gameState.unlockedActivities || [];
-                let selectedActivity = 'bedroom_intimacy'; // Default fallback
+                const currentAffection = gameState.affection || 0;
+                const currentIntimacy = gameState.intimacyLevel || 0;
+                let selectedActivity = 'cuddling'; // Safe default for early game
                 
-                // Tier 3 - Ultimate intimate activities (requires penthouse)
-                if (unlockedActivities.includes('master_suite_intimacy')) selectedActivity = 'master_suite_intimacy';
-                else if (unlockedActivities.includes('spend_the_night_together')) selectedActivity = 'spend_the_night_together';
-                else if (unlockedActivities.includes('penthouse_morning_together')) selectedActivity = 'penthouse_morning_together';
-                // Tier 2 - Advanced intimate activities
-                else if (unlockedActivities.includes('passionate_night')) selectedActivity = 'passionate_night';
-                else if (unlockedActivities.includes('shower_together')) selectedActivity = 'shower_together';
-                else if (unlockedActivities.includes('intimate_massage')) selectedActivity = 'intimate_massage';
-                // Tier 1 - Basic intimate activities
-                else if (unlockedActivities.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
-                else if (unlockedActivities.includes('first_kiss')) selectedActivity = 'first_kiss';
+                // Check relationship gates before allowing activities
+                if (currentAffection >= 80 && currentIntimacy >= 80) {
+                  // Tier 3 - Ultimate intimate activities (requires penthouse + high stats)
+                  if (unlockedActivities.includes('master_suite_intimacy')) selectedActivity = 'master_suite_intimacy';
+                  else if (unlockedActivities.includes('spend_the_night_together')) selectedActivity = 'spend_the_night_together';
+                  else if (unlockedActivities.includes('penthouse_morning_together')) selectedActivity = 'penthouse_morning_together';
+                } else if (currentAffection >= 50 && currentIntimacy >= 40) {
+                  // Tier 2 - Advanced intimate activities (requires moderate stats)
+                  if (unlockedActivities.includes('passionate_night')) selectedActivity = 'passionate_night';
+                  else if (unlockedActivities.includes('shower_together')) selectedActivity = 'shower_together';
+                  else if (unlockedActivities.includes('intimate_massage')) selectedActivity = 'intimate_massage';
+                } else if (currentAffection >= 20 && currentIntimacy >= 10) {
+                  // Tier 1 - Basic intimate activities (requires some relationship progress)
+                  if (unlockedActivities.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
+                  else if (unlockedActivities.includes('first_kiss')) selectedActivity = 'first_kiss';
+                } else {
+                  // Very early game - only basic cuddling/conversation
+                  selectedActivity = 'cuddling';
+                }
                 
                 setActiveActivity(selectedActivity);
                 setShowIntimateModal(true);
-                console.log(`Bedroom gateway - Initiating ${selectedActivity} directly`);
+                console.log(`Bedroom gateway - Initiating ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
                 break;
               case 'living_room_couch':
                 // Primary conversational node - relaxing at home scene
@@ -2922,16 +2932,54 @@ export default function SoloLevelingSpatial() {
                 console.log('Private elevator - Transitioning back to World Map');
                 break;
               case 'kitchen_counter':
-                // Apartment tier 1 - Kitchen intimacy
-                setActiveActivity('kitchen_intimacy');
-                setShowIntimateModal(true);
-                console.log('Kitchen counter - Initiating intimate kitchen scene');
+                // Apartment tier 1 - Kitchen intimacy (requires relationship progress)
+                const kitchenAffection = gameState.affection || 0;
+                const kitchenIntimacy = gameState.intimacyLevel || 0;
+                
+                if (kitchenAffection >= 30 && kitchenIntimacy >= 20) {
+                  setActiveActivity('kitchen_intimacy');
+                  setShowIntimateModal(true);
+                  console.log('Kitchen counter - Initiating intimate kitchen scene');
+                } else {
+                  // Too early for intimate activities - just cooking conversation
+                  handleEnvironmentalInteraction({
+                    id: 'kitchen_cooking_chat',
+                    action: 'You suggest making something together in the kitchen. "That sounds nice," Cha Hae-In says with a gentle smile. You work side by side preparing a simple meal, sharing light conversation and growing more comfortable with each other.',
+                    name: 'Kitchen Cooking',
+                    x: 70,
+                    y: 40
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 3)
+                  }));
+                  console.log('Kitchen counter - Early game cooking conversation');
+                }
                 break;
               case 'shower':
-                // Apartment tier 1 - Shower intimacy  
-                setActiveActivity('shower_together');
-                setShowIntimateModal(true);
-                console.log('Shower - Initiating shower together scene');
+                // Apartment tier 1 - Shower intimacy (requires high relationship progress)
+                const showerAffection = gameState.affection || 0;
+                const showerIntimacy = gameState.intimacyLevel || 0;
+                
+                if (showerAffection >= 60 && showerIntimacy >= 50) {
+                  setActiveActivity('shower_together');
+                  setShowIntimateModal(true);
+                  console.log('Shower - Initiating shower together scene');
+                } else {
+                  // Too early for shower intimacy - just bathroom conversation
+                  handleEnvironmentalInteraction({
+                    id: 'bathroom_chat',
+                    action: 'You mention the bathroom facilities. "It\'s very clean," Cha Hae-In observes politely, maintaining appropriate boundaries. This isn\'t the right time for more intimate activities.',
+                    name: 'Bathroom',
+                    x: 80,
+                    y: 25
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 1)
+                  }));
+                  console.log('Shower - Early game bathroom conversation');
+                }
                 break;
               case 'vanity_table':
               case 'bookshelf':
