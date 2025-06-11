@@ -817,11 +817,12 @@ IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and referenc
 Respond naturally as if you're texting Jin-Woo back:`;
 
         const result = await model.generateContent(fullPrompt);
-        const response = result.response.text();
+        const rawResponse = result.response.text();
+        const sanitizedResponse = rawResponse.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
         const updatedGameState = { ...gameState };
 
         return res.json({
-          response: response.trim(),
+          response: sanitizedResponse,
           gameState: updatedGameState,
           expression: 'focused'
         });
@@ -949,7 +950,7 @@ RESPONSE INSTRUCTIONS:
 - Express growing feelings if affection is high enough`;
         
         const result = await model.generateContent(fullPrompt);
-        response = result.response.text();
+        response = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
         
         // Advanced emotion detection for avatar updates
         const responseText = response.toLowerCase();
@@ -1569,7 +1570,8 @@ User Message: ${message}
 Respond as Cha Hae-In would in this intimate moment:`;
 
       const result = await model.generateContent(intimateContext);
-      const response = result.response.text();
+      const rawResponse = result.response.text();
+      const response = rawResponse.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
       
       // Analyze intimacy level for progression
       const intimacyLevel = analyzeIntimacyLevel(response);
