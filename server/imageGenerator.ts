@@ -85,21 +85,24 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
         model: 'nai-diffusion-3',
         action: 'generate',
         parameters: {
-          width: 1024,
-          height: 1024,
-          scale: 7,
-          sampler: 'k_euler_ancestral',
-          steps: 28,
+          width: 1344,
+          height: 768,
+          scale: 18,
+          sampler: 'k_dpmpp_2s_ancestral',
+          steps: 70,
           seed: Math.floor(Math.random() * 1000000),
           n_samples: 1,
           ucPreset: 0,
           qualityToggle: true,
-          sm: false,
-          sm_dyn: false,
-          dynamic_thresholding: false,
-          controlnet_strength: 1,
+          sm: true,
+          sm_dyn: true,
+          dynamic_thresholding: true,
+          controlnet_strength: 1.0,
           legacy: false,
-          negative_prompt: "blonde hair, light hair, yellow hair, golden hair, bright hair, white hair, silver hair, gray hair, wrong hair color"
+          cfg_rescale: 0.7,
+          noise: 0.0,
+          strength: 0.85,
+          negative_prompt: "low quality, blurry, deformed, bad anatomy, ugly, distorted, pixelated, artifacts, jpeg artifacts, watermark, signature, text, logo, username, monochrome, oversaturated, undersaturated, overexposed, underexposed, bad hands, extra fingers, missing fingers, malformed limbs, mutation, poorly drawn"
         }
       })
     });

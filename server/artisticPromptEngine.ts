@@ -7,9 +7,9 @@ interface ArtisticPromptOptions {
 
 export class ArtisticPromptEngine {
   private baseArtStyles = {
-    manhwa: "Solo Leveling manhwa art style by DUBU, detailed character designs, cinematic composition, dramatic lighting",
-    romantic: "romantic art style, soft lighting, emotional depth, beautiful couple portrayal, artistic merit",
-    elegant: "elegant artistic style, sophisticated composition, tasteful romantic imagery, high-quality illustration"
+    manhwa: "masterpiece, best quality, ultra detailed, extremely detailed, sharp focus, Solo Leveling manhwa art style by DUBU, webtoon illustration, Korean manhwa style, professional digital art, vibrant colors, detailed character designs, cinematic composition, dramatic lighting, high resolution",
+    romantic: "masterpiece, best quality, ultra detailed, romantic art style, soft ethereal lighting, emotional depth, beautiful couple portrayal, artistic merit, professional illustration, high quality artwork, detailed rendering",
+    elegant: "masterpiece, best quality, ultra detailed, elegant artistic style, sophisticated composition, tasteful romantic imagery, high-quality illustration, professional digital art, detailed shading, perfect anatomy"
   };
 
   private emotionalDescriptors = {
@@ -61,14 +61,15 @@ export class ArtisticPromptEngine {
   }
 
   private createCharacterDescription(intimacyLevel: number): string {
-    const baseDesc = "Sung Jin-Woo and Cha Hae-In as beautiful couple, Solo Leveling character designs";
+    const jinWooDesc = "Sung Jin-Woo (handsome Korean male, age 24, short neat black hair, sharp angular features, intense dark eyes, tall athletic build, confident posture, Shadow Monarch aura)";
+    const chaHaeInDesc = "Cha Hae-In (beautiful Korean female, age 23, golden blonde hair in elegant bob cut, violet eyes, graceful athletic build, stunning features, S-rank hunter elegance)";
     
     if (intimacyLevel >= 8) {
-      return `${baseDesc}, deeply in love, emotional vulnerability, pure connection between souls`;
+      return `${jinWooDesc}, ${chaHaeInDesc}, deeply in love couple, emotional vulnerability, pure soul connection, intimate bond, passionate romance`;
     } else if (intimacyLevel >= 6) {
-      return `${baseDesc}, romantic couple, growing emotional bond, tender care for each other`;
+      return `${jinWooDesc}, ${chaHaeInDesc}, romantic couple, growing emotional bond, tender care, developing intimacy`;
     } else {
-      return `${baseDesc}, developing relationship, gentle emotional connection, mutual respect and attraction`;
+      return `${jinWooDesc}, ${chaHaeInDesc}, developing relationship, gentle connection, mutual attraction, romantic tension`;
     }
   }
 

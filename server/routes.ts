@@ -1651,9 +1651,9 @@ Respond as Cha Hae-In would in this intimate moment:`;
         "hardcore adult content, x-rated scene, pornographic"
       ].join(", ");
 
-      const novelAIPrompt = `masterpiece, best quality, sharp focus, ${explicitElements}, webtoon art style, manhwa illustration, Solo Leveling art style by DUBU, ${prompt}, ${jinWooDesc}, ${chaHaeInDesc}, explicit sexual scene, detailed intimate anatomy, uncensored adult content, high quality erotic anime art, Korean manhwa style`;
+      const novelAIPrompt = `masterpiece, best quality, ultra detailed, extremely detailed, sharp focus, 8k resolution, professional digital art, ${prompt}, ${jinWooDesc}, ${chaHaeInDesc}, Solo Leveling manhwa art style by DUBU, webtoon illustration, Korean manhwa style, vibrant colors, perfect anatomy, detailed shading, cinematic lighting, high contrast, beautiful artwork`;
 
-      const negativePrompt = "ugly, deformed, blurry, text, watermark, low quality, bad anatomy, censored, mosaic, bar censor, clothes, clothing, dressed, covered, purple hair on cha hae-in, dark hair on cha hae-in, black hair on cha hae-in, brown hair on cha hae-in, blonde hair on sung jin-woo, light hair on sung jin-woo, wrong hair colors";
+      const negativePrompt = "low quality, worst quality, blurry, bad anatomy, deformed, disfigured, ugly, distorted, pixelated, jpeg artifacts, compression artifacts, watermark, signature, text, logo, username, monochrome, grainy, noise, oversaturated, undersaturated, overexposed, underexposed, bad hands, extra fingers, missing fingers, malformed limbs, mutation, poorly drawn, bad proportions, cropped, out of frame, duplicate, multiple views, split screen, border, frame";
 
       // Add timeout to prevent hanging
       const controller = new AbortController();
