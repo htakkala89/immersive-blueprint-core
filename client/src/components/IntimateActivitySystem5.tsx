@@ -213,32 +213,39 @@ export function IntimateActivitySystem5({
       console.log('NovelAI response received:', { hasImageUrl: !!data.imageUrl, hasFallback: !!data.fallbackText });
       
       if (data.imageUrl) {
-        console.log('✅ NovelAI image received - Length:', data.imageUrl.length);
-        console.log('✅ Image prefix:', data.imageUrl.substring(0, 50));
+        console.log('✅ NovelAI image received:', data.imageUrl);
         
-        // Convert base64 to blob URL for better browser handling
-        try {
-          const base64Data = data.imageUrl.replace('data:image/png;base64,', '');
-          const byteCharacters = atob(base64Data);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        // Handle both file URLs and base64 data URLs
+        if (data.imageUrl.startsWith('data:image/')) {
+          // Base64 data URL - convert to blob for better browser handling
+          try {
+            const base64Data = data.imageUrl.replace('data:image/png;base64,', '');
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'image/png' });
+            const blobUrl = URL.createObjectURL(blob);
+            
+            setNarrativeLens(prev => ({
+              ...prev,
+              generatedImage: blobUrl,
+              showFullscreen: true,
+              isGenerating: false
+            }));
+          } catch (blobError) {
+            console.error('❌ Blob conversion failed:', blobError);
+            setNarrativeLens(prev => ({
+              ...prev,
+              generatedImage: data.imageUrl,
+              showFullscreen: true,
+              isGenerating: false
+            }));
           }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'image/png' });
-          const blobUrl = URL.createObjectURL(blob);
-          
-          console.log('✅ Created blob URL:', blobUrl);
-          
-          setNarrativeLens(prev => ({
-            ...prev,
-            generatedImage: blobUrl,
-            showFullscreen: true,
-            isGenerating: false
-          }));
-        } catch (blobError) {
-          console.error('❌ Blob conversion failed:', blobError);
-          // Fallback to original data URL
+        } else {
+          // File URL - use directly
           setNarrativeLens(prev => ({
             ...prev,
             generatedImage: data.imageUrl,

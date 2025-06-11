@@ -1761,8 +1761,6 @@ Generate a prompt suitable for manhwa-style art generation:`;
               console.log('Successfully extracted image from ZIP');
               
               // Save image to public directory and serve as URL
-              const fs = await import('fs');
-              const path = await import('path');
               const timestamp = Date.now();
               const filename = `mature_${timestamp}.png`;
               const publicPath = path.join(process.cwd(), 'public');
@@ -1832,8 +1830,6 @@ Generate a prompt suitable for manhwa-style art generation:`;
         
         // Try to save as file first, fallback to base64
         try {
-          const fs = await import('fs');
-          const path = await import('path');
           const timestamp = Date.now();
           const filename = `mature_${timestamp}.png`;
           const publicPath = path.join(process.cwd(), 'public');
