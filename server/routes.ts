@@ -1730,14 +1730,22 @@ Generate a prompt suitable for manhwa-style art generation:`;
       console.log('NovelAI response content-type:', contentType);
 
       // NovelAI typically returns ZIP files containing images
-      if (contentType && (contentType.includes('application/zip') || contentType.includes('application/octet-stream'))) {
-        const zipBuffer = await response.arrayBuffer();
+      // Check for ZIP signature in the response data
+      const responseBuffer = await response.arrayBuffer();
+      const bufferView = new Uint8Array(responseBuffer.slice(0, 4));
+      const isZipFile = bufferView[0] === 0x50 && bufferView[1] === 0x4B; // ZIP file signature "PK"
+      
+      if (isZipFile) {
+        console.log('🗜️  Processing NovelAI ZIP response...');
+        const zipBuffer = responseBuffer;
+        console.log(`📦 ZIP buffer size: ${zipBuffer.byteLength} bytes`);
         
         // Extract the first image from the ZIP file
         try {
           const AdmZip = require('adm-zip');
           const zip = new AdmZip(Buffer.from(zipBuffer));
           const zipEntries = zip.getEntries();
+          console.log(`📋 ZIP entries found: ${zipEntries.length}`);
           
           if (zipEntries.length > 0) {
             const imageEntry = zipEntries.find((entry: any) => 
@@ -1816,10 +1824,38 @@ Generate a prompt suitable for manhwa-style art generation:`;
         }
       } else {
         // Handle direct binary image response
+        console.log('🖼️  Processing direct binary image response...');
         const imageBuffer = await response.arrayBuffer();
-        const base64Image = Buffer.from(imageBuffer).toString('base64');
-        const imageUrl = `data:image/png;base64,${base64Image}`;
-        res.json({ imageUrl });
+        console.log(`📊 Binary buffer size: ${imageBuffer.byteLength} bytes`);
+        
+        // Try to save as file first, fallback to base64
+        try {
+          const fs = require('fs');
+          const path = require('path');
+          const timestamp = Date.now();
+          const filename = `mature_${timestamp}.png`;
+          const publicPath = path.join(process.cwd(), 'public');
+          
+          if (!fs.existsSync(publicPath)) {
+            fs.mkdirSync(publicPath, { recursive: true });
+          }
+          
+          const filePath = path.join(publicPath, filename);
+          fs.writeFileSync(filePath, Buffer.from(imageBuffer));
+          
+          if (fs.existsSync(filePath)) {
+            console.log(`✅ Saved direct binary image: ${filename}`);
+            const imageUrl = `/${filename}`;
+            res.json({ imageUrl });
+          } else {
+            throw new Error('File creation failed');
+          }
+        } catch (saveError) {
+          console.log('📝 Binary save failed, using base64:', saveError.message);
+          const base64Image = Buffer.from(imageBuffer).toString('base64');
+          const imageUrl = `data:image/png;base64,${base64Image}`;
+          res.json({ imageUrl });
+        }
       }
     } catch (error) {
       console.error("NovelAI generation error:", error);
