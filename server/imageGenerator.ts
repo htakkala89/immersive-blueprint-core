@@ -400,7 +400,11 @@ export async function generateChatSceneImage(prompt: string, imageType: string):
       console.log('⚠️ NovelAI chat scene generation failed:', (novelError as Error)?.message || 'Unknown error');
     }
 
-    return null;
+    // Use fallback service for character scenes while API keys are being resolved
+    const { getFallbackCharacterImage } = await import('./fallbackImageService');
+    const fallbackImage = getFallbackCharacterImage(imageType, 'hunter_association');
+    console.log('📷 Using fallback character image');
+    return fallbackImage;
   } catch (error) {
     console.error('Error generating chat scene image:', error);
     return null;
