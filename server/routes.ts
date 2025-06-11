@@ -1242,7 +1242,21 @@ RESPONSE INSTRUCTIONS:
       
       console.log(`🏢 Spatial interface requesting: ${location} at ${timeOfDay}${weather ? ` with ${weather} weather` : ''}`);
       
+      // First try to get cached image from preloader
+      const cachedImage = await getCachedLocationImage(location, timeOfDay, weather);
+      if (cachedImage) {
+        console.log(`✅ Serving cached image for spatial interface: ${location}_${timeOfDay}`);
+        return res.json({ imageUrl: cachedImage });
+      }
+      
+      // If not cached, generate new image
       const imageUrl = await generateLocationSceneImage(location, timeOfDay, weather);
+      if (imageUrl) {
+        // Cache the newly generated image
+        await cacheLocationImage(location, timeOfDay, weather, imageUrl);
+        console.log(`✅ Generated and cached new spatial image: ${location}_${timeOfDay}`);
+      }
+      
       res.json({ imageUrl });
     } catch (error) {
       console.error("Location image generation error:", error);
