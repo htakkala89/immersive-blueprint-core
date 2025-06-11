@@ -562,50 +562,50 @@ export function IntimateActivitySystem5({
         </AnimatePresence>
 
         {/* Fullscreen Image Display */}
-        <AnimatePresence>
-          {(() => {
-            console.log('Fullscreen render check:', { 
-              showFullscreen: narrativeLens.showFullscreen, 
-              hasImage: !!narrativeLens.generatedImage,
-              shouldShow: narrativeLens.showFullscreen && narrativeLens.generatedImage
-            });
-            return narrativeLens.showFullscreen && narrativeLens.generatedImage;
-          })() && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black flex items-center justify-center z-[9999]"
-              onClick={() => {
-                console.log('Closing fullscreen image');
-                setNarrativeLens(prev => ({ ...prev, showFullscreen: false }));
-              }}
-            >
-              <motion.img
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+        {narrativeLens.showFullscreen && narrativeLens.generatedImage && (
+          <div 
+            className="fixed inset-0 bg-black flex items-center justify-center z-[9999] p-4"
+            onClick={() => {
+              console.log('Closing fullscreen image');
+              setNarrativeLens(prev => ({ ...prev, showFullscreen: false }));
+            }}
+          >
+            <div className="relative max-w-full max-h-full">
+              <img
                 src={narrativeLens.generatedImage}
                 alt="Generated intimate scene"
-                className="max-w-full max-h-full object-contain cursor-pointer"
-                onLoad={() => console.log('Image loaded successfully')}
-                onError={(e) => console.error('Image failed to load:', e)}
+                className="max-w-full max-h-full object-contain"
+                onLoad={(e) => {
+                  console.log('Image loaded successfully');
+                  const img = e.target as HTMLImageElement;
+                  console.log('Image dimensions:', img.naturalWidth, 'x', img.naturalHeight);
+                }}
+                onError={(e) => {
+                  console.error('Image failed to load:', e);
+                  console.error('Image src length:', narrativeLens.generatedImage?.length);
+                  console.error('Image src preview:', narrativeLens.generatedImage?.substring(0, 100));
+                }}
+                style={{
+                  maxWidth: '95vw',
+                  maxHeight: '95vh',
+                  objectFit: 'contain'
+                }}
               />
               
-              {/* Close button for better UX */}
+              {/* Close button */}
               <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   setNarrativeLens(prev => ({ ...prev, showFullscreen: false }));
                 }}
-                className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white border-white/20"
+                className="absolute top-2 right-2 bg-black/70 hover:bg-black/90 text-white border-white/30"
                 size="sm"
               >
                 <X className="w-4 h-4" />
               </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        )}
       </motion.div>
     </AnimatePresence>
   );
