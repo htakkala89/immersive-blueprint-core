@@ -35,6 +35,7 @@ import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
 import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSystem9';
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
+import ItemInspectionView from '@/components/ItemInspectionView';
 
 interface CoreStats {
   strength: number;
@@ -235,6 +236,10 @@ export default function SoloLevelingSpatial() {
 
   // System 3: Quest Log state
   const [showQuestLog, setShowQuestLog] = useState(false);
+
+  // System 7: Item Inspection View state
+  const [showItemInspection, setShowItemInspection] = useState(false);
+  const [itemInspectionCategory, setItemInspectionCategory] = useState<'jewelry' | 'clothing' | 'living_room' | 'bedroom'>('jewelry');
 
 
 
@@ -2103,49 +2108,19 @@ export default function SoloLevelingSpatial() {
                 console.log('🎯 Red Gate case executed successfully');
                 break;
               case 'jewelry_counter':
-                // Luxury jewelry shopping with gift mechanics
-                if ((gameState.gold || 0) >= 50000) {
-                  setGameState(prev => ({
-                    ...prev,
-                    gold: Math.max(0, (prev.gold || 0) - 50000),
-                    affection: Math.min(100, prev.affection + 12),
-                    inventory: [...(prev.inventory || []), 'elegant_diamond_necklace']
-                  }));
-                  handleEnvironmentalInteraction({
-                    id: 'jewelry_purchase',
-                    action: 'You select an elegant diamond necklace from the premium collection. [- ₩50,000]. Cha Hae-In\'s eyes widen with surprise and genuine appreciation as you present it to her. "You really didn\'t have to..." she whispers, but her radiant smile says everything.',
-                    name: 'Jewelry Counter',
-                    x: 25,
-                    y: 45
-                  });
-                  console.log('Jewelry purchase - Major affection boost through luxury gift');
-                } else {
-                  handleEnvironmentalInteraction({
-                    id: 'jewelry_browsing',
-                    action: 'You browse the exquisite jewelry collection together. The diamonds sparkle under the boutique lighting as Cha Hae-In admires a particularly elegant necklace. "It\'s beautiful," she says softly, though she doesn\'t expect you to purchase it.',
-                    name: 'Jewelry Counter',
-                    x: 25,
-                    y: 45
-                  });
-                }
+                // Open Item Inspection View for jewelry
+                setItemInspectionCategory('jewelry');
+                setShowItemInspection(true);
+                console.log('Opening jewelry collection view');
                 break;
               case 'designer_apparel':
-                // Fashion appreciation and style bonding
-                setGameState(prev => ({
-                  ...prev,
-                  affection: Math.min(100, prev.affection + 6)
-                }));
-                handleEnvironmentalInteraction({
-                  id: 'fashion_appreciation',
-                  action: 'You examine the designer clothing collection together. Cha Hae-In runs her fingers along a silk evening gown, commenting on the craftsmanship. "The attention to detail is incredible," she observes. You enjoy seeing her appreciate beautiful things, and she notices your genuine interest in her thoughts.',
-                  name: 'Designer Apparel',
-                  x: 65,
-                  y: 35
-                });
-                console.log('Fashion browsing - Affection gained through shared aesthetic appreciation');
+                // Open Item Inspection View for clothing
+                setItemInspectionCategory('clothing');
+                setShowItemInspection(true);
+                console.log('Opening designer apparel collection view');
                 break;
               case 'luxury_confections':
-                // Intimate treat sharing experience
+                // Intimate treat sharing experience (keeping as simple interaction)
                 if ((gameState.gold || 0) >= 15000) {
                   setGameState(prev => ({
                     ...prev,
@@ -2171,8 +2146,16 @@ export default function SoloLevelingSpatial() {
                 }
                 break;
               case 'living_room_collection':
+                // Open Item Inspection View for living room furniture
+                setItemInspectionCategory('living_room');
+                setShowItemInspection(true);
+                console.log('Opening living room furniture collection view');
+                break;
               case 'bedroom_collection':
-                setPlayerLocation('gangnam_furnishings');
+                // Open Item Inspection View for bedroom furniture
+                setItemInspectionCategory('bedroom');
+                setShowItemInspection(true);
+                console.log('Opening bedroom furniture collection view');
                 break;
               case 'reception_desk':
               case 'architectural_models':
