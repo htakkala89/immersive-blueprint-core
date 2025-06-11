@@ -1324,6 +1324,28 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+  // Helper function to determine highest unlocked intimate activity
+  const getHighestUnlockedIntimateActivity = (gameState: GameState): string | null => {
+    const unlockedActivities = gameState.unlockedActivities || [];
+    
+    // Tier 3 - Ultimate intimate activities (requires penthouse)
+    if (unlockedActivities.includes('master_suite_intimacy')) return 'master_suite_intimacy';
+    if (unlockedActivities.includes('spend_the_night_together')) return 'spend_the_night_together';
+    if (unlockedActivities.includes('penthouse_morning_together')) return 'penthouse_morning_together';
+    
+    // Tier 2 - Advanced intimate activities
+    if (unlockedActivities.includes('passionate_night')) return 'passionate_night';
+    if (unlockedActivities.includes('shower_together')) return 'shower_together';
+    if (unlockedActivities.includes('intimate_massage')) return 'intimate_massage';
+    
+    // Tier 1 - Basic intimate activities
+    if (unlockedActivities.includes('bedroom_intimacy')) return 'bedroom_intimacy';
+    if (unlockedActivities.includes('first_kiss')) return 'first_kiss';
+    
+    // Default fallback
+    return 'bedroom_intimacy';
+  };
+
   // Handle Item Inspection View purchases
   const handleItemPurchase = (item: any) => {
     const cost = item.price;
@@ -2590,12 +2612,64 @@ export default function SoloLevelingSpatial() {
                 setSelectedVendor('alchemist');
                 console.log('Opening Alchemist interface');
                 break;
+              // Your Apartment & Cha Hae-In's Apartment - Direct Intimacy Gateway Nodes
+              case 'bed':
+                // Direct gateway to highest-tier intimate activity
+                const unlockedActivities = gameState.unlockedActivities || [];
+                let selectedActivity = 'bedroom_intimacy'; // Default fallback
+                
+                // Tier 3 - Ultimate intimate activities (requires penthouse)
+                if (unlockedActivities.includes('master_suite_intimacy')) selectedActivity = 'master_suite_intimacy';
+                else if (unlockedActivities.includes('spend_the_night_together')) selectedActivity = 'spend_the_night_together';
+                else if (unlockedActivities.includes('penthouse_morning_together')) selectedActivity = 'penthouse_morning_together';
+                // Tier 2 - Advanced intimate activities
+                else if (unlockedActivities.includes('passionate_night')) selectedActivity = 'passionate_night';
+                else if (unlockedActivities.includes('shower_together')) selectedActivity = 'shower_together';
+                else if (unlockedActivities.includes('intimate_massage')) selectedActivity = 'intimate_massage';
+                // Tier 1 - Basic intimate activities
+                else if (unlockedActivities.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
+                else if (unlockedActivities.includes('first_kiss')) selectedActivity = 'first_kiss';
+                
+                setActiveActivity(selectedActivity);
+                setShowIntimateModal(true);
+                console.log(`Bedroom gateway - Initiating ${selectedActivity} directly`);
+                break;
+              case 'living_room_couch':
+                // Relaxing scene that can lead to cuddling activity
+                const hasFurniture = gameState.inventory?.some(item => 
+                  (typeof item === 'string' ? item : item.id)?.includes('luxury_sofa') ||
+                  (typeof item === 'string' ? item : item.id)?.includes('sectional')
+                );
+                
+                if (hasFurniture && gameState.unlockedActivities?.includes('cuddle_and_watch_movie')) {
+                  setActiveActivity('cuddle_and_watch_movie');
+                  setShowIntimateModal(true);
+                  console.log('Living room couch - Direct cuddling activity with luxury furniture');
+                } else if (gameState.unlockedActivities?.includes('cuddle_and_watch_movie')) {
+                  setActiveActivity('cuddle_and_watch_movie');
+                  setShowIntimateModal(true);
+                  console.log('Living room couch - Cuddling activity available');
+                } else {
+                  // Basic relaxation scene
+                  handleEnvironmentalInteraction({
+                    id: 'couch_relaxation',
+                    action: 'You suggest relaxing on the sofa together. Cha Hae-In settles beside you with a content sigh. "This is nice," she says softly, leaning against your shoulder. The intimate proximity feels natural and comfortable.',
+                    name: 'Living Room Couch',
+                    x: 45,
+                    y: 55
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 6)
+                  }));
+                  console.log('Living room couch - Basic relaxation scene with affection gain');
+                }
+                break;
               case 'vanity_table':
               case 'bookshelf':
-              case 'bed':
               case 'window_view':
               case 'tea_station':
-                // Intimate apartment interactions - enhance affection
+                // Other intimate apartment interactions - enhance affection
                 setGameState(prev => ({
                   ...prev,
                   affection: Math.min(100, prev.affection + 2)
