@@ -224,18 +224,18 @@ export async function generateLocationSceneImage(location: string, timeOfDay: st
     const locationPrompt = createLocationPrompt(location, timeOfDay, weather);
     console.log(`🏢 Generating location scene for: ${location} at ${timeOfDay}${weather ? ` with ${weather} weather` : ''}`);
     
-    // Use Gemini for location scene generation
+    // Use Google Imagen for location scene generation
     try {
-      const { generateImageWithGemini } = await import('./geminiImageService');
-      const imageUrl = await generateImageWithGemini(locationPrompt);
+      const { generateImageWithImagen } = await import('./imagenService');
+      const imageUrl = await generateImageWithImagen(locationPrompt);
       
       if (imageUrl) {
-        console.log('✅ Gemini generated location scene successfully');
+        console.log('✅ Google Imagen generated location scene successfully');
         imageCache.set(cacheKey, { url: imageUrl, timestamp: Date.now() });
         return imageUrl;
       }
-    } catch (geminiError) {
-      console.log('⚠️ Gemini location generation failed:', (geminiError as Error)?.message || 'Unknown error');
+    } catch (imagenError) {
+      console.log('⚠️ Google Imagen location generation failed:', (imagenError as Error)?.message || 'Unknown error');
     }
 
     return null;
@@ -286,17 +286,17 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     const scenePrompt = createScenePrompt(gameState);
     console.log(`🎬 Generating scene image for: ${gameState.currentScene}`);
     
-    // Use Gemini for general scene images
+    // Use Google Imagen for general scene images
     try {
-      const { generateImageWithGemini } = await import('./geminiImageService');
-      const imageUrl = await generateImageWithGemini(scenePrompt);
+      const { generateImageWithImagen } = await import('./imagenService');
+      const imageUrl = await generateImageWithImagen(scenePrompt);
       
       if (imageUrl) {
-        console.log('✅ Gemini generated scene image successfully');
+        console.log('✅ Google Imagen generated scene image successfully');
         return imageUrl;
       }
-    } catch (geminiError) {
-      console.log('⚠️ Gemini scene generation failed:', (geminiError as Error)?.message || 'Unknown error');
+    } catch (imagenError) {
+      console.log('⚠️ Google Imagen scene generation failed:', (imagenError as Error)?.message || 'Unknown error');
     }
 
     return null;
@@ -390,17 +390,17 @@ export async function generateChatSceneImage(prompt: string, imageType: string):
 
     console.log(`🎭 Generating chat scene image: ${imageType}`);
     
-    // Use Gemini for character portraits and emotional scenes
+    // Use Google Imagen for character portraits and emotional scenes
     try {
-      const { generateImageWithGemini } = await import('./geminiImageService');
-      const imageUrl = await generateImageWithGemini(prompt);
+      const { generateImageWithImagen } = await import('./imagenService');
+      const imageUrl = await generateImageWithImagen(prompt);
       
       if (imageUrl) {
-        console.log('✅ Gemini generated chat scene image successfully');
+        console.log('✅ Google Imagen generated chat scene image successfully');
         return imageUrl;
       }
-    } catch (geminiError) {
-      console.log('⚠️ Gemini chat scene generation failed:', (geminiError as Error)?.message || 'Unknown error');
+    } catch (imagenError) {
+      console.log('⚠️ Google Imagen chat scene generation failed:', (imagenError as Error)?.message || 'Unknown error');
     }
 
     return null;
