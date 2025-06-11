@@ -588,6 +588,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sharedMemories: 0,
         livingTogether: 0,
         daysTogether: 1,
+        apartmentTier: 1,
         currentScene: "romantic",
         choices: [],
         sceneData: null,

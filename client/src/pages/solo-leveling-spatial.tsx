@@ -2048,7 +2048,7 @@ export default function SoloLevelingSpatial() {
           environmentalContext={{
             weather: weather,
             timeOfDay: timeOfDay,
-            storyFlags: Object.keys(storyFlags).filter(flag => storyFlags[flag]),
+            storyFlags: Object.keys(storyFlags).filter((flag: string) => storyFlags[flag as keyof typeof storyFlags]),
             visitHistory: {},
             chaHaeInPresent: chaHaeInPresent
           }}
