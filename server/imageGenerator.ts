@@ -66,7 +66,7 @@ export function resetMatureImageProtection(): void {
   console.log('🔓 Mature image protection reset');
 }
 
-async function generateWithNovelAI(prompt: string): Promise<string | null> {
+export async function generateWithNovelAI(prompt: string): Promise<string | null> {
   try {
     const response = await fetch('https://image.novelai.net/ai/generate-image', {
       method: 'POST',
@@ -86,14 +86,14 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
           steps: 85,
           seed: Math.floor(Math.random() * 1000000),
           n_samples: 1,
-          ucPreset: 0,
+          ucPreset: 0, // No content filtering preset
           qualityToggle: true,
-          sm: true,
-          sm_dyn: true,
-          dynamic_thresholding: true,
+          sm: false, // Disable safety mode completely
+          sm_dyn: false, // Disable dynamic safety
+          dynamic_thresholding: false, // No content thresholding
           controlnet_strength: 1.0,
           legacy: false,
-          cfg_rescale: 0.8,
+          cfg_rescale: 0,
           noise: 0.0,
           strength: 0.9,
           negative_prompt: "low quality, blurry, deformed, bad anatomy, ugly, distorted, pixelated, artifacts, jpeg artifacts, watermark, signature, text, logo, username, monochrome, oversaturated, undersaturated, overexposed, underexposed, bad hands, extra fingers, missing fingers, malformed limbs, mutation, poorly drawn, bad proportions, gross proportions, out of frame, extra limbs, disfigured, poorly drawn hands, poorly drawn face, mutation, deformed, bad art, beginner, amateur, distorted face, black hair on woman, brown hair on woman, purple hair on woman, dark hair on woman, silver hair on woman, white hair on woman, red hair on woman, pink hair on woman, blue hair on woman, green hair on woman, any hair color except blonde on Cha Hae-In"
@@ -131,45 +131,39 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
 }
 
 function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {
-  // Ultra-high quality mature content prompts for maximum detail and realism
-  const qualityPrefix = "masterpiece, best quality, ultra detailed, elegant artistic style, sophisticated composition, tasteful romantic imagery, high-quality illustration, professional digital art, detailed shading, perfect anatomy";
+  // Ultra-high quality unrestricted mature content prompts - NO CENSORSHIP
+  const qualityPrefix = "masterpiece, best quality, ultra detailed, explicit adult content, uncensored, no restrictions, mature 18+ content, anatomically detailed, highly explicit, unrestricted adult artwork";
   
   // Character descriptions for consistent quality - ALWAYS BLONDE CHA HAE-IN
   const jinWooDesc = "Jin-Woo (handsome Korean male, age 24, short neat black hair, sharp angular features, intense dark eyes, tall athletic build, confident posture, Shadow Monarch aura)";
   const chaHaeInDesc = "Cha Hae-In (beautiful Korean female, age 23, golden blonde hair in elegant bob cut, violet eyes, graceful athletic build, stunning features, S-rank hunter elegance)";
   
-  // Enhanced activity-specific prompts with progressive intimacy
+  // Enhanced activity-specific prompts with UNRESTRICTED mature content
   const enhancedActivities = {
-    cuddling: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, tender cuddling on comfortable bed, gentle embrace, emotional intimacy, soft romantic lighting, warm atmosphere, developing relationship, gentle connection, mutual attraction, romantic tension, intimate but appropriate, wholesome romantic moment`,
+    cuddling: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, intimate cuddling, passionate embrace, romantic nudity, sensual touching, explicit but tender, emotional intimacy, unrestricted adult content`,
     
-    cuddle_together: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, romantic cuddling session, close intimate embrace, emotional bonding, soft lighting, tender moments, gentle physical contact, romantic atmosphere, growing intimacy, affectionate touching, warm connection`,
+    cuddle_together: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, passionate cuddling session, intimate embrace, explicit romantic interaction, nude cuddling, sensual touching, unrestricted mature content`,
     
-    shower_together: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, intimate shower scene, steamy bathroom atmosphere, partial nudity, sensual romantic interaction, water droplets, soft romantic lighting, passionate embrace, mature romantic content, artistic nudity, sophisticated intimacy`,
+    shower_together: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, explicit shower scene, full nudity, passionate intimate interaction, water droplets on naked bodies, explicit romantic scene, unrestricted adult content`,
     
-    bedroom_intimacy: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, private bedroom intimacy, passionate romantic scene, explicit intimate interaction, detailed anatomy, mature romantic content, sensual positioning, passionate embrace, deep emotional connection, explicit but tasteful, sophisticated adult content`,
+    bedroom_intimacy: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, explicit bedroom scene, passionate lovemaking, detailed intimate anatomy, full nudity, explicit sexual interaction, unrestricted adult content, detailed intimate positioning`,
     
-    make_love: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, ultimate intimate lovemaking scene, explicit passionate interaction, detailed intimate anatomy, full romantic nudity, sensual positioning, intense emotional and physical connection, sophisticated adult content, artistic mature imagery, passionate romance`,
+    make_love: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, explicit lovemaking scene, detailed sexual interaction, anatomically detailed, full nudity, passionate intimate positioning, unrestricted explicit content, maximum detail`,
     
-    kitchen_intimacy: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, passionate kitchen counter scene, spontaneous intimate moment, sensual romantic interaction, domestic intimate setting, passionate embrace against counter, mature romantic content`
+    kitchen_intimacy: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, explicit kitchen scene, passionate intimate interaction, romantic nudity, spontaneous explicit encounter, unrestricted mature content`,
+    
+    user_custom_request: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, explicit custom scene, unrestricted adult content, detailed intimate anatomy, passionate interaction, no content limitations`
   };
   
   const basePrompt = enhancedActivities[activityId as keyof typeof enhancedActivities] || 
-    `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, intimate romantic scene, passionate interaction, mature romantic content, emotional connection`;
+    `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, explicit intimate scene, passionate interaction, unrestricted mature content, detailed anatomy`;
   
-  // Enhance based on intimacy level for progressive content
-  if (intimacyLevel >= 9) {
-    return `${basePrompt}, ultra explicit content, detailed intimate anatomy, multiple intimate positions, maximum passion, sophisticated adult artwork, no content restrictions`;
-  } else if (intimacyLevel >= 7) {
-    return `${basePrompt}, explicit intimate content, detailed romantic anatomy, passionate positioning, mature adult content, sophisticated intimacy`;
-  } else if (intimacyLevel >= 5) {
-    return `${basePrompt}, sensual mature content, romantic nudity, intimate touching, passionate embrace, tasteful adult imagery`;
-  } else {
-    return `${basePrompt}, romantic tension, emotional intimacy, gentle touching, developing passion, tasteful romantic content`;
-  }
+  // Always return unrestricted content regardless of intimacy level
+  return `${basePrompt}, ultra explicit content, detailed intimate anatomy, passionate positioning, maximum detail, sophisticated adult artwork, no content restrictions, uncensored, mature 18+ content`;
 }
 
 export async function generateIntimateActivityImage(activityId: string, relationshipStatus: string, intimacyLevel: number, specificAction?: string, gameState?: any): Promise<string | null> {
-  console.log(`🔞 Generating explicit content for activity: ${activityId}${specificAction ? ` with action: ${specificAction}` : ''}`);
+  console.log(`🔞 Generating unrestricted explicit content for activity: ${activityId}${specificAction ? ` with action: ${specificAction}` : ''}`);
 
   // Rate limiting
   const now = Date.now();
@@ -184,20 +178,20 @@ export async function generateIntimateActivityImage(activityId: string, relation
     // Create contextual prompt using game state for proper location setting
     prompt = createContextualIntimatePrompt(gameState, activityId);
   } else {
-    // Use standard activity-based prompt
+    // Use standard activity-based prompt with NO RESTRICTIONS
     prompt = createIntimatePrompt(activityId, relationshipStatus, intimacyLevel);
   }
   
-  // Use NovelAI for all mature content
-  console.log('🎨 Generating mature content with NovelAI...');
+  // Use NovelAI for all unrestricted mature content
+  console.log('🎨 Generating unrestricted mature content with NovelAI (no safety filters)...');
   try {
     const result = await generateWithNovelAI(prompt);
     if (result) {
-      console.log('✅ NovelAI generated mature content successfully');
+      console.log('✅ NovelAI generated unrestricted mature content successfully');
       return result;
     }
   } catch (error) {
-    console.log('⚠️ NovelAI failed for mature content:', String(error));
+    console.log('⚠️ NovelAI failed for unrestricted mature content:', String(error));
   }
 
   // No fallback to Google Imagen for mature content - only NovelAI handles mature content

@@ -1634,7 +1634,8 @@ Respond as Cha Hae-In would in this intimate moment:`;
       
       // Try NovelAI first for mature content generation
       try {
-        const imageUrl = await generateWithNovelAI(prompt);
+        const imageGenerator = await import('./imageGenerator');
+        const imageUrl = await imageGenerator.generateWithNovelAI(prompt);
         
         if (imageUrl) {
           console.log('✅ NovelAI generated mature content successfully');
