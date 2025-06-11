@@ -2201,23 +2201,76 @@ export default function SoloLevelingSpatial() {
                 setShowItemInspection(true);
                 console.log('Opening bedroom furniture collection view');
                 break;
-              case 'reception_desk':
-              case 'architectural_models':
-                setShowLuxuryRealtor(true);
-                console.log('Opening luxury realtor property interface');
+              
+              // Hongdae Cafe simple interactions
+              case 'order_counter':
+                // Simple drink ordering with preference detection
+                if ((gameState.gold || 0) >= 8000) {
+                  setGameState(prev => ({
+                    ...prev,
+                    gold: Math.max(0, (prev.gold || 0) - 8000),
+                    affection: Math.min(100, prev.affection + 5)
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'cafe_order',
+                    action: 'You order drinks for both of you. [- ₩8,000]. "I\'ll have an iced americano," Cha Hae-In says with a smile. You remember her preference and order accordingly. She seems pleased that you\'re paying attention to the small details.',
+                    name: 'Cafe Counter',
+                    x: 30,
+                    y: 45
+                  });
+                  console.log('Cafe order - Small affection gain through attentiveness');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'cafe_browsing',
+                    action: 'You browse the menu together. Cha Hae-In points to her usual order. "I always get the same thing," she admits with a small laugh. "Some habits are hard to break."',
+                    name: 'Cafe Counter',
+                    x: 30,
+                    y: 45
+                  });
+                }
                 break;
+              case 'window_seat':
+                // Contextual conversation scene
+                handleEnvironmentalInteraction({
+                  id: 'window_conversation',
+                  action: 'You suggest taking the window seat. Cha Hae-In nods and settles in comfortably. "I like watching people go by," she says, gazing out at the bustling Hongdae street. "It reminds me that there\'s still normal life happening outside of our hunter world."',
+                  name: 'Window Seat',
+                  x: 70,
+                  y: 35
+                });
+                // Set contextual thought prompts
+                setThoughtPrompts([
+                  "What do you see out there?",
+                  "Do you miss normal life?",
+                  "This is peaceful, isn't it?"
+                ]);
+                console.log('Window seat conversation - Contextual dialogue triggered');
+                break;
+                
+              // Hangang River Park simple interactions  
               case 'park_bench':
-                // Major conversational node - high energy cost, high affection gain, memory star
+                // Heartfelt conversation scene with Memory Star potential
                 setGameState(prev => ({
                   ...prev,
-                  energy: Math.max(0, (prev.energy || 100) - 25),
                   affection: Math.min(100, prev.affection + 8)
                 }));
-                handleChaHaeInInteraction();
-                console.log('Park bench conversation - Major relationship moment');
+                handleEnvironmentalInteraction({
+                  id: 'bench_heart_to_heart',
+                  action: 'You suggest sitting on the bench overlooking the river. Cha Hae-In sits beside you, closer than usual. The gentle breeze carries the scent of cherry blossoms. "Sometimes I forget how beautiful Seoul can be," she says softly, her usual stoic demeanor melting away in the peaceful moment.',
+                  name: 'River Bench',
+                  x: 45,
+                  y: 60
+                });
+                // Set heartfelt thought prompts
+                setThoughtPrompts([
+                  "You seem more relaxed here.",
+                  "What are you thinking about?",
+                  "I could stay here with you forever."
+                ]);
+                console.log('Park bench - Heartfelt scene with high affection gain');
                 break;
-              case 'food_vendor_cart':
-                // Economic transaction with affection boost
+              case 'street_food_vendor':
+                // Simple food sharing interaction
                 if ((gameState.gold || 0) >= 5000) {
                   setGameState(prev => ({
                     ...prev,
@@ -2225,27 +2278,28 @@ export default function SoloLevelingSpatial() {
                     affection: Math.min(100, prev.affection + 4)
                   }));
                   handleEnvironmentalInteraction({
-                    id: 'food_sharing',
-                    action: 'You buy two skewers of tteokbokki. [- ₩5,000]. You share the spicy rice cakes while watching the river. She laughs as you get some sauce on your face, wiping it away for you.',
-                    name: 'Street Food Sharing',
-                    x: 70,
-                    y: 35
+                    id: 'street_food_sharing',
+                    action: 'You buy hotteok from the street vendor. [- ₩5,000]. The sweet pancakes are still warm as you share them. Cha Hae-In laughs when the honey drips on her fingers. "I haven\'t had street food in ages," she admits, licking the sweetness away with genuine delight.',
+                    name: 'Street Food Vendor',
+                    x: 25,
+                    y: 40
                   });
-                  console.log('Food vendor purchase - Affection gained through sharing');
+                  console.log('Street food sharing - Small affection gain through simple pleasure');
                 } else {
                   handleEnvironmentalInteraction({
-                    id: 'insufficient_funds',
-                    action: 'You check your wallet but realize you don\'t have enough for the street food.',
-                    name: 'Food Vendor Cart',
-                    x: 70,
-                    y: 35
+                    id: 'food_vendor_browse',
+                    action: 'You approach the street food vendor together. The aroma of hotteok and tteokbokki fills the air. Cha Hae-In inhales deeply. "That smells incredible," she says wistfully.',
+                    name: 'Street Food Vendor',
+                    x: 25,
+                    y: 40
                   });
                 }
                 break;
-              case 'rivers_edge':
-                // Atmospheric cinematic mode - no cost, no affection, pure atmosphere
-                setCinematicMode(true);
-                console.log('Entering cinematic mode - River edge contemplation');
+                
+              case 'reception_desk':
+              case 'architectural_models':
+                setShowLuxuryRealtor(true);
+                console.log('Opening luxury realtor property interface');
                 break;
               case 'counter':
               case 'window_seat':
