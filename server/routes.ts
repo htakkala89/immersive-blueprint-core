@@ -1751,6 +1751,18 @@ Generate a prompt suitable for manhwa-style art generation:`;
               const base64Image = imageBuffer.toString('base64');
               const imageUrl = `data:image/png;base64,${base64Image}`;
               console.log('Successfully extracted image from ZIP');
+              
+              // Save image to file for debugging
+              const fs = require('fs');
+              const timestamp = Date.now();
+              const filename = `generated_mature_content_${timestamp}.png`;
+              try {
+                fs.writeFileSync(filename, imageBuffer);
+                console.log(`✅ Saved image to ${filename} (${imageBuffer.length} bytes)`);
+              } catch (saveError) {
+                console.error('❌ Failed to save image:', saveError);
+              }
+              
               res.json({ imageUrl });
             } else {
               throw new Error('No image found in ZIP file');

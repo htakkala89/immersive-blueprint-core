@@ -213,18 +213,18 @@ export function IntimateActivitySystem5({
       console.log('NovelAI response received:', { hasImageUrl: !!data.imageUrl, hasFallback: !!data.fallbackText });
       
       if (data.imageUrl) {
-        console.log('Setting generated image and fullscreen display');
-        console.log('Image URL length:', data.imageUrl.length);
-        console.log('Image URL prefix:', data.imageUrl.substring(0, 50));
-        setNarrativeLens(prev => {
-          console.log('Previous state:', { showFullscreen: prev.showFullscreen, hasImage: !!prev.generatedImage });
-          return {
+        console.log('✅ NovelAI image received - Length:', data.imageUrl.length);
+        console.log('✅ Image prefix:', data.imageUrl.substring(0, 50));
+        
+        // Force a brief delay to ensure state updates properly
+        setTimeout(() => {
+          setNarrativeLens(prev => ({
             ...prev,
             generatedImage: data.imageUrl,
             showFullscreen: true,
             isGenerating: false
-          };
-        });
+          }));
+        }, 100);
       } else if (data.fallbackText) {
         // Handle fallback text when image generation fails
         const fallbackMessage = {
