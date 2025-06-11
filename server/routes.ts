@@ -1231,6 +1231,25 @@ RESPONSE INSTRUCTIONS:
     }
   });
 
+  // Location background image generation for spatial interface
+  app.post("/api/location-image", async (req, res) => {
+    try {
+      const { location, timeOfDay, weather } = req.body;
+      
+      if (!location || !timeOfDay) {
+        return res.status(400).json({ error: "Location and time of day are required" });
+      }
+      
+      console.log(`🏢 Spatial interface requesting: ${location} at ${timeOfDay}${weather ? ` with ${weather} weather` : ''}`);
+      
+      const imageUrl = await generateLocationSceneImage(location, timeOfDay, weather);
+      res.json({ imageUrl });
+    } catch (error) {
+      console.error("Location image generation error:", error);
+      res.status(500).json({ error: "Failed to generate location image" });
+    }
+  });
+
   // Direct mature content generation API - No restrictions
   app.post("/api/generate-mature-content", async (req, res) => {
     try {

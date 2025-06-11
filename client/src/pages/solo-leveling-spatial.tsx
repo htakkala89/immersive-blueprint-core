@@ -383,6 +383,35 @@ export default function SoloLevelingSpatial() {
     return new Date(); // Use real-world time
   });
   
+  // Load location background image with Google Imagen
+  useEffect(() => {
+    const loadLocationImage = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/location-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: playerLocation,
+            timeOfDay,
+            weather
+          })
+        });
+        
+        const data = await response.json();
+        if (data.imageUrl) {
+          setSceneImage(data.imageUrl);
+        }
+      } catch (error) {
+        console.error('Failed to load location image:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadLocationImage();
+  }, [playerLocation, timeOfDay, weather]);
+
   // Real-time clock update
   useEffect(() => {
     const updateTime = () => {
