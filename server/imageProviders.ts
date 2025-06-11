@@ -1,3 +1,5 @@
+import AdmZip from 'adm-zip';
+
 interface ImageGenerationResult {
   success: boolean;
   imageUrl?: string;
@@ -70,7 +72,6 @@ class NovelAIProvider implements ImageProvider {
           
           // NovelAI returns images in ZIP format, extract the first image
           try {
-            const AdmZip = require('adm-zip');
             const zip = new AdmZip(Buffer.from(buffer));
             const zipEntries = zip.getEntries();
             
@@ -180,7 +181,12 @@ class GoogleImagenProvider implements ImageProvider {
 
       if (response.ok) {
         const data = await response.json();
-        const imageUrl = data.predictions?.[0]?.bytesBase64Encoded;
+        console.log('Google Imagen response structure:', JSON.stringify(data, null, 2));
+        
+        // Try multiple possible response formats
+        let imageUrl = data.predictions?.[0]?.bytesBase64Encoded ||
+                      data.predictions?.[0]?.image?.bytesBase64Encoded ||
+                      data.predictions?.[0]?.generatedImage?.bytesBase64Encoded;
         
         if (imageUrl) {
           return {
@@ -188,12 +194,15 @@ class GoogleImagenProvider implements ImageProvider {
             imageUrl: `data:image/png;base64,${imageUrl}`,
             provider: this.name
           };
+        } else {
+          console.log('No image found in Google Imagen response');
         }
       }
 
       // Enhanced error handling
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.error?.message || `HTTP ${response.status}`;
+      console.log('Google Imagen error:', errorMessage, errorData);
       
       return {
         success: false,

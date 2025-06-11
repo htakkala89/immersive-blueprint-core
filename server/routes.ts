@@ -1662,6 +1662,46 @@ Respond as Cha Hae-In would in this intimate moment:`;
     }
   });
 
+  // Basic image generation endpoint
+  app.post("/api/generate-image", async (req, res) => {
+    try {
+      const { prompt, preferredProvider } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+      
+      console.log(`🎨 Generating image with prompt: ${prompt.substring(0, 50)}...`);
+      const result = await imageGenerationService.generateImage(prompt, preferredProvider);
+      
+      if (result.success) {
+        console.log(`✅ Image generated successfully with ${result.provider}`);
+        return res.json({ 
+          success: true,
+          imageUrl: result.imageUrl,
+          provider: result.provider
+        });
+      }
+
+      console.log(`❌ Image generation failed: ${result.error}`);
+      
+      return res.json({ 
+        success: false,
+        imageUrl: null,
+        error: result.error,
+        availableProviders: await imageGenerationService.getAvailableProviders()
+      });
+    } catch (error) {
+      console.error("Image generation error:", error);
+      
+      res.status(500).json({ 
+        success: false,
+        imageUrl: null,
+        error: "Image generation temporarily unavailable"
+      });
+    }
+  });
+
   // Debug endpoint to check available image providers
   app.get("/api/available-providers", async (req, res) => {
     try {
