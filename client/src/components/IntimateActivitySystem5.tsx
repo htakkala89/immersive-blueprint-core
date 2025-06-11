@@ -101,6 +101,20 @@ export function IntimateActivitySystem5({
 
   const getInitialSceneText = (activityId: string): string => {
     const sceneTexts: Record<string, string> = {
+      // Shower-specific scenes
+      'shower_together': '*Steam fills the luxurious bathroom as warm water cascades down. Cha Hae-In stands before you, water droplets glistening on her skin, her blonde hair darkened and flowing. She reaches for your hand with a shy yet trusting smile.* "The water feels perfect... and being here with you feels even more perfect." *Her cheeks are flushed, whether from the heat or intimacy, you cannot tell.*',
+      
+      // Bedroom-specific scenes  
+      'bedroom_intimacy': '*The bedroom is bathed in soft moonlight filtering through sheer curtains. Cha Hae-In sits on the edge of the bed, her violet eyes meeting yours with a mixture of desire and vulnerability.* "I\'ve been thinking about this moment... about us." *She pats the space beside her gently, her voice filled with tender invitation.*',
+      'bedroom_passionate': '*Candles flicker throughout the bedroom, casting warm golden light across the silk sheets. Cha Hae-In moves gracefully toward you, her nightgown flowing like liquid silk.* "Tonight, I want to show you how much you mean to me..." *Her voice carries deep emotion and unmistakable desire.*',
+      
+      // Kitchen-specific scenes
+      'kitchen_intimacy': '*The kitchen counter is cool against your back as Cha Hae-In steps closer, trapping you between her arms. The scent of her perfume mingles with the lingering aroma of dinner.* "Cooking together was nice... but I had something else in mind for dessert." *Her eyes sparkle with mischief and growing passion.*',
+      
+      // Living room/cuddle scenes
+      'cuddle_together': '*The living room is cozy and intimate, lit only by the city lights streaming through the windows. Cha Hae-In curls up against you on the sofa, her head resting on your shoulder.* "This is my favorite place... right here in your arms." *She tilts her head up to look at you, love shining in her violet eyes.*',
+      
+      // Generic intimate scenes (fallbacks)
       'intimate_evening': '*The apartment is softly lit by candles, creating dancing shadows on the walls. Cha Hae-In moves closer to you on the couch, her eyes reflecting the warm light as she gently places her hand on yours.* "Jin-Woo... tonight feels different. Special." *Her voice is barely above a whisper, filled with anticipation and trust.*',
       'morning_together': '*Sunlight filters through the curtains as you wake up next to Cha Hae-In. She stirs softly, her hair catching the golden morning light. Her eyes flutter open and find yours, a gentle smile spreading across her face.* "Good morning, my love. I could wake up like this every day..." *She moves closer, her warmth radiating against you.*',
       'private_moment': '*The world outside seems to fade away as you find yourselves alone in the quiet intimacy of your shared space. Cha Hae-In looks at you with eyes full of love and desire, her fingers tracing gentle patterns on your skin.* "I want to be close to you... completely close."'
