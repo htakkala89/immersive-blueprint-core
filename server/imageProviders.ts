@@ -229,6 +229,9 @@ class OpenAIProvider implements ImageProvider {
     }
 
     try {
+      // Enhanced prompt for better Solo Leveling style results
+      const enhancedPrompt = `${prompt}, Solo Leveling manhwa art style, Korean webtoon illustration, romantic scene between two characters, high quality digital art, detailed character features, soft lighting`;
+      
       const response = await fetch('https://api.openai.com/v1/images/generations', {
         method: 'POST',
         headers: {
@@ -236,7 +239,7 @@ class OpenAIProvider implements ImageProvider {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          prompt: `${prompt}, Solo Leveling manhwa art style, romantic scene, high quality digital art`,
+          prompt: enhancedPrompt,
           model: 'dall-e-3',
           size: '1024x1024',
           quality: 'hd',
@@ -257,15 +260,19 @@ class OpenAIProvider implements ImageProvider {
         }
       }
 
+      // Enhanced error handling
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error?.message || `HTTP ${response.status}`;
+      
       return {
         success: false,
-        error: `OpenAI API error: ${response.status}`,
+        error: `OpenAI API error: ${errorMessage}`,
         provider: this.name
       };
     } catch (error) {
       return {
         success: false,
-        error: `OpenAI generation failed: ${error}`,
+        error: `OpenAI generation failed: ${error instanceof Error ? error.message : String(error)}`,
         provider: this.name
       };
     }
