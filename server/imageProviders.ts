@@ -121,56 +121,9 @@ class GoogleImagenProvider implements ImageProvider {
   }
 
   private async getAccessToken(): Promise<string | null> {
-    try {
-      if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
-        return null;
-      }
-
-      const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-      if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
-        return null;
-      }
-
-      const serviceAccount = JSON.parse(serviceAccountString);
-      const { private_key, client_email } = serviceAccount;
-
-      if (!private_key || !client_email) return null;
-
-      const header = {
-        alg: 'RS256',
-        typ: 'JWT'
-      };
-
-      const now = Math.floor(Date.now() / 1000);
-      const payload = {
-        iss: client_email,
-        scope: 'https://www.googleapis.com/auth/cloud-platform',
-        aud: 'https://oauth2.googleapis.com/token',
-        exp: now + 3600,
-        iat: now
-      };
-
-      // Simple JWT creation without external libraries
-      const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
-      const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-      
-      const crypto = await import('crypto');
-      const signature = crypto.sign('RSA-SHA256', Buffer.from(`${encodedHeader}.${encodedPayload}`), private_key);
-      const encodedSignature = signature.toString('base64url');
-      
-      const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
-
-      const response = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
-      });
-
-      const data = await response.json();
-      return data.access_token || null;
-    } catch {
-      return null;
-    }
+    // Import the existing Google auth system
+    const { getGoogleAccessToken } = await import('./googleAuth');
+    return await getGoogleAccessToken();
   }
 
   async generate(prompt: string): Promise<ImageGenerationResult> {
@@ -186,8 +139,8 @@ class GoogleImagenProvider implements ImageProvider {
     }
 
     try {
-      // Enhanced prompt for Narrative Lens intimate scenes
-      const enhancedPrompt = `${prompt}, Solo Leveling manhwa art style, romantic scene between Cha Hae-In and Sung Jin-Woo, Korean webtoon illustration, detailed character features, soft lighting, emotional connection, high quality digital artwork, tender moment`;
+      // Enhanced prompt matching the working location image system
+      const enhancedPrompt = `${prompt}. Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, character design errors`;
       
       const response = await fetch(
         `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/imagegeneration@006:predict`,
@@ -203,11 +156,9 @@ class GoogleImagenProvider implements ImageProvider {
             }],
             parameters: {
               sampleCount: 1,
-              aspectRatio: '3:4',
-              safetyFilterLevel: 'block_only_high',
-              personGeneration: 'allow_adult',
-              guidanceScale: 15,
-              seed: Math.floor(Math.random() * 1000000)
+              aspectRatio: "1:1",
+              safetyFilterLevel: "block_only_high",
+              personGeneration: "allow_adult"
             }
           })
         }
