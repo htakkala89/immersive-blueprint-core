@@ -35,7 +35,7 @@ class NovelAIProvider implements ImageProvider {
       'https://image.novelai.net/ai/generate-image'
     ];
 
-    const negativePrompt = "low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
+    const negativePrompt = "silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
     
     const requestBody = {
       input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
