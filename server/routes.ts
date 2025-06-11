@@ -1626,7 +1626,8 @@ Respond as Cha Hae-In would in this intimate moment:`;
   // NovelAI Generation for System 5 Narrative Lens
   app.post("/api/generate-novelai-intimate", async (req, res) => {
     try {
-      const { prompt, activityId, stylePreset } = req.body;
+      const { prompt: rawPrompt, activityId, stylePreset } = req.body;
+      const prompt = String(rawPrompt || '');
       
       if (!process.env.NOVELAI_API_KEY) {
         console.log("NovelAI API key not found, providing fallback response");
@@ -1875,21 +1876,6 @@ Respond as Cha Hae-In would in this intimate moment:`;
     } catch (error) {
       console.error("NovelAI generation error:", error);
       
-      // Try Google Imagen as fallback
-      try {
-        console.log("🎨 Attempting Google Imagen fallback...");
-        const googleImageUrl = await generateWithGoogleImagen(
-          `romantic scene between Sung Jin-Woo and Cha Hae-In from Solo Leveling, ${prompt}, beautiful lighting, emotional connection, Solo Leveling manhwa art style`
-        );
-        
-        if (googleImageUrl) {
-          console.log("✅ Google Imagen fallback successful");
-          return res.json({ imageUrl: googleImageUrl });
-        }
-      } catch (googleError) {
-        console.log("⚠️ Google Imagen fallback failed:", googleError);
-      }
-      
       // Enhanced fallback narratives based on context
       const contextualFallbacks = {
         kiss: "Their lips meet in a tender kiss, time seeming to stop as their hearts beat in perfect synchrony under the gentle moonlight.",
@@ -1899,13 +1885,15 @@ Respond as Cha Hae-In would in this intimate moment:`;
         default: "The intimate moment unfolds with tender passion, their connection deepening as they lose themselves in each other's presence."
       };
       
-      const lowerPrompt = prompt.toLowerCase();
+      // Select appropriate fallback based on prompt content
       let fallbackText = contextualFallbacks.default;
-      
-      for (const [key, text] of Object.entries(contextualFallbacks)) {
-        if (key !== 'default' && lowerPrompt.includes(key)) {
-          fallbackText = text;
-          break;
+      if (prompt) {
+        const lowerPrompt = prompt.toLowerCase();
+        for (const [key, text] of Object.entries(contextualFallbacks)) {
+          if (key !== 'default' && lowerPrompt.includes(key)) {
+            fallbackText = text;
+            break;
+          }
         }
       }
       
