@@ -1748,8 +1748,6 @@ Generate a prompt suitable for manhwa-style art generation:`;
             
             if (imageEntry) {
               const imageBuffer = imageEntry.getData();
-              const base64Image = imageBuffer.toString('base64');
-              const imageUrl = `data:image/png;base64,${base64Image}`;
               console.log('Successfully extracted image from ZIP');
               
               // Save image to public directory and serve as URL
@@ -1757,7 +1755,7 @@ Generate a prompt suitable for manhwa-style art generation:`;
               const path = require('path');
               const timestamp = Date.now();
               const filename = `mature_${timestamp}.png`;
-              const publicPath = path.join(__dirname, '..', 'public');
+              const publicPath = path.join(process.cwd(), 'public');
               
               // Ensure public directory exists
               if (!fs.existsSync(publicPath)) {
@@ -1768,7 +1766,7 @@ Generate a prompt suitable for manhwa-style art generation:`;
               
               try {
                 fs.writeFileSync(filePath, imageBuffer);
-                console.log(`✅ Saved image to ${filePath} (${imageBuffer.length} bytes)`);
+                console.log(`✅ Saved NovelAI image to ${filePath} (${imageBuffer.length} bytes)`);
                 
                 // Return file URL instead of base64
                 const imageUrl = `/public/${filename}`;
