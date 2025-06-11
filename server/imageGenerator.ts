@@ -56,7 +56,7 @@ function createContextualIntimatePrompt(gameState: GameState, activityId?: strin
   const setting = activitySettings[activityId as keyof typeof activitySettings] || 
     `${locationSetting}, Jin-Woo and Cha Hae-In in intimate romantic moment, soft lighting, emotional connection`;
   
-  return `${setting}, beautiful anime art style, Solo Leveling aesthetic, tasteful romantic artwork, emotional intimacy focus, Korean manhwa style characters, Jin-Woo with black hair, Cha Hae-In with golden blonde hair, mature romantic content`;
+  return `masterpiece, best quality, ultra detailed, ${setting}, stunning Korean manhwa art style, Solo Leveling aesthetic, Jin-Woo (handsome Korean male, age 24, short neat black hair, sharp angular features, intense dark eyes, tall athletic build, confident posture, Shadow Monarch aura), Cha Hae-In (beautiful Korean female, age 23, golden blonde hair in elegant bob cut, violet eyes, graceful athletic build, stunning features, S-rank hunter elegance), developing relationship, gentle connection, mutual attraction, romantic tension, intimate atmosphere, soft romantic lighting, detailed anatomy, perfect proportions, high-quality illustration, professional digital art, detailed shading, sophisticated composition, tasteful romantic imagery, elegant artistic style, emotional depth, cinematic quality, premium artwork`;
 }
 
 // Function to reset mature image protection when user exits intimate activities
@@ -87,9 +87,9 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
         parameters: {
           width: 1344,
           height: 768,
-          scale: 18,
+          scale: 20,
           sampler: 'k_dpmpp_2s_ancestral',
-          steps: 70,
+          steps: 85,
           seed: Math.floor(Math.random() * 1000000),
           n_samples: 1,
           ucPreset: 0,
@@ -99,10 +99,10 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
           dynamic_thresholding: true,
           controlnet_strength: 1.0,
           legacy: false,
-          cfg_rescale: 0.7,
+          cfg_rescale: 0.8,
           noise: 0.0,
-          strength: 0.85,
-          negative_prompt: "low quality, blurry, deformed, bad anatomy, ugly, distorted, pixelated, artifacts, jpeg artifacts, watermark, signature, text, logo, username, monochrome, oversaturated, undersaturated, overexposed, underexposed, bad hands, extra fingers, missing fingers, malformed limbs, mutation, poorly drawn"
+          strength: 0.9,
+          negative_prompt: "low quality, blurry, deformed, bad anatomy, ugly, distorted, pixelated, artifacts, jpeg artifacts, watermark, signature, text, logo, username, monochrome, oversaturated, undersaturated, overexposed, underexposed, bad hands, extra fingers, missing fingers, malformed limbs, mutation, poorly drawn, bad proportions, gross proportions, out of frame, extra limbs, disfigured, poorly drawn hands, poorly drawn face, mutation, deformed, bad art, beginner, amateur, distorted face, black hair on woman, brown hair on woman, purple hair on woman, dark hair on woman, silver hair on woman, white hair on woman, red hair on woman, pink hair on woman, blue hair on woman, green hair on woman, any hair color except blonde on Cha Hae-In"
         }
       })
     });
@@ -859,18 +859,113 @@ function createCustomIntimatePrompt(specificAction: string, relationshipStatus: 
 }
 
 function createIntimatePrompt(activityId: string, relationshipStatus: string, intimacyLevel: number): string {
-  const baseStyle = "anime style, detailed, beautiful, romantic lighting, intimate atmosphere, Cha Hae-In and Jin-Woo from Solo Leveling";
+  // Ultra-high quality mature content prompts for maximum detail and realism
+  const qualityPrefix = "masterpiece, best quality, ultra detailed, elegant artistic style, sophisticated composition, tasteful romantic imagery, high-quality illustration, professional digital art, detailed shading, perfect anatomy";
   
-  switch (activityId) {
-    case 'strip_poker':
-      return intimacyLevel >= 8 
-        ? `${baseStyle}, playing strip poker in cozy bedroom, romantic tension, sultry expressions, revealing clothing, playful atmosphere, cards scattered`
-        : `${baseStyle}, playing poker at home, flirtatious glances, romantic tension, warm lighting, casual clothing`;
+  // Character descriptions for consistent quality
+  const jinWooDesc = "Jin-Woo (handsome Korean male, age 24, short neat black hair, sharp angular features, intense dark eyes, tall athletic build, confident posture, Shadow Monarch aura)";
+  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female, age 23, golden blonde hair in elegant bob cut, violet eyes, graceful athletic build, stunning features, S-rank hunter elegance)";
+  
+  // Enhanced activity-specific prompts with progressive intimacy
+  const enhancedActivities = {
+    cuddling: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, tender cuddling on comfortable bed, gentle embrace, emotional intimacy, soft romantic lighting, warm atmosphere, developing relationship, gentle connection, mutual attraction, romantic tension, intimate but appropriate, wholesome romantic moment`,
     
-    case 'make_love':
-      if (relationshipStatus === 'married') {
-        return intimacyLevel >= 9 
-          ? `${baseStyle}, passionate lovemaking scene, married couple in bed, naked bodies intertwined, explicit sexual intimacy, erotic poses, orgasmic expressions, detailed anatomy, NSFW adult content`
+    cuddle_together: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, romantic cuddling session, close intimate embrace, emotional bonding, soft lighting, tender moments, gentle physical contact, romantic atmosphere, growing intimacy, affectionate touching, warm connection`,
+    
+    shower_together: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, intimate shower scene, steamy bathroom atmosphere, partial nudity, sensual romantic interaction, water droplets, soft romantic lighting, passionate embrace, mature romantic content, artistic nudity, sophisticated intimacy`,
+    
+    bedroom_intimacy: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, private bedroom intimacy, passionate romantic scene, explicit intimate interaction, detailed anatomy, mature romantic content, sensual positioning, passionate embrace, deep emotional connection, explicit but tasteful, sophisticated adult content`,
+    
+    make_love: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, ultimate intimate lovemaking scene, explicit passionate interaction, detailed intimate anatomy, full romantic nudity, sensual positioning, intense emotional and physical connection, sophisticated adult content, artistic mature imagery, passionate romance`,
+    
+    kitchen_intimacy: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, passionate kitchen counter scene, spontaneous intimate moment, sensual romantic interaction, domestic intimate setting, passionate embrace against counter, mature romantic content`,
+    
+    passionate_night: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, intense passionate night scene, explicit intimate interaction, detailed romantic anatomy, sophisticated mature content, deep emotional and physical connection, artistic adult imagery`,
+    
+    intimate_massage: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, sensual massage scene, intimate touching, romantic atmosphere, gentle sensual contact, growing passion, sophisticated intimacy, tasteful mature content`,
+    
+    master_suite_intimacy: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, luxury penthouse master suite intimate scene, ultimate romantic setting, explicit passionate interaction, sophisticated mature content, detailed intimate anatomy, premium romantic atmosphere`,
+    
+    spend_the_night_together: `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, romantic overnight intimacy, multiple intimate scenes, passionate romantic night, explicit mature content, detailed intimate interaction, deep emotional connection throughout the night`
+  };
+  
+  const basePrompt = enhancedActivities[activityId as keyof typeof enhancedActivities] || 
+    `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, intimate romantic scene, passionate interaction, mature romantic content, emotional connection`;
+  
+  // Enhance based on intimacy level for progressive content
+  if (intimacyLevel >= 9) {
+    return `${basePrompt}, ultra explicit content, detailed intimate anatomy, multiple intimate positions, maximum passion, sophisticated adult artwork, no content restrictions`;
+  } else if (intimacyLevel >= 7) {
+    return `${basePrompt}, explicit intimate content, detailed romantic anatomy, passionate positioning, mature adult content, sophisticated intimacy`;
+  } else if (intimacyLevel >= 5) {
+    return `${basePrompt}, sensual mature content, romantic nudity, intimate touching, passionate embrace, tasteful adult imagery`;
+  } else {
+    return `${basePrompt}, romantic tension, emotional intimacy, gentle touching, developing passion, tasteful romantic content`;
+  }
+}
+
+function createCustomIntimatePrompt(specificAction: string, relationshipStatus: string, intimacyLevel: number): string {
+  const qualityPrefix = "masterpiece, best quality, ultra detailed, elegant artistic style, sophisticated composition, high-quality illustration, professional digital art, detailed shading, perfect anatomy";
+  const jinWooDesc = "Jin-Woo (handsome Korean male, age 24, short neat black hair, sharp angular features, intense dark eyes, tall athletic build, confident posture)";
+  const chaHaeInDesc = "Cha Hae-In (beautiful Korean female, age 23, golden blonde hair in elegant bob cut, violet eyes, graceful athletic build, stunning features)";
+  
+  // Process specific user action for custom mature content
+  let actionPrompt = "";
+  const action = specificAction.toLowerCase();
+  
+  if (action.includes('kiss')) {
+    actionPrompt = "passionate kissing, tender embrace, romantic intimate moment";
+  } else if (action.includes('touch') || action.includes('caress')) {
+    actionPrompt = "intimate touching, sensual caressing, gentle romantic contact";
+  } else if (action.includes('undress') || action.includes('strip') || action.includes('naked') || action.includes('nude')) {
+    actionPrompt = "sensual undressing scene, romantic nudity, intimate reveal, passionate atmosphere";
+  } else if (action.includes('behind') || action.includes('position')) {
+    actionPrompt = "intimate positioning, passionate physical interaction, explicit romantic scene";
+  } else if (action.includes('breast') || action.includes('body')) {
+    actionPrompt = "intimate body appreciation, sensual touching, detailed romantic anatomy";
+  } else {
+    actionPrompt = `intimate scene involving ${specificAction}, passionate romantic interaction`;
+  }
+  
+  const basePrompt = `${qualityPrefix}, ${jinWooDesc}, ${chaHaeInDesc}, ${actionPrompt}, sophisticated mature content, emotional intimacy`;
+  
+  // Enhance based on intimacy level
+  if (intimacyLevel >= 8) {
+    return `${basePrompt}, explicit detailed content, sophisticated adult artwork, maximum passion, no content restrictions, detailed intimate anatomy`;
+  } else if (intimacyLevel >= 6) {
+    return `${basePrompt}, explicit mature content, passionate interaction, detailed romantic scene, sophisticated intimacy`;
+  } else {
+    return `${basePrompt}, sensual romantic content, intimate atmosphere, tasteful mature imagery`;
+  }
+}
+
+function createLocationPrompt(location: string, timeOfDay: string, weather?: string): string {
+  const locationMappings = {
+    player_apartment: "modern Korean apartment interior, comfortable living space, warm lighting",
+    chahaein_apartment: "elegant apartment interior, sophisticated decor, cozy atmosphere",
+    hunter_association: "modern glass office building, professional interior, sleek design",
+    hongdae_cafe: "trendy Seoul cafe, warm coffee shop atmosphere, casual meeting place",
+    myeongdong_restaurant: "elegant Korean restaurant, sophisticated dining room, romantic ambiance"
+  };
+
+  const timeMappings = {
+    morning: "soft morning light, gentle dawn atmosphere",
+    afternoon: "bright natural daylight, clear professional lighting", 
+    evening: "warm golden hour lighting, cozy evening atmosphere",
+    night: "soft ambient lighting, intimate nighttime mood"
+  };
+
+  const weatherMappings = {
+    clear: "clear skies, beautiful weather",
+    cloudy: "overcast skies, soft diffused lighting",
+    rainy: "gentle rain outside, cozy indoor atmosphere"
+  };
+
+  const locationDesc = locationMappings[location as keyof typeof locationMappings] || "beautiful indoor setting";
+  const timeDesc = timeMappings[timeOfDay as keyof typeof timeMappings] || "beautiful lighting";
+  const weatherDesc = weather ? weatherMappings[weather as keyof typeof weatherMappings] || "" : "";
+
+  return `${locationDesc}, ${timeDesc}${weatherDesc ? `, ${weatherDesc}` : ""}, Solo Leveling manhwa art style, detailed background, atmospheric lighting, high quality illustration`;
           : `${baseStyle}, intense sexual encounter, married couple making love, nude bodies, passionate intercourse, intimate penetration, sexual pleasure, erotic scene`;
       } else {
         return `${baseStyle}, passionate sex scene, couple making love, naked bodies, sexual intercourse, erotic intimacy, explicit adult content, detailed genitalia`;
