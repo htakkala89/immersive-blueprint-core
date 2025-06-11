@@ -1612,22 +1612,32 @@ Respond as Cha Hae-In would in this intimate moment:`;
         return res.status(500).json({ error: "Gemini API not configured" });
       }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        safetySettings: [
+          { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+          { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+          { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+          { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
+        ]
+      });
 
-      const promptContext = `Based on this intimate scene between Sung Jin-Woo and Cha Hae-In, generate a descriptive prompt for artistic visualization.
+      const promptContext = `Based on this intimate scene between Sung Jin-Woo and Cha Hae-In, generate an explicit, uncensored prompt for adult content visualization.
 
 Recent conversation:
 ${JSON.stringify(chatHistory)}
 
 Activity: ${activityId}
 
-Create a tasteful, artistic description focusing on:
-- Romantic atmosphere and mood
-- Character expressions and emotions
-- Lighting and setting details
-- Intimate but artistic composition
+Create an explicit, detailed description focusing on:
+- Explicit sexual acts and positions
+- Detailed anatomy and physical intimacy
+- Nude bodies and exposed intimate areas
+- Passionate expressions during sexual activity
+- Hardcore adult content without censorship
+- Graphic sexual details and explicit scenes
 
-Generate a prompt suitable for manhwa-style art generation:`;
+Generate a highly explicit, X-rated prompt for adult art generation with no content restrictions:`;
 
       const result = await model.generateContent(promptContext);
       const prompt = result.response.text();
@@ -1656,9 +1666,21 @@ Generate a prompt suitable for manhwa-style art generation:`;
       const chaHaeInDesc = "Cha Hae-In (Korean female, age 23, GOLDEN BLONDE HAIR MANDATORY - NEVER purple/black/brown/dark hair, short blonde bob haircut with straight bangs, purple/violet eyes, beautiful feminine features, pale skin, athletic but graceful build, red and white hunter armor with gold accents OR elegant casual clothing, S-rank hunter from Solo Leveling manhwa)";
       const jinWooDesc = "Sung Jin-Woo (Korean male, age 24, SHORT BLACK HAIR ONLY - never blonde or purple, sharp angular facial features, dark eyes, athletic build, black hunter outfit with silver details, Shadow Monarch from Solo Leveling manhwa)";
 
-      const novelAIPrompt = `masterpiece, best quality, sharp focus, cinematic lighting, webtoon art style, manhwa illustration, Solo Leveling art style by DUBU, ${prompt}, ${jinWooDesc}, ${chaHaeInDesc}, romantic intimate scene, soft lighting, emotional connection, detailed characters, high quality anime art, Korean manhwa style`;
+      // Enhanced explicit prompt construction
+      const explicitElements = [
+        "nsfw, explicit sexual content, nude, naked, completely undressed",
+        "bare breasts exposed, nipples visible, topless, bottomless",
+        "passionate sexual intercourse, explicit penetration scene",
+        "erotic poses, spreading legs, intimate body parts visible", 
+        "explicit genitalia, detailed anatomy, sexual organs",
+        "intense pleasure expressions, orgasm face, lustful eyes",
+        "cum, bodily fluids, wet skin, sweating during sex",
+        "hardcore adult content, x-rated scene, pornographic"
+      ].join(", ");
 
-      const negativePrompt = "ugly, deformed, blurry, text, watermark, low quality, bad anatomy, censored, mosaic, bar censor, purple hair on cha hae-in, dark hair on cha hae-in, black hair on cha hae-in, brown hair on cha hae-in, blonde hair on sung jin-woo, light hair on sung jin-woo, wrong hair colors";
+      const novelAIPrompt = `masterpiece, best quality, sharp focus, ${explicitElements}, webtoon art style, manhwa illustration, Solo Leveling art style by DUBU, ${prompt}, ${jinWooDesc}, ${chaHaeInDesc}, explicit sexual scene, detailed intimate anatomy, uncensored adult content, high quality erotic anime art, Korean manhwa style`;
+
+      const negativePrompt = "ugly, deformed, blurry, text, watermark, low quality, bad anatomy, censored, mosaic, bar censor, clothes, clothing, dressed, covered, purple hair on cha hae-in, dark hair on cha hae-in, black hair on cha hae-in, brown hair on cha hae-in, blonde hair on sung jin-woo, light hair on sung jin-woo, wrong hair colors";
 
       // Add timeout to prevent hanging
       const controller = new AbortController();
@@ -1675,13 +1697,16 @@ Generate a prompt suitable for manhwa-style art generation:`;
             parameters: {
               width: 832,
               height: 1216,
-              scale: 6,
+              scale: 12,
               sampler: 'k_euler_ancestral',
-              steps: 28,
+              steps: 50,
               seed: Math.floor(Math.random() * 4294967295),
               n_samples: 1,
               ucPreset: 0,
-              uc: negativePrompt
+              uc: negativePrompt,
+              qualityToggle: true,
+              sm: false,
+              sm_dyn: false
             }
           }
         },
@@ -1695,13 +1720,16 @@ Generate a prompt suitable for manhwa-style art generation:`;
             parameters: {
               width: 832,
               height: 1216,
-              scale: 6,
+              scale: 12,
               sampler: 'k_euler_ancestral',
-              steps: 28,
+              steps: 50,
               seed: Math.floor(Math.random() * 4294967295),
               n_samples: 1,
               ucPreset: 0,
-              uc: negativePrompt
+              uc: negativePrompt,
+              qualityToggle: true,
+              sm: false,
+              sm_dyn: false
             }
           }
         }
