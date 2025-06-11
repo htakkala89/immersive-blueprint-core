@@ -93,22 +93,46 @@ class GoogleImagenProvider implements ImageProvider {
   name = 'Google Imagen';
 
   async isAvailable(): Promise<boolean> {
-    return !!process.env.GOOGLE_APPLICATION_CREDENTIALS && this.getProjectId() !== null;
+    const hasKey = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    const projectId = this.getProjectId();
+    const hasProject = projectId !== null;
+    
+    console.log(`Google Imagen availability check: hasKey=${hasKey}, projectId=${projectId}, hasProject=${hasProject}`);
+    
+    return hasKey && hasProject;
   }
 
   private getProjectId(): string | null {
     try {
-      const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS || '{}');
-      return credentials.project_id || null;
+      if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+        return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
+      }
+      
+      const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+      if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
+        return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
+      }
+      
+      const serviceAccount = JSON.parse(serviceAccountString);
+      return serviceAccount.project_id;
     } catch {
-      return null;
+      return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
     }
   }
 
   private async getAccessToken(): Promise<string | null> {
     try {
-      const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS || '{}');
-      const { private_key, client_email } = credentials;
+      if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+        return null;
+      }
+
+      const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+      if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
+        return null;
+      }
+
+      const serviceAccount = JSON.parse(serviceAccountString);
+      const { private_key, client_email } = serviceAccount;
 
       if (!private_key || !client_email) return null;
 
@@ -332,10 +356,17 @@ export class ImageGenerationService {
   async getAvailableProviders(): Promise<string[]> {
     const available = [];
     for (const provider of this.providers) {
-      if (await provider.isAvailable()) {
-        available.push(provider.name);
+      try {
+        const isAvailable = await provider.isAvailable();
+        console.log(`Provider ${provider.name}: ${isAvailable ? 'Available' : 'Not Available'}`);
+        if (isAvailable) {
+          available.push(provider.name);
+        }
+      } catch (error) {
+        console.log(`Provider ${provider.name} check failed:`, error);
       }
     }
+    console.log('Available providers:', available);
     return available;
   }
 }

@@ -1662,6 +1662,16 @@ Respond as Cha Hae-In would in this intimate moment:`;
     }
   });
 
+  // Debug endpoint to check available image providers
+  app.get("/api/available-providers", async (req, res) => {
+    try {
+      const providers = await imageGenerationService.getAvailableProviders();
+      res.json({ providers });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get providers" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
