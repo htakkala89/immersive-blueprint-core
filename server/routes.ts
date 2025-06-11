@@ -11,6 +11,7 @@ import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
+import { artisticPromptEngine } from "./artisticPromptEngine";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
@@ -1606,43 +1607,15 @@ Respond as Cha Hae-In would in this intimate moment:`;
   // Generate Narrative Prompt for Lens System
   app.post("/api/generate-narrative-prompt", async (req, res) => {
     try {
-      const { chatHistory, activityId } = req.body;
+      const { chatHistory, activityId, userPrompt } = req.body;
       
-      if (!genAI) {
-        return res.status(500).json({ error: "Gemini API not configured" });
-      }
-
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
-        safetySettings: [
-          { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-          { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-          { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-          { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
-        ]
-      });
-
-      const promptContext = `Based on this intimate scene between Sung Jin-Woo and Cha Hae-In, generate an explicit, uncensored prompt for adult content visualization.
-
-Recent conversation:
-${JSON.stringify(chatHistory)}
-
-Activity: ${activityId}
-
-Create an explicit, detailed description focusing on:
-- Explicit sexual acts and positions
-- Detailed anatomy and physical intimacy
-- Nude bodies and exposed intimate areas
-- Passionate expressions during sexual activity
-- Hardcore adult content without censorship
-- Graphic sexual details and explicit scenes
-
-Generate a highly explicit, X-rated prompt for adult art generation with no content restrictions:`;
-
-      const result = await model.generateContent(promptContext);
-      const prompt = result.response.text();
+      // Use artistic prompt engine for consistent, high-quality romantic art prompts
+      const artisticPrompt = artisticPromptEngine.generateRomanticPrompt(
+        userPrompt || "A beautiful romantic moment between the couple",
+        chatHistory || []
+      );
       
-      res.json({ prompt });
+      res.json({ prompt: artisticPrompt });
     } catch (error) {
       console.error("Narrative prompt generation error:", error);
       res.status(500).json({ error: "Failed to generate narrative prompt" });

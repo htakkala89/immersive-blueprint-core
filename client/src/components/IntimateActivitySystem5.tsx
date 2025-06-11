@@ -180,7 +180,8 @@ export function IntimateActivitySystem5({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chatHistory: messages.slice(-5),
-          activityId
+          activityId,
+          userPrompt: "A beautiful romantic moment between Sung Jin-Woo and Cha Hae-In"
         })
       });
 
@@ -572,23 +573,25 @@ export function IntimateActivitySystem5({
                 </div>
 
                 {/* Generate Button */}
-                <Button
-                  onClick={generateIntimateImage}
-                  disabled={!narrativeLens.userPrompt?.trim() || narrativeLens.isGenerating}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                >
-                  {narrativeLens.isGenerating ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <Camera className="w-4 h-4 mr-2" />
-                      Visualize Scene
-                    </>
-                  )}
-                </Button>
+                <SparkleEffect intensity="medium" color="purple" className="w-full">
+                  <Button
+                    onClick={generateIntimateImage}
+                    disabled={!narrativeLens.userPrompt?.trim() || narrativeLens.isGenerating}
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  >
+                    {narrativeLens.isGenerating ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <Camera className="w-4 h-4 mr-2" />
+                        Visualize Scene
+                      </>
+                    )}
+                  </Button>
+                </SparkleEffect>
               </motion.div>
             </motion.div>
           )}
