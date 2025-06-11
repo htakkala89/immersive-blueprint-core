@@ -545,11 +545,9 @@ export function IntimateActivitySystem5({
                       
                       <motion.div
                         animate={{ 
-                          rotate: [0, 360],
                           scale: [1, 1.1, 1]
                         }}
                         transition={{ 
-                          rotate: { duration: 8, repeat: Infinity, ease: "linear" },
                           scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                         }}
                       >
