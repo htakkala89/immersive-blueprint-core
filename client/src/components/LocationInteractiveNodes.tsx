@@ -551,6 +551,40 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       outcome: 'Discover she enjoys traditional Korean teas. Option to prepare tea together for affection boost.',
       gameLogic: 'system_6_affection_activity'
     }
+  ],
+
+  // Hunter Market - Trading Hub
+  hunter_market: [
+    {
+      id: 'materials_trader',
+      label: 'Materials Trader',
+      icon: ShoppingBag,
+      position: { x: 25, y: 50 },
+      thoughtPrompt: 'Approach the Materials Trader to sell monster cores and rare materials',
+      outcome: 'Opens trading interface for selling valuable monster drops and materials',
+      gameLogic: 'system_7_commerce_materials_trading',
+      requirements: []
+    },
+    {
+      id: 'equipment_smith',
+      label: 'Equipment Smith',
+      icon: Shield,
+      position: { x: 70, y: 40 },
+      thoughtPrompt: 'Visit the Equipment Smith to upgrade weapons and armor',
+      outcome: 'Access weapon and armor enhancement services',
+      gameLogic: 'system_7_commerce_equipment_trading',
+      requirements: []
+    },
+    {
+      id: 'alchemist',
+      label: 'Alchemist',
+      icon: Zap,
+      position: { x: 60, y: 65 },
+      thoughtPrompt: 'Consult the Alchemist for potions and enhancement items',
+      outcome: 'Browse magical potions and stat enhancement items',
+      gameLogic: 'system_7_commerce_alchemy_trading',
+      requirements: []
+    }
   ]
 };
 
