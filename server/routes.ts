@@ -717,12 +717,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🎭 Generating emotional scene for Cha Hae-In: ${emotion} at ${location} during ${timeOfDay}`);
 
-      // Create emotional prompt for Cha Hae-In
-      const emotionalPrompt = createChaHaeInEmotionalPrompt(emotion as string, location as string, timeOfDay as string);
+      // Create emotional prompt for Cha Hae-In using the same structure that works for locations
+      const emotionalPrompt = `Solo Leveling manhwa art style, beautiful Korean female hunter Cha Hae-In with golden blonde hair in elegant bob cut and violet eyes, ${emotion} expression, ${location} background during ${timeOfDay}, high quality character portrait, detailed facial features, professional S-rank hunter attire, graceful elegant posture, atmospheric lighting, digital illustration`;
       
-      // Use Google Imagen for character generation
-      const { generateChatSceneImage } = await import("./imageGenerator");
-      const imageUrl = await generateChatSceneImage(emotionalPrompt, "character_portrait");
+      // Use the same Google Imagen service that successfully generates location images
+      const { generateImageWithImagen } = await import('./imagenService');
+      const imageUrl = await generateImageWithImagen(emotionalPrompt);
       
       if (imageUrl) {
         console.log(`✅ Generated emotional scene successfully`);
@@ -1243,7 +1243,7 @@ RESPONSE INSTRUCTIONS:
       console.log(`🏢 Spatial interface requesting: ${location} at ${timeOfDay}${weather ? ` with ${weather} weather` : ''}`);
       
       // First try to get cached image from preloader
-      const cachedImage = await getCachedLocationImage(location, timeOfDay, weather);
+      const cachedImage = getCachedLocationImage(location, timeOfDay);
       if (cachedImage) {
         console.log(`✅ Serving cached image for spatial interface: ${location}_${timeOfDay}`);
         return res.json({ imageUrl: cachedImage });
@@ -1252,9 +1252,7 @@ RESPONSE INSTRUCTIONS:
       // If not cached, generate new image
       const imageUrl = await generateLocationSceneImage(location, timeOfDay, weather);
       if (imageUrl) {
-        // Cache the newly generated image
-        await cacheLocationImage(location, timeOfDay, weather, imageUrl);
-        console.log(`✅ Generated and cached new spatial image: ${location}_${timeOfDay}`);
+        console.log(`✅ Generated new spatial image: ${location}_${timeOfDay}`);
       }
       
       res.json({ imageUrl });
