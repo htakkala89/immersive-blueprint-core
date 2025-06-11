@@ -234,6 +234,8 @@ export default function SoloLevelingSpatial() {
   // System 3: Quest Log state
   const [showQuestLog, setShowQuestLog] = useState(false);
 
+
+
   // System 8: World Map state - activeQuests defined below with other quest states
 
   // System 9: AI Narrative Engine state
@@ -2291,6 +2293,24 @@ export default function SoloLevelingSpatial() {
                 console.log('Private elevator activated - Opening world map for travel');
                 break;
 
+              case 'materials_trader':
+                // Open Hunter Market with Materials Trader selected
+                setShowHunterMarketVendors(true);
+                setSelectedVendor('materials_trader');
+                console.log('Opening Materials Trader interface');
+                break;
+              case 'equipment_smith':
+                // Open Hunter Market with Equipment Smith selected
+                setShowHunterMarketVendors(true);
+                setSelectedVendor('equipment_smith');
+                console.log('Opening Equipment Smith interface');
+                break;
+              case 'alchemist':
+                // Open Hunter Market with Alchemist selected
+                setShowHunterMarketVendors(true);
+                setSelectedVendor('alchemist');
+                console.log('Opening Alchemist interface');
+                break;
               case 'vanity_table':
               case 'bookshelf':
               case 'bed':
@@ -3373,6 +3393,30 @@ export default function SoloLevelingSpatial() {
           affectionLevel={gameState.affection || 0}
         />
       )}
+
+      {/* Hunter Market Vendors Interface */}
+      <HunterMarketVendors
+        isVisible={showHunterMarketVendors}
+        onClose={() => {
+          setShowHunterMarketVendors(false);
+          setSelectedVendor(null);
+        }}
+        inventory={gameState.inventory || []}
+        currentGold={gameState.gold || 0}
+        onSellItem={(itemId, quantity, totalValue) => {
+          setGameState(prev => ({
+            ...prev,
+            gold: (prev.gold || 0) + totalValue,
+            inventory: prev.inventory?.map(item => 
+              item.id === itemId 
+                ? { ...item, quantity: Math.max(0, item.quantity - quantity) }
+                : item
+            ).filter(item => item.quantity > 0) || []
+          }));
+        }}
+        backgroundImage={currentLocationData.backgroundImage}
+        selectedVendor={selectedVendor}
+      />
     </div>
   );
 }
