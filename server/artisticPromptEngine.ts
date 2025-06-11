@@ -9,34 +9,34 @@ export class ArtisticPromptEngine {
   private baseArtStyles = {
     manhwa: "masterpiece, best quality, ultra detailed, extremely detailed, sharp focus, Solo Leveling manhwa art style by DUBU, webtoon illustration, Korean manhwa style, professional digital art, vibrant colors, detailed character designs, cinematic composition, dramatic lighting, high resolution",
     romantic: "masterpiece, best quality, ultra detailed, romantic art style, soft ethereal lighting, emotional depth, beautiful couple portrayal, artistic merit, professional illustration, high quality artwork, detailed rendering",
-    elegant: "masterpiece, best quality, ultra detailed, elegant artistic style, sophisticated composition, tasteful romantic imagery, high-quality illustration, professional digital art, detailed shading, perfect anatomy"
+    elegant: "masterpiece, best quality, ultra detailed, artistic style, sophisticated composition, intimate romantic imagery, high-quality illustration, professional digital art, detailed shading, perfect anatomy"
   };
 
   private emotionalDescriptors = {
     tender: {
-      expressions: "gentle loving gazes, soft tender smiles, peaceful contentment",
-      atmosphere: "warm intimate atmosphere, soft golden lighting, cozy romantic setting",
-      body_language: "gentle touches, caring embraces, protective closeness"
+      expressions: "gentle loving gazes, soft tender smiles, peaceful contentment, affectionate expressions",
+      atmosphere: "warm intimate atmosphere, soft golden lighting, cozy romantic setting, private sanctuary",
+      body_language: "gentle touches, caring embraces, protective closeness, tender caresses"
     },
     passionate: {
-      expressions: "intense loving gazes, passionate expressions, deep emotional connection",
-      atmosphere: "dramatic romantic lighting, intimate private setting, intense emotional atmosphere",
-      body_language: "passionate embraces, close intimate positioning, emotional intensity"
+      expressions: "intense loving gazes, passionate expressions, deep emotional connection, desire-filled looks",
+      atmosphere: "dramatic romantic lighting, intimate private setting, intense emotional atmosphere, heated environment",
+      body_language: "passionate embraces, close intimate positioning, emotional intensity, fervent touches"
     },
     romantic: {
-      expressions: "loving romantic gazes, beautiful smiles, heartfelt emotions",
-      atmosphere: "romantic lighting, beautiful scenic background, intimate romantic setting",
-      body_language: "romantic closeness, gentle caresses, loving connection"
+      expressions: "loving romantic gazes, beautiful smiles, heartfelt emotions, adoring looks",
+      atmosphere: "romantic lighting, beautiful scenic background, intimate romantic setting, sensual ambiance",
+      body_language: "romantic closeness, gentle caresses, loving connection, intimate positioning"
     },
     intimate: {
-      expressions: "deeply connected gazes, vulnerable emotional expressions, pure love",
-      atmosphere: "private intimate setting, soft romantic lighting, emotional sanctuary",
-      body_language: "intimate closeness, tender touches, emotional vulnerability"
+      expressions: "deeply connected gazes, vulnerable emotional expressions, pure love, sensual awareness",
+      atmosphere: "private intimate setting, soft romantic lighting, emotional sanctuary, secluded space",
+      body_language: "intimate closeness, tender touches, emotional vulnerability, physical connection"
     },
     playful: {
-      expressions: "joyful smiles, playful expressions, happy contentment",
-      atmosphere: "bright cheerful lighting, comfortable casual setting, joyful atmosphere",
-      body_language: "playful interactions, comfortable closeness, carefree moments"
+      expressions: "joyful smiles, playful expressions, happy contentment, mischievous looks",
+      atmosphere: "bright cheerful lighting, comfortable casual setting, joyful atmosphere, relaxed environment",
+      body_language: "playful interactions, comfortable closeness, carefree moments, teasing touches"
     }
   };
 
@@ -57,7 +57,7 @@ export class ArtisticPromptEngine {
     const settingDesc = this.createSettingDescription(options.setting);
     const emotionalContext = this.createEmotionalContext(options.emotionalTone, options.activityContext);
     
-    return `${artStyle}, ${characterDesc}, ${settingDesc}, ${emotional.expressions}, ${emotional.atmosphere}, ${emotional.body_language}, ${emotionalContext}, beautiful artistic composition, high quality romantic art, emotional depth and artistic merit, tasteful and elegant portrayal`;
+    return `${artStyle}, ${characterDesc}, ${settingDesc}, ${emotional.expressions}, ${emotional.atmosphere}, ${emotional.body_language}, ${emotionalContext}, beautiful artistic composition, high quality romantic art, emotional depth and artistic merit, detailed intimate portrayal`;
   }
 
   private createCharacterDescription(intimacyLevel: number): string {
@@ -87,19 +87,23 @@ export class ArtisticPromptEngine {
 
   private createEmotionalContext(tone: string, activity: string): string {
     const contextMap = {
-      'cuddling': 'tender intimate cuddling, emotional comfort, peaceful togetherness',
-      'kissing': 'passionate romantic kiss, deep emotional connection, loving intimacy',
-      'talking': 'intimate conversation, emotional vulnerability, sharing hearts',
-      'together': 'beautiful moment together, pure love, emotional sanctuary',
-      'bedroom': 'private intimate space, emotional vulnerability, tender love',
-      'shower': 'intimate cleansing ritual, tender care, emotional closeness'
+      'cuddling': 'tender intimate cuddling, emotional comfort, peaceful togetherness, warm physical connection',
+      'kissing': 'passionate romantic kiss, deep emotional connection, loving intimacy, sensual embrace',
+      'talking': 'intimate conversation, emotional vulnerability, sharing hearts, private moments',
+      'together': 'beautiful moment together, pure love, emotional sanctuary, intimate bonding',
+      'bedroom': 'private intimate space, emotional vulnerability, tender love, sensual atmosphere',
+      'shower': 'intimate cleansing ritual, tender care, emotional closeness, steamy environment',
+      'touch': 'gentle intimate touching, physical connection, sensual exploration, tender caresses',
+      'embrace': 'passionate embrace, close physical contact, emotional intimacy, loving hold',
+      'undress': 'intimate undressing, vulnerability, sensual revelation, tender exposure',
+      'body': 'physical intimacy, body appreciation, sensual contact, intimate exploration'
     };
 
     const activityContext = Object.keys(contextMap).find(key => 
       activity.toLowerCase().includes(key)
     );
 
-    return activityContext ? contextMap[activityContext as keyof typeof contextMap] : 'beautiful romantic moment, emotional connection, pure love';
+    return activityContext ? contextMap[activityContext as keyof typeof contextMap] : 'beautiful romantic moment, emotional connection, intimate love';
   }
 
   generateRomanticPrompt(userPrompt: string, chatHistory: any[]): string {

@@ -498,11 +498,9 @@ export function IntimateActivitySystem5({
                 <div className="flex gap-2">
                   {/* Narrative Lens Button - Enhanced with enticing effects */}
                   <motion.div className="relative">
-                    <Button
+                    <motion.button
                       onClick={activateNarrativeLens}
-                      variant="ghost"
-                      size="icon"
-                      className="text-pink-400 hover:bg-pink-500/30 border border-pink-400/50 relative overflow-hidden backdrop-blur-sm"
+                      className="text-pink-400 hover:bg-pink-500/30 border border-pink-400/50 relative overflow-hidden backdrop-blur-sm p-2 rounded-lg bg-transparent"
                       title="Visualize Scene"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
@@ -543,7 +541,7 @@ export function IntimateActivitySystem5({
                       >
                         <Eye className="w-5 h-5 relative z-10" />
                       </motion.div>
-                    </Button>
+                    </motion.button>
                     
                     {/* Floating sparkles around the button */}
                     <motion.div
