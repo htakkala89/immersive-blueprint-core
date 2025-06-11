@@ -162,6 +162,9 @@ class GoogleImagenProvider implements ImageProvider {
     }
 
     try {
+      // Enhanced prompt for Narrative Lens intimate scenes
+      const enhancedPrompt = `${prompt}, Solo Leveling manhwa art style, romantic scene between Cha Hae-In and Sung Jin-Woo, Korean webtoon illustration, detailed character features, soft lighting, emotional connection, high quality digital artwork, tender moment`;
+      
       const response = await fetch(
         `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/imagegeneration@006:predict`,
         {
@@ -172,13 +175,15 @@ class GoogleImagenProvider implements ImageProvider {
           },
           body: JSON.stringify({
             instances: [{
-              prompt: `${prompt}, Solo Leveling manhwa art style, romantic scene, high quality artwork`
+              prompt: enhancedPrompt
             }],
             parameters: {
               sampleCount: 1,
               aspectRatio: '3:4',
               safetyFilterLevel: 'block_only_high',
-              personGeneration: 'allow_adult'
+              personGeneration: 'allow_adult',
+              guidanceScale: 15,
+              seed: Math.floor(Math.random() * 1000000)
             }
           })
         }
@@ -197,15 +202,19 @@ class GoogleImagenProvider implements ImageProvider {
         }
       }
 
+      // Enhanced error handling
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error?.message || `HTTP ${response.status}`;
+      
       return {
         success: false,
-        error: `Google Imagen API error: ${response.status}`,
+        error: `Google Imagen API error: ${errorMessage}`,
         provider: this.name
       };
     } catch (error) {
       return {
         success: false,
-        error: `Google Imagen generation failed: ${error}`,
+        error: `Google Imagen generation failed: ${error instanceof Error ? error.message : String(error)}`,
         provider: this.name
       };
     }
@@ -229,8 +238,8 @@ class OpenAIProvider implements ImageProvider {
     }
 
     try {
-      // Enhanced prompt for better Solo Leveling style results
-      const enhancedPrompt = `${prompt}, Solo Leveling manhwa art style, Korean webtoon illustration, romantic scene between two characters, high quality digital art, detailed character features, soft lighting`;
+      // Content-safe prompt for DALL-E compliance
+      const safePrompt = `Two characters from Korean manhwa Solo Leveling in a romantic scene, anime art style, soft lighting, emotional moment, high quality digital art, tender expression`;
       
       const response = await fetch('https://api.openai.com/v1/images/generations', {
         method: 'POST',
@@ -239,10 +248,10 @@ class OpenAIProvider implements ImageProvider {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          prompt: enhancedPrompt,
+          prompt: safePrompt,
           model: 'dall-e-3',
           size: '1024x1024',
-          quality: 'hd',
+          quality: 'standard',
           n: 1
         })
       });
@@ -296,7 +305,7 @@ export class ImageGenerationService {
       }
     }
 
-    // Try all available providers in order
+    // Try all available providers in order: NovelAI → Google Imagen → OpenAI
     for (const provider of this.providers) {
       if (await provider.isAvailable()) {
         console.log(`Attempting generation with ${provider.name}...`);
@@ -307,6 +316,9 @@ export class ImageGenerationService {
           return result;
         } else {
           console.log(`❌ ${provider.name} failed: ${result.error}`);
+          
+          // Continue to next provider immediately if this one fails
+          continue;
         }
       }
     }
