@@ -2614,35 +2614,54 @@ export default function SoloLevelingSpatial() {
                 break;
               // Your Apartment & Cha Hae-In's Apartment - Direct Intimacy Gateway Nodes
               case 'bed':
-                // Direct gateway respecting relationship progress
-                const unlockedActivities = gameState.unlockedActivities || [];
+                // Bedroom interaction using narrative lens - respects relationship progress
                 const currentAffection = gameState.affection || 0;
                 const currentIntimacy = gameState.intimacyLevel || 0;
-                let selectedActivity = 'cuddling'; // Safe default for early game
                 
-                // Check relationship gates before allowing activities
-                if (currentAffection >= 80 && currentIntimacy >= 80) {
-                  // Tier 3 - Ultimate intimate activities (requires penthouse + high stats)
-                  if (unlockedActivities.includes('master_suite_intimacy')) selectedActivity = 'master_suite_intimacy';
-                  else if (unlockedActivities.includes('spend_the_night_together')) selectedActivity = 'spend_the_night_together';
-                  else if (unlockedActivities.includes('penthouse_morning_together')) selectedActivity = 'penthouse_morning_together';
-                } else if (currentAffection >= 50 && currentIntimacy >= 40) {
-                  // Tier 2 - Advanced intimate activities (requires moderate stats)
-                  if (unlockedActivities.includes('passionate_night')) selectedActivity = 'passionate_night';
-                  else if (unlockedActivities.includes('shower_together')) selectedActivity = 'shower_together';
-                  else if (unlockedActivities.includes('intimate_massage')) selectedActivity = 'intimate_massage';
+                if (currentAffection < 20) {
+                  // Very early game - gentle, appropriate interaction
+                  handleEnvironmentalInteraction({
+                    id: 'bedroom_early_game',
+                    action: 'You suggest sitting on the bed to talk. "This is comfortable," Cha Hae-In says, settling beside you while maintaining appropriate distance. The conversation flows naturally as you both feel at ease in this private space.',
+                    name: 'Bedroom Conversation',
+                    x: 20,
+                    y: 30
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 2)
+                  }));
+                  console.log('Bedroom - Early game conversation (narrative lens)');
                 } else if (currentAffection >= 20 && currentIntimacy >= 10) {
-                  // Tier 1 - Basic intimate activities (requires some relationship progress)
-                  if (unlockedActivities.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
-                  else if (unlockedActivities.includes('first_kiss')) selectedActivity = 'first_kiss';
+                  // More intimate interaction as relationship progresses
+                  handleEnvironmentalInteraction({
+                    id: 'bedroom_intimate',
+                    action: 'The bedroom feels different tonight. There\'s an unspoken understanding between you and Cha Hae-In as you both move closer. The soft lighting creates an intimate atmosphere perfect for deeper connection.',
+                    name: 'Intimate Bedroom',
+                    x: 20,
+                    y: 30
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 5),
+                    intimacyLevel: Math.min(100, (prev.intimacyLevel || 0) + 3)
+                  }));
+                  console.log('Bedroom - Intimate interaction (narrative lens)');
                 } else {
-                  // Very early game - only basic cuddling/conversation
-                  selectedActivity = 'cuddling';
+                  // Basic comfort interaction
+                  handleEnvironmentalInteraction({
+                    id: 'bedroom_comfort',
+                    action: 'You both settle onto the bed comfortably. Cha Hae-In relaxes against the pillows, her guard lowering in this private space. "Thank you for making me feel so welcome here," she says softly.',
+                    name: 'Bedroom Comfort',
+                    x: 20,
+                    y: 30
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 3)
+                  }));
+                  console.log('Bedroom - Comfort interaction (narrative lens)');
                 }
-                
-                setActiveActivity(selectedActivity);
-                setShowIntimateModal(true);
-                console.log(`Bedroom gateway - Initiating ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
                 break;
               case 'living_room_couch':
                 // Primary conversational node - relaxing at home scene
