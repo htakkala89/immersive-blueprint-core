@@ -1757,26 +1757,38 @@ Generate a prompt suitable for manhwa-style art generation:`;
               const filename = `mature_${timestamp}.png`;
               const publicPath = path.join(process.cwd(), 'public');
               
+              console.log(`📁 Public path: ${publicPath}`);
+              console.log(`📄 Filename: ${filename}`);
+              
               // Ensure public directory exists
               if (!fs.existsSync(publicPath)) {
+                console.log('📁 Creating public directory...');
                 fs.mkdirSync(publicPath, { recursive: true });
               }
               
               const filePath = path.join(publicPath, filename);
+              console.log(`💾 Full file path: ${filePath}`);
               
               try {
                 fs.writeFileSync(filePath, imageBuffer);
                 console.log(`✅ Saved NovelAI image to ${filePath} (${imageBuffer.length} bytes)`);
                 
-                // Return file URL instead of base64
-                const imageUrl = `/public/${filename}`;
-                res.json({ imageUrl });
+                // Verify file exists before returning URL
+                if (fs.existsSync(filePath)) {
+                  const imageUrl = `/${filename}`;
+                  console.log(`✅ File verified, serving URL: ${imageUrl}`);
+                  res.json({ imageUrl });
+                } else {
+                  throw new Error('File was not created successfully');
+                }
               } catch (saveError) {
                 console.error('❌ Failed to save image:', saveError);
-                // Fallback to base64
+                console.log('📝 Falling back to blob URL approach');
+                
+                // Convert to blob URL on frontend instead
                 const base64Image = imageBuffer.toString('base64');
                 const imageUrl = `data:image/png;base64,${base64Image}`;
-                res.json({ imageUrl });
+                res.json({ imageUrl, useBlob: true });
               }
             } else {
               throw new Error('No image found in ZIP file');
