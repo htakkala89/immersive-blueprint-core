@@ -2614,54 +2614,31 @@ export default function SoloLevelingSpatial() {
                 break;
               // Your Apartment & Cha Hae-In's Apartment - Direct Intimacy Gateway Nodes
               case 'bed':
-                // Bedroom interaction using narrative lens - respects relationship progress
+                // Bedroom - Use same intimate activity system as daily planner
                 const currentAffection = gameState.affection || 0;
                 const currentIntimacy = gameState.intimacyLevel || 0;
                 
-                if (currentAffection < 20) {
-                  // Very early game - gentle, appropriate interaction
-                  handleEnvironmentalInteraction({
-                    id: 'bedroom_early_game',
-                    action: 'You suggest sitting on the bed to talk. "This is comfortable," Cha Hae-In says, settling beside you while maintaining appropriate distance. The conversation flows naturally as you both feel at ease in this private space.',
-                    name: 'Bedroom Conversation',
-                    x: 20,
-                    y: 30
-                  });
-                  setGameState(prev => ({
-                    ...prev,
-                    affection: Math.min(100, prev.affection + 2)
-                  }));
-                  console.log('Bedroom - Early game conversation (narrative lens)');
-                } else if (currentAffection >= 20 && currentIntimacy >= 10) {
-                  // More intimate interaction as relationship progresses
-                  handleEnvironmentalInteraction({
-                    id: 'bedroom_intimate',
-                    action: 'The bedroom feels different tonight. There\'s an unspoken understanding between you and Cha Hae-In as you both move closer. The soft lighting creates an intimate atmosphere perfect for deeper connection.',
-                    name: 'Intimate Bedroom',
-                    x: 20,
-                    y: 30
-                  });
-                  setGameState(prev => ({
-                    ...prev,
-                    affection: Math.min(100, prev.affection + 5),
-                    intimacyLevel: Math.min(100, (prev.intimacyLevel || 0) + 3)
-                  }));
-                  console.log('Bedroom - Intimate interaction (narrative lens)');
+                // Determine appropriate activity based on relationship progress (same logic as daily planner)
+                let selectedActivity = 'cuddling'; // Default for very early game
+                
+                if (currentAffection >= 100) {
+                  // Max affection - bedroom intimacy unlocked
+                  selectedActivity = 'bedroom_intimacy';
+                } else if (currentAffection >= 80) {
+                  // High affection - shower together unlocked
+                  selectedActivity = 'shower_together';
+                } else if (currentAffection >= 60) {
+                  // Mid-high affection - cuddling unlocked
+                  selectedActivity = 'cuddle_together';
                 } else {
-                  // Basic comfort interaction
-                  handleEnvironmentalInteraction({
-                    id: 'bedroom_comfort',
-                    action: 'You both settle onto the bed comfortably. Cha Hae-In relaxes against the pillows, her guard lowering in this private space. "Thank you for making me feel so welcome here," she says softly.',
-                    name: 'Bedroom Comfort',
-                    x: 20,
-                    y: 30
-                  });
-                  setGameState(prev => ({
-                    ...prev,
-                    affection: Math.min(100, prev.affection + 3)
-                  }));
-                  console.log('Bedroom - Comfort interaction (narrative lens)');
+                  // Early game - basic cuddling only
+                  selectedActivity = 'cuddling';
                 }
+                
+                // Use same intimate activity system as daily planner
+                setActiveActivity(selectedActivity);
+                setShowIntimateModal(true);
+                console.log(`Bedroom - Opening intimate activity: ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
                 break;
               case 'living_room_couch':
                 // Primary conversational node - relaxing at home scene
@@ -2951,53 +2928,35 @@ export default function SoloLevelingSpatial() {
                 console.log('Private elevator - Transitioning back to World Map');
                 break;
               case 'kitchen_counter':
-                // Apartment tier 1 - Kitchen intimacy (requires relationship progress)
+                // Kitchen - Use same intimate activity system as daily planner
                 const kitchenAffection = gameState.affection || 0;
-                const kitchenIntimacy = gameState.intimacyLevel || 0;
                 
-                if (kitchenAffection >= 30 && kitchenIntimacy >= 20) {
+                if (kitchenAffection >= 60) {
+                  // High enough affection for intimate kitchen activity
                   setActiveActivity('kitchen_intimacy');
                   setShowIntimateModal(true);
-                  console.log('Kitchen counter - Initiating intimate kitchen scene');
+                  console.log('Kitchen counter - Opening intimate activity: kitchen_intimacy');
                 } else {
-                  // Too early for intimate activities - just cooking conversation
-                  handleEnvironmentalInteraction({
-                    id: 'kitchen_cooking_chat',
-                    action: 'You suggest making something together in the kitchen. "That sounds nice," Cha Hae-In says with a gentle smile. You work side by side preparing a simple meal, sharing light conversation and growing more comfortable with each other.',
-                    name: 'Kitchen Cooking',
-                    x: 70,
-                    y: 40
-                  });
-                  setGameState(prev => ({
-                    ...prev,
-                    affection: Math.min(100, prev.affection + 3)
-                  }));
-                  console.log('Kitchen counter - Early game cooking conversation');
+                  // Use cuddling as fallback for lower affection
+                  setActiveActivity('cuddling');
+                  setShowIntimateModal(true);
+                  console.log('Kitchen counter - Opening intimate activity: cuddling (affection too low for kitchen intimacy)');
                 }
                 break;
               case 'shower':
-                // Apartment tier 1 - Shower intimacy (requires high relationship progress)
+                // Shower - Use same intimate activity system as daily planner
                 const showerAffection = gameState.affection || 0;
-                const showerIntimacy = gameState.intimacyLevel || 0;
                 
-                if (showerAffection >= 60 && showerIntimacy >= 50) {
+                if (showerAffection >= 80) {
+                  // High enough affection for shower together activity
                   setActiveActivity('shower_together');
                   setShowIntimateModal(true);
-                  console.log('Shower - Initiating shower together scene');
+                  console.log('Shower - Opening intimate activity: shower_together');
                 } else {
-                  // Too early for shower intimacy - just bathroom conversation
-                  handleEnvironmentalInteraction({
-                    id: 'bathroom_chat',
-                    action: 'You mention the bathroom facilities. "It\'s very clean," Cha Hae-In observes politely, maintaining appropriate boundaries. This isn\'t the right time for more intimate activities.',
-                    name: 'Bathroom',
-                    x: 80,
-                    y: 25
-                  });
-                  setGameState(prev => ({
-                    ...prev,
-                    affection: Math.min(100, prev.affection + 1)
-                  }));
-                  console.log('Shower - Early game bathroom conversation');
+                  // Use cuddling as fallback for lower affection
+                  setActiveActivity('cuddling');
+                  setShowIntimateModal(true);
+                  console.log('Shower - Opening intimate activity: cuddling (affection too low for shower intimacy)');
                 }
                 break;
               case 'vanity_table':
