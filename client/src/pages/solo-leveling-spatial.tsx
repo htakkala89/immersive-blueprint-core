@@ -28,6 +28,7 @@ import HunterMarket from '@/components/HunterMarket';
 import HunterMarketVendors from '@/components/HunterMarketVendors';
 import QuestBoard from '@/components/QuestBoard';
 import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
+import { SparkleEffect } from '@/components/SparkleEffect';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
@@ -1572,7 +1573,8 @@ export default function SoloLevelingSpatial() {
           setMonarchAuraVisible(newState);
         }}
       >
-        <svg className="w-11 h-11 text-purple-200 drop-shadow-lg pointer-events-none" viewBox="0 0 48 48" fill="none">
+        <SparkleEffect intensity="medium" color="purple" className="w-11 h-11">
+          <svg className="w-11 h-11 text-purple-200 drop-shadow-lg pointer-events-none" viewBox="0 0 48 48" fill="none">
           {/* Main Crown Structure */}
           <path 
             d="M8 32 L12 36 L36 36 L40 32 L40 24 L8 24 Z" 
@@ -1636,7 +1638,8 @@ export default function SoloLevelingSpatial() {
           <g filter="url(#shadowGlow)">
             <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(147, 51, 234, 0.3)" strokeWidth="0.5" className="animate-pulse" />
           </g>
-        </svg>
+          </svg>
+        </SparkleEffect>
         
         {/* Pulsing Ring Effect */}
         <div className="absolute inset-0 rounded-full border border-purple-400/20 animate-pulse" />
@@ -1959,26 +1962,28 @@ export default function SoloLevelingSpatial() {
                       }}
                     />
                     
-                    {/* Heart Icon with Shimmer */}
-                    <motion.div
-                      className="w-8 h-8 flex items-center justify-center text-pink-400"
-                      animate={{
-                        rotate: [0, -10, 10, 0],
-                        scale: [1, 1.1, 1]
-                      }}
-                      transition={{ 
-                        duration: 0.8, 
-                        repeat: 2, 
-                        ease: "easeInOut" 
-                      }}
-                    >
-                      <Heart 
-                        className="w-6 h-6 fill-pink-400 drop-shadow-lg" 
-                        style={{
-                          filter: 'drop-shadow(0 0 8px rgba(236, 72, 153, 0.8))'
+                    {/* Heart Icon with Shimmer and Sparkles */}
+                    <SparkleEffect intensity="high" color="pink" className="w-8 h-8">
+                      <motion.div
+                        className="w-8 h-8 flex items-center justify-center text-pink-400"
+                        animate={{
+                          rotate: [0, -10, 10, 0],
+                          scale: [1, 1.1, 1]
                         }}
-                      />
-                    </motion.div>
+                        transition={{ 
+                          duration: 0.8, 
+                          repeat: 2, 
+                          ease: "easeInOut" 
+                        }}
+                      >
+                        <Heart 
+                          className="w-6 h-6 fill-pink-400 drop-shadow-lg" 
+                          style={{
+                            filter: 'drop-shadow(0 0 8px rgba(236, 72, 153, 0.8))'
+                          }}
+                        />
+                      </motion.div>
+                    </SparkleEffect>
                     
                     {/* Sparkle Effects */}
                     <motion.div
