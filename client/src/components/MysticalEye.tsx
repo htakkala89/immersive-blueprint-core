@@ -66,7 +66,7 @@ export function MysticalEye({
 
   return (
     <SparkleEffect 
-      intensity={isActive ? 'high' : intensity} 
+      intensity="high"
       color={color}
       className={`${sizeClasses[size]} ${className}`}
     >
@@ -82,10 +82,22 @@ export function MysticalEye({
           ${onClick ? 'cursor-pointer hover:scale-105' : 'cursor-default'}
         `}
         style={{
-          filter: isActive ? scheme.activeGlow : scheme.glow,
+          filter: `${isActive ? scheme.activeGlow : scheme.glow} brightness(1.2) contrast(1.1)`,
           boxShadow: isActive 
-            ? '0 0 30px rgba(147, 51, 234, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.2)'
-            : '0 0 20px rgba(147, 51, 234, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            ? `0 0 40px ${color === 'purple' ? 'rgba(147, 51, 234, 0.8)' : 
+                         color === 'pink' ? 'rgba(236, 72, 153, 0.8)' :
+                         color === 'gold' ? 'rgba(251, 191, 36, 0.8)' :
+                         'rgba(255, 255, 255, 0.8)'}, 
+               0 0 80px ${color === 'purple' ? 'rgba(147, 51, 234, 0.4)' : 
+                         color === 'pink' ? 'rgba(236, 72, 153, 0.4)' :
+                         color === 'gold' ? 'rgba(251, 191, 36, 0.4)' :
+                         'rgba(255, 255, 255, 0.4)'}, 
+               inset 0 2px 0 rgba(255, 255, 255, 0.3)`
+            : `0 0 25px ${color === 'purple' ? 'rgba(147, 51, 234, 0.5)' : 
+                         color === 'pink' ? 'rgba(236, 72, 153, 0.5)' :
+                         color === 'gold' ? 'rgba(251, 191, 36, 0.5)' :
+                         'rgba(255, 255, 255, 0.5)'}, 
+               inset 0 1px 0 rgba(255, 255, 255, 0.2)`
         }}
         animate={{
           scale: isActive ? [1, 1.05, 1] : 1,
@@ -103,25 +115,77 @@ export function MysticalEye({
         whileTap={onClick ? { scale: 0.95 } : undefined}
         onClick={onClick}
       >
-        {/* Background Glow Effect */}
+        {/* Intense Background Glow Effect */}
         <motion.div
           className="absolute inset-0 rounded-xl"
           style={{
-            background: `radial-gradient(circle at center, ${color === 'purple' ? 'rgba(147, 51, 234, 0.3)' : 
-                         color === 'pink' ? 'rgba(236, 72, 153, 0.3)' :
-                         color === 'gold' ? 'rgba(251, 191, 36, 0.3)' :
-                         'rgba(255, 255, 255, 0.3)'} 0%, transparent 70%)`
+            background: `radial-gradient(circle at center, ${color === 'purple' ? 'rgba(147, 51, 234, 0.6)' : 
+                         color === 'pink' ? 'rgba(236, 72, 153, 0.6)' :
+                         color === 'gold' ? 'rgba(251, 191, 36, 0.6)' :
+                         'rgba(255, 255, 255, 0.6)'} 0%, transparent 50%)`
           }}
           animate={{
-            opacity: isActive ? [0.3, 0.6, 0.3] : 0.3,
-            scale: isActive ? [1, 1.2, 1] : 1
+            opacity: [0.4, 0.8, 0.4],
+            scale: [1, 1.3, 1]
           }}
           transition={{
-            duration: 3,
-            repeat: isActive ? Infinity : 0,
+            duration: 2,
+            repeat: Infinity,
             ease: "easeInOut"
           }}
         />
+
+        {/* Outer Magical Ring */}
+        <motion.div
+          className="absolute inset-[-4px] rounded-xl border-2 opacity-60"
+          style={{
+            borderColor: color === 'purple' ? '#9333ea' : 
+                        color === 'pink' ? '#ec4899' :
+                        color === 'gold' ? '#fbbf24' : '#ffffff',
+            boxShadow: `0 0 20px ${color === 'purple' ? 'rgba(147, 51, 234, 0.8)' : 
+                               color === 'pink' ? 'rgba(236, 72, 153, 0.8)' :
+                               color === 'gold' ? 'rgba(251, 191, 36, 0.8)' :
+                               'rgba(255, 255, 255, 0.8)'}`
+          }}
+          animate={{
+            rotate: [0, 360],
+            scale: [1, 1.1, 1],
+            opacity: [0.6, 1, 0.6]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+
+        {/* Floating Sparkle Particles */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 rounded-full opacity-80"
+            style={{
+              background: color === 'purple' ? '#9333ea' : 
+                         color === 'pink' ? '#ec4899' :
+                         color === 'gold' ? '#fbbf24' : '#ffffff',
+              left: `${15 + (i * 10)}%`,
+              top: `${20 + (i * 8)}%`,
+              boxShadow: `0 0 6px currentColor`
+            }}
+            animate={{
+              y: [-20, 20, -20],
+              x: [-10, 10, -10],
+              scale: [0.5, 1.5, 0.5],
+              opacity: [0.4, 1, 0.4]
+            }}
+            transition={{
+              duration: 3 + (i * 0.5),
+              repeat: Infinity,
+              delay: i * 0.2,
+              ease: "easeInOut"
+            }}
+          />
+        ))}
 
         {/* Eye Icon */}
         <Eye 
@@ -131,21 +195,25 @@ export function MysticalEye({
           }}
         />
 
-        {/* Mystical Pupil Effect */}
+        {/* Enhanced Mystical Pupil Effect */}
         <motion.div
-          className="absolute w-2 h-2 rounded-full bg-current opacity-80 z-20"
+          className="absolute w-3 h-3 rounded-full bg-current opacity-90 z-20"
           style={{
             background: `radial-gradient(circle, ${color === 'purple' ? '#9333ea' : 
                          color === 'pink' ? '#ec4899' :
                          color === 'gold' ? '#fbbf24' :
-                         '#ffffff'} 0%, transparent 100%)`
+                         '#ffffff'} 0%, transparent 80%)`,
+            boxShadow: `0 0 15px ${color === 'purple' ? '#9333ea' : 
+                                  color === 'pink' ? '#ec4899' :
+                                  color === 'gold' ? '#fbbf24' : '#ffffff'}`
           }}
           animate={{
-            scale: isActive ? [0.8, 1.2, 0.8] : [0.8, 1, 0.8],
-            opacity: [0.8, 1, 0.8]
+            scale: [0.8, 1.4, 0.8],
+            opacity: [0.7, 1, 0.7],
+            rotate: [0, 180, 360]
           }}
           transition={{
-            duration: 2,
+            duration: 3,
             repeat: Infinity,
             ease: "easeInOut"
           }}
