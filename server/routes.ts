@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage, generateAvatarExpressionImage } from "./imageGenerator";
+import { imageGenerationService } from "./imageProviders";
 import { ActivityProposalSystem } from "./activityProposalSystem";
 import { getCachedLocationImage, cacheLocationImage, preloadLocationImages, getCacheStats } from "./imagePreloader";
 import { getSceneImage } from "./preGeneratedImages";
@@ -1623,23 +1624,25 @@ Respond as Cha Hae-In would in this intimate moment:`;
     }
   });
 
-  // NovelAI Generation for System 5 Narrative Lens
+  // Enhanced Image Generation for System 5 Narrative Lens
   app.post("/api/generate-novelai-intimate", async (req, res) => {
     try {
       const { prompt: rawPrompt, activityId, stylePreset } = req.body;
       const prompt = String(rawPrompt || '');
       
-      if (!process.env.NOVELAI_API_KEY) {
-        console.log("NovelAI API key not found, providing fallback response");
+      // Use the new multi-provider image generation service
+      console.log("🎨 Generating narrative lens image with multiple providers...");
+      const result = await imageGenerationService.generateImage(prompt, 'novelai');
+      
+      if (result.success) {
+        console.log(`✅ Image generated successfully with ${result.provider}`);
         return res.json({ 
-          imageUrl: null,
-          fallbackText: "The intimate moment unfolds with tender passion, their connection deepening as they lose themselves in each other's embrace."
+          imageUrl: result.imageUrl,
+          provider: result.provider
         });
       }
 
-      // Use established character descriptions for consistency
-      const chaHaeInDesc = "Cha Hae-In (Korean female, age 23, GOLDEN BLONDE HAIR MANDATORY - NEVER purple/black/brown/dark hair, short blonde bob haircut with straight bangs, purple/violet eyes, beautiful feminine features, pale skin, athletic but graceful build, red and white hunter armor with gold accents OR elegant casual clothing, S-rank hunter from Solo Leveling manhwa)";
-      const jinWooDesc = "Sung Jin-Woo (Korean male, age 24, SHORT BLACK HAIR ONLY - never blonde or purple, sharp angular facial features, dark eyes, athletic build, black hunter outfit with silver details, Shadow Monarch from Solo Leveling manhwa)";
+      console.log(`❌ Image generation failed: ${result.error}`);
 
       // Enhanced explicit prompt construction
       const explicitElements = [
@@ -1662,11 +1665,14 @@ Respond as Cha Hae-In would in this intimate moment:`;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-      // Try multiple NovelAI API endpoints and formats
+      // Updated NovelAI API endpoints (2025 structure)
       const endpoints = [
         {
           url: 'https://api.novelai.net/ai/generate-image',
-          headers: { 'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}` },
+          headers: { 
+            'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
           body: {
             input: novelAIPrompt,
             model: 'nai-diffusion-3',
@@ -1687,12 +1693,40 @@ Respond as Cha Hae-In would in this intimate moment:`;
           }
         },
         {
-          url: 'https://image.novelai.net/ai/generate-image',
-          headers: { 'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}` },
+          url: 'https://backend.novelai.net/ai/generate-image',
+          headers: { 
+            'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
           body: {
             input: novelAIPrompt,
             model: 'nai-diffusion-3',
             action: 'generate',
+            parameters: {
+              width: 832,
+              height: 1216,
+              scale: 12,
+              sampler: 'k_euler_ancestral',
+              steps: 50,
+              seed: Math.floor(Math.random() * 4294967295),
+              n_samples: 1,
+              ucPreset: 0,
+              uc: negativePrompt,
+              qualityToggle: true,
+              sm: false,
+              sm_dyn: false
+            }
+          }
+        },
+        {
+          url: 'https://novelai.net/api/ai/generate-image',
+          headers: { 
+            'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: {
+            input: novelAIPrompt,
+            model: 'nai-diffusion-3',
             parameters: {
               width: 832,
               height: 1216,
