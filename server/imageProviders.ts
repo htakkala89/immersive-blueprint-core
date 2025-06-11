@@ -39,13 +39,13 @@ class NovelAIProvider implements ImageProvider {
     
     const requestBody = {
       input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
-      model: 'nai-diffusion-3',
+      model: 'nai-diffusion-4-curated-preview',
       parameters: {
         width: 832,
         height: 1216,
-        scale: 7,
-        sampler: 'k_dpmpp_2m',
-        steps: 28,
+        scale: 5.5,
+        sampler: 'k_euler_ancestral',
+        steps: 35,
         seed: Math.floor(Math.random() * 4294967295),
         n_samples: 1,
         ucPreset: 0,
@@ -53,7 +53,8 @@ class NovelAIProvider implements ImageProvider {
         qualityToggle: true,
         sm: true,
         sm_dyn: true,
-        cfg_rescale: 0.0
+        cfg_rescale: 0.7,
+        noise_schedule: "native"
       }
     };
 
