@@ -202,11 +202,24 @@ export function IntimateActivitySystem5({
     setNarrativeLens(prev => ({ ...prev, isGenerating: true }));
 
     try {
+      // First generate an artistic prompt using the new engine
+      const promptResponse = await fetch('/api/generate-narrative-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chatHistory: messages.slice(-5),
+          activityId,
+          userPrompt: narrativeLens.userPrompt
+        })
+      });
+
+      const promptData = await promptResponse.json();
+      
       const response = await fetch('/api/generate-novelai-intimate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: narrativeLens.userPrompt,
+          prompt: promptData.prompt || narrativeLens.userPrompt,
           activityId,
           stylePreset: 'manhwa_intimate'
         })
