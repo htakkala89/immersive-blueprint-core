@@ -2103,9 +2103,72 @@ export default function SoloLevelingSpatial() {
                 console.log('🎯 Red Gate case executed successfully');
                 break;
               case 'jewelry_counter':
+                // Luxury jewelry shopping with gift mechanics
+                if ((gameState.gold || 0) >= 50000) {
+                  setGameState(prev => ({
+                    ...prev,
+                    gold: Math.max(0, (prev.gold || 0) - 50000),
+                    affection: Math.min(100, prev.affection + 12),
+                    inventory: [...(prev.inventory || []), 'elegant_diamond_necklace']
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'jewelry_purchase',
+                    action: 'You select an elegant diamond necklace from the premium collection. [- ₩50,000]. Cha Hae-In\'s eyes widen with surprise and genuine appreciation as you present it to her. "You really didn\'t have to..." she whispers, but her radiant smile says everything.',
+                    name: 'Jewelry Counter',
+                    x: 25,
+                    y: 45
+                  });
+                  console.log('Jewelry purchase - Major affection boost through luxury gift');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'jewelry_browsing',
+                    action: 'You browse the exquisite jewelry collection together. The diamonds sparkle under the boutique lighting as Cha Hae-In admires a particularly elegant necklace. "It\'s beautiful," she says softly, though she doesn\'t expect you to purchase it.',
+                    name: 'Jewelry Counter',
+                    x: 25,
+                    y: 45
+                  });
+                }
+                break;
               case 'designer_apparel':
+                // Fashion appreciation and style bonding
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(100, prev.affection + 6)
+                }));
+                handleEnvironmentalInteraction({
+                  id: 'fashion_appreciation',
+                  action: 'You examine the designer clothing collection together. Cha Hae-In runs her fingers along a silk evening gown, commenting on the craftsmanship. "The attention to detail is incredible," she observes. You enjoy seeing her appreciate beautiful things, and she notices your genuine interest in her thoughts.',
+                  name: 'Designer Apparel',
+                  x: 65,
+                  y: 35
+                });
+                console.log('Fashion browsing - Affection gained through shared aesthetic appreciation');
+                break;
               case 'luxury_confections':
-                setPlayerLocation('luxury_department_store');
+                // Intimate treat sharing experience
+                if ((gameState.gold || 0) >= 15000) {
+                  setGameState(prev => ({
+                    ...prev,
+                    gold: Math.max(0, (prev.gold || 0) - 15000),
+                    affection: Math.min(100, prev.affection + 8)
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'chocolate_sharing',
+                    action: 'You purchase an assortment of artisan chocolates. [- ₩15,000]. As you both sample the delicate truffles, Cha Hae-In closes her eyes to savor the flavors. "This one tastes like cherry blossoms," she murmurs with delight. The intimate moment of shared indulgence brings you closer.',
+                    name: 'Luxury Confections',
+                    x: 50,
+                    y: 60
+                  });
+                  console.log('Chocolate purchase - Affection gained through intimate sharing');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'confection_sampling',
+                    action: 'The chocolatier offers you both a small sample of their signature truffle. Cha Hae-In\'s face lights up with pleasure at the exquisite taste. "I\'ve never had chocolate this refined," she admits, enjoying the luxurious experience even without a purchase.',
+                    name: 'Luxury Confections',
+                    x: 50,
+                    y: 60
+                  });
+                }
                 break;
               case 'living_room_collection':
               case 'bedroom_collection':
