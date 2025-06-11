@@ -1645,37 +1645,83 @@ Generate a prompt suitable for manhwa-style art generation:`;
 
       // Add timeout to prevent hanging
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-      const response = await fetch('https://api.novelai.net/ai/generate-image', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          input: novelAIPrompt,
-          model: 'nai-diffusion-3',
-          action: 'generate',
-          parameters: {
-            width: 832,
-            height: 1216,
-            scale: 6,
-            sampler: 'k_euler_ancestral',
-            steps: 28,
-            seed: Math.floor(Math.random() * 4294967295),
-            n_samples: 1,
-            ucPreset: 0,
-            uc: negativePrompt
+      // Try multiple NovelAI API endpoints and formats
+      const endpoints = [
+        {
+          url: 'https://api.novelai.net/ai/generate-image',
+          headers: { 'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}` },
+          body: {
+            input: novelAIPrompt,
+            model: 'nai-diffusion-3',
+            parameters: {
+              width: 832,
+              height: 1216,
+              scale: 6,
+              sampler: 'k_euler_ancestral',
+              steps: 28,
+              seed: Math.floor(Math.random() * 4294967295),
+              n_samples: 1,
+              ucPreset: 0,
+              uc: negativePrompt
+            }
           }
-        })
-      });
+        },
+        {
+          url: 'https://image.novelai.net/ai/generate-image',
+          headers: { 'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}` },
+          body: {
+            input: novelAIPrompt,
+            model: 'nai-diffusion-3',
+            action: 'generate',
+            parameters: {
+              width: 832,
+              height: 1216,
+              scale: 6,
+              sampler: 'k_euler_ancestral',
+              steps: 28,
+              seed: Math.floor(Math.random() * 4294967295),
+              n_samples: 1,
+              ucPreset: 0,
+              uc: negativePrompt
+            }
+          }
+        }
+      ];
+
+      let response;
+      let lastError;
+
+      for (const endpoint of endpoints) {
+        try {
+          response = await fetch(endpoint.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...endpoint.headers
+            },
+            signal: controller.signal,
+            body: JSON.stringify(endpoint.body)
+          });
+
+          if (response.ok) {
+            console.log(`NovelAI API successful with endpoint: ${endpoint.url}`);
+            break;
+          } else {
+            console.log(`NovelAI API failed with endpoint ${endpoint.url}: ${response.status}`);
+            lastError = new Error(`NovelAI API error: ${response.status} - ${await response.text()}`);
+          }
+        } catch (err) {
+          console.log(`NovelAI API error with endpoint ${endpoint.url}:`, err.message);
+          lastError = err;
+        }
+      }
 
       clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        throw new Error(`NovelAI API error: ${response.status}`);
+      if (!response || !response.ok) {
+        throw lastError || new Error('All NovelAI endpoints failed');
       }
 
       const imageBuffer = await response.arrayBuffer();
