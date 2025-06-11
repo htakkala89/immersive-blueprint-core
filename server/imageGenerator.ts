@@ -237,6 +237,16 @@ export async function generateLocationSceneImage(location: string, timeOfDay: st
       console.log('⚠️ NovelAI location generation failed:', (novelError as Error)?.message || 'Unknown error');
     }
 
+    // Use existing assets as fallback
+    const { getAssetLocationImage } = await import('./assetImageService');
+    const assetImage = getAssetLocationImage(location, timeOfDay, weather);
+    
+    if (assetImage) {
+      console.log('📸 Using existing asset for location');
+      imageCache.set(cacheKey, { url: assetImage, timestamp: Date.now() });
+      return assetImage;
+    }
+
     return null;
   } catch (error) {
     console.error('Error generating location image:', error);
@@ -400,11 +410,16 @@ export async function generateChatSceneImage(prompt: string, imageType: string):
       console.log('⚠️ NovelAI chat scene generation failed:', (novelError as Error)?.message || 'Unknown error');
     }
 
-    // Use fallback service for character scenes while API keys are being resolved
-    const { getFallbackCharacterImage } = await import('./fallbackImageService');
-    const fallbackImage = getFallbackCharacterImage(imageType, 'hunter_association');
-    console.log('📷 Using fallback character image');
-    return fallbackImage;
+    // Use existing assets for character scenes
+    const { getAssetCharacterImage } = await import('./assetImageService');
+    const assetImage = getAssetCharacterImage(imageType);
+    
+    if (assetImage) {
+      console.log('📸 Using existing asset for character');
+      return assetImage;
+    }
+
+    return null;
   } catch (error) {
     console.error('Error generating chat scene image:', error);
     return null;
