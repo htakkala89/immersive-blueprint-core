@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
-import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -1322,6 +1321,22 @@ export default function SoloLevelingSpatial() {
       
       console.log(`Purchased ${item.name} for ₩${item.price.toLocaleString()}`);
     }
+  };
+
+  // Helper function to get activity title for display
+  const getActivityTitle = (activityId: string | null): string => {
+    if (!activityId) return 'Cuddling';
+    
+    const titles: { [key: string]: string } = {
+      'cuddling': 'Cuddling',
+      'cuddle_together': 'Cuddle Time',
+      'shower_together': 'Shower Together',
+      'bedroom_intimacy': 'Bedroom Time',
+      'kitchen_intimacy': 'Kitchen Romance',
+      'make_love': 'Intimate Moments'
+    };
+    
+    return titles[activityId] || 'Intimate Activity';
   };
 
   // Helper function to determine highest unlocked intimate activity
@@ -3551,29 +3566,20 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      <IntimateActivityModal
+      <IntimateActivitySystem5
         isVisible={showIntimateModal}
         onClose={() => setShowIntimateModal(false)}
-        onReturnToHub={() => {
+        activityId={activeActivity || 'cuddling'}
+        activityTitle={activeActivity ? getActivityTitle(activeActivity) : 'Cuddling'}
+        backgroundImage={sceneImage ? sceneImage : undefined}
+        onSceneComplete={(memory) => {
+          // Handle scene completion - update game state
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + 5),
+            intimacyLevel: Math.min(100, (prev.intimacyLevel || 0) + 3)
+          }));
           setShowIntimateModal(false);
-          setShowDailyLifeHub(true);
-        }}
-        activityType={activeActivity as 'shower_together' | 'cuddle_together' | 'bedroom_intimacy' | 'make_love' | null}
-        onAction={(action) => console.log('Intimate action:', action)}
-        intimacyLevel={gameState.intimacyLevel || 1}
-        affectionLevel={gameState.affection}
-        onImageGenerate={(prompt) => {
-          fetch('/api/generate-intimate-image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt, activityId: activeActivity })
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.imageUrl) {
-              setSceneImage(data.imageUrl);
-            }
-          });
         }}
       />
 
