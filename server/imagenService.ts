@@ -59,7 +59,7 @@ function createHighQualitySVG(description: string, originalPrompt: string): stri
   const isDungeon = originalPrompt.includes('dungeon');
   
   // Character detection
-  const hasCharacter = originalPrompt.includes('Cha Hae-In') || originalPrompt.includes('character');
+  const hasCharacter = originalPrompt.includes('Cha Hae-In') || originalPrompt.includes('character') || originalPrompt.includes('portrait') || originalPrompt.includes('focused_professional');
   
   // Color schemes based on time and mood
   let primaryColor = '#3b82f6';
@@ -207,15 +207,36 @@ function createHighQualitySVG(description: string, originalPrompt: string): stri
         <circle cx="800" cy="500" r="30" fill="rgba(255,69,0,0.4)" filter="url(#softGlow)"/>
       ` : ''}
       
-      <!-- Character silhouette if present -->
+      <!-- Character portrait if present -->
       ${hasCharacter ? `
-        <g transform="translate(650,350)">
-          <!-- Character silhouette -->
-          <ellipse cx="0" cy="150" rx="40" ry="20" fill="rgba(0,0,0,0.2)"/>
-          <rect x="-15" y="50" width="30" height="100" rx="15" fill="rgba(255,255,255,0.3)" filter="url(#softGlow)"/>
-          <circle cx="0" cy="20" r="20" fill="rgba(255,223,186,0.4)" filter="url(#softGlow)"/>
-          <!-- Blonde hair highlight -->
-          <ellipse cx="0" cy="15" rx="25" ry="15" fill="rgba(255,215,0,0.4)" filter="url(#softGlow)"/>
+        <g transform="translate(512,200)">
+          <!-- Character portrait background -->
+          <circle cx="0" cy="0" r="120" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="3" filter="url(#softGlow)"/>
+          
+          <!-- Character body -->
+          <ellipse cx="0" cy="60" rx="45" ry="80" fill="rgba(255,255,255,0.4)" filter="url(#softGlow)"/>
+          
+          <!-- Character head -->
+          <circle cx="0" cy="-20" r="35" fill="rgba(255,223,186,0.6)" filter="url(#softGlow)"/>
+          
+          <!-- Blonde hair (Cha Hae-In) -->
+          <ellipse cx="0" cy="-35" rx="40" ry="25" fill="rgba(255,215,0,0.7)" filter="url(#softGlow)"/>
+          <ellipse cx="-15" cy="-30" rx="20" ry="15" fill="rgba(255,235,59,0.6)"/>
+          <ellipse cx="15" cy="-30" rx="20" ry="15" fill="rgba(255,235,59,0.6)"/>
+          
+          <!-- Eyes -->
+          <circle cx="-10" cy="-25" r="3" fill="rgba(138,43,226,0.8)"/>
+          <circle cx="10" cy="-25" r="3" fill="rgba(138,43,226,0.8)"/>
+          
+          <!-- Professional attire -->
+          <rect x="-30" y="20" width="60" height="60" rx="10" fill="rgba(70,130,180,0.5)" stroke="rgba(100,149,237,0.7)" stroke-width="2"/>
+          
+          <!-- Focused expression elements -->
+          <ellipse cx="0" cy="-15" rx="15" ry="3" fill="rgba(255,255,255,0.3)"/>
+          
+          <!-- Professional aura -->
+          <circle cx="0" cy="0" r="140" fill="none" stroke="rgba(138,43,226,0.2)" stroke-width="2" opacity="0.6"/>
+          <circle cx="0" cy="0" r="160" fill="none" stroke="rgba(138,43,226,0.1)" stroke-width="1" opacity="0.4"/>
         </g>
       ` : ''}
       
