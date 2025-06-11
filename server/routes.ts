@@ -610,7 +610,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       // Use the existing dual-generator system
-      const imageUrl = await generateSceneImage(mockGameState);
+      const imageUrl = await generateSceneImage(mockGameState as any);
       
       if (imageUrl) {
         res.json({ imageUrl });
