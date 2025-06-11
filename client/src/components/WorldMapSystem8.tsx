@@ -160,6 +160,14 @@ export function WorldMapSystem8({
           state: playerAffection >= 3 ? getLocationState('training_facility') : 'locked',
           unlockCondition: 'Gain Cha Hae-In\'s trust through missions',
           atmosphere: 'Intense training environment'
+        },
+        {
+          id: 'hunter_market',
+          name: 'Hunter Market',
+          description: 'Trading hub for monster materials and equipment',
+          position: { x: 10, y: 18 },
+          state: getLocationState('hunter_market'),
+          atmosphere: 'Bustling marketplace with rare treasures'
         }
       ]
     },
