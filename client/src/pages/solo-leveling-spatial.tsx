@@ -2301,12 +2301,141 @@ export default function SoloLevelingSpatial() {
                 setShowLuxuryRealtor(true);
                 console.log('Opening luxury realtor property interface');
                 break;
+              // Myeongdong Fine Dining - Date Activity Exclusive Nodes
+              case 'view_menu':
+                // Menu UI for conversational ordering choices
+                if (gameState.unlockedActivities?.includes('fine_dining_date')) {
+                  handleEnvironmentalInteraction({
+                    id: 'menu_discussion',
+                    action: 'You and Cha Hae-In review the elegant menu together. "Everything looks exquisite," she says, studying the options carefully. "What catches your eye?" The sommelier approaches to discuss wine pairings.',
+                    name: 'Fine Dining Menu',
+                    x: 45,
+                    y: 40
+                  });
+                  // Set menu-specific thought prompts
+                  setThoughtPrompts([
+                    "Order the chef's special for both of us.",
+                    "Ask what she recommends.",
+                    "Let's try something we've never had before."
+                  ]);
+                  console.log('Fine dining menu conversation triggered');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'restaurant_closed',
+                    action: 'The restaurant appears to be fully booked. You would need to make a reservation through the Daily Life Hub for a proper dining experience here.',
+                    name: 'Myeongdong Restaurant',
+                    x: 45,
+                    y: 40
+                  });
+                }
+                break;
+              case 'speak_sommelier':
+                // NPC dialogue with wine recommendation and purchase option
+                if (gameState.unlockedActivities?.includes('fine_dining_date')) {
+                  if ((gameState.gold || 0) >= 50000) {
+                    setGameState(prev => ({
+                      ...prev,
+                      gold: Math.max(0, (prev.gold || 0) - 50000),
+                      affection: Math.min(100, prev.affection + 12)
+                    }));
+                    handleEnvironmentalInteraction({
+                      id: 'sommelier_recommendation',
+                      action: 'The sommelier recommends a rare vintage. [- ₩50,000]. "An excellent choice," Cha Hae-In says as she savors the wine. "You have refined taste." The expensive gesture shows your commitment to making this evening special.',
+                      name: 'Wine Recommendation',
+                      x: 60,
+                      y: 50
+                    });
+                    console.log('Premium wine ordered - High affection gain');
+                  } else {
+                    handleEnvironmentalInteraction({
+                      id: 'sommelier_budget',
+                      action: 'The sommelier suggests several excellent options within your budget. Cha Hae-In appreciates that you\'re being thoughtful about the selection rather than just ordering the most expensive option.',
+                      name: 'Wine Selection',
+                      x: 60,
+                      y: 50
+                    });
+                  }
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'sommelier_unavailable',
+                    action: 'The sommelier is busy with other guests. You would need a reservation to receive their full attention.',
+                    name: 'Sommelier',
+                    x: 60,
+                    y: 50
+                  });
+                }
+                break;
+                
+              // N Seoul Tower - Date Activity Exclusive Nodes
+              case 'observation_deck':
+                // Cinematic mode for romantic panoramic scene
+                if (gameState.unlockedActivities?.includes('seoul_tower_date')) {
+                  setCinematicMode(true);
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 10)
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'tower_cinematic',
+                    action: 'The view from N Seoul Tower takes your breath away. The entire city spreads out below like a glittering tapestry. Cha Hae-In stands close beside you, her usual stoic expression softened by wonder. "Seoul looks so peaceful from up here," she whispers.',
+                    name: 'Tower View',
+                    x: 50,
+                    y: 30
+                  });
+                  console.log('N Seoul Tower cinematic mode activated - Major romantic moment');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'tower_general',
+                    action: 'The observation deck offers an incredible view of Seoul. You would need to plan a special date here through the Daily Life Hub to fully experience this romantic location with Cha Hae-In.',
+                    name: 'Tower View',
+                    x: 50,
+                    y: 30
+                  });
+                }
+                break;
+              case 'wall_of_locks':
+                // Key relationship scene requiring padlock item
+                if (gameState.unlockedActivities?.includes('seoul_tower_date')) {
+                  const hasPadlock = gameState.inventory?.some(item => item.id === 'padlock' || item === 'padlock');
+                  if (hasPadlock) {
+                    setGameState(prev => ({
+                      ...prev,
+                      affection: Math.min(100, prev.affection + 15),
+                      inventory: prev.inventory?.filter(item => 
+                        (typeof item === 'string' ? item : item.id) !== 'padlock'
+                      ) || []
+                    }));
+                    handleEnvironmentalInteraction({
+                      id: 'lock_ceremony',
+                      action: 'You produce the padlock you purchased. Cha Hae-In\'s eyes widen with surprise and genuine emotion. Together, you attach your lock to the wall among thousands of others. "This... this is forever," she says softly, her voice filled with meaning. [Memory Star Created]',
+                      name: 'Love Lock Ceremony',
+                      x: 70,
+                      y: 60
+                    });
+                    console.log('Love lock ceremony completed - Memory Star created, highest affection gain');
+                  } else {
+                    handleEnvironmentalInteraction({
+                      id: 'lock_wall_observe',
+                      action: 'You examine the wall of love locks together. "So many promises," Cha Hae-In observes. "I wonder how many of them lasted." You would need to purchase a padlock to add your own.',
+                      name: 'Wall of Locks',
+                      x: 70,
+                      y: 60
+                    });
+                  }
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'locks_casual',
+                    action: 'The wall of love locks represents countless relationships and promises. A romantic gesture that would be more meaningful on a planned date.',
+                    name: 'Wall of Locks',
+                    x: 70,
+                    y: 60
+                  });
+                }
+                break;
+                
+              // Generic location nodes
               case 'counter':
               case 'window_seat':
-              case 'view_menu':
-              case 'speak_sommelier':
-              case 'observation_deck':
-              case 'wall_of_locks':
                 // Trigger environmental interaction with thought prompt
                 handleEnvironmentalInteraction({
                   id: nodeId,
