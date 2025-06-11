@@ -419,6 +419,20 @@ function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOf
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve NovelAI generated images directly (bypasses Vite)
+  app.get('/mature_*.png', (req, res) => {
+    const filename = req.path.substring(1); // Remove leading slash
+    const filePath = path.join(process.cwd(), 'public', filename);
+    
+    if (fs.existsSync(filePath)) {
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+      res.sendFile(filePath);
+    } else {
+      res.status(404).send('Image not found');
+    }
+  });
+
   // Get or create game state
   app.get("/api/game-state/:sessionId", async (req, res) => {
     try {
