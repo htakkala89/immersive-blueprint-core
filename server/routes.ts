@@ -1752,18 +1752,34 @@ Generate a prompt suitable for manhwa-style art generation:`;
               const imageUrl = `data:image/png;base64,${base64Image}`;
               console.log('Successfully extracted image from ZIP');
               
-              // Save image to file for debugging
+              // Save image to public directory and serve as URL
               const fs = require('fs');
+              const path = require('path');
               const timestamp = Date.now();
-              const filename = `generated_mature_content_${timestamp}.png`;
-              try {
-                fs.writeFileSync(filename, imageBuffer);
-                console.log(`✅ Saved image to ${filename} (${imageBuffer.length} bytes)`);
-              } catch (saveError) {
-                console.error('❌ Failed to save image:', saveError);
+              const filename = `mature_${timestamp}.png`;
+              const publicPath = path.join(__dirname, '..', 'public');
+              
+              // Ensure public directory exists
+              if (!fs.existsSync(publicPath)) {
+                fs.mkdirSync(publicPath, { recursive: true });
               }
               
-              res.json({ imageUrl });
+              const filePath = path.join(publicPath, filename);
+              
+              try {
+                fs.writeFileSync(filePath, imageBuffer);
+                console.log(`✅ Saved image to ${filePath} (${imageBuffer.length} bytes)`);
+                
+                // Return file URL instead of base64
+                const imageUrl = `/public/${filename}`;
+                res.json({ imageUrl });
+              } catch (saveError) {
+                console.error('❌ Failed to save image:', saveError);
+                // Fallback to base64
+                const base64Image = imageBuffer.toString('base64');
+                const imageUrl = `data:image/png;base64,${base64Image}`;
+                res.json({ imageUrl });
+              }
             } else {
               throw new Error('No image found in ZIP file');
             }

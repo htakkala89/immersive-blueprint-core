@@ -11,6 +11,9 @@ app.use(fileUpload({
   abortOnLimit: true
 }));
 
+// Serve static files from public directory for NovelAI images
+app.use('/public', express.static('public'));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;

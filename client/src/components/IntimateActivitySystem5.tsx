@@ -216,15 +216,36 @@ export function IntimateActivitySystem5({
         console.log('✅ NovelAI image received - Length:', data.imageUrl.length);
         console.log('✅ Image prefix:', data.imageUrl.substring(0, 50));
         
-        // Force a brief delay to ensure state updates properly
-        setTimeout(() => {
+        // Convert base64 to blob URL for better browser handling
+        try {
+          const base64Data = data.imageUrl.replace('data:image/png;base64,', '');
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'image/png' });
+          const blobUrl = URL.createObjectURL(blob);
+          
+          console.log('✅ Created blob URL:', blobUrl);
+          
+          setNarrativeLens(prev => ({
+            ...prev,
+            generatedImage: blobUrl,
+            showFullscreen: true,
+            isGenerating: false
+          }));
+        } catch (blobError) {
+          console.error('❌ Blob conversion failed:', blobError);
+          // Fallback to original data URL
           setNarrativeLens(prev => ({
             ...prev,
             generatedImage: data.imageUrl,
             showFullscreen: true,
             isGenerating: false
           }));
-        }, 100);
+        }
       } else if (data.fallbackText) {
         // Handle fallback text when image generation fails
         const fallbackMessage = {
@@ -575,20 +596,18 @@ export function IntimateActivitySystem5({
                 src={narrativeLens.generatedImage}
                 alt="Generated intimate scene"
                 className="max-w-full max-h-full object-contain"
-                onLoad={(e) => {
-                  console.log('Image loaded successfully');
-                  const img = e.target as HTMLImageElement;
-                  console.log('Image dimensions:', img.naturalWidth, 'x', img.naturalHeight);
-                }}
-                onError={(e) => {
-                  console.error('Image failed to load:', e);
-                  console.error('Image src length:', narrativeLens.generatedImage?.length);
-                  console.error('Image src preview:', narrativeLens.generatedImage?.substring(0, 100));
-                }}
                 style={{
                   maxWidth: '95vw',
-                  maxHeight: '95vh',
-                  objectFit: 'contain'
+                  maxHeight: '95vh'
+                }}
+                onLoad={(e) => {
+                  console.log('✅ Image loaded successfully');
+                  const img = e.target as HTMLImageElement;
+                  console.log('✅ Image dimensions:', img.naturalWidth, 'x', img.naturalHeight);
+                }}
+                onError={(e) => {
+                  console.error('❌ Image failed to load:', e);
+                  console.error('❌ Error details:', (e.target as HTMLImageElement).src?.substring(0, 100));
                 }}
               />
               
