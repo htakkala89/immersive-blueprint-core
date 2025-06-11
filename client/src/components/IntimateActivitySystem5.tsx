@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { SparkleEffect } from '@/components/SparkleEffect';
+import { MysticalEye } from '@/components/MysticalEye';
 
 interface IntimateActivitySystem5Props {
   isVisible: boolean;
@@ -524,7 +526,9 @@ export function IntimateActivitySystem5({
               >
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-white text-xl font-bold flex items-center gap-2">
-                    <Eye className="w-6 h-6 text-pink-400" />
+                    <SparkleEffect intensity="medium" color="pink" className="w-8 h-8">
+                      <Eye className="w-6 h-6 text-pink-400" />
+                    </SparkleEffect>
                     Narrative Lens
                   </h3>
                   <Button
@@ -553,15 +557,16 @@ export function IntimateActivitySystem5({
                   <label className="text-white/80 text-sm mb-3 block">Enhancement Suggestions</label>
                   <div className="grid grid-cols-1 gap-2">
                     {getSuggestionPrompts().map((suggestion, index) => (
-                      <Button
-                        key={index}
-                        onClick={() => appendSuggestion(suggestion)}
-                        variant="ghost"
-                        className="justify-start text-left bg-white/5 hover:bg-white/10 border border-white/10 text-white/80"
-                      >
-                        <Sparkles className="w-4 h-4 mr-2 text-pink-400" />
-                        {suggestion}
-                      </Button>
+                      <SparkleEffect key={index} intensity="low" color="pink" className="w-full">
+                        <Button
+                          onClick={() => appendSuggestion(suggestion)}
+                          variant="ghost"
+                          className="justify-start text-left bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 w-full"
+                        >
+                          <Sparkles className="w-4 h-4 mr-2 text-pink-400" />
+                          {suggestion}
+                        </Button>
+                      </SparkleEffect>
                     ))}
                   </div>
                 </div>

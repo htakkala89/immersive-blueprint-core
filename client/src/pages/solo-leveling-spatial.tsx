@@ -29,6 +29,7 @@ import HunterMarketVendors from '@/components/HunterMarketVendors';
 import QuestBoard from '@/components/QuestBoard';
 import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
 import { SparkleEffect } from '@/components/SparkleEffect';
+import { MysticalEye } from '@/components/MysticalEye';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
@@ -2396,25 +2397,22 @@ export default function SoloLevelingSpatial() {
         {/* Narrative Lens Icon */}
         <AnimatePresence>
           {narrativeLensActive && (
-            <motion.button
-              className="absolute top-6 right-6 w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center border-2 border-white/30"
+            <motion.div
+              className="absolute top-6 right-6"
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => {
-                // Handle narrative lens activation
-                console.log('Narrative lens activated');
-              }}
             >
-              <Eye className="w-6 h-6 text-white" />
-              <motion.div
-                className="absolute inset-0 rounded-full bg-white/20"
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
+              <MysticalEye
+                intensity="high"
+                size="md"
+                color="purple"
+                isActive={true}
+                onClick={() => {
+                  console.log('Narrative lens activated');
+                }}
               />
-            </motion.button>
+            </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
