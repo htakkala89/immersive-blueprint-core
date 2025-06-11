@@ -2163,38 +2163,6 @@ export default function SoloLevelingSpatial() {
             
             // Handle different node types with specific logic
             console.log('🔍 SWITCH STATEMENT - Processing nodeId:', nodeId);
-            
-            // Priority handler for bedroom intimate activities
-            if (nodeId === 'bed' && playerLocation === 'player_apartment') {
-              console.log('🛏️ BEDROOM NODE DETECTED - Opening System 5 Intimate Activity');
-              const currentAffection = gameState.affection || 0;
-              const currentIntimacy = gameState.intimacyLevel || 0;
-              let selectedActivity = 'cuddling'; // Safe default for early game
-              
-              // Check relationship gates before allowing activities
-              if (currentAffection >= 80 && currentIntimacy >= 80) {
-                // High tier activities
-                if (gameState.unlockedActivities?.includes('master_suite_intimacy')) selectedActivity = 'master_suite_intimacy';
-                else if (gameState.unlockedActivities?.includes('passionate_night')) selectedActivity = 'passionate_night';
-              } else if (currentAffection >= 50 && currentIntimacy >= 40) {
-                // Mid tier activities
-                if (gameState.unlockedActivities?.includes('passionate_night')) selectedActivity = 'passionate_night';
-                else if (gameState.unlockedActivities?.includes('intimate_massage')) selectedActivity = 'intimate_massage';
-              } else if (currentAffection >= 20 && currentIntimacy >= 10) {
-                // Basic intimate activities
-                if (gameState.unlockedActivities?.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
-                else if (gameState.unlockedActivities?.includes('first_kiss')) selectedActivity = 'first_kiss';
-              } else {
-                // Very early game - only basic cuddling
-                selectedActivity = 'cuddling';
-              }
-              
-              setActiveActivity(selectedActivity);
-              setShowIntimateModal(true);
-              console.log(`Bedroom - Opening System 5 with ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
-              return; // Exit early to prevent other handlers
-            }
-            
             switch (nodeId) {
               case 'red_gate_entrance':
               case 'red_gate':
