@@ -12,6 +12,7 @@ import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
 import { artisticPromptEngine } from "./artisticPromptEngine";
+import { qualityEnhancer } from "./qualityEnhancer";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
@@ -1651,7 +1652,12 @@ Respond as Cha Hae-In would in this intimate moment:`;
         "hardcore adult content, x-rated scene, pornographic"
       ].join(", ");
 
-      const novelAIPrompt = `masterpiece, best quality, ultra detailed, extremely detailed, sharp focus, 8k resolution, professional digital art, ${prompt}, ${jinWooDesc}, ${chaHaeInDesc}, Solo Leveling manhwa art style by DUBU, webtoon illustration, Korean manhwa style, vibrant colors, perfect anatomy, detailed shading, cinematic lighting, high contrast, beautiful artwork`;
+      // Generate enhanced quality prompt using quality enhancer
+      const characters = qualityEnhancer.getSoloLevelingCharacterPrompts();
+      const enhancedPrompt = qualityEnhancer.generateQualityPrompt(prompt, 'intimate');
+      const scenePrompt = qualityEnhancer.enhanceScenePrompt('apartment', `${characters.jinWoo}, ${characters.chaHaeIn}`, 'passionate');
+      
+      const novelAIPrompt = `${enhancedPrompt}, ${scenePrompt}, Solo Leveling manhwa art style by DUBU, webtoon illustration, Korean manhwa style`;
 
       const negativePrompt = "low quality, worst quality, blurry, bad anatomy, deformed, disfigured, ugly, distorted, pixelated, jpeg artifacts, compression artifacts, watermark, signature, text, logo, username, monochrome, grainy, noise, oversaturated, undersaturated, overexposed, underexposed, bad hands, extra fingers, missing fingers, malformed limbs, mutation, poorly drawn, bad proportions, cropped, out of frame, duplicate, multiple views, split screen, border, frame";
 
@@ -1668,18 +1674,23 @@ Respond as Cha Hae-In would in this intimate moment:`;
             input: novelAIPrompt,
             model: 'nai-diffusion-3',
             parameters: {
-              width: 832,
-              height: 1216,
-              scale: 12,
-              sampler: 'k_euler_ancestral',
-              steps: 50,
+              width: 1344,
+              height: 768,
+              scale: 18,
+              sampler: 'k_dpmpp_2s_ancestral',
+              steps: 70,
               seed: Math.floor(Math.random() * 4294967295),
               n_samples: 1,
               ucPreset: 0,
               uc: negativePrompt,
               qualityToggle: true,
-              sm: false,
-              sm_dyn: false
+              sm: true,
+              sm_dyn: true,
+              dynamic_thresholding: true,
+              controlnet_strength: 1.0,
+              cfg_rescale: 0.7,
+              noise: 0.0,
+              strength: 0.85
             }
           }
         },
@@ -1691,18 +1702,23 @@ Respond as Cha Hae-In would in this intimate moment:`;
             model: 'nai-diffusion-3',
             action: 'generate',
             parameters: {
-              width: 832,
-              height: 1216,
-              scale: 12,
-              sampler: 'k_euler_ancestral',
-              steps: 50,
+              width: 1344,
+              height: 768,
+              scale: 18,
+              sampler: 'k_dpmpp_2s_ancestral',
+              steps: 70,
               seed: Math.floor(Math.random() * 4294967295),
               n_samples: 1,
               ucPreset: 0,
               uc: negativePrompt,
               qualityToggle: true,
-              sm: false,
-              sm_dyn: false
+              sm: true,
+              sm_dyn: true,
+              dynamic_thresholding: true,
+              controlnet_strength: 1.0,
+              cfg_rescale: 0.7,
+              noise: 0.0,
+              strength: 0.85
             }
           }
         }
