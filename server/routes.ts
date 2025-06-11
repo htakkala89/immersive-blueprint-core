@@ -1652,12 +1652,8 @@ Respond as Cha Hae-In would in this intimate moment:`;
         "hardcore adult content, x-rated scene, pornographic"
       ].join(", ");
 
-      // Generate enhanced quality prompt using quality enhancer
-      const characters = qualityEnhancer.getSoloLevelingCharacterPrompts();
-      const enhancedPrompt = qualityEnhancer.generateQualityPrompt(prompt, 'intimate');
-      const scenePrompt = qualityEnhancer.enhanceScenePrompt('apartment', `${characters.jinWoo}, ${characters.chaHaeIn}`, 'passionate');
-      
-      const novelAIPrompt = `${enhancedPrompt}, ${scenePrompt}, Solo Leveling manhwa art style by DUBU, webtoon illustration, Korean manhwa style`;
+      // Create stable, working prompt for NovelAI
+      const novelAIPrompt = `masterpiece, best quality, detailed, ${prompt}, Sung Jin-Woo and Cha Hae-In from Solo Leveling, romantic scene, beautiful lighting, manhwa art style by DUBU, Korean webtoon illustration, high quality artwork`;
 
       const negativePrompt = qualityEnhancer.generateAdvancedNegativePrompt('general');
 
@@ -1674,8 +1670,18 @@ Respond as Cha Hae-In would in this intimate moment:`;
             input: novelAIPrompt,
             model: 'nai-diffusion-3',
             parameters: {
-              ...qualityEnhancer.getOptimalParameters('intimate'),
-              uc: negativePrompt
+              width: 832,
+              height: 1216,
+              scale: 12,
+              sampler: 'k_euler_ancestral',
+              steps: 50,
+              seed: Math.floor(Math.random() * 4294967295),
+              n_samples: 1,
+              ucPreset: 0,
+              uc: negativePrompt,
+              qualityToggle: true,
+              sm: false,
+              sm_dyn: false
             }
           }
         },
@@ -1687,8 +1693,18 @@ Respond as Cha Hae-In would in this intimate moment:`;
             model: 'nai-diffusion-3',
             action: 'generate',
             parameters: {
-              ...qualityEnhancer.getOptimalParameters('intimate'),
-              uc: negativePrompt
+              width: 832,
+              height: 1216,
+              scale: 12,
+              sampler: 'k_euler_ancestral',
+              steps: 50,
+              seed: Math.floor(Math.random() * 4294967295),
+              n_samples: 1,
+              ucPreset: 0,
+              uc: negativePrompt,
+              qualityToggle: true,
+              sm: false,
+              sm_dyn: false
             }
           }
         }
@@ -1859,10 +1875,44 @@ Respond as Cha Hae-In would in this intimate moment:`;
     } catch (error) {
       console.error("NovelAI generation error:", error);
       
-      // Provide fallback response instead of error
+      // Try Google Imagen as fallback
+      try {
+        console.log("🎨 Attempting Google Imagen fallback...");
+        const googleImageUrl = await generateWithGoogleImagen(
+          `romantic scene between Sung Jin-Woo and Cha Hae-In from Solo Leveling, ${prompt}, beautiful lighting, emotional connection, Solo Leveling manhwa art style`
+        );
+        
+        if (googleImageUrl) {
+          console.log("✅ Google Imagen fallback successful");
+          return res.json({ imageUrl: googleImageUrl });
+        }
+      } catch (googleError) {
+        console.log("⚠️ Google Imagen fallback failed:", googleError);
+      }
+      
+      // Enhanced fallback narratives based on context
+      const contextualFallbacks = {
+        kiss: "Their lips meet in a tender kiss, time seeming to stop as their hearts beat in perfect synchrony under the gentle moonlight.",
+        embrace: "They hold each other close, finding comfort and warmth in their intimate embrace as the world fades away around them.",
+        touch: "Their gentle touch speaks volumes of unspoken affection, fingers intertwining as they share this precious moment together.",
+        bedroom: "In the quiet intimacy of the bedroom, they discover a deeper connection that transcends words and touches their very souls.",
+        default: "The intimate moment unfolds with tender passion, their connection deepening as they lose themselves in each other's presence."
+      };
+      
+      const lowerPrompt = prompt.toLowerCase();
+      let fallbackText = contextualFallbacks.default;
+      
+      for (const [key, text] of Object.entries(contextualFallbacks)) {
+        if (key !== 'default' && lowerPrompt.includes(key)) {
+          fallbackText = text;
+          break;
+        }
+      }
+      
       res.json({ 
         imageUrl: null,
-        fallbackText: "The intimate moment unfolds with tender passion, their connection deepening as moonlight streams through the window, casting gentle shadows across their intertwined forms."
+        fallbackText,
+        error: "Image generation temporarily unavailable"
       });
     }
   });

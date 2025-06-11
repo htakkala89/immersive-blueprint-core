@@ -947,3 +947,5 @@ function createMatureSoloLevelingPrompt(gameState: GameState): string {
   // Default romantic scene
   return `${baseStyle}, ${jinWooDesc} and ${chaHaeInDesc} romantic scene, intimate moment, beautiful lighting, detailed character interaction, fantasy romance setting, emotional connection`;
 }
+
+export { generateWithGoogleImagen };
