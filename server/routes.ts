@@ -11,6 +11,9 @@ import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
+import AdmZip from "adm-zip";
+import fs from "fs";
+import path from "path";
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -1742,7 +1745,6 @@ Generate a prompt suitable for manhwa-style art generation:`;
         
         // Extract the first image from the ZIP file
         try {
-          const AdmZip = require('adm-zip');
           const zip = new AdmZip(Buffer.from(zipBuffer));
           const zipEntries = zip.getEntries();
           console.log(`📋 ZIP entries found: ${zipEntries.length}`);
@@ -1759,8 +1761,8 @@ Generate a prompt suitable for manhwa-style art generation:`;
               console.log('Successfully extracted image from ZIP');
               
               // Save image to public directory and serve as URL
-              const fs = require('fs');
-              const path = require('path');
+              const fs = await import('fs');
+              const path = await import('path');
               const timestamp = Date.now();
               const filename = `mature_${timestamp}.png`;
               const publicPath = path.join(process.cwd(), 'public');
@@ -1830,8 +1832,8 @@ Generate a prompt suitable for manhwa-style art generation:`;
         
         // Try to save as file first, fallback to base64
         try {
-          const fs = require('fs');
-          const path = require('path');
+          const fs = await import('fs');
+          const path = await import('path');
           const timestamp = Date.now();
           const filename = `mature_${timestamp}.png`;
           const publicPath = path.join(process.cwd(), 'public');
@@ -1851,7 +1853,7 @@ Generate a prompt suitable for manhwa-style art generation:`;
             throw new Error('File creation failed');
           }
         } catch (saveError) {
-          console.log('📝 Binary save failed, using base64:', saveError.message);
+          console.log('📝 Binary save failed, using base64:', saveError instanceof Error ? saveError.message : String(saveError));
           const base64Image = Buffer.from(imageBuffer).toString('base64');
           const imageUrl = `data:image/png;base64,${base64Image}`;
           res.json({ imageUrl });
