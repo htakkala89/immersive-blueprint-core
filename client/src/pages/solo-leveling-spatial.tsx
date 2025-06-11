@@ -2699,18 +2699,18 @@ export default function SoloLevelingSpatial() {
                 console.log('Cook dinner together - Major activity with high affection gain and energy cost');
                 break;
               case 'bedroom_door':
-                // Gateway to mid-tier intimacy - direct transition
-                const tierTwoIntimateActivities = gameState.unlockedActivities || [];
-                let selectedTierTwoIntimate = 'passionate_night'; // Default mid-tier
-                
-                if (tierTwoIntimateActivities.includes('passionate_night')) selectedTierTwoIntimate = 'passionate_night';
-                else if (tierTwoIntimateActivities.includes('intimate_massage')) selectedTierTwoIntimate = 'intimate_massage';
-                else if (tierTwoIntimateActivities.includes('romantic_evening')) selectedTierTwoIntimate = 'romantic_evening';
-                else selectedTierTwoIntimate = 'bedroom_intimacy';
-                
-                setActiveActivity(selectedTierTwoIntimate);
-                setShowIntimateModal(true);
-                console.log(`Bedroom door gateway - Initiating mid-tier intimacy: ${selectedTierTwoIntimate}`);
+                // Gateway to highest unlocked intimate activity - direct transition
+                const highestUnlockedActivity = getHighestUnlockedIntimateActivity(gameState);
+                if (highestUnlockedActivity) {
+                  setActiveActivity(highestUnlockedActivity);
+                  setShowIntimateModal(true);
+                  console.log(`Bedroom door gateway - Opening highest unlocked intimate activity: ${highestUnlockedActivity}`);
+                } else {
+                  // Fallback to basic activity if none unlocked
+                  setActiveActivity('cuddling');
+                  setShowIntimateModal(true);
+                  console.log('Bedroom door gateway - Opening basic cuddling activity');
+                }
                 break;
               case 'balcony_door':
                 // Transition to unique Balcony Spatial View
@@ -2854,7 +2854,7 @@ export default function SoloLevelingSpatial() {
                 break;
               case 'artifact_display':
                 // Direct link to Relationship Constellation System
-                setShowRelationshipConstellation(true);
+                setShowInventory(true);
                 handleEnvironmentalInteraction({
                   id: 'trophy_examination',
                   action: 'You examine your collection of trophies and artifacts together. Each piece tells a story of your journey - the battles fought, the victories won, the moments shared. Cha Hae-In studies each item with reverence, remembering the experiences that brought you here.',
