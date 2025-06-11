@@ -445,28 +445,17 @@ export function IntimateActivitySystem5({
                 />
                 
                 <div className="flex gap-2">
-                  {/* Narrative Lens Button - Only appears contextually */}
-                  <AnimatePresence>
-                    {narrativeLens.isVisible && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="relative"
-                      >
-                        <Button
-                          onClick={activateNarrativeLens}
-                          variant="ghost"
-                          size="icon"
-                          className="text-pink-400 hover:bg-pink-500/20 border border-pink-400/30 relative overflow-hidden"
-                        >
-                          <Eye className="w-5 h-5" />
-                          <div className="absolute inset-0 bg-pink-400/20 animate-pulse rounded" />
-                        </Button>
-                        <div className="absolute -top-2 -right-2 w-3 h-3 bg-pink-500 rounded-full animate-ping" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {/* Narrative Lens Button - Always visible during intimate activities */}
+                  <Button
+                    onClick={activateNarrativeLens}
+                    variant="ghost"
+                    size="icon"
+                    className="text-pink-400 hover:bg-pink-500/20 border border-pink-400/30 relative overflow-hidden"
+                    title="Visualize Scene"
+                  >
+                    <Eye className="w-5 h-5" />
+                    <div className="absolute inset-0 bg-pink-400/20 animate-pulse rounded" />
+                  </Button>
                   
                   <Button
                     onClick={sendMessage}

@@ -1595,7 +1595,7 @@ Respond as Cha Hae-In would in this intimate moment:`;
         return res.status(500).json({ error: "Gemini API not configured" });
       }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       const promptContext = `Based on this intimate scene between Sung Jin-Woo and Cha Hae-In, generate a descriptive prompt for artistic visualization.
 
