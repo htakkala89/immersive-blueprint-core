@@ -218,10 +218,43 @@ export function IntimateActivitySystem5({
           showFullscreen: true,
           isGenerating: false
         }));
+      } else if (data.fallbackText) {
+        // Handle fallback text when image generation fails
+        const fallbackMessage = {
+          id: Date.now().toString(),
+          type: 'character' as const,
+          content: data.fallbackText,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, fallbackMessage]);
+        setNarrativeLens(prev => ({
+          ...prev,
+          isActive: false,
+          isGenerating: false,
+          userPrompt: ''
+        }));
+      } else {
+        throw new Error('No image or fallback text received');
       }
     } catch (error) {
       console.error('Error generating intimate image:', error);
-      setNarrativeLens(prev => ({ ...prev, isGenerating: false }));
+      
+      // Provide fallback message in case of complete failure
+      const fallbackMessage = {
+        id: Date.now().toString(),
+        type: 'character' as const,
+        content: "The intimate moment unfolds beautifully between us, filled with tender passion and deep connection.",
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, fallbackMessage]);
+      setNarrativeLens(prev => ({ 
+        ...prev, 
+        isGenerating: false,
+        isActive: false,
+        userPrompt: ''
+      }));
     }
   };
 

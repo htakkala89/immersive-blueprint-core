@@ -1628,7 +1628,11 @@ Generate a prompt suitable for manhwa-style art generation:`;
       const { prompt, activityId, stylePreset } = req.body;
       
       if (!process.env.NOVELAI_API_KEY) {
-        return res.status(500).json({ error: "NovelAI API not configured" });
+        console.log("NovelAI API key not found, providing fallback response");
+        return res.json({ 
+          imageUrl: null,
+          fallbackText: "The intimate moment unfolds with tender passion, their connection deepening as they lose themselves in each other's embrace."
+        });
       }
 
       // Use established character descriptions for consistency
@@ -1639,12 +1643,17 @@ Generate a prompt suitable for manhwa-style art generation:`;
 
       const negativePrompt = "ugly, deformed, blurry, text, watermark, low quality, bad anatomy, censored, mosaic, bar censor, purple hair on cha hae-in, dark hair on cha hae-in, black hair on cha hae-in, brown hair on cha hae-in, blonde hair on sung jin-woo, light hair on sung jin-woo, wrong hair colors";
 
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch('https://api.novelai.net/ai/generate-image', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
           'Content-Type': 'application/json',
         },
+        signal: controller.signal,
         body: JSON.stringify({
           input: novelAIPrompt,
           model: 'nai-diffusion-3',
@@ -1663,6 +1672,8 @@ Generate a prompt suitable for manhwa-style art generation:`;
         })
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
         throw new Error(`NovelAI API error: ${response.status}`);
       }
@@ -1674,7 +1685,12 @@ Generate a prompt suitable for manhwa-style art generation:`;
       res.json({ imageUrl });
     } catch (error) {
       console.error("NovelAI generation error:", error);
-      res.status(500).json({ error: "Failed to generate intimate image with NovelAI" });
+      
+      // Provide fallback response instead of error
+      res.json({ 
+        imageUrl: null,
+        fallbackText: "The intimate moment unfolds with tender passion, their connection deepening as moonlight streams through the window, casting gentle shadows across their intertwined forms."
+      });
     }
   });
 
