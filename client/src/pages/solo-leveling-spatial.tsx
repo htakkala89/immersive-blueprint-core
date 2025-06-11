@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
+import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -383,35 +384,6 @@ export default function SoloLevelingSpatial() {
     return new Date(); // Use real-world time
   });
   
-  // Load location background image with Google Imagen
-  useEffect(() => {
-    const loadLocationImage = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch('/api/location-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            location: playerLocation,
-            timeOfDay,
-            weather
-          })
-        });
-        
-        const data = await response.json();
-        if (data.imageUrl) {
-          setSceneImage(data.imageUrl);
-        }
-      } catch (error) {
-        console.error('Failed to load location image:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadLocationImage();
-  }, [playerLocation, timeOfDay, weather]);
-
   // Real-time clock update
   useEffect(() => {
     const updateTime = () => {
@@ -1352,22 +1324,6 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Helper function to get activity title for display
-  const getActivityTitle = (activityId: string | null): string => {
-    if (!activityId) return 'Cuddling';
-    
-    const titles: { [key: string]: string } = {
-      'cuddling': 'Cuddling',
-      'cuddle_together': 'Cuddle Time',
-      'shower_together': 'Shower Together',
-      'bedroom_intimacy': 'Bedroom Time',
-      'kitchen_intimacy': 'Kitchen Romance',
-      'make_love': 'Intimate Moments'
-    };
-    
-    return titles[activityId] || 'Intimate Activity';
-  };
-
   // Helper function to determine highest unlocked intimate activity
   const getHighestUnlockedIntimateActivity = (gameState: GameState): string | null => {
     const unlockedActivities = gameState.unlockedActivities || [];
@@ -2207,6 +2163,38 @@ export default function SoloLevelingSpatial() {
             
             // Handle different node types with specific logic
             console.log('🔍 SWITCH STATEMENT - Processing nodeId:', nodeId);
+            
+            // Priority handler for bedroom intimate activities
+            if (nodeId === 'bed' && playerLocation === 'player_apartment') {
+              console.log('🛏️ BEDROOM NODE DETECTED - Opening System 5 Intimate Activity');
+              const currentAffection = gameState.affection || 0;
+              const currentIntimacy = gameState.intimacyLevel || 0;
+              let selectedActivity = 'cuddling'; // Safe default for early game
+              
+              // Check relationship gates before allowing activities
+              if (currentAffection >= 80 && currentIntimacy >= 80) {
+                // High tier activities
+                if (gameState.unlockedActivities?.includes('master_suite_intimacy')) selectedActivity = 'master_suite_intimacy';
+                else if (gameState.unlockedActivities?.includes('passionate_night')) selectedActivity = 'passionate_night';
+              } else if (currentAffection >= 50 && currentIntimacy >= 40) {
+                // Mid tier activities
+                if (gameState.unlockedActivities?.includes('passionate_night')) selectedActivity = 'passionate_night';
+                else if (gameState.unlockedActivities?.includes('intimate_massage')) selectedActivity = 'intimate_massage';
+              } else if (currentAffection >= 20 && currentIntimacy >= 10) {
+                // Basic intimate activities
+                if (gameState.unlockedActivities?.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
+                else if (gameState.unlockedActivities?.includes('first_kiss')) selectedActivity = 'first_kiss';
+              } else {
+                // Very early game - only basic cuddling
+                selectedActivity = 'cuddling';
+              }
+              
+              setActiveActivity(selectedActivity);
+              setShowIntimateModal(true);
+              console.log(`Bedroom - Opening System 5 with ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
+              return; // Exit early to prevent other handlers
+            }
+            
             switch (nodeId) {
               case 'red_gate_entrance':
               case 'red_gate':
@@ -2658,31 +2646,35 @@ export default function SoloLevelingSpatial() {
                 break;
               // Your Apartment & Cha Hae-In's Apartment - Direct Intimacy Gateway Nodes
               case 'bed':
-                // Bedroom - Use same intimate activity system as daily planner
+                // Direct gateway respecting relationship progress
+                const unlockedActivities = gameState.unlockedActivities || [];
                 const currentAffection = gameState.affection || 0;
                 const currentIntimacy = gameState.intimacyLevel || 0;
+                let selectedActivity = 'cuddling'; // Safe default for early game
                 
-                // Determine appropriate activity based on relationship progress (same logic as daily planner)
-                let selectedActivity = 'cuddling'; // Default for very early game
-                
-                if (currentAffection >= 100) {
-                  // Max affection - bedroom intimacy unlocked
-                  selectedActivity = 'bedroom_intimacy';
-                } else if (currentAffection >= 80) {
-                  // High affection - shower together unlocked
-                  selectedActivity = 'shower_together';
-                } else if (currentAffection >= 60) {
-                  // Mid-high affection - cuddling unlocked
-                  selectedActivity = 'cuddle_together';
+                // Check relationship gates before allowing activities
+                if (currentAffection >= 80 && currentIntimacy >= 80) {
+                  // Tier 3 - Ultimate intimate activities (requires penthouse + high stats)
+                  if (unlockedActivities.includes('master_suite_intimacy')) selectedActivity = 'master_suite_intimacy';
+                  else if (unlockedActivities.includes('spend_the_night_together')) selectedActivity = 'spend_the_night_together';
+                  else if (unlockedActivities.includes('penthouse_morning_together')) selectedActivity = 'penthouse_morning_together';
+                } else if (currentAffection >= 50 && currentIntimacy >= 40) {
+                  // Tier 2 - Advanced intimate activities (requires moderate stats)
+                  if (unlockedActivities.includes('passionate_night')) selectedActivity = 'passionate_night';
+                  else if (unlockedActivities.includes('shower_together')) selectedActivity = 'shower_together';
+                  else if (unlockedActivities.includes('intimate_massage')) selectedActivity = 'intimate_massage';
+                } else if (currentAffection >= 20 && currentIntimacy >= 10) {
+                  // Tier 1 - Basic intimate activities (requires some relationship progress)
+                  if (unlockedActivities.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
+                  else if (unlockedActivities.includes('first_kiss')) selectedActivity = 'first_kiss';
                 } else {
-                  // Early game - basic cuddling only
+                  // Very early game - only basic cuddling/conversation
                   selectedActivity = 'cuddling';
                 }
                 
-                // Use same intimate activity system as daily planner
                 setActiveActivity(selectedActivity);
                 setShowIntimateModal(true);
-                console.log(`Bedroom - Opening intimate activity: ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
+                console.log(`Bedroom gateway - Initiating ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
                 break;
               case 'living_room_couch':
                 // Primary conversational node - relaxing at home scene
@@ -2972,35 +2964,53 @@ export default function SoloLevelingSpatial() {
                 console.log('Private elevator - Transitioning back to World Map');
                 break;
               case 'kitchen_counter':
-                // Kitchen - Use same intimate activity system as daily planner
+                // Apartment tier 1 - Kitchen intimacy (requires relationship progress)
                 const kitchenAffection = gameState.affection || 0;
+                const kitchenIntimacy = gameState.intimacyLevel || 0;
                 
-                if (kitchenAffection >= 60) {
-                  // High enough affection for intimate kitchen activity
+                if (kitchenAffection >= 30 && kitchenIntimacy >= 20) {
                   setActiveActivity('kitchen_intimacy');
                   setShowIntimateModal(true);
-                  console.log('Kitchen counter - Opening intimate activity: kitchen_intimacy');
+                  console.log('Kitchen counter - Initiating intimate kitchen scene');
                 } else {
-                  // Use cuddling as fallback for lower affection
-                  setActiveActivity('cuddling');
-                  setShowIntimateModal(true);
-                  console.log('Kitchen counter - Opening intimate activity: cuddling (affection too low for kitchen intimacy)');
+                  // Too early for intimate activities - just cooking conversation
+                  handleEnvironmentalInteraction({
+                    id: 'kitchen_cooking_chat',
+                    action: 'You suggest making something together in the kitchen. "That sounds nice," Cha Hae-In says with a gentle smile. You work side by side preparing a simple meal, sharing light conversation and growing more comfortable with each other.',
+                    name: 'Kitchen Cooking',
+                    x: 70,
+                    y: 40
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 3)
+                  }));
+                  console.log('Kitchen counter - Early game cooking conversation');
                 }
                 break;
               case 'shower':
-                // Shower - Use same intimate activity system as daily planner
+                // Apartment tier 1 - Shower intimacy (requires high relationship progress)
                 const showerAffection = gameState.affection || 0;
+                const showerIntimacy = gameState.intimacyLevel || 0;
                 
-                if (showerAffection >= 80) {
-                  // High enough affection for shower together activity
+                if (showerAffection >= 60 && showerIntimacy >= 50) {
                   setActiveActivity('shower_together');
                   setShowIntimateModal(true);
-                  console.log('Shower - Opening intimate activity: shower_together');
+                  console.log('Shower - Initiating shower together scene');
                 } else {
-                  // Use cuddling as fallback for lower affection
-                  setActiveActivity('cuddling');
-                  setShowIntimateModal(true);
-                  console.log('Shower - Opening intimate activity: cuddling (affection too low for shower intimacy)');
+                  // Too early for shower intimacy - just bathroom conversation
+                  handleEnvironmentalInteraction({
+                    id: 'bathroom_chat',
+                    action: 'You mention the bathroom facilities. "It\'s very clean," Cha Hae-In observes politely, maintaining appropriate boundaries. This isn\'t the right time for more intimate activities.',
+                    name: 'Bathroom',
+                    x: 80,
+                    y: 25
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(100, prev.affection + 1)
+                  }));
+                  console.log('Shower - Early game bathroom conversation');
                 }
                 break;
               case 'vanity_table':
@@ -3595,20 +3605,29 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      <IntimateActivitySystem5
+      <IntimateActivityModal
         isVisible={showIntimateModal}
         onClose={() => setShowIntimateModal(false)}
-        activityId={activeActivity || 'cuddling'}
-        activityTitle={activeActivity ? getActivityTitle(activeActivity) : 'Cuddling'}
-        backgroundImage={sceneImage ? sceneImage : undefined}
-        onSceneComplete={(memory) => {
-          // Handle scene completion - update game state
-          setGameState(prev => ({
-            ...prev,
-            affection: Math.min(100, prev.affection + 5),
-            intimacyLevel: Math.min(100, (prev.intimacyLevel || 0) + 3)
-          }));
+        onReturnToHub={() => {
           setShowIntimateModal(false);
+          setShowDailyLifeHub(true);
+        }}
+        activityType={activeActivity as 'shower_together' | 'cuddle_together' | 'bedroom_intimacy' | 'make_love' | null}
+        onAction={(action) => console.log('Intimate action:', action)}
+        intimacyLevel={gameState.intimacyLevel || 1}
+        affectionLevel={gameState.affection}
+        onImageGenerate={(prompt) => {
+          fetch('/api/generate-intimate-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, activityId: activeActivity })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.imageUrl) {
+              setSceneImage(data.imageUrl);
+            }
+          });
         }}
       />
 

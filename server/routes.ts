@@ -717,12 +717,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🎭 Generating emotional scene for Cha Hae-In: ${emotion} at ${location} during ${timeOfDay}`);
 
-      // Create emotional prompt for Cha Hae-In using the same structure that works for locations
-      const emotionalPrompt = `Solo Leveling manhwa art style, beautiful Korean female hunter Cha Hae-In with golden blonde hair in elegant bob cut and violet eyes, ${emotion} expression, ${location} background during ${timeOfDay}, high quality character portrait, detailed facial features, professional S-rank hunter attire, graceful elegant posture, atmospheric lighting, digital illustration`;
+      // Create emotional prompt for Cha Hae-In
+      const emotionalPrompt = createChaHaeInEmotionalPrompt(emotion as string, location as string, timeOfDay as string);
       
-      // Use the same Google Imagen service that successfully generates location images
-      const { generateImageWithImagen } = await import('./imagenService');
-      const imageUrl = await generateImageWithImagen(emotionalPrompt);
+      // Use Google Imagen for character generation
+      const { generateChatSceneImage } = await import("./imageGenerator");
+      const imageUrl = await generateChatSceneImage(emotionalPrompt, "character_portrait");
       
       if (imageUrl) {
         console.log(`✅ Generated emotional scene successfully`);
@@ -1231,37 +1231,6 @@ RESPONSE INSTRUCTIONS:
     }
   });
 
-  // Location background image generation for spatial interface
-  app.post("/api/location-image", async (req, res) => {
-    try {
-      const { location, timeOfDay, weather } = req.body;
-      
-      if (!location || !timeOfDay) {
-        return res.status(400).json({ error: "Location and time of day are required" });
-      }
-      
-      console.log(`🏢 Spatial interface requesting: ${location} at ${timeOfDay}${weather ? ` with ${weather} weather` : ''}`);
-      
-      // First try to get cached image from preloader
-      const cachedImage = getCachedLocationImage(location, timeOfDay);
-      if (cachedImage) {
-        console.log(`✅ Serving cached image for spatial interface: ${location}_${timeOfDay}`);
-        return res.json({ imageUrl: cachedImage });
-      }
-      
-      // If not cached, generate new image
-      const imageUrl = await generateLocationSceneImage(location, timeOfDay, weather);
-      if (imageUrl) {
-        console.log(`✅ Generated new spatial image: ${location}_${timeOfDay}`);
-      }
-      
-      res.json({ imageUrl });
-    } catch (error) {
-      console.error("Location image generation error:", error);
-      res.status(500).json({ error: "Failed to generate location image" });
-    }
-  });
-
   // Direct mature content generation API - No restrictions
   app.post("/api/generate-mature-content", async (req, res) => {
     try {
@@ -1655,54 +1624,35 @@ Respond as Cha Hae-In would in this intimate moment:`;
     }
   });
 
-  // Enhanced Image Generation for System 5 Narrative Lens - Mature Content Priority
+  // Enhanced Image Generation for System 5 Narrative Lens
   app.post("/api/generate-novelai-intimate", async (req, res) => {
     try {
       const { prompt: rawPrompt, activityId, stylePreset } = req.body;
       const prompt = String(rawPrompt || '');
       
-      console.log("🔞 Generating mature content with NovelAI priority...");
+      // Use the new multi-provider image generation service
+      console.log("🎨 Generating narrative lens image with multiple providers...");
+      const result = await imageGenerationService.generateImage(prompt, 'novelai');
       
-      // Try NovelAI first for mature content generation
-      try {
-        const imageGenerator = await import('./imageGenerator');
-        const imageUrl = await imageGenerator.generateWithNovelAI(prompt);
-        
-        if (imageUrl) {
-          console.log('✅ NovelAI generated mature content successfully');
-          return res.json({ 
-            imageUrl,
-            provider: 'NovelAI'
-          });
-        }
-      } catch (novelError) {
-        console.log('⚠️ NovelAI mature content generation failed, trying Google Imagen fallback:', (novelError as Error)?.message || 'Unknown error');
+      if (result.success) {
+        console.log(`✅ Image generated successfully with ${result.provider}`);
+        return res.json({ 
+          imageUrl: result.imageUrl,
+          provider: result.provider
+        });
       }
 
-      // Fallback to Google Imagen for mature content
-      try {
-        const { generateImageWithImagen } = await import('./imagenService');
-        const imageUrl = await generateImageWithImagen(prompt);
-        
-        if (imageUrl) {
-          console.log('✅ Google Imagen generated mature content successfully (fallback)');
-          return res.json({ 
-            imageUrl,
-            provider: 'Google Imagen'
-          });
-        }
-      } catch (imagenError) {
-        console.log('⚠️ Google Imagen mature content generation failed:', (imagenError as Error)?.message || 'Unknown error');
-      }
+      console.log(`❌ Image generation failed: ${result.error}`);
       
       // Return fallback response with descriptive text
       return res.json({ 
         imageUrl: null,
         fallbackText: "The intimate moment unfolds with tender passion, their connection deepening as they lose themselves in each other's embrace.",
-        error: "Image generation temporarily unavailable"
+        error: result.error,
+        availableProviders: await imageGenerationService.getAvailableProviders()
       });
     } catch (error) {
-      console.error("Mature content generation error:", error);
+      console.error("Image generation error:", error);
       
       res.status(500).json({ 
         imageUrl: null,
