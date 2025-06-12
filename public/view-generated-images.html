@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Narrative Lens Images</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .image-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .image-card img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .image-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .image-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        .generate-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+        .loading {
+            text-align: center;
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Narrative Lens: Generated Romantic Scenes</h1>
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <button class="generate-btn" onclick="generateNewScene()">Generate New Intimate Scene</button>
+            <button class="generate-btn" onclick="generateChatScene()">Generate Chat Scene</button>
+        </div>
+
+        <div id="image-gallery" class="image-gallery">
+            <!-- Images will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        let imageCounter = 1;
+
+        async function generateNewScene() {
+            const gallery = document.getElementById('image-gallery');
+            
+            // Add loading card
+            const loadingCard = document.createElement('div');
+            loadingCard.className = 'image-card';
+            loadingCard.innerHTML = `
+                <div class="loading">Generating romantic scene ${imageCounter}...</div>
+            `;
+            gallery.appendChild(loadingCard);
+
+            try {
+                const response = await fetch('/api/generate-novelai-intimate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: `Cha Hae-In and Jin-Woo tender romantic moment, beautiful lighting, emotional intimacy`,
+                        activityId: 'intimate_evening',
+                        relationshipStatus: 'deeply_connected',
+                        intimacyLevel: 8
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Remove loading card
+                gallery.removeChild(loadingCard);
+
+                if (data.imageUrl) {
+                    const imageCard = document.createElement('div');
+                    imageCard.className = 'image-card';
+                    imageCard.innerHTML = `
+                        <div class="image-title">Romantic Scene ${imageCounter}</div>
+                        <div class="image-description">Generated with ${data.provider || 'Multiple Providers'}</div>
+                        <img src="${data.imageUrl}" alt="Generated romantic scene" />
+                    `;
+                    gallery.appendChild(imageCard);
+                    imageCounter++;
+                } else {
+                    const errorCard = document.createElement('div');
+                    errorCard.className = 'image-card';
+                    errorCard.innerHTML = `
+                        <div class="image-title">Generation Failed</div>
+                        <div class="image-description">${data.error || 'Unknown error'}</div>
+                        <div style="padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                            ${data.fallbackText || 'No fallback text available'}
+                        </div>
+                    `;
+                    gallery.appendChild(errorCard);
+                }
+            } catch (error) {
+                gallery.removeChild(loadingCard);
+                console.error('Error generating scene:', error);
+            }
+        }
+
+        async function generateChatScene() {
+            const gallery = document.getElementById('image-gallery');
+            
+            // Add loading card
+            const loadingCard = document.createElement('div');
+            loadingCard.className = 'image-card';
+            loadingCard.innerHTML = `
+                <div class="loading">Generating chat scene ${imageCounter}...</div>
+            `;
+            gallery.appendChild(loadingCard);
+
+            try {
+                const response = await fetch('/api/chat-scene-image?emotion=tender&location=hunter_association&timeOfDay=evening', {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+                
+                // Remove loading card
+                gallery.removeChild(loadingCard);
+
+                if (data.imageUrl) {
+                    const imageCard = document.createElement('div');
+                    imageCard.className = 'image-card';
+                    imageCard.innerHTML = `
+                        <div class="image-title">Chat Scene ${imageCounter}</div>
+                        <div class="image-description">Cha Hae-In emotional expression</div>
+                        <img src="${data.imageUrl}" alt="Generated chat scene" />
+                    `;
+                    gallery.appendChild(imageCard);
+                    imageCounter++;
+                }
+            } catch (error) {
+                gallery.removeChild(loadingCard);
+                console.error('Error generating chat scene:', error);
+            }
+        }
+
+        // Generate initial scene on page load
+        window.addEventListener('load', () => {
+            generateNewScene();
+        });
+    </script>
+</body>
+</html>
