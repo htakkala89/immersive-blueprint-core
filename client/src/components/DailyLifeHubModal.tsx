@@ -107,6 +107,16 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       available: stats.energy >= 25
     },
     {
+      id: 'evening_walk',
+      title: 'Evening Walk',
+      description: 'Take a romantic stroll through the city',
+      icon: '🌙',
+      energyCost: 12,
+      affectionReward: 6,
+      available: timeOfDay === 'evening' && stats.energy >= 12,
+      goldReward: 0
+    },
+    {
       id: 'romantic_dinner',
       title: 'Romantic Dinner',
       description: 'Share an intimate dinner at home',
@@ -332,6 +342,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
   const [coffeeActivityVisible, setCoffeeActivityVisible] = useState(false);
   const [trainingActivityVisible, setTrainingActivityVisible] = useState(false);
   const [lunchActivityVisible, setLunchActivityVisible] = useState(false);
+  const [eveningWalkActivityVisible, setEveningWalkActivityVisible] = useState(false);
   const [currentTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'morning';
@@ -371,6 +382,12 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     // Handle lunch activity
     if (activity.id === 'lunch_date') {
       setLunchActivityVisible(true);
+      return;
+    }
+
+    // Handle evening walk activity
+    if (activity.id === 'evening_walk') {
+      setEveningWalkActivityVisible(true);
       return;
     }
 
@@ -473,6 +490,17 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     }
     
     setLunchActivityVisible(false);
+  };
+
+  // Handle evening walk activity completion
+  const handleEveningWalkActivityComplete = (results: any) => {
+    // Update game state with results
+    if (gameState) {
+      gameState.energy = Math.max(0, (gameState.energy || 80) - results.energySpent);
+      gameState.affection = Math.min(5, (gameState.affection || 0) + (results.affectionGained / 20)); // Convert back to 0-5 scale
+    }
+    
+    setEveningWalkActivityVisible(false);
   };
 
   if (!isVisible) return null;
@@ -658,6 +686,14 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
         onClose={() => setLunchActivityVisible(false)}
         onActivityComplete={handleLunchActivityComplete}
         backgroundImage="/images/restaurant.jpg"
+      />
+
+      {/* Evening Walk Activity Modal */}
+      <EveningWalkActivityModal
+        isVisible={eveningWalkActivityVisible}
+        onClose={() => setEveningWalkActivityVisible(false)}
+        onActivityComplete={handleEveningWalkActivityComplete}
+        backgroundImage="/images/seoul-night.jpg"
       />
     </div>
   );
