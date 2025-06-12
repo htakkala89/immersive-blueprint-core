@@ -117,7 +117,7 @@ export function ClearLowRankGateModal({ isVisible, onClose, onGateSelect, backgr
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 rounded-2xl border border-blue-400/30 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+          className="bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 rounded-2xl border border-blue-400/30 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
           style={{
             backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
@@ -231,7 +231,7 @@ export function ClearLowRankGateModal({ isVisible, onClose, onGateSelect, backgr
             </div>
           ) : (
             /* Confirmation Screen */
-            <div className="relative p-6 space-y-6 min-h-[400px]">
+            <div className="relative p-6">
               <div className="text-center space-y-6 max-w-2xl mx-auto">
                 {(() => {
                   const gate = getSelectedGateData();
@@ -270,27 +270,27 @@ export function ClearLowRankGateModal({ isVisible, onClose, onGateSelect, backgr
                           </div>
                         </div>
                       </div>
+                      
+                      {/* Action Buttons */}
+                      <div className="flex space-x-4 pt-6">
+                        <Button
+                          onClick={() => setShowConfirmation(false)}
+                          variant="outline"
+                          className="flex-1 border-white/30 text-white hover:bg-white/10"
+                        >
+                          Choose Different Gate
+                        </Button>
+                        <Button
+                          onClick={confirmGateSelection}
+                          className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        >
+                          <Shield className="w-5 h-5 mr-2" />
+                          Enter Gate
+                        </Button>
+                      </div>
                     </>
                   );
                 })()}
-              </div>
-              
-              {/* Fixed Action Buttons */}
-              <div className="flex space-x-4 pt-4 sticky bottom-0 bg-gradient-to-t from-slate-900 to-transparent pb-4">
-                <Button
-                  onClick={() => setShowConfirmation(false)}
-                  variant="outline"
-                  className="flex-1 border-white/30 text-white hover:bg-white/10"
-                >
-                  Choose Different Gate
-                </Button>
-                <Button
-                  onClick={confirmGateSelection}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                >
-                  <Shield className="w-5 h-5 mr-2" />
-                  Enter Gate
-                </Button>
               </div>
             </div>
           )}
