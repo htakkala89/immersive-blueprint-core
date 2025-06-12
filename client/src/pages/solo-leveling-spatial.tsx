@@ -3578,16 +3578,16 @@ export default function SoloLevelingSpatial() {
           setActiveActivity(activity.id);
           setShowDailyLifeHub(false);
           
-          // Handle coffee activity specifically
+          // Handle coffee activity specifically - follow exact spec
           if (activity.id === 'grab_coffee') {
-            console.log('☕ Coffee activity selected - transitioning to Hongdae Cafe');
-            // First transition to the cafe location
+            console.log('☕ Coffee activity selected - transitioning to Hongdae Cafe spatial view');
+            // Step 1: Transition to Hongdae Cafe spatial view (Cha Hae-In already present)
             setPlayerLocation('hongdae_cafe');
             setGameState(prev => ({ ...prev, currentScene: 'hongdae_cafe' }));
-            // Then open the coffee modal after a brief delay for transition
+            // Step 2: Show choice UI immediately in spatial view (not modal)
             setTimeout(() => {
               setShowCoffeeActivity(true);
-            }, 500);
+            }, 800); // Allow time for spatial transition
             return;
           }
 
