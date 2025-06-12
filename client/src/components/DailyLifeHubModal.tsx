@@ -45,6 +45,16 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
   const scaledAffection = stats.affectionLevel * 20;
   const baseActivities: Activity[] = [
     {
+      id: 'grab_coffee',
+      title: 'Grab a Coffee',
+      description: 'Have a casual coffee date at Hongdae Cafe',
+      icon: '☕',
+      energyCost: 10,
+      affectionReward: 3,
+      available: true,
+      goldReward: 0 // Will be deducted based on choice
+    },
+    {
       id: 'dungeon_raid',
       title: 'Dungeon Raids',
       description: 'Lead your shadow army into dangerous dungeons',
