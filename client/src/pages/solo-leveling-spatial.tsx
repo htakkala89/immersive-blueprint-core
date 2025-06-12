@@ -37,6 +37,7 @@ import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes'
 import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSystem9';
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
+import { MonarchsAuraMenu } from '@/components/MonarchsAuraMenu';
 
 interface CoreStats {
   strength: number;
@@ -154,6 +155,7 @@ export default function SoloLevelingSpatial() {
   const [selectedActivity, setSelectedActivity] = useState<string>('');
   
   // Advanced Systems UI
+  const [showMonarchsAura, setShowMonarchsAura] = useState(false);
   const [showMonarchArmory, setShowMonarchArmory] = useState(false);
   const [showMonarchInventory, setShowMonarchInventory] = useState(false);
   const [showPlayerProgression, setShowPlayerProgression] = useState(false);
@@ -449,57 +451,15 @@ export default function SoloLevelingSpatial() {
               )}
             </div>
 
-            {/* Monarch Systems */}
-            <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3">
+            {/* Monarch's Aura Menu */}
+            <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-2xl p-4">
               <Button 
-                onClick={() => setShowMonarchArmory(true)}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
-                <Sword className="w-4 h-4 mr-2" />
-                Armory
-              </Button>
-              
-              <Button 
-                onClick={() => setShowMonarchInventory(true)}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Package className="w-4 h-4 mr-2" />
-                Inventory
-              </Button>
-              
-              <Button 
-                onClick={() => setShowPlayerProgression(true)}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                onClick={() => setShowMonarchsAura(true)}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white relative overflow-hidden"
               >
                 <Crown className="w-4 h-4 mr-2" />
-                Progression
-              </Button>
-            </div>
-
-            {/* World Systems */}
-            <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3">
-              <Button 
-                onClick={() => setShowWorldMap(true)}
-                className="bg-teal-600 hover:bg-teal-700 text-white"
-              >
-                <MapPin className="w-4 h-4 mr-2" />
-                World Map
-              </Button>
-              
-              <Button 
-                onClick={() => setShowHunterCommunicator(true)}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Communicator
-              </Button>
-              
-              <Button 
-                onClick={() => setShowDungeonRaid(true)}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-              >
-                <Zap className="w-4 h-4 mr-2" />
-                Dungeons
+                Monarch's Aura
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse" />
               </Button>
             </div>
           </div>
@@ -758,6 +718,41 @@ export default function SoloLevelingSpatial() {
           }}
         />
       )}
+
+      {/* Monarch's Aura Menu */}
+      <MonarchsAuraMenu
+        isVisible={showMonarchsAura}
+        onClose={() => setShowMonarchsAura(false)}
+        onSystemSelect={(systemId: string) => {
+          console.log('System selected:', systemId);
+          switch (systemId) {
+            case 'armory':
+              setShowMonarchArmory(true);
+              break;
+            case 'inventory':
+              setShowMonarchInventory(true);
+              break;
+            case 'progression':
+              setShowPlayerProgression(true);
+              break;
+            case 'worldmap':
+              setShowWorldMap(true);
+              break;
+            case 'dungeons':
+              setShowDungeonRaid(true);
+              break;
+            case 'communicator':
+              setShowHunterCommunicator(true);
+              break;
+            case 'relationships':
+              // Open relationship constellation system
+              console.log('Opening relationship constellation');
+              break;
+            default:
+              console.log('Unknown system:', systemId);
+          }
+        }}
+      />
     </div>
   );
 }
