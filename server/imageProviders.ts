@@ -156,8 +156,15 @@ class GoogleImagenProvider implements ImageProvider {
     }
 
     try {
-      // Enhanced prompt matching the working location image system
-      const enhancedPrompt = `${prompt}. Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, character design errors`;
+      // Enhanced prompt for intimate scenes with higher quality and better romance aesthetics
+      const isIntimateScene = prompt.toLowerCase().includes('intimate') || 
+                             prompt.toLowerCase().includes('romantic') || 
+                             prompt.toLowerCase().includes('tender') ||
+                             prompt.toLowerCase().includes('passionate');
+      
+      const enhancedPrompt = isIntimateScene 
+        ? `${prompt}. Masterpiece quality anime illustration, Solo Leveling manhwa art style, romantic cinematic lighting, soft warm glow, beautiful detailed faces, expressive loving eyes, tender emotional connection, elegant composition, high quality digital art, detailed shadows and highlights, Korean webtoon aesthetic, intimate atmosphere, beautiful couple, emotional depth, artistic excellence. NEGATIVE PROMPT: explicit content, nudity, inappropriate content, low quality, blurry, distorted faces, bad anatomy, wrong hair colors, purple hair on Cha Hae-In, blonde hair on Jin-Woo`
+        : `${prompt}. Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, character design errors`;
       
       const response = await fetch(
         `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`,

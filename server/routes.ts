@@ -1789,21 +1789,19 @@ Respond as Cha Hae-In would in this intimate moment:`;
       const { prompt: rawPrompt, activityId, stylePreset, relationshipStatus, intimacyLevel } = req.body;
       const prompt = String(rawPrompt || '');
       
-      console.log("🎨 Generating narrative lens image directly...");
+      console.log("🎨 Generating enhanced intimate scene with Google Imagen...");
       
-      // Use the working intimate image generator directly to bypass service issues
-      const imageUrl = await generateIntimateActivityImage(
-        activityId || 'intimate_evening',
-        relationshipStatus || 'deeply_connected',
-        intimacyLevel || 8,
-        prompt
-      );
+      // Create enhanced romantic prompt for Google Imagen
+      const enhancedIntimatePrompt = `Cha Hae-In and Jin-Woo intimate romantic moment, ${prompt}, masterpiece quality anime illustration, Solo Leveling manhwa art style, romantic cinematic lighting, soft warm glow, beautiful detailed faces, expressive loving eyes, tender emotional connection, elegant composition, Korean webtoon aesthetic`;
       
-      if (imageUrl) {
-        console.log('✅ Direct intimate image generation successful');
+      // Use enhanced Google Imagen for intimate scenes while NovelAI is down
+      const result = await imageGenerationService.generateImage(enhancedIntimatePrompt, 'Google Imagen');
+      
+      if (result.success && result.imageUrl) {
+        console.log('✅ Enhanced Google Imagen intimate scene generated successfully');
         return res.json({ 
-          imageUrl,
-          provider: 'Direct Generation'
+          imageUrl: result.imageUrl,
+          provider: result.provider
         });
       }
 
