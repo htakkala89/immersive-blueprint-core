@@ -4375,6 +4375,42 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
+      {/* Hangang Park Walk Modal - Activity 4: Casual Outing */}
+      <HangangParkWalkModal
+        isVisible={showHangangParkModal}
+        onClose={() => setShowHangangParkModal(false)}
+        onReturnToHub={() => {
+          setShowHangangParkModal(false);
+          setShowDailyLifeHub(true);
+        }}
+        playerStats={{
+          gold: gameState.gold || 0,
+          level: gameState.level,
+          experience: gameState.experience || 0,
+          affectionLevel: gameState.affection,
+          energy: gameState.energy || 80,
+          maxEnergy: gameState.maxEnergy || 100,
+          apartmentTier: gameState.apartmentTier || 1
+        }}
+        onStatsUpdate={(updates) => {
+          setGameState(prev => ({
+            ...prev,
+            energy: updates.energy !== undefined ? updates.energy : prev.energy,
+            experience: updates.experience !== undefined ? (prev.experience || 0) + updates.experience : prev.experience,
+            affection: updates.affection !== undefined ? Math.min(10, (prev.affection || 0) + updates.affection) : prev.affection
+          }));
+        }}
+        onCreateMemoryStar={(memory) => {
+          setMemoryStars(prev => [...prev, {
+            id: `memory_${Date.now()}`,
+            title: memory.title,
+            description: memory.description,
+            emotion: memory.emotion,
+            timestamp: new Date()
+          }]);
+        }}
+      />
+
     </div>
   );
 }
