@@ -76,6 +76,7 @@ interface GameState {
   playerId?: string;
   activeQuests?: any[];
   completedQuests?: any[];
+  intelligence?: number;
   storyFlags?: {
     redGateUnlocked?: boolean;
     dungeonAccessGranted?: boolean;
@@ -4208,7 +4209,7 @@ export default function SoloLevelingSpatial() {
           description: 'A sleek glass-top coffee table with metal legs',
           complexity: 'moderate'
         }}
-        playerIntelligence={gameState.intelligence || 50}
+        playerIntelligence={gameState.stats?.intelligence || 50}
         onComplete={(memory) => {
           setShowAssembleFurniture(false);
           
