@@ -499,18 +499,17 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {showDailyLifeHub && (
           <DailyLifeHubComplete
-            isVisible={showDailyLifeHub}
             onClose={() => setShowDailyLifeHub(false)}
             onActivitySelect={(activity) => {
               console.log('Daily Life Hub - Activity selected:', activity);
-              setSelectedActivity(activity.id);
+              setSelectedActivity(activity);
               
-              if (activity.id === 'grab_coffee') {
+              if (activity === 'coffee') {
                 console.log('Coffee activity selected - navigating to Hongdae Cafe');
                 setShowDailyLifeHub(false);
                 setPlayerLocation('hongdae_cafe');
                 setShowCoffeeModal(true);
-              } else if (activity.id === 'intimate') {
+              } else if (activity === 'intimate') {
                 setActiveActivity('cuddling');
                 setShowIntimateModal(true);
                 setShowDailyLifeHub(false);
@@ -518,18 +517,6 @@ export default function SoloLevelingSpatial() {
                 setShowDailyLifeHub(false);
               }
             }}
-            playerStats={{
-              gold: gameState.gold || 0,
-              level: gameState.level,
-              experience: gameState.experience || 0,
-              affectionLevel: gameState.affection,
-              energy: gameState.energy || 85,
-              maxEnergy: gameState.maxEnergy || 100,
-              relationshipStatus: 'dating',
-              intimacyLevel: gameState.intimacyLevel || 25,
-              sharedMemories: 15
-            }}
-            timeOfDay={timeOfDay}
           />
         )}
       </AnimatePresence>
