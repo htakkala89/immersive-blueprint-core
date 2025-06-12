@@ -324,6 +324,15 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
     ];
   }
   
+  // Coffee date activity - Special contextual prompts
+  if (context?.activity === 'enjoying coffee date with Jin-Woo') {
+    return [
+      "I'm glad we could do this together.",
+      "You seem more relaxed than usual.",
+      "How's the coffee? I wasn't sure what you'd prefer."
+    ];
+  }
+  
   // Casual romantic locations - Personal conversations
   if (location.includes('cafe') || location.includes('restaurant')) {
     return [
