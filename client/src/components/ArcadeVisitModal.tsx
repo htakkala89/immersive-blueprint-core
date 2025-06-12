@@ -61,19 +61,37 @@ export function ArcadeVisitModal({ isVisible, onClose, onComplete, backgroundIma
     }, 500);
   };
 
-  // Game timer effect
+  // Game timer effect - isolated from score changes
   useEffect(() => {
-    if (gameStarted && timeLeft > 0 && gameMode === 'shooting') {
-      const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && gameMode === 'shooting') {
-      // Game over
+    if (gameStarted && gameMode === 'shooting') {
+      const timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            // Game over
+            const currentScore = score;
+            const result = currentScore >= 1000 ? 'win' : 'loss';
+            setGameResult(result);
+            setGameMode('results');
+            setGameStarted(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      return () => clearInterval(timer);
+    }
+  }, [gameStarted, gameMode]); // Removed timeLeft and score dependencies
+
+  // Separate effect to handle game over condition
+  useEffect(() => {
+    if (timeLeft === 0 && gameMode === 'shooting') {
       const result = score >= 1000 ? 'win' : 'loss';
       setGameResult(result);
       setGameMode('results');
       setGameStarted(false);
     }
-  }, [gameStarted, timeLeft, gameMode, score]);
+  }, [timeLeft, gameMode, score]);
 
   // Auto-spawn targets during game
   useEffect(() => {
