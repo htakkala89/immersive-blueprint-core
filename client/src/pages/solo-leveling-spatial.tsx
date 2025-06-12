@@ -926,7 +926,20 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const currentLocationData = worldLocations[playerLocation as keyof typeof worldLocations] || worldLocations.hunter_association;
+  const currentLocationData = (() => {
+    const baseLocation = worldLocations[playerLocation as keyof typeof worldLocations] || worldLocations.hunter_association;
+    
+    // Override presence for coffee activity
+    if (coffeeActivityContext && playerLocation === 'hongdae_cafe') {
+      return {
+        ...baseLocation,
+        chaHaeInPresent: true,
+        chaActivity: coffeeActivityContext
+      };
+    }
+    
+    return baseLocation;
+  })();
 
   // Debug logging for character presence
   console.log('Current time:', timeOfDay);
