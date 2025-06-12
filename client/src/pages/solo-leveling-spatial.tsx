@@ -704,6 +704,24 @@ export default function SoloLevelingSpatial() {
         };
       } else if (apartmentTier >= 2) {
         // Tier 2: Gangnam High-Rise
+        const baseElements = [
+          { id: 'modern_bedroom', name: 'Modern Bedroom', position: { x: 25, y: 30 }, action: 'Stylish bedroom romance' },
+          { id: 'city_view_couch', name: 'City View Living Room', position: { x: 55, y: 55 }, action: 'Intimate moments with city lights' },
+          { id: 'designer_kitchen', name: 'Designer Kitchen', position: { x: 70, y: 35 }, action: 'Kitchen counter passion' },
+          { id: 'luxury_shower', name: 'Rain Shower', position: { x: 80, y: 25 }, action: 'Steamy shower romance' },
+          { id: 'rooftop_access', name: 'Rooftop Garden', position: { x: 40, y: 20 }, action: 'Garden terrace intimacy' }
+        ];
+
+        // Add movie night node if furniture requirements are met
+        if ((gameState as any).hasPlushSofa && (gameState as any).hasEntertainmentSystem) {
+          baseElements.push({
+            id: 'movie_night_setup',
+            name: 'Entertainment Center',
+            position: { x: 60, y: 65 },
+            action: 'Watch a movie together on your luxurious sectional sofa'
+          });
+        }
+
         return {
           id: 'player_apartment',
           name: 'Gangnam High-Rise',
@@ -713,13 +731,7 @@ export default function SoloLevelingSpatial() {
           chaActivity: 'enjoying the sophisticated atmosphere of your upgraded home',
           chaPosition: { x: 45, y: 50 },
           chaExpression: 'loving' as const,
-          interactiveElements: [
-            { id: 'modern_bedroom', name: 'Modern Bedroom', position: { x: 25, y: 30 }, action: 'Stylish bedroom romance' },
-            { id: 'city_view_couch', name: 'City View Living Room', position: { x: 55, y: 55 }, action: 'Intimate moments with city lights' },
-            { id: 'designer_kitchen', name: 'Designer Kitchen', position: { x: 70, y: 35 }, action: 'Kitchen counter passion' },
-            { id: 'luxury_shower', name: 'Rain Shower', position: { x: 80, y: 25 }, action: 'Steamy shower romance' },
-            { id: 'rooftop_access', name: 'Rooftop Garden', position: { x: 40, y: 20 }, action: 'Garden terrace intimacy' }
-          ]
+          interactiveElements: baseElements
         };
       } else {
         // Tier 1: Basic Apartment
@@ -2881,6 +2893,11 @@ export default function SoloLevelingSpatial() {
                   });
                   console.log('Luxury bathroom activated - Spa activities unlocked');
                 }
+                break;
+              case 'movie_night_setup':
+                // Movie night activity - direct to movie modal
+                console.log('🎬 MOVIE NIGHT NODE CLICKED - Opening movie night modal');
+                setShowMovieNightModal(true);
                 break;
               case 'home_office':
                 // Gateway: Professional bonding activities
