@@ -3636,6 +3636,19 @@ export default function SoloLevelingSpatial() {
             }, 500);
             return;
           }
+
+          // Handle sparring session specifically - Activity 2: Gameplay-Integrated  
+          if (activity.id === 'sparring_session') {
+            console.log('⚔️ Sparring session selected - transitioning to Elite Training Center');
+            // First transition to the training center location
+            setPlayerLocation('training_facility');
+            setGameState(prev => ({ ...prev, currentScene: 'training_facility' }));
+            // Then open the sparring modal after a brief delay for transition
+            setTimeout(() => {
+              setShowSparringModal(true);
+            }, 500);
+            return;
+          }
           
           // Route activity to appropriate system
           if (activity.category === 'intimate') {
