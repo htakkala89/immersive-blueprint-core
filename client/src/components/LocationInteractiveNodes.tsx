@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Sofa, MapPin, Coffee, TreePine, ChefHat, Eye, Heart, Shield, Users, Bed, Building, Zap } from 'lucide-react';
+import { ShoppingBag, Sofa, MapPin, Coffee, TreePine, ChefHat, Eye, Heart, Shield, Users, Bed, Building, Zap, Monitor } from 'lucide-react';
 
 interface InteractiveNode {
   id: string;
@@ -289,109 +289,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
     }
   ],
 
-  // Hongdae District - Cafe
-  hongdae_cafe: [
-    {
-      id: 'red_gate_entrance',
-      label: 'Red Gate',
-      icon: Shield,
-      position: { x: 50, y: 40 },
-      thoughtPrompt: 'Enter the Red Gate to clear the dungeon.',
-      outcome: 'You approach the crimson portal that has materialized near Hongik University. The air crackles with dangerous energy.',
-      gameLogic: 'dungeon_entrance',
-      requirements: undefined,
-      spatialRelationships: {
-        enhances: undefined,
-        excludes: ['counter', 'window_seat'],
-        proximity: undefined
-      },
-      environmentalStates: {
-        weather: ['clear', 'rain', 'cloudy'],
-        timeOfDay: ['morning', 'afternoon', 'evening'],
-        storyFlags: undefined
-      },
-      memoryTriggers: {
-        firstTime: 'Enter the Red Gate - This is my mission',
-        repeated: 'Enter the Red Gate - Time to finish what I started',
-        withCharacter: 'Enter the Red Gate - Let\'s clear this together'
-      }
-    },
-    {
-      id: 'counter',
-      label: 'Counter',
-      icon: Coffee,
-      position: { x: 80, y: 25 },
-      thoughtPrompt: 'Order drinks for us.',
-      outcome: 'You approach the counter to order beverages. Choosing her preferred drink correctly provides a bonus.',
-      gameLogic: 'cafe_ordering_system',
-      requirements: undefined,
-      spatialRelationships: {
-        enhances: ['window_seat'],
-        excludes: undefined,
-        proximity: undefined
-      },
-      environmentalStates: {
-        weather: ['clear', 'rain', 'cloudy'],
-        timeOfDay: ['morning', 'afternoon', 'evening'],
-        storyFlags: undefined
-      },
-      memoryTriggers: {
-        firstTime: 'Order drinks for us - I wonder what she prefers?',
-        repeated: 'Order drinks for us - I remember her preference now',
-        withCharacter: 'Order drinks for us - let\'s see if I can surprise her with her favorite'
-      }
-    },
-    {
-      id: 'window_seat',
-      label: 'Window Seat',
-      icon: Eye,
-      position: { x: 20, y: 65 },
-      thoughtPrompt: 'Suggest we take the window seat.',
-      outcome: 'You both settle into comfortable seats with a peaceful view. This unlocks deeper conversation topics.',
-      gameLogic: 'intimate_conversation_unlock',
-      requirements: undefined,
-      spatialRelationships: {
-        enhances: undefined,
-        excludes: undefined,
-        proximity: ['counter']
-      },
-      environmentalStates: {
-        weather: ['clear', 'rain', 'cloudy'],
-        timeOfDay: ['morning', 'afternoon', 'evening'],
-        storyFlags: undefined
-      },
-      memoryTriggers: {
-        firstTime: 'Suggest we take the window seat - this feels like a perfect first date spot',
-        repeated: 'Suggest we take the window seat - our favorite spot in the cafe',
-        withCharacter: 'Suggest we take the window seat - somewhere we can talk privately'
-      }
-    },
-    {
-      id: 'red_gate_entrance',
-      label: 'Red Gate',
-      icon: Zap,
-      position: { x: 85, y: 85 },
-      thoughtPrompt: 'Enter the Red Gate',
-      outcome: 'System 11: Touch-Based Combat dungeon raid experience begins',
-      gameLogic: 'dungeon_raid_entrance',
-      requirements: undefined,
-      spatialRelationships: {
-        enhances: undefined,
-        excludes: ['counter', 'window_seat'],
-        proximity: undefined
-      },
-      environmentalStates: {
-        weather: ['clear', 'rain', 'cloudy'],
-        timeOfDay: ['morning', 'afternoon', 'evening'],
-        storyFlags: undefined
-      },
-      memoryTriggers: {
-        firstTime: 'Enter the Red Gate - This is my mission',
-        repeated: 'Enter the Red Gate - Time to finish what I started',
-        withCharacter: 'Enter the Red Gate - Let\'s clear this together'
-      }
-    }
-  ],
+
 
   // Hongdae District - Hangang Park
   hangang_park: [
@@ -580,6 +478,40 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       thoughtPrompt: 'Notice her tea collection.',
       outcome: 'Discover she enjoys traditional Korean teas. Option to prepare tea together for affection boost.',
       gameLogic: 'system_6_affection_activity'
+    }
+  ],
+
+  // Hongdae Cafe - Coffee Date Location
+  hongdae_cafe: [
+    {
+      id: 'menu_board',
+      label: 'Artisan Menu',
+      icon: Coffee,
+      position: { x: 70, y: 20 },
+      thoughtPrompt: 'Browse the specialty drinks menu together',
+      outcome: 'Discuss coffee preferences and discover new favorites',
+      gameLogic: 'casual_interaction',
+      requirements: []
+    },
+    {
+      id: 'window_seat',
+      label: 'Cozy Window Seat',
+      icon: Sofa,
+      position: { x: 30, y: 60 },
+      thoughtPrompt: 'Suggest sitting by the window for a better view',
+      outcome: 'Move to a more intimate seating arrangement',
+      gameLogic: 'romantic_interaction',
+      requirements: []
+    },
+    {
+      id: 'art_display',
+      label: 'Local Art Display',
+      icon: Eye,
+      position: { x: 15, y: 40 },
+      thoughtPrompt: 'Comment on the local artwork displayed on the walls',
+      outcome: 'Share thoughts about art and culture together',
+      gameLogic: 'cultural_interaction',
+      requirements: []
     }
   ],
 
