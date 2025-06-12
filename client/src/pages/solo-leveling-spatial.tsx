@@ -16,6 +16,7 @@ import { SparringSessionModal } from '@/components/SparringSessionModal';
 import { TrainingActivityModal } from '@/components/TrainingActivityModal';
 import { MovieNightModal } from '@/components/MovieNightModal';
 import { HangangParkWalkModal } from '@/components/HangangParkWalkModal';
+import { ShoppingDateModal } from '@/components/ShoppingDateModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -266,6 +267,7 @@ export default function SoloLevelingSpatial() {
   const [showSparringModal, setShowSparringModal] = useState(false);
   const [showMovieNightModal, setShowMovieNightModal] = useState(false);
   const [showHangangParkModal, setShowHangangParkModal] = useState(false);
+  const [showShoppingDateModal, setShowShoppingDateModal] = useState(false);
 
   // System 9: AI Narrative Engine state
   const [showNarrativeProgression, setShowNarrativeProgression] = useState(false);
@@ -3743,6 +3745,13 @@ export default function SoloLevelingSpatial() {
             setTimeout(() => {
               setShowHangangParkModal(true);
             }, 500);
+            return;
+          }
+
+          // Handle Shopping for Gifts - Activity 5: Casual Outing → System 7 Bridge
+          if (activity.id === 'shopping_for_gifts') {
+            console.log('🛍️ Shopping for gifts selected - opening store selection modal');
+            setShowShoppingDateModal(true);
             return;
           }
           
