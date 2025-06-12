@@ -22,7 +22,23 @@ interface LuxuryDepartmentStoreProps {
   currentGold: number;
   onPurchase: (item: LuxuryItem) => void;
   backgroundImage?: string;
+  chaHaeInShoppingMode?: boolean;
 }
+
+const getChaHaeInCommentary = (item: LuxuryItem): string => {
+  const comments: Record<string, string> = {
+    'starlight_sapphire_necklace': "That sapphire... it's beautiful. The way it catches the light reminds me of moonlit raids.",
+    'moonstone_earrings': "These would complement my hair color perfectly. You have good taste, Jin-Woo.",
+    'platinum_bracelet': "Simple yet elegant. I appreciate functional beauty over flashy displays.",
+    'exclusive_handbag': "A quality piece that would last for years. I value craftsmanship like this.",
+    'silk_evening_dress': "It's lovely, but I wonder when I'd have occasion to wear something so formal...",
+    'designer_watch': "Practical and stylish. A hunter needs to keep track of time during missions.",
+    'premium_chocolates': "These look delicious. Though I should maintain my training diet...",
+    'crystal_vase': "Beautiful, but I'm not sure my apartment needs more decorative pieces right now."
+  };
+  
+  return comments[item.id] || "This catches my eye. What do you think about it?";
+};
 
 const LUXURY_ITEMS: LuxuryItem[] = [
   {

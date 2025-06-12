@@ -98,7 +98,7 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     {
       id: 'shopping_for_gifts',
       title: 'Go Shopping for Gifts',
-      description: 'Browse the Luxury Department Store together to find the perfect gift for her.',
+      description: 'Visit stores together to find the perfect gift. She\'ll share her thoughts on items.',
       icon: <Gift className="w-5 h-5" />,
       energyCost: 20,
       category: 'casual',
@@ -409,7 +409,7 @@ export function DailyLifeHubComplete({
   useEffect(() => {
     console.log('🎮 Available activities:', availableActivities.map(a => ({ id: a.id, title: a.title, available: a.available })));
     const coffeeActivity = availableActivities.find(a => a.id === 'grab_coffee');
-    console.log('☕ Coffee activity details:', coffeeActivity);
+    console.log('☕ Coffee activity details:', coffeeActivity ? { id: coffeeActivity.id, title: coffeeActivity.title, available: coffeeActivity.available } : 'not found');
   }, [availableActivities]);
 
   const filteredActivities = selectedCategory === 'all' 
