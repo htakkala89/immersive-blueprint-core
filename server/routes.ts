@@ -422,6 +422,165 @@ function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOf
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // API endpoint to test both models and return results
+  app.get("/api/test-models", async (req, res) => {
+    try {
+      const results = { novelai: null, imagen: null, errors: [] };
+      
+      // Test NovelAI V4
+      try {
+        console.log('Testing NovelAI V4 Curated Preview...');
+        const novelaiResult = await imageGenerationService.generateNovelAI({
+          activityId: 'bedroom_intimacy',
+          relationshipStatus: 'deeply_connected', 
+          intimacyLevel: 8
+        });
+        results.novelai = novelaiResult;
+      } catch (error) {
+        results.errors.push(`NovelAI V4 failed: ${error.message}`);
+      }
+      
+      // Test Google Imagen 4.0
+      try {
+        console.log('Testing Google Imagen 4.0...');
+        const imagenResult = await generateLocationSceneImage('chahaein_apartment', 'evening');
+        results.imagen = imagenResult;
+      } catch (error) {
+        results.errors.push(`Google Imagen 4.0 failed: ${error.message}`);
+      }
+      
+      res.json(results);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Serve test images page (must be before Vite middleware)
+  app.get("/test-images", (req, res) => {
+    const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Tests</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .test-section { margin: 30px 0; padding: 20px; border: 1px solid #333; border-radius: 8px; }
+        .image-container { margin: 20px 0; text-align: center; }
+        .generated-image { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .loading { color: #888; font-style: italic; }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .model-info { background: #2a2a2a; padding: 10px; border-radius: 4px; margin: 10px 0; font-family: monospace; }
+        button { background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 5px; }
+        button:hover { background: #5855eb; }
+    </style>
+</head>
+<body>
+    <h1>AI Model Generation Tests</h1>
+    
+    <div class="test-section">
+        <h2>NovelAI V4 Curated Preview Test</h2>
+        <div class="model-info">Model: nai-diffusion-4-curated-preview</div>
+        <button onclick="testNovelAI()">Generate Intimate Scene</button>
+        <div id="novelai-status" class="loading">Ready to test...</div>
+        <div id="novelai-container" class="image-container"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Google Imagen 4.0 Test</h2>
+        <div class="model-info">Model: imagen-4.0-generate-001</div>
+        <button onclick="testImagen()">Generate Location Scene</button>
+        <div id="imagen-status" class="loading">Ready to test...</div>
+        <div id="imagen-container" class="image-container"></div>
+    </div>
+
+    <script>
+        async function testNovelAI() {
+            const statusDiv = document.getElementById('novelai-status');
+            const containerDiv = document.getElementById('novelai-container');
+            
+            statusDiv.textContent = 'Generating with NovelAI V4...';
+            statusDiv.className = 'loading';
+            containerDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/generate-novelai-intimate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        activityId: 'shower_intimacy',
+                        relationshipStatus: 'deeply_connected',
+                        intimacyLevel: 8
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.imageUrl) {
+                    statusDiv.textContent = 'Successfully generated with NovelAI V4';
+                    statusDiv.className = 'success';
+                    
+                    const img = document.createElement('img');
+                    img.src = data.imageUrl;
+                    img.className = 'generated-image';
+                    img.alt = 'NovelAI V4 Generated Image';
+                    containerDiv.appendChild(img);
+                } else {
+                    statusDiv.textContent = 'Failed to generate image';
+                    statusDiv.className = 'error';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Error: ' + error.message;
+                statusDiv.className = 'error';
+            }
+        }
+
+        async function testImagen() {
+            const statusDiv = document.getElementById('imagen-status');
+            const containerDiv = document.getElementById('imagen-container');
+            
+            statusDiv.textContent = 'Generating with Google Imagen 4.0...';
+            statusDiv.className = 'loading';
+            containerDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/generate-scene-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        location: 'chahaein_apartment',
+                        timeOfDay: 'evening'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.imageUrl) {
+                    statusDiv.textContent = 'Successfully generated with Google Imagen 4.0';
+                    statusDiv.className = 'success';
+                    
+                    const img = document.createElement('img');
+                    img.src = data.imageUrl;
+                    img.className = 'generated-image';
+                    img.alt = 'Google Imagen 4.0 Generated Image';
+                    containerDiv.appendChild(img);
+                } else {
+                    statusDiv.textContent = 'Failed to generate image';
+                    statusDiv.className = 'error';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Error: ' + error.message;
+                statusDiv.className = 'error';
+            }
+        }
+    </script>
+</body>
+</html>`;
+    res.setHeader('Content-Type', 'text/html');
+    res.send(htmlContent);
+  });
+
   // Serve NovelAI generated images directly (bypasses Vite)
   app.get('/mature_*.png', (req, res) => {
     const filename = req.path.substring(1); // Remove leading slash
