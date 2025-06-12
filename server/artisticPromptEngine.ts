@@ -79,19 +79,24 @@ export class ArtisticPromptEngine {
     const characters = "Cha Hae-In (beautiful Korean female, golden blonde hair, violet eyes) and Jin-Woo (handsome Korean male, black hair, dark eyes)";
     
     const explicitContexts = {
-      'shower_together': 'nude shower scene together, wet naked bodies, steamy bathroom, water cascading over bare skin, intimate shower embrace, explicit nudity, wet blonde hair, passionate kissing under running water, naked bodies pressed together, steam-filled bathroom, shower glass, bathroom tiles',
-      'shower': 'nude shower scene, wet naked body, steamy bathroom atmosphere, water droplets on bare skin, explicit nudity, wet hair, intimate bathing, sensual shower moment, steam and water',
-      'bedroom': 'nude bedroom scene, explicit intimate moment, naked bodies, passionate embrace, bed intimacy, explicit sexual content, romantic bedroom setting, mature intimate activity',
-      'undress': 'intimate undressing scene, removing clothes, revealing naked body, explicit nudity, sensual undressing, bare skin exposure, intimate vulnerability',
-      'touch': 'intimate touching, caressing naked skin, explicit physical intimacy, sensual exploration, bare body contact, passionate touching',
-      'embrace': 'naked embrace, nude bodies pressed together, explicit intimate embrace, skin-to-skin contact, passionate naked cuddle'
+      'shower_together': 'nude shower scene together, wet naked bodies, steamy bathroom, water cascading over bare skin, intimate shower embrace, explicit nudity, wet blonde hair, passionate kissing under running water, naked bodies pressed together, steam-filled bathroom, shower glass, bathroom tiles, water streaming down nude bodies, sensual washing, intimate bathing together',
+      'shower': 'solo nude shower scene, wet naked body, steamy bathroom atmosphere, water droplets on bare skin, explicit nudity, wet hair, intimate bathing, sensual shower moment, steam and water, solo bathing eroticism',
+      'bedroom': 'nude bedroom scene, explicit intimate moment, naked bodies, passionate embrace, bed intimacy, explicit sexual content, romantic bedroom setting, mature intimate activity, lovers entwined, intimate positioning, sexual tension',
+      'undress': 'intimate undressing scene, removing clothes, revealing naked body, explicit nudity, sensual undressing, bare skin exposure, intimate vulnerability, clothing removal, seductive stripping, gradual reveal',
+      'touch': 'intimate touching, caressing naked skin, explicit physical intimacy, sensual exploration, bare body contact, passionate touching, erotic caresses, intimate fondling, sensual massage',
+      'embrace': 'naked embrace, nude bodies pressed together, explicit intimate embrace, skin-to-skin contact, passionate naked cuddle, intimate holding, nude cuddling, bare body contact',
+      'kiss': 'passionate kissing, nude bodies, intimate lip contact, deep passionate kiss, erotic kissing, sensual mouth contact, lovers kissing, romantic lip lock',
+      'massage': 'nude body massage, sensual touching, intimate massage therapy, bare skin massage, erotic massage, oil massage on nude body, intimate body work',
+      'bath': 'nude bathing together, shared bath intimacy, wet naked bodies in bath, intimate bathing, water play, nude bath scene, sensual washing'
     };
 
-    const activityDesc = explicitContexts[options.activityContext as keyof typeof explicitContexts] || 'explicit intimate scene, nude bodies, mature content, passionate intimacy';
+    const activityDesc = explicitContexts[options.activityContext as keyof typeof explicitContexts] || 'explicit intimate scene, nude bodies, mature content, passionate intimacy, erotic encounter, explicit sexual content';
     const setting = this.createSettingDescription(options.setting);
-    const negativePrompt = ", censored, clothed, covered, modest, tame content, safe for work";
 
-    return `${baseQuality}, ${characters}, ${activityDesc}, ${setting}, explicit mature content, uncensored, detailed anatomy, high quality erotic art${negativePrompt}`;
+    const explicitPrompt = `${baseQuality}, ${characters}, ${activityDesc}, ${setting}, explicit mature content, uncensored, detailed anatomy, high quality erotic art, NSFW content, adult content, explicit sexual art`;
+    
+    console.log('EXPLICIT PROMPT GENERATED:', explicitPrompt);
+    return explicitPrompt;
   }
 
   private createCharacterDescription(intimacyLevel: number): string {

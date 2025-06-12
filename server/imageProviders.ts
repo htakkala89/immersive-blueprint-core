@@ -35,9 +35,9 @@ class NovelAIProvider implements ImageProvider {
       'https://image.novelai.net/ai/generate-image'
     ];
 
-    const negativePrompt = "silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
+    const negativePrompt = "dark hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted, censored bars, mosaic censoring";
     
-    const optimizedPrompt = `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In with blonde hair, Jin-Woo with dark hair, Solo Leveling manhwa art style, romantic intimate scene, beautiful cinematic lighting, emotional connection, tender embrace, high quality artwork, Korean webtoon aesthetic`;
+    const optimizedPrompt = `${prompt}, Cha Hae-In with blonde hair, Jin-Woo with dark hair, Solo Leveling manhwa art style, explicit mature content, uncensored, high quality erotic artwork, Korean webtoon aesthetic, NSFW content, adult content`;
 
     const requestBody = {
       input: optimizedPrompt,
