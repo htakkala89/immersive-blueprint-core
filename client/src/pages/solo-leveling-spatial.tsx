@@ -4013,6 +4013,7 @@ export default function SoloLevelingSpatial() {
         currentGold={gameState.gold || 0}
         onPurchase={handleFurniturePurchase}
         backgroundImage={currentLocationData.backgroundImage}
+        chaHaeInShoppingMode={true}
       />
 
       <LuxuryRealtor
