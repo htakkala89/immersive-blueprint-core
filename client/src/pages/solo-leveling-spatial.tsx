@@ -4028,13 +4028,13 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      <DungeonRaidSystem11
+      <DungeonRaidWithInventory
         isVisible={showDungeonRaid}
         onClose={() => {
           console.log('Closing dungeon raid');
           setShowDungeonRaid(false);
         }}
-        onRaidComplete={(success, loot) => {
+        onRaidComplete={(success: boolean, loot: any[]) => {
           if (success) {
             setGameState(prev => ({
               ...prev,
@@ -4042,7 +4042,7 @@ export default function SoloLevelingSpatial() {
               affection: Math.min(100, prev.affection + 10),
               experience: (prev.experience || 0) + 500
             }));
-            loot.forEach(item => {
+            loot.forEach((item: any) => {
               setGameState(prev => ({
                 ...prev,
                 inventory: [...prev.inventory, item]
