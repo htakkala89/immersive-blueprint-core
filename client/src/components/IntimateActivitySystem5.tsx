@@ -582,16 +582,15 @@ export function IntimateActivitySystem5({
                   <label className="text-white/80 text-sm mb-3 block">Enhancement Suggestions</label>
                   <div className="grid grid-cols-1 gap-2">
                     {getSuggestionPrompts().map((suggestion, index) => (
-                      <SparkleEffect key={index} intensity="low" color="pink" className="w-full">
-                        <Button
-                          onClick={() => appendSuggestion(suggestion)}
-                          variant="ghost"
-                          className="justify-start text-left bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 w-full"
-                        >
-                          <Sparkles className="w-4 h-4 mr-2 text-pink-400" />
-                          {suggestion}
-                        </Button>
-                      </SparkleEffect>
+                      <Button
+                        key={index}
+                        onClick={() => appendSuggestion(suggestion)}
+                        variant="ghost"
+                        className="justify-start text-left bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 w-full"
+                      >
+                        <Sparkles className="w-4 h-4 mr-2 text-pink-400" />
+                        {suggestion}
+                      </Button>
                     ))}
                   </div>
                 </div>
