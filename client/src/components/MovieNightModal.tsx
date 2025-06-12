@@ -284,20 +284,21 @@ export function MovieNightModal({
                       key={movie.id}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      className="bg-black/30 hover:bg-black/50 border border-indigo-500/30 hover:border-indigo-400 rounded-lg overflow-hidden cursor-pointer"
+                      onClick={() => selectMovie(movie)}
                     >
-                      <Button
-                        onClick={() => selectMovie(movie)}
-                        className="w-full h-auto p-6 bg-black/30 hover:bg-black/50 border border-indigo-500/30 hover:border-indigo-400 text-left space-y-4"
-                      >
+                      <div className="p-6 space-y-4 text-left">
                         <div className="flex items-center gap-4">
-                          {movie.icon}
+                          <div className="text-indigo-300">
+                            {movie.icon}
+                          </div>
                           <h3 className="text-xl font-semibold text-white">{movie.title}</h3>
                         </div>
-                        <p className="text-indigo-200 text-sm">{movie.description}</p>
-                        <div className="text-xs text-green-300">
+                        <p className="text-indigo-200 text-sm leading-relaxed">{movie.description}</p>
+                        <div className="text-xs text-green-300 font-medium">
                           +{movie.affectionBonus} bonus affection
                         </div>
-                      </Button>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
