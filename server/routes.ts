@@ -1782,13 +1782,17 @@ Respond as Cha Hae-In would in this intimate moment:`;
   // Generate Narrative Prompt for Lens System
   app.post("/api/generate-narrative-prompt", async (req, res) => {
     try {
-      const { chatHistory, activityId, userPrompt } = req.body;
+      const { chatHistory, activityId, userPrompt, intimacyLevel, setting, emotionalTone } = req.body;
       
-      // Use artistic prompt engine for consistent, high-quality romantic art prompts
-      const artisticPrompt = artisticPromptEngine.generateRomanticPrompt(
-        userPrompt || "A beautiful romantic moment between the couple",
-        chatHistory || []
-      );
+      // Use the enhanced artistic prompt engine with explicit content support
+      const promptOptions = {
+        emotionalTone: emotionalTone || 'passionate',
+        setting: setting || 'chahaein_apartment',
+        activityContext: activityId || userPrompt || 'intimate_moment',
+        intimacyLevel: intimacyLevel || 8
+      };
+      
+      const artisticPrompt = artisticPromptEngine.generateArtisticPrompt(promptOptions);
       
       res.json({ prompt: artisticPrompt });
     } catch (error) {

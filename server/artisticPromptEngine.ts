@@ -52,12 +52,42 @@ export class ArtisticPromptEngine {
     const emotional = this.emotionalDescriptors[options.emotionalTone];
     const artStyle = options.intimacyLevel > 7 ? this.baseArtStyles.romantic : this.baseArtStyles.elegant;
     
+    // For explicit mature content (intimacy level 8+), generate uncensored prompts
+    if (options.intimacyLevel >= 8 && this.isExplicitActivity(options.activityContext)) {
+      return this.generateExplicitPrompt(options);
+    }
+    
     // Create character descriptions focused on emotional connection
     const characterDesc = this.createCharacterDescription(options.intimacyLevel);
     const settingDesc = this.createSettingDescription(options.setting);
     const emotionalContext = this.createEmotionalContext(options.emotionalTone, options.activityContext);
     
     return `${artStyle}, ${characterDesc}, ${settingDesc}, ${emotional.expressions}, ${emotional.atmosphere}, ${emotional.body_language}, ${emotionalContext}, beautiful artistic composition, high quality romantic art, emotional depth and artistic merit, detailed intimate portrayal`;
+  }
+
+  private isExplicitActivity(activity: string): boolean {
+    const explicitActivities = ['shower_together', 'shower', 'bedroom', 'undress', 'nude', 'naked', 'explicit', 'sexual'];
+    return explicitActivities.some(explicit => activity.toLowerCase().includes(explicit));
+  }
+
+  private generateExplicitPrompt(options: ArtisticPromptOptions): string {
+    const baseQuality = "masterpiece, best quality, ultra detailed, high resolution, Solo Leveling manhwa art style";
+    const characters = "Cha Hae-In (beautiful Korean female, golden blonde hair, violet eyes) and Jin-Woo (handsome Korean male, black hair, dark eyes)";
+    
+    const explicitContexts = {
+      'shower_together': 'nude shower scene together, wet naked bodies, steamy bathroom, water cascading over bare skin, intimate shower embrace, explicit nudity, wet blonde hair, passionate kissing under running water, naked bodies pressed together, steam-filled bathroom, shower glass, bathroom tiles',
+      'shower': 'nude shower scene, wet naked body, steamy bathroom atmosphere, water droplets on bare skin, explicit nudity, wet hair, intimate bathing, sensual shower moment, steam and water',
+      'bedroom': 'nude bedroom scene, explicit intimate moment, naked bodies, passionate embrace, bed intimacy, explicit sexual content, romantic bedroom setting, mature intimate activity',
+      'undress': 'intimate undressing scene, removing clothes, revealing naked body, explicit nudity, sensual undressing, bare skin exposure, intimate vulnerability',
+      'touch': 'intimate touching, caressing naked skin, explicit physical intimacy, sensual exploration, bare body contact, passionate touching',
+      'embrace': 'naked embrace, nude bodies pressed together, explicit intimate embrace, skin-to-skin contact, passionate naked cuddle'
+    };
+
+    const activityDesc = explicitContexts[options.activityContext as keyof typeof explicitContexts] || 'explicit intimate scene, nude bodies, mature content, passionate intimacy';
+    const setting = this.createSettingDescription(options.setting);
+    const negativePrompt = ", censored, clothed, covered, modest, tame content, safe for work";
+
+    return `${baseQuality}, ${characters}, ${activityDesc}, ${setting}, explicit mature content, uncensored, detailed anatomy, high quality erotic art${negativePrompt}`;
   }
 
   private createCharacterDescription(intimacyLevel: number): string {
