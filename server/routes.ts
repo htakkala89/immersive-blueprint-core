@@ -1712,6 +1712,11 @@ Respond as Cha Hae-In would in this intimate moment:`;
     }
   });
 
+  // Serve test images page
+  app.get("/test-images", (req, res) => {
+    res.sendFile(path.join(__dirname, "../test_generated_images.html"));
+  });
+
   const server = createServer(app);
   return server;
 }
