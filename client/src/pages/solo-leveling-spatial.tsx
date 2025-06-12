@@ -14,6 +14,7 @@ import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { CoffeeActivityModal } from '@/components/CoffeeActivityModal';
 import { SparringSessionModal } from '@/components/SparringSessionModal';
 import { TrainingActivityModal } from '@/components/TrainingActivityModal';
+import { MovieNightModal } from '@/components/MovieNightModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -250,6 +251,7 @@ export default function SoloLevelingSpatial() {
   
   // Activity System states
   const [showSparringModal, setShowSparringModal] = useState(false);
+  const [showMovieNightModal, setShowMovieNightModal] = useState(false);
 
   // System 9: AI Narrative Engine state
   const [showNarrativeProgression, setShowNarrativeProgression] = useState(false);
@@ -3646,6 +3648,19 @@ export default function SoloLevelingSpatial() {
             // Then open the sparring modal after a brief delay for transition
             setTimeout(() => {
               setShowSparringModal(true);
+            }, 500);
+            return;
+          }
+
+          // Handle movie night specifically - Activity 3: Domestic & Narrative Gateway
+          if (activity.id === 'movie_on_couch') {
+            console.log('🎬 Movie night selected - transitioning to apartment living room');
+            // First transition to the apartment location
+            setPlayerLocation('chahaein_apartment');
+            setGameState(prev => ({ ...prev, currentScene: 'chahaein_apartment' }));
+            // Then open the movie night modal after a brief delay for transition
+            setTimeout(() => {
+              setShowMovieNightModal(true);
             }, 500);
             return;
           }
