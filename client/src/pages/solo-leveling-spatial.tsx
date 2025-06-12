@@ -1086,7 +1086,11 @@ export default function SoloLevelingSpatial() {
         if (data.imageUrl) {
           setAvatarImage(data.imageUrl);
           console.log(`Generated new avatar for expression: ${expression}`);
+        } else {
+          console.log(`Avatar generation returned no image for expression: ${expression}`);
         }
+      } else {
+        console.log(`Avatar generation failed with status: ${response.status}`);
       }
     } catch (error) {
       console.error('Failed to generate avatar expression:', error);
@@ -3284,12 +3288,20 @@ export default function SoloLevelingSpatial() {
                               </div>
                             )}
                           </div>
-                        ) : (
+                        ) : isGeneratingAvatar ? (
                           <div className="w-full h-full bg-gradient-to-b from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-pink-300/20 flex items-center justify-center">
-                            <div className="text-pink-200 text-center">
-                              <div className="w-8 h-3 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-full mb-1 mx-auto" />
-                              <div className="w-6 h-6 bg-gradient-to-b from-pink-100 to-pink-200 rounded-full mx-auto mb-1" />
-                              <div className="w-5 h-4 bg-gradient-to-b from-blue-800 to-blue-900 rounded-b-lg mx-auto" />
+                            <div className="w-6 h-6 border-2 border-pink-400/60 border-t-pink-400 rounded-full animate-spin"></div>
+                          </div>
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-b from-purple-600/30 to-pink-600/30 backdrop-blur-sm border border-pink-300/20 flex items-center justify-center">
+                            <div className="text-pink-200 text-2xl">
+                              {chaHaeInExpression === 'romantic' ? '💕' : 
+                               chaHaeInExpression === 'welcoming' ? '😊' :
+                               chaHaeInExpression === 'surprised' ? '😲' :
+                               chaHaeInExpression === 'amused' ? '😄' :
+                               chaHaeInExpression === 'contemplative' ? '🤔' :
+                               chaHaeInExpression === 'concerned' ? '😟' :
+                               chaHaeInExpression === 'focused' ? '🎯' : '✨'}
                             </div>
                           </div>
                         )}
