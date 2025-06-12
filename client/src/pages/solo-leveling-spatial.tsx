@@ -38,6 +38,7 @@ import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSy
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
 import { MonarchsAuraMenu } from '@/components/MonarchsAuraMenu';
+import { ChaHaeInDialogue } from '@/components/ChaHaeInDialogue';
 
 interface CoreStats {
   strength: number;
@@ -178,6 +179,45 @@ export default function SoloLevelingSpatial() {
 
   // Character state
   const [chaHaeInPresent, setChaHaeInPresent] = useState(true);
+  const [chaHaeInState, setChaHaeInState] = useState({
+    location: 'hongdae_cafe',
+    activity: 'reading_menu',
+    expression: 'happy',
+    affectionLevel: 45,
+    status: 'available',
+    lastInteraction: new Date(),
+    currentMood: 'content'
+  });
+  const [showDialogue, setShowDialogue] = useState(false);
+  const [dialogueHistory, setDialogueHistory] = useState<any[]>([]);
+
+  // Handler for affection changes
+  const handleAffectionChange = (change: number) => {
+    setChaHaeInState(prev => ({
+      ...prev,
+      affectionLevel: Math.max(0, Math.min(100, prev.affectionLevel + change)),
+      lastInteraction: new Date()
+    }));
+    
+    // Update game state affection
+    setGameState(prev => ({
+      ...prev,
+      affection: Math.max(0, Math.min(100, prev.affection + change))
+    }));
+
+    // Update mood based on affection level
+    const newAffection = Math.max(0, Math.min(100, chaHaeInState.affectionLevel + change));
+    let newMood = 'content';
+    if (newAffection >= 80) newMood = 'happy';
+    else if (newAffection >= 60) newMood = 'content';
+    else if (newAffection >= 40) newMood = 'shy';
+    else newMood = 'distant';
+
+    setChaHaeInState(prev => ({
+      ...prev,
+      currentMood: newMood
+    }));
+  };
 
   // Narrative state
   const [currentNarrativeContext, setCurrentNarrativeContext] = useState('');
@@ -354,7 +394,7 @@ export default function SoloLevelingSpatial() {
         {/* Character Presence - Cha Hae-In */}
         {currentLocationData.chaHaeInPresent && (
           <motion.div
-            className="absolute pointer-events-none"
+            className="absolute cursor-pointer z-20"
             style={{
               left: `${currentLocationData.chaPosition.x}%`,
               top: `${currentLocationData.chaPosition.y}%`,
@@ -363,17 +403,44 @@ export default function SoloLevelingSpatial() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowDialogue(true)}
           >
             <div className="relative">
-              {/* Character indicator */}
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full border-4 border-white/80 shadow-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">CHA</span>
+              {/* Character avatar */}
+              <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full border-4 border-white/80 shadow-lg flex items-center justify-center relative overflow-hidden">
+                <span className="text-white font-bold text-lg">차</span>
+                
+                {/* Mood indicator */}
+                <div className="absolute top-1 right-1 w-3 h-3 rounded-full border border-white/50" 
+                     style={{
+                       backgroundColor: chaHaeInState.currentMood === 'happy' ? '#10B981' : 
+                                       chaHaeInState.currentMood === 'content' ? '#3B82F6' :
+                                       chaHaeInState.currentMood === 'busy' ? '#F59E0B' : '#EF4444'
+                     }}
+                />
               </div>
               
               {/* Activity indicator */}
               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap">
-                {currentLocationData.chaActivity.replace('_', ' ')}
+                {chaHaeInState.activity.replace('_', ' ')}
               </div>
+
+              {/* Affection level indicator */}
+              <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs px-2 py-1 rounded-full">
+                <Heart className="w-3 h-3 inline mr-1" />
+                {chaHaeInState.affectionLevel}
+              </div>
+
+              {/* Interaction prompt */}
+              <motion.div
+                className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded-lg opacity-0"
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{ repeat: Infinity, duration: 3, delay: 1 }}
+              >
+                Tap to talk
+              </motion.div>
             </div>
           </motion.div>
         )}
@@ -747,6 +814,15 @@ export default function SoloLevelingSpatial() {
               console.log('Unknown rune:', systemId);
           }
         }}
+      />
+
+      {/* Cha Hae-In Dialogue System */}
+      <ChaHaeInDialogue
+        isVisible={showDialogue}
+        onClose={() => setShowDialogue(false)}
+        chaState={chaHaeInState}
+        timeOfDay={timeOfDay}
+        onAffectionChange={handleAffectionChange}
       />
     </div>
   );
