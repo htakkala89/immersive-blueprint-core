@@ -237,8 +237,13 @@ export function SparringSessionModal({
       affection: affectionGain
     });
 
-    // Generate aftermath conversation
-    generateAftermathConversation();
+    // Generate aftermath conversation if not already shown
+    if (conversationHistory.length === 0) {
+      generateAftermathConversation();
+    } else {
+      // If conversation already shown, close the session
+      onClose();
+    }
   };
 
   const generateAftermathConversation = () => {
@@ -504,7 +509,7 @@ export function SparringSessionModal({
                     onClick={completeSession}
                     className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3"
                   >
-                    Complete Training Session
+                    {conversationHistory.length === 0 ? 'Complete Training Session' : 'Finish & Return'}
                   </Button>
                   
                   <Button
