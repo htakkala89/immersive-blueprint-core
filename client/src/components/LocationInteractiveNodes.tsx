@@ -876,11 +876,12 @@ export function LocationInteractiveNodes({
         return (
           <motion.div
             key={node.id}
-            className="absolute pointer-events-auto cursor-pointer z-40 opacity-100"
+            className="absolute pointer-events-auto cursor-pointer opacity-100"
             style={{
               left: `${node.position.x}%`,
               top: `${node.position.y}%`,
-              transform: 'translate(-50%, -50%)'
+              transform: 'translate(-50%, -50%)',
+              zIndex: 9999 // Force high z-index to ensure visibility
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -893,12 +894,14 @@ export function LocationInteractiveNodes({
           >
             {/* Node Orb with 8px spacing system */}
             <motion.div
-              className="w-6 h-6 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-purple-500 border-4 border-white shadow-lg"
               style={{
-                minWidth: '24px',
-                minHeight: '24px',
-                padding: '4px', // 4px micro spacing for icon-to-border
-                margin: '8px' // 8px standard element spacing
+                minWidth: '40px',
+                minHeight: '40px',
+                padding: '8px',
+                margin: '8px',
+                backgroundColor: 'rgba(147, 51, 234, 0.9)',
+                backdropFilter: 'blur(4px)'
               }}
               animate={available ? {
                 boxShadow: [
@@ -909,7 +912,7 @@ export function LocationInteractiveNodes({
               } : {}}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <IconComponent className="w-3 h-3 text-white" />
+              <IconComponent className="w-5 h-5 text-white" />
             </motion.div>
 
             {/* Node Label with 8px spacing from orb */}
