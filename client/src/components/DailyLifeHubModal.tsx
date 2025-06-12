@@ -3,6 +3,8 @@ import { X } from 'lucide-react';
 import { useVoice } from '../hooks/useVoice';
 import { CoffeeActivityModal } from './CoffeeActivityModal';
 import { TrainingActivityModal } from './TrainingActivityModal';
+import { LunchActivityModal } from './LunchActivityModal';
+import { EveningWalkActivityModal } from './EveningWalkActivityModal';
 
 interface PlayerStats {
   gold: number;
@@ -83,6 +85,16 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       energyCost: 10,
       affectionReward: 5,
       available: timeOfDay === 'morning'
+    },
+    {
+      id: 'lunch_date',
+      title: 'Lunch Date',
+      description: 'Share a meal at a nice restaurant',
+      icon: '🍽️',
+      energyCost: 15,
+      affectionReward: 5,
+      available: stats.energy >= 15,
+      goldReward: 0
     },
     {
       id: 'training_together',
@@ -319,6 +331,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
   const { playVoice } = useVoice();
   const [coffeeActivityVisible, setCoffeeActivityVisible] = useState(false);
   const [trainingActivityVisible, setTrainingActivityVisible] = useState(false);
+  const [lunchActivityVisible, setLunchActivityVisible] = useState(false);
   const [currentTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'morning';
@@ -352,6 +365,12 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     // Handle training activity
     if (activity.id === 'training_together') {
       setTrainingActivityVisible(true);
+      return;
+    }
+
+    // Handle lunch activity
+    if (activity.id === 'lunch_date') {
+      setLunchActivityVisible(true);
       return;
     }
 
@@ -442,6 +461,18 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     }
     
     setTrainingActivityVisible(false);
+  };
+
+  // Handle lunch activity completion
+  const handleLunchActivityComplete = (results: any) => {
+    // Update game state with results
+    if (gameState) {
+      gameState.gold = Math.max(0, (gameState.gold || 500) - results.goldSpent);
+      gameState.energy = Math.max(0, (gameState.energy || 80) - results.energySpent);
+      gameState.affection = Math.min(5, (gameState.affection || 0) + (results.affectionGained / 20)); // Convert back to 0-5 scale
+    }
+    
+    setLunchActivityVisible(false);
   };
 
   if (!isVisible) return null;
@@ -619,6 +650,14 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
         onClose={() => setTrainingActivityVisible(false)}
         onActivityComplete={handleTrainingActivityComplete}
         backgroundImage="/images/training-grounds.jpg"
+      />
+
+      {/* Lunch Activity Modal */}
+      <LunchActivityModal
+        isVisible={lunchActivityVisible}
+        onClose={() => setLunchActivityVisible(false)}
+        onActivityComplete={handleLunchActivityComplete}
+        backgroundImage="/images/restaurant.jpg"
       />
     </div>
   );
