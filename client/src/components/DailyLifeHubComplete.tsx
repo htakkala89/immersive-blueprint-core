@@ -442,6 +442,7 @@ export function DailyLifeHubComplete({
     if (activity.id === 'grab_coffee') {
       console.log('☕ Opening coffee modal');
       setCoffeeActivityVisible(true);
+      console.log('☕ Modal state set to true');
       return;
     }
     
@@ -486,6 +487,16 @@ export function DailyLifeHubComplete({
           {/* Header with Greeting */}
           <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-xl border-b border-white/10 p-6">
             <div className="flex items-center justify-between">
+              {/* Debug Coffee Modal Button */}
+              <button 
+                onClick={() => {
+                  console.log('🧪 Test button clicked');
+                  setCoffeeActivityVisible(true);
+                }} 
+                className="bg-red-500 text-white px-3 py-1 rounded text-xs"
+              >
+                Test Coffee Modal
+              </button>
               <div className="flex-1">
                 <h2 className="text-white font-bold text-2xl mb-2">Day Planner</h2>
                 <p className="text-purple-200 text-lg italic">{greetingMessage}</p>
