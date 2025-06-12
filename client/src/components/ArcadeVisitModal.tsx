@@ -40,6 +40,7 @@ export function ArcadeVisitModal({ isVisible, onClose, onComplete, backgroundIma
 
   // Start shooting gallery game
   const startShootingGame = () => {
+    console.log('🎯 Starting shooting game!');
     setGameMode('shooting');
     setGameStarted(true);
     setScore(0);
@@ -117,6 +118,7 @@ export function ArcadeVisitModal({ isVisible, onClose, onComplete, backgroundIma
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        onClick={(e) => e.stopPropagation()}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -178,13 +180,13 @@ export function ArcadeVisitModal({ isVisible, onClose, onComplete, backgroundIma
                 <p className="text-cyan-200 text-lg mb-8">Time to show off your skills to Cha Hae-In</p>
                 
                 <div className="space-y-4">
-                  <Button
+                  <button
                     onClick={startShootingGame}
-                    className="w-64 py-4 text-xl font-bold bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white border-2 border-yellow-400 shadow-lg"
+                    className="w-64 py-4 text-xl font-bold bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white border-2 border-yellow-400 shadow-lg rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer z-50 relative flex items-center justify-center"
                   >
                     <Target className="w-6 h-6 mr-3" />
                     TARGET SHOOTER
-                  </Button>
+                  </button>
                 </div>
               </div>
             </motion.div>
