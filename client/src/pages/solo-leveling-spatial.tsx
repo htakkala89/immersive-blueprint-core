@@ -2035,6 +2035,19 @@ export default function SoloLevelingSpatial() {
             </div>
           </div>
 
+          {/* DevTools Access */}
+          <div className="mb-3">
+            <button 
+              onClick={() => setShowDevTools(true)}
+              className="w-full px-3 py-2 rounded bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium text-xs transition-all"
+            >
+              🔧 Activity Requirements Manager
+            </button>
+            <div className="text-xs text-gray-400 mt-1 text-center">
+              Ctrl+Shift+D
+            </div>
+          </div>
+
           {/* Weather Controls */}
           <div>
             <div className="text-xs text-gray-300 mb-1">Weather</div>
