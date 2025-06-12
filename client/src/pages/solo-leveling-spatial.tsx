@@ -11,6 +11,7 @@ import {
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
+import { CoffeeActivityModal } from '@/components/CoffeeActivityModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -406,6 +407,7 @@ export default function SoloLevelingSpatial() {
   
   const [showConstellation, setShowConstellation] = useState(false);
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
+  const [showCoffeeActivity, setShowCoffeeActivity] = useState(false);
   
   // Debug logging for dungeon raid state
   useEffect(() => {
@@ -3574,6 +3576,13 @@ export default function SoloLevelingSpatial() {
           setActiveActivity(activity.id);
           setShowDailyLifeHub(false);
           
+          // Handle coffee activity specifically
+          if (activity.id === 'grab_coffee') {
+            console.log('☕ Coffee activity selected - opening coffee modal');
+            setShowCoffeeActivity(true);
+            return;
+          }
+          
           // Route activity to appropriate system
           if (activity.category === 'intimate') {
             // Route to System 5: Intimate Activity System for mature content
@@ -4123,6 +4132,24 @@ export default function SoloLevelingSpatial() {
         category={itemInspectionCategory}
         playerGold={gameState.gold || 0}
         onPurchase={handleItemPurchase}
+      />
+
+      {/* Coffee Activity Modal */}
+      <CoffeeActivityModal
+        isVisible={showCoffeeActivity}
+        onClose={() => setShowCoffeeActivity(false)}
+        onActivityComplete={(results) => {
+          console.log('☕ Coffee activity completed:', results);
+          // Update game state based on coffee activity results
+          setGameState(prev => ({
+            ...prev,
+            energy: Math.max(0, prev.energy - 10), // Coffee costs 10 energy
+            affection: Math.min(10, prev.affection + 0.1), // Small affection boost
+            gold: Math.max(0, (prev.gold || 0) - 15000) // Coffee costs 15,000 won
+          }));
+          setShowCoffeeActivity(false);
+        }}
+        backgroundImage="/images/hongdae-cafe.jpg"
       />
     </div>
   );
