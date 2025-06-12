@@ -630,6 +630,12 @@ export function LocationInteractiveNodes({
 
   const baseNodes = LOCATION_NODES[locationId] || [];
   
+  // Debug logging for hongdae_cafe
+  if (locationId === 'hongdae_cafe') {
+    console.log('🏪 HONGDAE CAFE DEBUG - Base nodes:', baseNodes);
+    console.log('🏪 Environmental context:', environmentalContext);
+  }
+  
   // System 3: Environmental State Management - Filter nodes based on context
   const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
     if (!environmentalContext) return baseNodes;
@@ -661,6 +667,12 @@ export function LocationInteractiveNodes({
   const nodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
     arr.findIndex(n => n.id === node.id) === index
   ); // Remove duplicates
+  
+  // Debug logging for hongdae_cafe
+  if (locationId === 'hongdae_cafe') {
+    console.log('🏪 HONGDAE CAFE DEBUG - Final filtered nodes:', nodes);
+    console.log('🏪 Available nodes after filtering:', nodes.filter(node => isNodeAvailable(node)));
+  }
 
   // System 3: Spatial Relationship Calculator
   const calculateNodeProximity = (node1: InteractiveNode, node2: InteractiveNode): number => {
