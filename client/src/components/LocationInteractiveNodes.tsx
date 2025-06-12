@@ -317,7 +317,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       }
     },
     {
-      id: 'counter',
+      id: 'order_counter',
       label: 'Counter',
       icon: Coffee,
       position: { x: 80, y: 25 },
@@ -353,7 +353,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       spatialRelationships: {
         enhances: undefined,
         excludes: undefined,
-        proximity: ['counter']
+        proximity: ['order_counter']
       },
       environmentalStates: {
         weather: ['clear', 'rain', 'cloudy'],
