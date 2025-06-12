@@ -404,24 +404,48 @@ export function DailyLifeHubComplete({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [hoveredActivity, setHoveredActivity] = useState<string | null>(null);
   const [coffeeActivityVisible, setCoffeeActivityVisible] = useState(false);
+
+  // Debug coffee modal state
+  useEffect(() => {
+    console.log('☕ Coffee modal state changed:', coffeeActivityVisible);
+  }, [coffeeActivityVisible]);
   
   const availableActivities = getAvailableActivities(playerStats, timeOfDay);
   const greetingMessage = getGreetingMessage(timeOfDay, playerStats.affectionLevel);
+
+  // Debug activities list
+  useEffect(() => {
+    console.log('🎮 Available activities:', availableActivities.map(a => ({ id: a.id, title: a.title, available: a.available })));
+    const coffeeActivity = availableActivities.find(a => a.id === 'grab_coffee');
+    console.log('☕ Coffee activity details:', coffeeActivity);
+  }, [availableActivities]);
 
   const filteredActivities = selectedCategory === 'all' 
     ? availableActivities 
     : availableActivities.filter(activity => activity.category === selectedCategory);
 
   const handleActivitySelect = (activity: Activity) => {
-    if (!activity.available) return;
-    if (playerStats.energy < activity.energyCost) return;
+    console.log('🎯 Activity clicked:', activity.id, activity.title);
+    console.log('📊 Activity available:', activity.available);
+    console.log('⚡ Player energy:', playerStats.energy, 'Required:', activity.energyCost);
+    
+    if (!activity.available) {
+      console.log('❌ Activity not available');
+      return;
+    }
+    if (playerStats.energy < activity.energyCost) {
+      console.log('❌ Not enough energy');
+      return;
+    }
     
     // Handle coffee activity with dedicated modal
     if (activity.id === 'grab_coffee') {
+      console.log('☕ Opening coffee modal');
       setCoffeeActivityVisible(true);
       return;
     }
     
+    console.log('🚀 Passing to parent:', activity.id);
     onActivitySelect(activity);
   };
 
@@ -534,7 +558,10 @@ export function DailyLifeHubComplete({
                           ? 'hover:bg-white/10 hover:border-purple-400/30 hover:shadow-purple-400/20 hover:shadow-lg'
                           : 'cursor-not-allowed'
                       }`}
-                      onClick={() => handleActivitySelect(activity)}
+                      onClick={() => {
+                        console.log('🖱️ Button clicked for activity:', activity.id);
+                        handleActivitySelect(activity);
+                      }}
                     >
                       {/* Lock Overlay */}
                       {isLocked && (
