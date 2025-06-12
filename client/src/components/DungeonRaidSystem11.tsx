@@ -129,6 +129,15 @@ export function DungeonRaidSystem11({
   const [screenShake, setScreenShake] = useState(false);
   const [cameraShake, setCameraShake] = useState(false);
 
+  // Combat inventory system
+  const [combatInventory] = useState([
+    { id: 'health_potion', name: 'Health Potion', icon: '🧪', quantity: 5, healAmount: 50, type: 'health', cooldown: 0, maxCooldown: 2000 },
+    { id: 'mana_potion', name: 'Mana Potion', icon: '💙', quantity: 3, manaAmount: 40, type: 'mana', cooldown: 0, maxCooldown: 1500 },
+    { id: 'revival_stone', name: 'Revival Stone', icon: '💎', quantity: 1, reviveAmount: 100, type: 'revival', cooldown: 0, maxCooldown: 10000 },
+    { id: 'energy_drink', name: 'Energy Drink', icon: '⚡', quantity: 2, healAmount: 25, manaAmount: 25, type: 'hybrid', cooldown: 0, maxCooldown: 3000 }
+  ]);
+  const [itemCooldowns, setItemCooldowns] = useState<Record<string, number>>({});
+
   // Special encounter states
   const [trapAlert, setTrapAlert] = useState<{
     active: boolean;
@@ -450,6 +459,71 @@ export function DungeonRaidSystem11({
       }
     }
   }, [gamePhase, enemies, commandMode, chaHaeInMode, commandShadowSoldiers]);
+
+  // Combat item usage
+  const useCombatItem = useCallback((itemId: string) => {
+    const item = combatInventory.find(inv => inv.id === itemId);
+    if (!item || item.quantity <= 0 || itemCooldowns[itemId] > 0) return;
+
+    const jinwoo = players.find(p => p.id === 'jinwoo');
+    const chahaein = players.find(p => p.id === 'chahaein');
+    if (!jinwoo) return;
+
+    // Start item cooldown
+    setItemCooldowns(prev => ({ ...prev, [itemId]: item.maxCooldown }));
+    
+    // Handle cooldown countdown
+    const cooldownInterval = setInterval(() => {
+      setItemCooldowns(prev => {
+        const newCooldown = Math.max(0, prev[itemId] - 100);
+        if (newCooldown === 0) {
+          clearInterval(cooldownInterval);
+        }
+        return { ...prev, [itemId]: newCooldown };
+      });
+    }, 100);
+
+    // Apply item effects
+    setPlayers(prev => prev.map(player => {
+      if (item.type === 'revival' && player.health <= 0) {
+        // Revival items restore fallen players
+        return { 
+          ...player, 
+          health: Math.min(player.maxHealth, item.reviveAmount || player.maxHealth * 0.5) 
+        };
+      }
+      
+      if (player.health > 0) {
+        let newHealth = player.health;
+        let newMana = player.mana;
+        
+        if (item.healAmount) {
+          newHealth = Math.min(player.maxHealth, player.health + item.healAmount);
+        }
+        if (item.manaAmount) {
+          newMana = Math.min(player.maxMana, player.mana + item.manaAmount);
+        }
+        
+        return { ...player, health: newHealth, mana: newMana };
+      }
+      
+      return player;
+    }));
+
+    // Visual feedback for healing
+    setDamageNumbers(prev => [...prev, {
+      id: `heal_${Date.now()}`,
+      damage: item.healAmount || item.manaAmount || item.reviveAmount || 0,
+      x: jinwoo.x,
+      y: jinwoo.y - 30,
+      isCritical: false,
+      timestamp: Date.now(),
+      isHealing: true
+    }]);
+
+    // Reduce item quantity (simulation - in real game this would sync with inventory)
+    console.log(`Used ${item.name} - ${item.quantity - 1} remaining`);
+  }, [combatInventory, itemCooldowns, players]);
 
   // Skill execution
   const executeSkill = useCallback((skillId: string) => {
