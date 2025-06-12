@@ -445,31 +445,27 @@ export async function generateIntimateActivityImage(activityId: string, relation
     console.log('⚠️ NovelAI failed for mature content:', String(error));
   }
 
-  // Fallback to OpenAI DALL-E for mature content when NovelAI is unavailable
+  // Enhanced OpenAI DALL-E fallback for intimate romantic scenes
   if (openai) {
-    console.log('🎨 Fallback to OpenAI DALL-E for mature content...');
+    console.log('🎨 Using OpenAI DALL-E for intimate romantic scenes...');
     try {
-      // Create a more sophisticated prompt for OpenAI that captures the essence without explicit content
-      const enhancedPrompt = prompt
-        .replace(/explicit|nude|naked|sex|nsfw|erotic|penetration|orgasm|climax/gi, 'intimate romantic moment')
-        .replace(/fucking|hardcore/gi, 'passionate embrace')
-        .replace(/breasts|boobs|ass|butt/gi, 'beautiful form')
-        .replace(/panties|underwear|bra/gi, 'delicate attire');
+      // Create sophisticated romantic prompts that work within OpenAI guidelines
+      const romanticPrompt = `Beautiful anime couple in tender romantic moment, Cha Hae-In with blonde hair and Jin-Woo with dark hair from Solo Leveling, emotional intimacy, soft romantic lighting, Korean manhwa art style, high quality illustration, detailed faces showing love and connection, elegant composition, warm atmosphere, artistic excellence, beautiful detailed eyes, romantic scene, tender embrace, emotional depth`;
       
       const openaiResult = await openai.images.generate({
         model: "dall-e-3",
-        prompt: `${enhancedPrompt}, romantic anime illustration, beautiful cinematic lighting, Solo Leveling art style, Korean manhwa aesthetic, intimate atmosphere, emotional connection, high quality artwork`,
+        prompt: romanticPrompt,
         n: 1,
         size: "1024x1024",
         quality: "hd",
       });
       
       if (openaiResult.data?.[0]?.url) {
-        console.log('✅ OpenAI DALL-E generated mature content fallback successfully');
+        console.log('✅ OpenAI DALL-E generated romantic scene successfully');
         return openaiResult.data[0].url;
       }
     } catch (openaiError) {
-      console.log('⚠️ OpenAI DALL-E fallback failed:', String(openaiError));
+      console.log('⚠️ OpenAI DALL-E romantic scene failed:', String(openaiError));
     }
   }
 
