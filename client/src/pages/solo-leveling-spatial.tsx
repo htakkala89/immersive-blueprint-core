@@ -12,6 +12,7 @@ import {
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { CoffeeActivityModal } from '@/components/CoffeeActivityModal';
+import { TrainingActivityModal } from '@/components/TrainingActivityModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -408,6 +409,7 @@ export default function SoloLevelingSpatial() {
   const [showConstellation, setShowConstellation] = useState(false);
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
   const [showCoffeeActivity, setShowCoffeeActivity] = useState(false);
+  const [showTrainingActivity, setShowTrainingActivity] = useState(false);
   
   // Debug logging for dungeon raid state
   useEffect(() => {
@@ -3585,6 +3587,19 @@ export default function SoloLevelingSpatial() {
             // Then open the coffee modal after a brief delay for transition
             setTimeout(() => {
               setShowCoffeeActivity(true);
+            }, 500);
+            return;
+          }
+
+          // Handle training activity specifically
+          if (activity.id === 'training_session') {
+            console.log('🥋 Training activity selected - transitioning to Hunter Association Training Center');
+            // First transition to the training center location
+            setPlayerLocation('hunter_association');
+            setGameState(prev => ({ ...prev, currentScene: 'hunter_association' }));
+            // Then open the training modal after a brief delay for transition
+            setTimeout(() => {
+              setShowTrainingActivity(true);
             }, 500);
             return;
           }
