@@ -1753,7 +1753,7 @@ export default function SoloLevelingSpatial() {
       
       {/* Monarch's Aura - Shadow Crown */}
       <motion.button
-        className="fixed top-6 right-6 w-16 h-16 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden"
+        className="fixed top-6 right-6 w-11 h-11 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden"
         style={{ 
           position: 'fixed',
           top: '24px',
