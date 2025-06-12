@@ -724,32 +724,27 @@ export default function SoloLevelingSpatial() {
         isVisible={showMonarchsAura}
         onClose={() => setShowMonarchsAura(false)}
         onSystemSelect={(systemId: string) => {
-          console.log('System selected:', systemId);
+          console.log('Rune selected:', systemId);
+          setShowMonarchsAura(false);
           switch (systemId) {
-            case 'armory':
-              setShowMonarchArmory(true);
+            case 'character':
+              setShowPlayerProgression(true);
               break;
             case 'inventory':
               setShowMonarchInventory(true);
               break;
-            case 'progression':
-              setShowPlayerProgression(true);
+            case 'quests':
+              setShowQuestLog(true);
               break;
             case 'worldmap':
               setShowWorldMap(true);
               break;
-            case 'dungeons':
-              setShowDungeonRaid(true);
-              break;
-            case 'communicator':
-              setShowHunterCommunicator(true);
-              break;
-            case 'relationships':
-              // Open relationship constellation system
-              console.log('Opening relationship constellation');
+            case 'affection':
+              // Open heart constellation system
+              console.log('Opening Heart Constellation');
               break;
             default:
-              console.log('Unknown system:', systemId);
+              console.log('Unknown rune:', systemId);
           }
         }}
       />
