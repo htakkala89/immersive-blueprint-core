@@ -152,6 +152,14 @@ export default function SoloLevelingSpatial() {
   const [showIntimateSystem5, setShowIntimateSystem5] = useState(false);
   const [activeActivity, setActiveActivity] = useState<string | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<string>('');
+  
+  // Advanced Systems UI
+  const [showMonarchArmory, setShowMonarchArmory] = useState(false);
+  const [showMonarchInventory, setShowMonarchInventory] = useState(false);
+  const [showPlayerProgression, setShowPlayerProgression] = useState(false);
+  const [showHunterCommunicator, setShowHunterCommunicator] = useState(false);
+  const [showWorldMap, setShowWorldMap] = useState(false);
+  const [showDungeonRaid, setShowDungeonRaid] = useState(false);
 
   // Location and environment state
   const [weather, setWeather] = useState<'sunny' | 'cloudy' | 'rainy'>('sunny');
@@ -411,8 +419,9 @@ export default function SoloLevelingSpatial() {
 
         {/* Bottom Action Bar */}
         <div className="absolute bottom-0 left-0 right-0 z-50 p-4">
-          <div className="flex justify-center">
-            <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-4">
+          <div className="flex justify-center gap-4">
+            {/* Main Actions */}
+            <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3">
               <Button 
                 onClick={() => setShowDailyLifeHub(true)}
                 className="bg-purple-600 hover:bg-purple-700 text-white"
@@ -438,6 +447,60 @@ export default function SoloLevelingSpatial() {
                   Cafe
                 </Button>
               )}
+            </div>
+
+            {/* Monarch Systems */}
+            <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3">
+              <Button 
+                onClick={() => setShowMonarchArmory(true)}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                <Sword className="w-4 h-4 mr-2" />
+                Armory
+              </Button>
+              
+              <Button 
+                onClick={() => setShowMonarchInventory(true)}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Package className="w-4 h-4 mr-2" />
+                Inventory
+              </Button>
+              
+              <Button 
+                onClick={() => setShowPlayerProgression(true)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              >
+                <Crown className="w-4 h-4 mr-2" />
+                Progression
+              </Button>
+            </div>
+
+            {/* World Systems */}
+            <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3">
+              <Button 
+                onClick={() => setShowWorldMap(true)}
+                className="bg-teal-600 hover:bg-teal-700 text-white"
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                World Map
+              </Button>
+              
+              <Button 
+                onClick={() => setShowHunterCommunicator(true)}
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Communicator
+              </Button>
+              
+              <Button 
+                onClick={() => setShowDungeonRaid(true)}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                Dungeons
+              </Button>
             </div>
           </div>
         </div>
@@ -586,6 +649,112 @@ export default function SoloLevelingSpatial() {
           onSceneComplete={(results) => {
             console.log('Intimate scene completed:', results);
             setShowIntimateSystem5(false);
+          }}
+        />
+      )}
+
+      {/* Monarch's Aura - Armory System */}
+      {showMonarchArmory && (
+        <MonarchArmory2D
+          isVisible={showMonarchArmory}
+          onClose={() => setShowMonarchArmory(false)}
+        />
+      )}
+
+      {/* Monarch's Inventory System */}
+      {showMonarchInventory && (
+        <MonarchInventorySystem
+          isVisible={showMonarchInventory}
+          onClose={() => setShowMonarchInventory(false)}
+        />
+      )}
+
+      {/* Player Progression System */}
+      {showPlayerProgression && (
+        <PlayerProgressionSystem16
+          isVisible={showPlayerProgression}
+          onClose={() => setShowPlayerProgression(false)}
+          playerId={gameState.playerId || 'sung_jin_woo'}
+          currentStats={{
+            level: gameState.level,
+            experience: gameState.experience || 0,
+            maxExperience: gameState.maxExperience || 2000,
+            stats: gameState.stats || {
+              strength: 120,
+              agility: 95,
+              vitality: 110,
+              intelligence: 85,
+              sense: 100
+            },
+            unspentStatPoints: gameState.unspentStatPoints || 15,
+            unspentSkillPoints: gameState.unspentSkillPoints || 8,
+            hunterRank: gameState.hunterRank || 'S-Rank'
+          }}
+          onStatsUpdate={(newStats) => {
+            setGameState(prev => ({
+              ...prev,
+              stats: newStats.stats,
+              unspentStatPoints: newStats.unspentStatPoints,
+              unspentSkillPoints: newStats.unspentSkillPoints
+            }));
+          }}
+        />
+      )}
+
+      {/* Hunter Communicator System */}
+      {showHunterCommunicator && (
+        <HunterCommunicatorSystem15
+          isVisible={showHunterCommunicator}
+          onClose={() => setShowHunterCommunicator(false)}
+          playerName="Sung Jin-Woo"
+          hunterRank={gameState.hunterRank || 'S-Rank'}
+          relationshipLevel={gameState.affection}
+        />
+      )}
+
+      {/* World Map System */}
+      {showWorldMap && (
+        <WorldMapSystem8
+          isVisible={showWorldMap}
+          onClose={() => setShowWorldMap(false)}
+          onLocationSelect={(locationId: string) => {
+            console.log('Traveling to:', locationId);
+            setPlayerLocation(locationId);
+            setShowWorldMap(false);
+          }}
+          currentLocation={playerLocation}
+          unlockedLocations={['player_apartment', 'hongdae_cafe', 'hunter_association', 'myeongdong_restaurant']}
+        />
+      )}
+
+      {/* Dungeon Raid System */}
+      {showDungeonRaid && (
+        <DungeonRaidSystem11
+          isVisible={showDungeonRaid}
+          onClose={() => setShowDungeonRaid(false)}
+          playerStats={{
+            level: gameState.level,
+            health: gameState.health,
+            maxHealth: gameState.maxHealth,
+            mana: gameState.mana,
+            maxMana: gameState.maxMana,
+            stats: gameState.stats || {
+              strength: 120,
+              agility: 95,
+              vitality: 110,
+              intelligence: 85,
+              sense: 100
+            }
+          }}
+          onRaidComplete={(rewards) => {
+            console.log('Raid completed with rewards:', rewards);
+            setGameState(prev => ({
+              ...prev,
+              gold: (prev.gold || 0) + (rewards.gold || 0),
+              experience: (prev.experience || 0) + (rewards.experience || 0),
+              inventory: [...prev.inventory, ...(rewards.items || [])]
+            }));
+            setShowDungeonRaid(false);
           }}
         />
       )}
