@@ -1034,15 +1034,81 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                       </div>
                     </div>
 
-                    {/* Enhanced Messages with Scene Script Styling */}
+                    {/* Enhanced Messages with Liquid Glassmorphism */}
                     <div 
                       ref={chatContainerRef} 
-                      className="flex-1 overflow-y-auto p-6 space-y-6"
+                      className="flex-1 overflow-y-auto p-6 space-y-6 relative"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(15,23,42,0.3), rgba(30,41,59,0.2))',
-                        backdropFilter: 'blur(30px)'
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01), rgba(255,255,255,0.02))',
+                        backdropFilter: 'blur(50px) saturate(180%) contrast(120%)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: `
+                          inset 0 1px 0 rgba(255,255,255,0.12),
+                          inset 0 -1px 0 rgba(255,255,255,0.04),
+                          inset 1px 0 0 rgba(255,255,255,0.06),
+                          inset -1px 0 0 rgba(255,255,255,0.03),
+                          0 8px 32px rgba(0,0,0,0.15),
+                          0 4px 16px rgba(0,0,0,0.1)
+                        `,
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}
                     >
+                      {/* Liquid glassmorphism shimmering inner border */}
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          background: `
+                            linear-gradient(135deg, 
+                              rgba(255,255,255,0.15) 0%, 
+                              transparent 20%, 
+                              transparent 40%,
+                              rgba(255,255,255,0.08) 50%,
+                              transparent 60%,
+                              transparent 80%, 
+                              rgba(255,255,255,0.12) 100%
+                            )
+                          `,
+                          borderRadius: 'inherit',
+                          mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                          maskComposite: 'xor',
+                          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                          WebkitMaskComposite: 'xor',
+                          padding: '1px'
+                        }}
+                      />
+                      
+                      {/* Watery distortion overlays for liquid effect */}
+                      <div
+                        className="absolute inset-0 pointer-events-none opacity-40"
+                        style={{
+                          background: `
+                            radial-gradient(ellipse 300px 200px at top left, rgba(147,197,253,0.12) 0%, transparent 60%),
+                            radial-gradient(ellipse 400px 150px at bottom right, rgba(168,85,247,0.10) 0%, transparent 65%),
+                            radial-gradient(ellipse 250px 180px at center, rgba(236,72,153,0.08) 0%, transparent 70%),
+                            radial-gradient(ellipse 200px 300px at 80% 20%, rgba(34,197,94,0.06) 0%, transparent 50%)
+                          `,
+                          filter: 'blur(2px)',
+                          mixBlendMode: 'soft-light'
+                        }}
+                      />
+                      
+                      {/* Additional subtle watery ripple effect */}
+                      <div
+                        className="absolute inset-0 pointer-events-none opacity-20"
+                        style={{
+                          background: `
+                            conic-gradient(from 0deg at 30% 30%, 
+                              rgba(255,255,255,0.1) 0deg, 
+                              transparent 120deg, 
+                              rgba(255,255,255,0.05) 240deg, 
+                              transparent 360deg
+                            )
+                          `,
+                          filter: 'blur(1px)',
+                          mixBlendMode: 'overlay'
+                        }}
+                      />
                       {selectedConversationData.messages.map((message) => (
                         <motion.div
                           key={message.id}
