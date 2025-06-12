@@ -17,7 +17,6 @@ import {
   Sword
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CoffeeActivityModal } from './CoffeeActivityModal';
 
 interface PlayerStats {
   gold: number;
@@ -403,12 +402,6 @@ export function DailyLifeHubComplete({
 }: DailyLifeHubCompleteProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [hoveredActivity, setHoveredActivity] = useState<string | null>(null);
-  const [coffeeActivityVisible, setCoffeeActivityVisible] = useState(false);
-
-  // Debug coffee modal state
-  useEffect(() => {
-    console.log('☕ Coffee modal state changed:', coffeeActivityVisible);
-  }, [coffeeActivityVisible]);
   
   const availableActivities = getAvailableActivities(playerStats, timeOfDay);
   const greetingMessage = getGreetingMessage(timeOfDay, playerStats.affectionLevel);
@@ -438,11 +431,10 @@ export function DailyLifeHubComplete({
       return;
     }
     
-    // Handle coffee activity with dedicated modal
+    // Handle coffee activity - pass to parent
     if (activity.id === 'grab_coffee') {
-      console.log('☕ Opening coffee modal');
-      setCoffeeActivityVisible(true);
-      console.log('☕ Modal state set to true');
+      console.log('☕ Coffee activity selected - passing to parent');
+      onActivitySelect(activity);
       return;
     }
     
@@ -450,12 +442,7 @@ export function DailyLifeHubComplete({
     onActivitySelect(activity);
   };
 
-  // Handle coffee activity completion
-  const handleCoffeeActivityComplete = (results: any) => {
-    // Update game state would happen in parent component
-    // For now, just close the modal
-    setCoffeeActivityVisible(false);
-  };
+
 
   const getEnergyOrbStyle = () => {
     const energyPercentage = (playerStats.energy / playerStats.maxEnergy) * 100;
@@ -467,14 +454,13 @@ export function DailyLifeHubComplete({
   if (!isVisible) return null;
 
   return (
-    <>
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center"
-        >
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center"
+      >
         {/* Beautiful Background with Glass Effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-blue-900/30" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.1)_0%,transparent_50%)]" />
@@ -488,16 +474,6 @@ export function DailyLifeHubComplete({
           {/* Header with Greeting */}
           <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-xl border-b border-white/10 p-6">
             <div className="flex items-center justify-between">
-              {/* Debug Coffee Modal Button */}
-              <button 
-                onClick={() => {
-                  console.log('🧪 Test button clicked');
-                  setCoffeeActivityVisible(true);
-                }} 
-                className="bg-red-500 text-white px-3 py-1 rounded text-xs"
-              >
-                Test Coffee Modal
-              </button>
               <div className="flex-1">
                 <h2 className="text-white font-bold text-2xl mb-2">Day Planner</h2>
                 <p className="text-purple-200 text-lg italic">{greetingMessage}</p>
@@ -642,17 +618,6 @@ export function DailyLifeHubComplete({
           </div>
         </motion.div>
       </motion.div>
-      </AnimatePresence>
-      
-      {/* Coffee Activity Modal - Outside main modal to avoid z-index conflicts */}
-      {coffeeActivityVisible && (
-        <CoffeeActivityModal
-          isVisible={coffeeActivityVisible}
-          onClose={() => setCoffeeActivityVisible(false)}
-          onActivityComplete={handleCoffeeActivityComplete}
-          backgroundImage="/images/hongdae-cafe.jpg"
-        />
-      )}
-    </>
+    </AnimatePresence>
   );
 }
