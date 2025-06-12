@@ -433,20 +433,41 @@ export async function generateIntimateActivityImage(activityId: string, relation
     prompt = createIntimatePrompt(activityId, relationshipStatus, intimacyLevel);
   }
   
-  // Use NovelAI for all mature content
+  // Try NovelAI first for mature content
   console.log('🎨 Generating mature content with NovelAI...');
   try {
-    const result = await generateWithNovelAI(prompt);
-    if (result) {
+    const novelaiResult = await generateWithNovelAI(prompt);
+    if (novelaiResult) {
       console.log('✅ NovelAI generated mature content successfully');
-      return result;
+      return novelaiResult;
     }
   } catch (error) {
     console.log('⚠️ NovelAI failed for mature content:', String(error));
   }
 
-  // No fallback to Google Imagen for mature content - only NovelAI handles mature content
-  console.log('📝 Mature content generation failed - NovelAI unavailable');
+  // Fallback to OpenAI DALL-E for mature content when NovelAI is unavailable
+  if (openai) {
+    console.log('🎨 Fallback to OpenAI DALL-E for mature content...');
+    try {
+      const sanitizedPrompt = prompt.replace(/explicit|nude|naked|sex|nsfw|erotic/gi, 'intimate romantic scene');
+      const openaiResult = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: `${sanitizedPrompt}, anime art style, romantic illustration, beautiful lighting, Solo Leveling inspired characters`,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
+      });
+      
+      if (openaiResult.data?.[0]?.url) {
+        console.log('✅ OpenAI DALL-E generated mature content fallback successfully');
+        return openaiResult.data[0].url;
+      }
+    } catch (openaiError) {
+      console.log('⚠️ OpenAI DALL-E fallback failed:', String(openaiError));
+    }
+  }
+
+  console.log('📝 All mature content generation providers failed');
   return null;
 }
 
