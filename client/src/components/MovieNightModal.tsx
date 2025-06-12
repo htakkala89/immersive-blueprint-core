@@ -208,7 +208,7 @@ export function MovieNightModal({
             onClick={onClose}
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 z-10 text-white hover:bg-white/10"
+            className="absolute top-4 right-4 z-50 text-white hover:bg-white/10 bg-black/20 rounded-full"
           >
             <X className="w-6 h-6" />
           </Button>

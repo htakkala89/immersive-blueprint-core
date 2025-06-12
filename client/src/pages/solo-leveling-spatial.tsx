@@ -83,6 +83,9 @@ interface GameState {
   storyProgress?: number;
   // System 4: Daily Life Hub - Unlocked Activities
   unlockedActivities?: string[];
+  // Apartment furniture for Activity 3: Movie Night
+  hasPlushSofa?: boolean;
+  hasEntertainmentSystem?: boolean;
 }
 
 interface WorldLocation {
@@ -4287,8 +4290,8 @@ export default function SoloLevelingSpatial() {
           energy: gameState.energy || 80,
           maxEnergy: gameState.maxEnergy || 100,
           apartmentTier: gameState.apartmentTier || 1,
-          hasPlushSofa: gameState.hasPlushSofa || false,
-          hasEntertainmentSystem: gameState.hasEntertainmentSystem || false
+          hasPlushSofa: (gameState as any).hasPlushSofa || false,
+          hasEntertainmentSystem: (gameState as any).hasEntertainmentSystem || false
         }}
         onStatsUpdate={(updates) => {
           setGameState(prev => ({
