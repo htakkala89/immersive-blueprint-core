@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Sparkles, Heart, Store, Gem } from 'lucide-react';
+import { X, ShoppingBag, Sparkles, Heart, Store, Gem, Gift } from 'lucide-react';
 
 interface ShoppingDateModalProps {
   isOpen: boolean;

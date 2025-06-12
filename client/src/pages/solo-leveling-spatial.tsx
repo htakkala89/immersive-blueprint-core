@@ -4429,6 +4429,52 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
+      {/* Shopping Date Modal */}
+      <ShoppingDateModal
+        isOpen={showShoppingDateModal}
+        onClose={() => setShowShoppingDateModal(false)}
+        onStoreSelect={(storeId) => {
+          setShowShoppingDateModal(false);
+          
+          // Add medium affection gain from shared shopping experience
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + 3),
+            energy: Math.max(0, (prev.energy || 80) - 15)
+          }));
+          
+          // Transition to selected store location with Cha Hae-In's enhanced presence
+          if (storeId === 'luxury_department') {
+            console.log('🏬 Transitioning to Luxury Department Store with Cha Hae-In');
+            setPlayerLocation('luxury_department_store');
+            setShowLuxuryDepartmentStore(true);
+            
+            // Enable Cha Hae-In's commentary mode for this shopping session
+            setGameState(prev => ({
+              ...prev,
+              chaHaeInShoppingMode: true,
+              currentScene: 'luxury_department_store'
+            }));
+          } else if (storeId === 'gangnam_furnishings') {
+            console.log('🪑 Transitioning to Gangnam Modern Furnishings with Cha Hae-In');
+            setPlayerLocation('gangnam_furnishings');
+            setShowGangnamFurnishings(true);
+            
+            // Enable Cha Hae-In's commentary mode for this shopping session
+            setGameState(prev => ({
+              ...prev,
+              chaHaeInShoppingMode: true,
+              currentScene: 'gangnam_furnishings'
+            }));
+          }
+        }}
+        gameState={{
+          affection: gameState.affection,
+          money: gameState.gold || 0,
+          energy: gameState.energy || 80
+        }}
+      />
+
     </div>
   );
 }
