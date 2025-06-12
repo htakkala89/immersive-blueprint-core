@@ -1,0 +1,55 @@
+Visit N Seoul Tower
+Category: Casual Outing
+Narrative Goal: To create the ultimate romantic, non-intimate "milestone" date. A classic, picturesque moment for a serious couple.
+User Experience Flow:
+Player selects this card, which is only unlocked at a high affection level.
+The game transitions to the N Seoul Tower Observation Deck Spatial View. The view is of Seoul at night.
+The experience is driven by interacting with the Labeled Nodes. Tapping [●] Admire the View triggers a "cinematic mode" with special music and dialogue.
+The key interaction is the [●] The Wall of Locks node, which triggers a unique scene.
+UI Components & Logic: Uses the core Dialogue System and Node interactions. The "Wall of Locks" interaction requires a Padlock item (purchasable from a store) to be in the player's inventory.
+Potential Outcomes: Creates a unique, S-Rank tier Memory Star (System 6). Provides a very large Affection gain.
+10. Co-op Skill Training
+Category: Training & Hunter Life
+Narrative Goal: A gameplay-focused activity to deepen their synergy as a combat pair.
+User Experience Flow:
+Player selects this card.
+The game loads a special non-combat scene in the Elite Training Center (Unity Engine).
+A rhythm or timing-based mini-game begins. The UI will show prompts for Skill 1, Skill 2, etc., and the player must tap the corresponding button in sync with Cha Hae-In's on-screen actions.
+UI Components & Logic: A unique mini-game UI with clear prompts and a "Sync Meter" that fills with successful taps.
+Potential Outcomes: Does not provide direct Affection. Instead, successfully completing it provides a permanent passive buff: "+1% Synergy Gauge fill rate." This buff can stack up to a maximum of 5 times.
+11. Order Takeout
+Category: Home Life
+Narrative Goal: A simple, low-effort, and relatable domestic moment that shows they are comfortable enough to not need a fancy date.
+User Experience Flow:
+Player selects this card.
+A simple Choice UI modal appears: "What should we get tonight?" with options like [Jjajangmyeon], [Fried Chicken], [Pizza].
+After the choice, a short, descriptive text scene plays out in the apartment, describing them eating and relaxing.
+UI Components & Logic: A simple Choice UI modal.
+Potential Outcomes: Costs a small amount of Gold (System 14). Restores a small amount of "Energy" for the player. Provides a small, reliable Affection gain.
+12. Talk on the Balcony
+Category: Home Life
+Narrative Goal: To provide a private and scenic space for deep, meaningful, and often more serious conversations away from the main living area.
+User Experience Flow:
+Player selects this card.
+The game transitions from the main apartment view to the unique "Balcony" Spatial View.
+This transition unlocks a new, unique set of Dynamic Thought Prompts in the Dialogue System (System 2), geared towards introspection, their future, and their feelings.
+UI Components & Logic: Uses the core Dialogue System. This activity is a "gateway" to specific high-quality conversational branches.
+Potential Outcomes: Low Energy Cost. The main reward is the conversation itself, which has a very high potential for significant Affection gain.
+13. Swim in the Private Pool
+Category: Home Life
+Narrative Goal: A high-end, luxurious, and relaxing date that showcases the peak of their success. It serves as a gateway to intimacy.
+User Experience Flow:
+This activity is only unlocked with the Tier 3 Penthouse.
+Player selects the card. The scene transitions to a new "Penthouse Poolside" Spatial View at night.
+The scene is primarily conversational, with a very relaxed, romantic, and intimate tone.
+UI Components & Logic: Uses the core Dialogue System.
+Potential Outcomes: Medium Energy Cost. High Affection gain. Can act as a narrative prerequisite to unlocking the final intimate scenes.
+14. Cuddle All Morning
+Category: Intimate
+Narrative Goal: A soft, purely romantic and emotional scene focused on connection and comfort, not overt passion.
+User Experience Flow:
+This activity might become available on a "day off" after a particularly difficult raid or emotional story beat.
+The scene takes place entirely in the Bedroom Spatial View. It is purely conversational, using the Dialogue System (System 2).
+The Thought Prompts and player choices will be focused on feelings, reassurance, shared comfort, and gentle physical touch.
+UI Components & Logic: Uses the core Dialogue UI.
+Potential Outcomes: Low Energy Cost. Provides a very high and restorative Affection gain. Can improve Cha Hae-In's "Prevailing Mood" for the rest of the day.

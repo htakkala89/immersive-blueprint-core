@@ -22,6 +22,10 @@ import { ReviewRaidFootageModal } from '@/components/ReviewRaidFootageModal';
 import { ClearLowRankGateModal } from '@/components/ClearLowRankGateModal';
 import { AssembleFurnitureModal } from '@/components/AssembleFurnitureModal';
 import { BackRubActivityModal } from '@/components/BackRubActivityModal';
+import { NSeoulTowerModal } from '@/components/NSeoulTowerModal';
+import { CoopSkillTrainingModal } from '@/components/CoopSkillTrainingModal';
+import { OrderTakeoutModal } from '@/components/OrderTakeoutModal';
+import { TalkOnBalconyModal } from '@/components/TalkOnBalconyModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -455,6 +459,10 @@ export default function SoloLevelingSpatial() {
   const [showClearLowRankGate, setShowClearLowRankGate] = useState(false);
   const [showAssembleFurniture, setShowAssembleFurniture] = useState(false);
   const [showBackRubActivity, setShowBackRubActivity] = useState(false);
+  const [showNSeoulTower, setShowNSeoulTower] = useState(false);
+  const [showCoopSkillTraining, setShowCoopSkillTraining] = useState(false);
+  const [showOrderTakeout, setShowOrderTakeout] = useState(false);
+  const [showTalkOnBalcony, setShowTalkOnBalcony] = useState(false);
   const [pendingFurnitureItem, setPendingFurnitureItem] = useState<any>(null);
 
   
