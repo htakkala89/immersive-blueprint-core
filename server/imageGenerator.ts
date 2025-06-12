@@ -73,67 +73,74 @@ function isMatureContent(prompt: string, activityId?: string): boolean {
 }
 
 async function generateWithNovelAI(prompt: string): Promise<string | null> {
-  try {
-    const response = await fetch('https://image.novelai.net/ai/generate-image', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        input: prompt,
-        model: 'nai-diffusion-4-curated-preview',
-        action: 'generate',
-        parameters: {
-          width: 1344,
-          height: 768,
-          scale: 18,
-          sampler: 'k_dpmpp_2s_ancestral',
-          steps: 70,
-          seed: Math.floor(Math.random() * 1000000),
-          n_samples: 1,
-          ucPreset: 0,
-          qualityToggle: true,
-          sm: true,
-          sm_dyn: true,
-          dynamic_thresholding: true,
-          controlnet_strength: 1.0,
-          legacy: false,
-          cfg_rescale: 0.7,
-          noise: 0.0,
-          strength: 0.85,
-          negative_prompt: "low quality, blurry, deformed, bad anatomy, ugly, distorted, pixelated, artifacts, jpeg artifacts, watermark, signature, text, logo, username, monochrome, oversaturated, undersaturated, overexposed, underexposed, bad hands, extra fingers, missing fingers, malformed limbs, mutation, poorly drawn"
+  const negativePrompt = "silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
+  
+  const endpoints = [
+    'https://image.novelai.net/ai/generate-image',
+    'https://api.novelai.net/ai/generate-image'
+  ];
+
+  const requestBody = {
+    input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
+    model: 'nai-diffusion-4-curated-preview',
+    parameters: {
+      width: 832,
+      height: 1216,
+      scale: 5.5,
+      sampler: 'k_euler_ancestral',
+      steps: 35,
+      seed: Math.floor(Math.random() * 4294967295),
+      n_samples: 1,
+      ucPreset: 0,
+      uc: negativePrompt,
+      qualityToggle: true,
+      sm: true,
+      sm_dyn: true,
+      cfg_rescale: 0.7,
+      noise_schedule: "native"
+    }
+  };
+
+  for (const endpoint of endpoints) {
+    try {
+      console.log(`🎨 Attempting NovelAI generation via ${endpoint}...`);
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        
+        // NovelAI returns images in ZIP format, extract the first image
+        try {
+          const zip = new AdmZip(Buffer.from(buffer));
+          const zipEntries = zip.getEntries();
+          
+          if (zipEntries.length > 0) {
+            const imageBuffer = zipEntries[0].getData();
+            const base64Image = imageBuffer.toString('base64');
+            console.log('✅ NovelAI generated image successfully');
+            return `data:image/png;base64,${base64Image}`;
+          }
+        } catch (zipError) {
+          console.log('Failed to extract ZIP from NovelAI response:', zipError);
         }
-      })
-    });
-
-    if (!response.ok) {
-      console.error('NovelAI API error:', response.status, response.statusText);
-      return null;
+      } else {
+        const errorText = await response.text();
+        console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
+      }
+    } catch (error) {
+      console.log(`NovelAI endpoint ${endpoint} failed:`, error);
     }
-
-    const buffer = await response.arrayBuffer();
-    
-    // NovelAI returns a ZIP file containing the image
-    const zip = new AdmZip(Buffer.from(buffer));
-    const zipEntries = zip.getEntries();
-    
-    if (zipEntries.length === 0) {
-      console.error('NovelAI ZIP file is empty');
-      return null;
-    }
-    
-    // Get the first image file from the ZIP
-    const imageEntry = zipEntries[0];
-    const imageBuffer = imageEntry.getData();
-    const base64Image = imageBuffer.toString('base64');
-    
-    // Convert to data URL for browser display
-    return `data:image/png;base64,${base64Image}`;
-  } catch (error) {
-    console.error('Error generating NovelAI image:', error);
-    return null;
   }
+
+  console.log('❌ All NovelAI endpoints failed');
+  return null;
 }
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
@@ -152,7 +159,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     }
 
     const location = 'us-central1';
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-4.0-generate-001:predict`;
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-001:predict`;
     
     console.log('🎨 Attempting Google Imagen generation...');
     
@@ -169,8 +176,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
         parameters: {
           sampleCount: 1,
           aspectRatio: "1:1",
-          safetyFilterLevel: "block_only_high",
-          personGeneration: "allow_adult"
+          safetyFilterLevel: "block_only_high"
         }
       })
     });
