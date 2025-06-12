@@ -527,7 +527,12 @@ export default function SoloLevelingSpatial() {
               maxEnergy: gameState.maxEnergy || 100,
               relationshipStatus: 'dating',
               intimacyLevel: gameState.intimacyLevel || 25,
-              sharedMemories: 15
+              sharedMemories: 15,
+              livingTogether: false,
+              daysTogether: 45,
+              apartmentTier: gameState.apartmentTier || 2,
+              hasModernKitchen: true,
+              hasHomeGym: false
             }}
             timeOfDay={timeOfDay}
           />
@@ -538,7 +543,18 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {showCoffeeModal && (
           <CoffeeActivityModal
+            isVisible={showCoffeeModal}
             onClose={() => setShowCoffeeModal(false)}
+            onActivityComplete={(results) => {
+              console.log('Coffee activity completed:', results);
+              setGameState(prev => ({
+                ...prev,
+                affection: Math.min(100, prev.affection + results.affectionGained),
+                gold: Math.max(0, (prev.gold || 0) - results.goldSpent),
+                energy: Math.max(0, (prev.energy || 85) - results.energySpent)
+              }));
+              setShowCoffeeModal(false);
+            }}
           />
         )}
       </AnimatePresence>
@@ -547,8 +563,21 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {showIntimateModal && (
           <IntimateActivityModal
-            activity={activeActivity}
+            isVisible={showIntimateModal}
             onClose={() => setShowIntimateModal(false)}
+            onReturnToHub={() => {
+              setShowIntimateModal(false);
+              setShowDailyLifeHub(true);
+            }}
+            activityType={activeActivity as 'shower_together' | 'cuddle_together' | 'bedroom_intimacy' | 'make_love' | null}
+            onAction={(action: string, isCustom?: boolean) => {
+              console.log('Intimate action:', action, isCustom);
+            }}
+            onImageGenerate={(prompt: string) => {
+              console.log('Generate image:', prompt);
+            }}
+            intimacyLevel={gameState.intimacyLevel || 25}
+            affectionLevel={gameState.affection}
           />
         )}
       </AnimatePresence>
@@ -557,7 +586,14 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {showIntimateSystem5 && (
           <IntimateActivitySystem5
+            isVisible={showIntimateSystem5}
+            activityId="intimate_massage"
+            activityTitle="Intimate Massage"
             onClose={() => setShowIntimateSystem5(false)}
+            onSceneComplete={(results) => {
+              console.log('Intimate scene completed:', results);
+              setShowIntimateSystem5(false);
+            }}
           />
         )}
       </AnimatePresence>
