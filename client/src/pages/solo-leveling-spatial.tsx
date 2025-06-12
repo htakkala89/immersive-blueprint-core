@@ -1913,6 +1913,26 @@ export default function SoloLevelingSpatial() {
             </div>
           </div>
 
+          {/* Apartment Furniture - Movie Night Testing */}
+          <div className="mb-3">
+            <div className="text-xs text-gray-300 mb-1">Movie Night Requirements</div>
+            <div className="flex flex-col gap-1 text-xs">
+              <button 
+                onClick={() => setGameState(prev => ({ 
+                  ...prev, 
+                  ownedFurniture: [...(prev.ownedFurniture || []), 'luxury_sectional_sofa', 'smart_entertainment_system'],
+                  apartmentTier: Math.max(prev.apartmentTier || 1, 2)
+                }))}
+                className="px-2 py-1 rounded bg-purple-600 hover:bg-purple-700"
+              >
+                Grant Movie Setup
+              </button>
+              <div className="text-xs text-gray-400 mt-1">
+                Grants: Designer Sectional Sofa + Smart Entertainment Hub + Tier 2 Apartment
+              </div>
+            </div>
+          </div>
+
           {/* Weather Controls */}
           <div>
             <div className="text-xs text-gray-300 mb-1">Weather</div>
