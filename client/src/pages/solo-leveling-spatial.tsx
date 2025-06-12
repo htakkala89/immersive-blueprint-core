@@ -3578,8 +3578,14 @@ export default function SoloLevelingSpatial() {
           
           // Handle coffee activity specifically
           if (activity.id === 'grab_coffee') {
-            console.log('☕ Coffee activity selected - opening coffee modal');
-            setShowCoffeeActivity(true);
+            console.log('☕ Coffee activity selected - transitioning to Hongdae Cafe');
+            // First transition to the cafe location
+            setPlayerLocation('hongdae_cafe');
+            setGameState(prev => ({ ...prev, currentScene: 'hongdae_cafe' }));
+            // Then open the coffee modal after a brief delay for transition
+            setTimeout(() => {
+              setShowCoffeeActivity(true);
+            }, 500);
             return;
           }
           
@@ -4140,12 +4146,12 @@ export default function SoloLevelingSpatial() {
         onClose={() => setShowCoffeeActivity(false)}
         onActivityComplete={(results) => {
           console.log('☕ Coffee activity completed:', results);
-          // Update game state based on coffee activity results
+          // Update game state based on actual coffee activity results
           setGameState(prev => ({
             ...prev,
-            energy: Math.max(0, prev.energy - 10), // Coffee costs 10 energy
-            affection: Math.min(10, prev.affection + 0.1), // Small affection boost
-            gold: Math.max(0, (prev.gold || 0) - 15000) // Coffee costs 15,000 won
+            energy: Math.max(0, (prev.energy || 80) - results.energySpent),
+            affection: Math.min(10, (prev.affection || 0) + (results.affectionGained / 10)), // Convert to 0-10 scale
+            gold: Math.max(0, (prev.gold || 0) - results.goldSpent)
           }));
           setShowCoffeeActivity(false);
         }}
