@@ -389,12 +389,13 @@ export function NSeoulTowerModal({
                 </div>
 
                 <div className="text-center">
-                  <Button
+                  <button
                     onClick={handleComplete}
-                    className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                    className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg font-medium transition-all duration-200 cursor-pointer z-50 relative"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     Treasure This Memory
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
