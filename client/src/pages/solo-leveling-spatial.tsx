@@ -2528,31 +2528,9 @@ export default function SoloLevelingSpatial() {
                 break;
               // Myeongdong Fine Dining - Date Activity Exclusive Nodes
               case 'view_menu':
-                // Menu UI for conversational ordering choices
-                if (gameState.unlockedActivities?.includes('fine_dining_date')) {
-                  handleEnvironmentalInteraction({
-                    id: 'menu_discussion',
-                    action: 'You and Cha Hae-In review the elegant menu together. "Everything looks exquisite," she says, studying the options carefully. "What catches your eye?" The sommelier approaches to discuss wine pairings.',
-                    name: 'Fine Dining Menu',
-                    x: 45,
-                    y: 40
-                  });
-                  // Set menu-specific thought prompts
-                  setThoughtPrompts([
-                    "Order the chef's special for both of us.",
-                    "Ask what she recommends.",
-                    "Let's try something we've never had before."
-                  ]);
-                  console.log('Fine dining menu conversation triggered');
-                } else {
-                  handleEnvironmentalInteraction({
-                    id: 'restaurant_closed',
-                    action: 'The restaurant appears to be fully booked. You would need to make a reservation through the Daily Life Hub for a proper dining experience here.',
-                    name: 'Myeongdong Restaurant',
-                    x: 45,
-                    y: 40
-                  });
-                }
+                // Direct access to Myeongdong dinner modal
+                console.log('🍽️ View menu clicked - opening Myeongdong dinner modal');
+                setShowMyeongdongDinner(true);
                 break;
               case 'speak_sommelier':
                 // NPC dialogue with wine recommendation and purchase option
