@@ -66,8 +66,12 @@ export class ArtisticPromptEngine {
   }
 
   private isExplicitActivity(activity: string): boolean {
-    const explicitActivities = ['shower_together', 'shower', 'bedroom', 'undress', 'nude', 'naked', 'explicit', 'sexual'];
-    return explicitActivities.some(explicit => activity.toLowerCase().includes(explicit));
+    const explicitActivities = ['shower_together', 'shower', 'bedroom', 'undress', 'nude', 'naked', 'explicit', 'sexual', 'intimate_moment', 'bath', 'together'];
+    const activityLower = activity.toLowerCase();
+    return explicitActivities.some(explicit => activityLower.includes(explicit)) || 
+           activityLower.includes('shower') || 
+           activityLower.includes('nude') ||
+           activityLower.includes('together');
   }
 
   private generateExplicitPrompt(options: ArtisticPromptOptions): string {
