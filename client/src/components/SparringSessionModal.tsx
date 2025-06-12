@@ -131,7 +131,7 @@ export function SparringSessionModal({
 
       return () => clearTimeout(aiActionTimer);
     }
-  }, [isPlayerTurn, gamePhase, sparringStats.timeRemaining]);
+  }, [isPlayerTurn, gamePhase]);
 
   const startSparring = () => {
     if (playerStats.energy < 30) {
@@ -159,19 +159,22 @@ export function SparringSessionModal({
     const damage = isHit ? action.damage + Math.floor(Math.random() * 5) : 0;
     
     if (isHit) {
-      setSparringStats(prev => ({
-        ...prev,
-        playerScore: prev.playerScore + damage,
-        playerHits: prev.playerHits + 1
-      }));
+      setSparringStats(prev => {
+        const newPlayerHits = prev.playerHits + 1;
+        
+        // Check win condition with updated hits
+        if (newPlayerHits >= 5) {
+          setGamePhase('aftermath');
+          setSessionResult('victory');
+        }
+        
+        return {
+          ...prev,
+          playerScore: prev.playerScore + damage,
+          playerHits: newPlayerHits
+        };
+      });
       setCombatLog(prev => [...prev, `You landed ${action.name} for ${damage} points!`]);
-      
-      // Check win condition
-      if (sparringStats.playerHits + 1 >= 5) {
-        setGamePhase('aftermath');
-        setSessionResult('victory');
-        return;
-      }
     } else {
       setCombatLog(prev => [...prev, `Your ${action.name} missed!`]);
     }
@@ -191,19 +194,22 @@ export function SparringSessionModal({
     const damage = isHit ? action.damage + Math.floor(Math.random() * 5) : 0;
     
     if (isHit) {
-      setSparringStats(prev => ({
-        ...prev,
-        chaScore: prev.chaScore + damage,
-        chaHits: prev.chaHits + 1
-      }));
+      setSparringStats(prev => {
+        const newChaHits = prev.chaHits + 1;
+        
+        // Check lose condition with updated hits
+        if (newChaHits >= 5) {
+          setGamePhase('aftermath');
+          setSessionResult('defeat');
+        }
+        
+        return {
+          ...prev,
+          chaScore: prev.chaScore + damage,
+          chaHits: newChaHits
+        };
+      });
       setCombatLog(prev => [...prev, `Cha Hae-In's ${action.name} hits for ${damage} points!`]);
-      
-      // Check lose condition
-      if (sparringStats.chaHits + 1 >= 5) {
-        setGamePhase('aftermath');
-        setSessionResult('defeat');
-        return;
-      }
     } else {
       setCombatLog(prev => [...prev, `Cha Hae-In's ${action.name} missed!`]);
     }
