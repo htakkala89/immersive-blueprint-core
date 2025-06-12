@@ -4271,6 +4271,38 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
+      {/* Movie Night Modal - Activity 3: Domestic & Narrative Gateway */}
+      <MovieNightModal
+        isVisible={showMovieNightModal}
+        onClose={() => setShowMovieNightModal(false)}
+        onReturnToHub={() => {
+          setShowMovieNightModal(false);
+          setShowDailyLifeHub(true);
+        }}
+        playerStats={{
+          gold: gameState.gold || 0,
+          level: gameState.level,
+          experience: gameState.experience || 0,
+          affectionLevel: gameState.affection,
+          energy: gameState.energy || 80,
+          maxEnergy: gameState.maxEnergy || 100,
+          apartmentTier: gameState.apartmentTier || 1,
+          hasPlushSofa: gameState.hasPlushSofa || false,
+          hasEntertainmentSystem: gameState.hasEntertainmentSystem || false
+        }}
+        onStatsUpdate={(updates) => {
+          setGameState(prev => ({
+            ...prev,
+            energy: updates.energy !== undefined ? updates.energy : prev.energy,
+            experience: updates.experience !== undefined ? (prev.experience || 0) + updates.experience : prev.experience,
+            affection: updates.affection !== undefined ? Math.min(10, (prev.affection || 0) + updates.affection) : prev.affection
+          }));
+        }}
+        onSetFlag={(flag) => {
+          setStoryFlags(prev => [...prev, flag]);
+        }}
+      />
+
     </div>
   );
 }
