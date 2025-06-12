@@ -714,11 +714,17 @@ export default function SoloLevelingSpatial() {
 
         // Add movie night node if furniture requirements are met
         if ((gameState as any).hasPlushSofa && (gameState as any).hasEntertainmentSystem) {
+          console.log('🎬 Movie night requirements met - adding Entertainment Center node');
           baseElements.push({
             id: 'movie_night_setup',
             name: 'Entertainment Center',
             position: { x: 60, y: 65 },
             action: 'Watch a movie together on your luxurious sectional sofa'
+          });
+        } else {
+          console.log('🎬 Movie night requirements NOT met:', {
+            hasPlushSofa: (gameState as any).hasPlushSofa,
+            hasEntertainmentSystem: (gameState as any).hasEntertainmentSystem
           });
         }
 
@@ -1942,7 +1948,10 @@ export default function SoloLevelingSpatial() {
                 Grant Movie Setup
               </button>
               <div className="text-xs text-gray-400 mt-1">
-                Grants: Designer Sectional Sofa + Smart Entertainment Hub + Tier 2 Apartment
+                Sofa: {(gameState as any).hasPlushSofa ? '✅' : '❌'} | Entertainment: {(gameState as any).hasEntertainmentSystem ? '✅' : '❌'}
+              </div>
+              <div className="text-xs text-gray-400">
+                Apt Tier: {gameState.apartmentTier || 1}
               </div>
             </div>
           </div>
