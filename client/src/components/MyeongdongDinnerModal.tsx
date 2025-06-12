@@ -303,7 +303,7 @@ export function MyeongdongDinnerModal({
             )}
 
             {currentStage === 'ordering' && !showResults && (
-              <div className="h-full overflow-y-auto p-6">
+              <div className="h-full overflow-y-auto p-6 pb-20">
                 <div className="max-w-6xl mx-auto">
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Menu */}
@@ -405,6 +405,30 @@ export function MyeongdongDinnerModal({
                         </Button>
                       </div>
                     </div>
+                  </div>
+                </div>
+                
+                {/* Fixed Bottom Action Bar */}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-white/20 p-4 z-50">
+                  <div className="flex items-center justify-between max-w-6xl mx-auto">
+                    <div className="text-white">
+                      <span className="text-sm">Total: ₩{totalCost.toLocaleString()}</span>
+                      {selectedItems.length > 0 && (
+                        <span className="text-pink-300 ml-4 text-sm">+{totalAffection} affection</span>
+                      )}
+                    </div>
+                    <Button
+                      onClick={handleOrderConfirm}
+                      disabled={selectedItems.length === 0 || totalCost > playerGold}
+                      className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-8 py-3"
+                    >
+                      {selectedItems.length === 0 
+                        ? 'Select Menu Items First' 
+                        : totalCost > playerGold 
+                          ? 'Insufficient Funds' 
+                          : 'Confirm Order & Continue'
+                      }
+                    </Button>
                   </div>
                 </div>
               </div>
