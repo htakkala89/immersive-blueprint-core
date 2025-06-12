@@ -4171,7 +4171,20 @@ export default function SoloLevelingSpatial() {
           }));
           setShowCoffeeActivity(false);
           // Step 5 of spec: Show standard Dialogue UI for conversation
-          // Use the existing sophisticated dialogue system
+          // Set coffee date context before triggering dialogue
+          setCurrentDialogue("*Taking a sip of her drink and looking more relaxed* This is nice, Jin-Woo. It's been a while since I've had time to just sit and enjoy a coffee without thinking about the next raid or mission.");
+          setThoughtPrompts([
+            "I'm glad we could do this together.",
+            "You seem more relaxed than usual.",
+            "How's the coffee? I wasn't sure what you'd prefer."
+          ]);
+          // Update location data to reflect coffee activity context
+          setWorldLocations(prev => prev.map(loc => 
+            loc.id === 'hongdae_cafe' 
+              ? { ...loc, chaActivity: 'enjoying coffee date with Jin-Woo' }
+              : loc
+          ));
+          // Trigger the sophisticated dialogue system with coffee context
           handleChaHaeInInteraction();
         }}
         backgroundImage="/images/hongdae-cafe.jpg"
