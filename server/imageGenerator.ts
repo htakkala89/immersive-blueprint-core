@@ -449,13 +449,19 @@ export async function generateIntimateActivityImage(activityId: string, relation
   if (openai) {
     console.log('🎨 Fallback to OpenAI DALL-E for mature content...');
     try {
-      const sanitizedPrompt = prompt.replace(/explicit|nude|naked|sex|nsfw|erotic/gi, 'intimate romantic scene');
+      // Create a more sophisticated prompt for OpenAI that captures the essence without explicit content
+      const enhancedPrompt = prompt
+        .replace(/explicit|nude|naked|sex|nsfw|erotic|penetration|orgasm|climax/gi, 'intimate romantic moment')
+        .replace(/fucking|hardcore/gi, 'passionate embrace')
+        .replace(/breasts|boobs|ass|butt/gi, 'beautiful form')
+        .replace(/panties|underwear|bra/gi, 'delicate attire');
+      
       const openaiResult = await openai.images.generate({
         model: "dall-e-3",
-        prompt: `${sanitizedPrompt}, anime art style, romantic illustration, beautiful lighting, Solo Leveling inspired characters`,
+        prompt: `${enhancedPrompt}, romantic anime illustration, beautiful cinematic lighting, Solo Leveling art style, Korean manhwa aesthetic, intimate atmosphere, emotional connection, high quality artwork`,
         n: 1,
         size: "1024x1024",
-        quality: "standard",
+        quality: "hd",
       });
       
       if (openaiResult.data?.[0]?.url) {
