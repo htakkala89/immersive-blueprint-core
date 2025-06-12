@@ -4039,6 +4039,63 @@ export default function SoloLevelingSpatial() {
         backgroundImage={currentLocationData.backgroundImage}
       />
 
+      <ArcadeVisitModal
+        isVisible={showArcadeVisit}
+        onClose={() => setShowArcadeVisit(false)}
+        backgroundImage={sceneImage || undefined}
+        onComplete={(outcome, score) => {
+          setShowArcadeVisit(false);
+          
+          // Apply game outcome effects
+          const affectionGain = outcome === 'win' ? 15 : 10;
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + affectionGain),
+            energy: Math.max(0, (prev.energy || 80) - 20),
+            experience: (prev.experience || 0) + (outcome === 'win' ? 100 : 50),
+            sharedMemories: [...(prev.sharedMemories || []), {
+              id: `arcade_${Date.now()}`,
+              type: 'fun',
+              title: 'Arcade Adventure',
+              description: outcome === 'win' 
+                ? `Achieved high score of ${score} points! Cha Hae-In was impressed by your gaming skills.`
+                : `Scored ${score} points. Cha Hae-In found your competitive spirit endearing.`,
+              timestamp: new Date().toISOString(),
+              location: 'arcade'
+            }]
+          }));
+
+          // Show outcome-based conversational dialogue
+          const winDialogue = [
+            "Wow, Jin-Woo! Your reflexes are incredible. I guess all that hunter training pays off in unexpected ways.",
+            "That was amazing! You make everything look so effortless. No wonder you're the strongest hunter.",
+            "I love seeing this playful side of you. It's nice to just have fun together without worrying about gates or raids."
+          ];
+
+          const lossDialogue = [
+            "Don't worry about the score, Jin-Woo. I had so much fun just being here with you.",
+            "You know, seeing you get competitive over a simple game is actually really cute.",
+            "Even the Shadow Monarch can't win at everything! But watching you try was entertaining."
+          ];
+
+          const selectedDialogue = outcome === 'win' 
+            ? winDialogue[Math.floor(Math.random() * winDialogue.length)]
+            : lossDialogue[Math.floor(Math.random() * lossDialogue.length)];
+
+          setCurrentDialogue(selectedDialogue);
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression(outcome === 'win' ? 'happy' : 'amused');
+
+          // Show affection heart effect
+          setShowAffectionHeart(true);
+          if (affectionHeartTimeout.current) clearTimeout(affectionHeartTimeout.current);
+          affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
+
+          console.log(`🎮 Arcade completed: ${outcome} with score ${score}, +${affectionGain} affection`);
+        }}
+      />
+
       {/* System 15: Hunter's Communicator */}
       <HunterCommunicatorSystem15
         isVisible={showCommunicator}
