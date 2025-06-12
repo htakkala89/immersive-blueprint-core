@@ -302,7 +302,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       requirements: undefined,
       spatialRelationships: {
         enhances: undefined,
-        excludes: ['counter', 'window_seat'],
+        excludes: ['order_counter', 'window_seat'],
         proximity: undefined
       },
       environmentalStates: {
@@ -377,7 +377,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       requirements: undefined,
       spatialRelationships: {
         enhances: undefined,
-        excludes: ['counter', 'window_seat'],
+        excludes: ['order_counter', 'window_seat'],
         proximity: undefined
       },
       environmentalStates: {
