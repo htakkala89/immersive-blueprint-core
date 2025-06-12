@@ -77,15 +77,15 @@ export class ArtisticPromptEngine {
     const characters = "Cha Hae-In (beautiful Korean female, golden blonde hair, violet eyes) and Jin-Woo (handsome Korean male, black hair, dark eyes)";
     
     const explicitContexts = {
-      'shower_together': 'nude shower scene together, wet naked bodies, steamy bathroom, water cascading over bare skin, intimate shower embrace, explicit nudity, wet blonde hair, passionate kissing under running water, naked bodies pressed together, steam-filled bathroom, shower glass, bathroom tiles, water streaming down nude bodies, sensual washing, intimate bathing together',
-      'shower': 'solo nude shower scene, wet naked body, steamy bathroom atmosphere, water droplets on bare skin, explicit nudity, wet hair, intimate bathing, sensual shower moment, steam and water, solo bathing eroticism',
-      'bedroom': 'nude bedroom scene, explicit intimate moment, naked bodies, passionate embrace, bed intimacy, explicit sexual content, romantic bedroom setting, mature intimate activity, lovers entwined, intimate positioning, sexual tension',
-      'undress': 'intimate undressing scene, removing clothes, revealing naked body, explicit nudity, sensual undressing, bare skin exposure, intimate vulnerability, clothing removal, seductive stripping, gradual reveal',
-      'touch': 'intimate touching, caressing naked skin, explicit physical intimacy, sensual exploration, bare body contact, passionate touching, erotic caresses, intimate fondling, sensual massage',
-      'embrace': 'naked embrace, nude bodies pressed together, explicit intimate embrace, skin-to-skin contact, passionate naked cuddle, intimate holding, nude cuddling, bare body contact',
-      'kiss': 'passionate kissing, nude bodies, intimate lip contact, deep passionate kiss, erotic kissing, sensual mouth contact, lovers kissing, romantic lip lock',
-      'massage': 'nude body massage, sensual touching, intimate massage therapy, bare skin massage, erotic massage, oil massage on nude body, intimate body work',
-      'bath': 'nude bathing together, shared bath intimacy, wet naked bodies in bath, intimate bathing, water play, nude bath scene, sensual washing'
+      'shower_together': 'nude shower scene together, wet naked bodies, steamy bathroom, water cascading over bare skin, intimate shower embrace, explicit nudity, wet blonde hair, passionate kissing under running water, naked bodies pressed together, Cha Hae-In bare breasts, exposed nipples, nude feminine curves, wet skin glistening, steam-filled bathroom, shower glass, bathroom tiles, water streaming down nude bodies, sensual washing, intimate bathing together',
+      'shower': 'solo nude shower scene, wet naked body, steamy bathroom atmosphere, water droplets on bare skin, explicit nudity, wet hair, Cha Hae-In bare breasts, exposed nipples, nude feminine form, intimate bathing, sensual shower moment, steam and water, solo bathing eroticism',
+      'bedroom': 'nude bedroom scene, explicit intimate moment, naked bodies, passionate embrace, bed intimacy, Cha Hae-In bare breasts, exposed nipples, nude feminine curves, explicit sexual content, romantic bedroom setting, mature intimate activity, lovers entwined, intimate positioning, sexual tension',
+      'undress': 'intimate undressing scene, removing clothes, revealing naked body, Cha Hae-In bare breasts, exposed nipples, explicit nudity, sensual undressing, bare skin exposure, intimate vulnerability, clothing removal, seductive stripping, gradual reveal',
+      'touch': 'intimate touching, caressing naked skin, Cha Hae-In bare breasts, exposed nipples, explicit physical intimacy, sensual exploration, bare body contact, passionate touching, erotic caresses, intimate fondling, sensual massage',
+      'embrace': 'naked embrace, nude bodies pressed together, Cha Hae-In bare breasts, exposed nipples, explicit intimate embrace, skin-to-skin contact, passionate naked cuddle, intimate holding, nude cuddling, bare body contact',
+      'kiss': 'passionate kissing, nude bodies, Cha Hae-In bare breasts, exposed nipples, intimate lip contact, deep passionate kiss, erotic kissing, sensual mouth contact, lovers kissing, romantic lip lock',
+      'massage': 'nude body massage, sensual touching, Cha Hae-In bare breasts, exposed nipples, intimate massage therapy, bare skin massage, erotic massage, oil massage on nude body, intimate body work',
+      'bath': 'nude bathing together, shared bath intimacy, wet naked bodies in bath, Cha Hae-In bare breasts, exposed nipples, intimate bathing, water play, nude bath scene, sensual washing'
     };
 
     const activityDesc = explicitContexts[options.activityContext as keyof typeof explicitContexts] || 'explicit intimate scene, nude bodies, mature content, passionate intimacy, erotic encounter, explicit sexual content';
