@@ -1921,7 +1921,9 @@ export default function SoloLevelingSpatial() {
                 onClick={() => setGameState(prev => ({ 
                   ...prev, 
                   ownedFurniture: [...(prev.ownedFurniture || []), 'luxury_sectional_sofa', 'smart_entertainment_system'],
-                  apartmentTier: Math.max(prev.apartmentTier || 1, 2)
+                  apartmentTier: Math.max(prev.apartmentTier || 1, 2),
+                  hasPlushSofa: true,
+                  hasEntertainmentSystem: true
                 }))}
                 className="px-2 py-1 rounded bg-purple-600 hover:bg-purple-700"
               >
