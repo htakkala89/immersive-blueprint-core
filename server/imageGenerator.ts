@@ -82,7 +82,7 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
       },
       body: JSON.stringify({
         input: prompt,
-        model: 'nai-diffusion-3',
+        model: 'nai-diffusion-4-curated-preview',
         action: 'generate',
         parameters: {
           width: 1344,
