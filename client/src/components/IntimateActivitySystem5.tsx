@@ -510,14 +510,16 @@ export function IntimateActivitySystem5({
                 />
                 
                 <div className="flex gap-2">
-                  {/* Narrative Lens Button - Static effects only */}
-                  <button
-                    onClick={activateNarrativeLens}
-                    className="text-pink-400 hover:bg-pink-500/30 border border-pink-400/50 relative overflow-hidden backdrop-blur-sm p-2 rounded-lg bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-pink-500/20 shadow-lg shadow-pink-500/30"
-                    title="Visualize Scene"
-                  >
-                    <Eye className="w-5 h-5 relative z-10" />
-                  </button>
+                  {/* Narrative Lens Button - With sparkle effects */}
+                  <SparkleEffect intensity="medium" color="pink" className="w-auto">
+                    <button
+                      onClick={activateNarrativeLens}
+                      className="text-pink-400 hover:bg-pink-500/30 border border-pink-400/50 relative overflow-hidden backdrop-blur-sm p-2 rounded-lg bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-pink-500/20 shadow-lg shadow-pink-500/30"
+                      title="Visualize Scene"
+                    >
+                      <Eye className="w-5 h-5 relative z-10" />
+                    </button>
+                  </SparkleEffect>
                   
                   <Button
                     onClick={sendMessage}
