@@ -80,7 +80,7 @@ export function MonarchsAuraMenu({ isVisible, onClose, onSystemSelect }: Monarch
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-start justify-center pt-16"
+        className="fixed inset-0 z-50 flex items-center justify-center"
         style={{
           background: 'radial-gradient(ellipse at top, rgba(147,51,234,0.15), rgba(0,0,0,0.8))',
           backdropFilter: 'blur(20px) saturate(180%)'
