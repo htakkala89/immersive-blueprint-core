@@ -495,108 +495,100 @@ export default function SoloLevelingSpatial() {
         </motion.div>
       )}
 
-      {/* Modals and UI Components */}
-      <AnimatePresence>
-        {showDailyLifeHub && (
-          <DailyLifeHubComplete
-            isVisible={showDailyLifeHub}
-            onClose={() => setShowDailyLifeHub(false)}
-            onActivitySelect={(activity) => {
-              console.log('Daily Life Hub - Activity selected:', activity);
-              setSelectedActivity(activity.id);
-              
-              if (activity.id === 'grab_coffee') {
-                console.log('Coffee activity selected - navigating to Hongdae Cafe');
-                setShowDailyLifeHub(false);
-                setPlayerLocation('hongdae_cafe');
-                setShowCoffeeModal(true);
-              } else if (activity.id === 'intimate') {
-                setActiveActivity('cuddling');
-                setShowIntimateModal(true);
-                setShowDailyLifeHub(false);
-              } else {
-                setShowDailyLifeHub(false);
-              }
-            }}
-            playerStats={{
-              gold: gameState.gold || 0,
-              level: gameState.level,
-              experience: gameState.experience || 0,
-              affectionLevel: gameState.affection,
-              energy: gameState.energy || 85,
-              maxEnergy: gameState.maxEnergy || 100,
-              relationshipStatus: 'dating',
-              intimacyLevel: gameState.intimacyLevel || 25,
-              sharedMemories: 15,
-              livingTogether: false,
-              daysTogether: 45,
-              apartmentTier: gameState.apartmentTier || 2,
-              hasModernKitchen: true,
-              hasHomeGym: false
-            }}
-            timeOfDay={timeOfDay}
-          />
-        )}
-      </AnimatePresence>
+      {/* Daily Life Hub */}
+      {showDailyLifeHub && (
+        <DailyLifeHubComplete
+          isVisible={showDailyLifeHub}
+          onClose={() => setShowDailyLifeHub(false)}
+          onActivitySelect={(activity) => {
+            console.log('Daily Life Hub - Activity selected:', activity);
+            setSelectedActivity(activity.id);
+            
+            if (activity.id === 'grab_coffee') {
+              console.log('Coffee activity selected - navigating to Hongdae Cafe');
+              setShowDailyLifeHub(false);
+              setPlayerLocation('hongdae_cafe');
+              setShowCoffeeModal(true);
+            } else if (activity.id === 'intimate') {
+              setActiveActivity('cuddling');
+              setShowIntimateModal(true);
+              setShowDailyLifeHub(false);
+            } else {
+              setShowDailyLifeHub(false);
+            }
+          }}
+          playerStats={{
+            gold: gameState.gold || 0,
+            level: gameState.level,
+            experience: gameState.experience || 0,
+            affectionLevel: gameState.affection,
+            energy: gameState.energy || 85,
+            maxEnergy: gameState.maxEnergy || 100,
+            relationshipStatus: 'dating' as const,
+            intimacyLevel: gameState.intimacyLevel || 25,
+            sharedMemories: 15,
+            livingTogether: false,
+            daysTogether: 45,
+            apartmentTier: gameState.apartmentTier || 2,
+            hasModernKitchen: true,
+            hasHomeGym: false
+          }}
+          timeOfDay={timeOfDay}
+        />
+      )}
 
       {/* Coffee Activity Modal */}
-      <AnimatePresence>
-        {showCoffeeModal && (
-          <CoffeeActivityModal
-            isVisible={showCoffeeModal}
-            onClose={() => setShowCoffeeModal(false)}
-            onActivityComplete={(results) => {
-              console.log('Coffee activity completed:', results);
-              setGameState(prev => ({
-                ...prev,
-                affection: Math.min(100, prev.affection + results.affectionGained),
-                gold: Math.max(0, (prev.gold || 0) - results.goldSpent),
-                energy: Math.max(0, (prev.energy || 85) - results.energySpent)
-              }));
-              setShowCoffeeModal(false);
-            }}
-          />
-        )}
-      </AnimatePresence>
+      {showCoffeeModal && (
+        <CoffeeActivityModal
+          isVisible={showCoffeeModal}
+          onClose={() => setShowCoffeeModal(false)}
+          onActivityComplete={(results) => {
+            console.log('Coffee activity completed:', results);
+            setGameState(prev => ({
+              ...prev,
+              affection: Math.min(100, prev.affection + results.affectionGained),
+              gold: Math.max(0, (prev.gold || 0) - results.goldSpent),
+              energy: Math.max(0, (prev.energy || 85) - results.energySpent)
+            }));
+            setShowCoffeeModal(false);
+          }}
+        />
+      )}
 
       {/* Intimate Activity Modal */}
-      <AnimatePresence>
-        {showIntimateModal && (
-          <IntimateActivityModal
-            isVisible={showIntimateModal}
-            onClose={() => setShowIntimateModal(false)}
-            onReturnToHub={() => {
-              setShowIntimateModal(false);
-              setShowDailyLifeHub(true);
-            }}
-            activityType={activeActivity as 'shower_together' | 'cuddle_together' | 'bedroom_intimacy' | 'make_love' | null}
-            onAction={(action: string, isCustom?: boolean) => {
-              console.log('Intimate action:', action, isCustom);
-            }}
-            onImageGenerate={(prompt: string) => {
-              console.log('Generate image:', prompt);
-            }}
-            intimacyLevel={gameState.intimacyLevel || 25}
-            affectionLevel={gameState.affection}
-          />
-        )}
-      </AnimatePresence>
+      {showIntimateModal && (
+        <IntimateActivityModal
+          isVisible={showIntimateModal}
+          onClose={() => setShowIntimateModal(false)}
+          onReturnToHub={() => {
+            setShowIntimateModal(false);
+            setShowDailyLifeHub(true);
+          }}
+          activityType={activeActivity as 'shower_together' | 'cuddle_together' | 'bedroom_intimacy' | 'make_love' | null}
+          onAction={(action: string, isCustom?: boolean) => {
+            console.log('Intimate action:', action, isCustom);
+          }}
+          onImageGenerate={(prompt: string) => {
+            console.log('Generate image:', prompt);
+          }}
+          intimacyLevel={gameState.intimacyLevel || 25}
+          affectionLevel={gameState.affection}
+        />
+      )}
 
       {/* System 5: Intimate Activity System */}
-      <AnimatePresence>
-        {showIntimateSystem5 && (
-          <IntimateActivitySystem5
-            isVisible={showIntimateSystem5}
-            activityId="intimate_massage"
-            activityTitle="Intimate Massage"
-            onClose={() => setShowIntimateSystem5(false)}
-            onSceneComplete={(results) => {
-              console.log('Intimate scene completed:', results);
-              setShowIntimateSystem5(false);
-            }}
-          />
-        )}
-      </AnimatePresence>
+      {showIntimateSystem5 && (
+        <IntimateActivitySystem5
+          isVisible={showIntimateSystem5}
+          activityId="intimate_massage"
+          activityTitle="Intimate Massage"
+          onClose={() => setShowIntimateSystem5(false)}
+          onSceneComplete={(results) => {
+            console.log('Intimate scene completed:', results);
+            setShowIntimateSystem5(false);
+          }}
+        />
+      )}
     </div>
   );
 }
