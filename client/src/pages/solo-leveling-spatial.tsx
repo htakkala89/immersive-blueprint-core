@@ -1750,6 +1750,61 @@ export default function SoloLevelingSpatial() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
           </motion.div>
         )}
+
+        {/* Enhanced Interactive Nodes System - Positioned within spatial view */}
+        <LocationInteractiveNodes
+          locationId={playerLocation}
+          playerStats={{
+            affection: gameState.affection,
+            gold: gameState.gold || 0,
+            apartmentTier: gameState.apartmentTier || 1
+          }}
+          environmentalContext={{
+            weather: weather,
+            timeOfDay: timeOfDay,
+            storyFlags: Object.keys(storyFlags).filter((flag: string) => storyFlags[flag as keyof typeof storyFlags]),
+            visitHistory: {},
+            chaHaeInPresent: chaHaeInPresent
+          }}
+          onNodeInteraction={(nodeId, thoughtPrompt, outcome) => {
+            console.log('Node interaction triggered:', { nodeId, thoughtPrompt, outcome });
+            
+            // Handle cafe nodes through existing interaction system
+            switch (nodeId) {
+              case 'order_counter':
+                if ((gameState.gold || 0) >= 8000) {
+                  setGameState(prev => ({
+                    ...prev,
+                    gold: Math.max(0, (prev.gold || 0) - 8000),
+                    affection: Math.min(100, prev.affection + 5)
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'cafe_order',
+                    action: 'You order drinks for both of you. [- ₩8,000]. "I\'ll have an iced americano," Cha Hae-In says with a smile.',
+                    name: 'Cafe Counter',
+                    x: 30,
+                    y: 45
+                  });
+                }
+                break;
+              case 'window_seat':
+                handleEnvironmentalInteraction({
+                  id: 'window_conversation',
+                  action: 'You suggest taking the window seat. Cha Hae-In nods and settles in comfortably.',
+                  name: 'Window Seat',
+                  x: 70,
+                  y: 35
+                });
+                break;
+              case 'red_gate_entrance':
+              case 'red_gate':
+                setShowDungeonRaid(true);
+                break;
+              default:
+                console.log('Unhandled node interaction:', nodeId);
+            }
+          }}
+        />
         
         {/* Developer Menu */}
         <div className="absolute top-6 right-[320px] bg-black/90 backdrop-blur-sm text-white rounded-lg border border-purple-400/30 z-40 max-w-xs">
@@ -2117,71 +2172,45 @@ export default function SoloLevelingSpatial() {
             </div>
           </motion.div>
         )}
+      </motion.div>
+      
+      {/* Spatial View ends here - this is the closing for the main spatial container */}
+      
+      {/* Continue with the rest of the page components */}
+      
+      {/* Quest Objective Available Notification */}
+      {gameState.activeQuests && gameState.activeQuests.some(quest => 
+        quest.targetLocation === playerLocation && quest.progress < 100
+      ) && (
+        <motion.div
+          className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999]"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div
+            className="bg-yellow-500/20 backdrop-blur-xl border border-yellow-400/50 rounded-2xl p-4"
+            style={{ 
+              boxShadow: '0 0 20px rgba(255, 215, 0, 0.3)',
+              background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 193, 7, 0.1))'
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
+                <Target className="w-4 h-4 text-black" />
+              </div>
+              <div>
+                <h3 className="text-yellow-200 font-semibold text-sm">Quest Objective Available</h3>
+                <p className="text-yellow-300/80 text-xs">Look for glowing interaction points to progress your mission</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
-        {/* Enhanced Interactive Nodes System */}
-        <LocationInteractiveNodes
-          locationId={playerLocation}
-          playerStats={{
-            affection: gameState.affection,
-            gold: gameState.gold || 0,
-            apartmentTier: gameState.apartmentTier || 1
-          }}
-          environmentalContext={{
-            weather: weather,
-            timeOfDay: timeOfDay,
-            storyFlags: Object.keys(storyFlags).filter((flag: string) => storyFlags[flag as keyof typeof storyFlags]),
-            visitHistory: {},
-            chaHaeInPresent: chaHaeInPresent
-          }}
-          onNodeInteraction={(nodeId, thoughtPrompt, outcome) => {
-            console.log('Node interaction triggered:', { nodeId, thoughtPrompt, outcome });
-            console.log('Current story flags:', storyFlags);
-            console.log('Available for red_gate_entrance:', nodeId === 'red_gate_entrance');
-            
-            // Check if this interaction progresses an active quest
-            const activeQuestAtLocation = gameState.activeQuests?.find(quest => 
-              quest.targetLocation === playerLocation
-            );
-            
-            if (activeQuestAtLocation) {
-              // Update quest progress
-              setGameState(prev => ({
-                ...prev,
-                activeQuests: prev.activeQuests?.map(quest => 
-                  quest.id === activeQuestAtLocation.id 
-                    ? { ...quest, progress: Math.min(100, (quest.progress || 0) + 25) }
-                    : quest
-                ) || []
-              }));
-              
-              // Show quest progress notification
-              setTimeout(() => {
-                setShowActivityNotification(true);
-                setTimeout(() => setShowActivityNotification(false), 3000);
-              }, 1000);
-              
-              console.log(`Quest progress: ${activeQuestAtLocation.title} advanced by interaction`);
-            }
-            
-            // Handle different node types with specific logic
-            console.log('🔍 SWITCH STATEMENT - Processing nodeId:', nodeId);
-            
-            // Priority handler for bedroom intimate activities
-            if (nodeId === 'bed' && playerLocation === 'player_apartment') {
-              console.log('🛏️ BEDROOM NODE DETECTED - Opening System 5 Intimate Activity');
-              const currentAffection = gameState.affection || 0;
-              const currentIntimacy = gameState.intimacyLevel || 0;
-              let selectedActivity = 'cuddling'; // Safe default for early game
-              
-              // Check relationship gates before allowing activities
-              if (currentAffection >= 80 && currentIntimacy >= 80) {
-                // High tier activities
-                if (gameState.unlockedActivities?.includes('master_suite_intimacy')) selectedActivity = 'master_suite_intimacy';
-                else if (gameState.unlockedActivities?.includes('passionate_night')) selectedActivity = 'passionate_night';
-              } else if (currentAffection >= 50 && currentIntimacy >= 40) {
-                // Mid tier activities
-                if (gameState.unlockedActivities?.includes('passionate_night')) selectedActivity = 'passionate_night';
-                else if (gameState.unlockedActivities?.includes('intimate_massage')) selectedActivity = 'intimate_massage';
+      
+      {/* Continue with existing modals and components */}
               } else if (currentAffection >= 20 && currentIntimacy >= 10) {
                 // Basic intimate activities
                 if (gameState.unlockedActivities?.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
