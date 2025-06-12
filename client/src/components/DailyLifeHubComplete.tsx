@@ -17,6 +17,7 @@ import {
   Sword
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CoffeeActivityModal } from './CoffeeActivityModal';
 
 interface PlayerStats {
   gold: number;
@@ -402,6 +403,7 @@ export function DailyLifeHubComplete({
 }: DailyLifeHubCompleteProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [hoveredActivity, setHoveredActivity] = useState<string | null>(null);
+  const [coffeeActivityVisible, setCoffeeActivityVisible] = useState(false);
   
   const availableActivities = getAvailableActivities(playerStats, timeOfDay);
   const greetingMessage = getGreetingMessage(timeOfDay, playerStats.affectionLevel);
@@ -414,7 +416,20 @@ export function DailyLifeHubComplete({
     if (!activity.available) return;
     if (playerStats.energy < activity.energyCost) return;
     
+    // Handle coffee activity with dedicated modal
+    if (activity.id === 'grab_coffee') {
+      setCoffeeActivityVisible(true);
+      return;
+    }
+    
     onActivitySelect(activity);
+  };
+
+  // Handle coffee activity completion
+  const handleCoffeeActivityComplete = (results: any) => {
+    // Update game state would happen in parent component
+    // For now, just close the modal
+    setCoffeeActivityVisible(false);
   };
 
   const getEnergyOrbStyle = () => {
@@ -588,6 +603,14 @@ export function DailyLifeHubComplete({
           </div>
         </motion.div>
       </motion.div>
+      
+      {/* Coffee Activity Modal */}
+      <CoffeeActivityModal
+        isVisible={coffeeActivityVisible}
+        onClose={() => setCoffeeActivityVisible(false)}
+        onActivityComplete={handleCoffeeActivityComplete}
+        backgroundImage="/images/hongdae-cafe.jpg"
+      />
     </AnimatePresence>
   );
 }
