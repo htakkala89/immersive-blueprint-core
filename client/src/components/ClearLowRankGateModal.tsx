@@ -170,7 +170,7 @@ export function ClearLowRankGateModal({ isVisible, onClose, onGateSelect, backgr
                 <motion.button
                   key={gate.id}
                   onClick={() => handleGateSelect(gate.id)}
-                  className="w-full p-6 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-xl border border-white/20 transition-all duration-200 text-left"
+                  className="w-full p-6 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-xl border border-white/20 transition-all duration-200 text-left cursor-pointer hover:border-blue-400/50 hover:shadow-lg hover:shadow-blue-500/20"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
