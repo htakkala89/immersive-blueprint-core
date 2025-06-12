@@ -206,6 +206,28 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       lockReason: stats.affectionLevel < 30 ? 'Synergy System Unlocked' : undefined,
       outcomes: ['Increases Synergy Gauge fill rate']
     },
+    {
+      id: 'review_raid_footage',
+      title: 'Review Raid Footage',
+      description: 'Analyze your recent raid performance together at the Hunter Association HQ.',
+      icon: <Eye className="w-5 h-5" />,
+      energyCost: 15,
+      category: 'training',
+      available: true, // Temporarily enabled for testing
+      lockReason: undefined,
+      outcomes: ['+5% Synergy bonus on next raid', 'Professional development']
+    },
+    {
+      id: 'clear_low_rank_gate',
+      title: 'Clear a Low-Rank Gate',
+      description: 'Take on a casual D-Rank or C-Rank gate together for practice and income.',
+      icon: <Sword className="w-5 h-5" />,
+      energyCost: 20,
+      category: 'training',
+      available: true, // Temporarily enabled for testing
+      lockReason: undefined,
+      outcomes: ['Gold & XP rewards', 'Medium Affection gain']
+    },
 
     // Category 3: Home Life
     {
