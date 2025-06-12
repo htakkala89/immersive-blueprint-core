@@ -229,6 +229,32 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       outcomes: ['Gold & XP rewards', 'Medium Affection gain']
     },
 
+    // Activity 11: Visit N Seoul Tower
+    {
+      id: 'n_seoul_tower',
+      title: 'Visit N Seoul Tower',
+      description: 'A romantic milestone date at Seoul\'s most iconic landmark.',
+      icon: <MapPin className="w-5 h-5" />,
+      energyCost: 30,
+      category: 'special',
+      available: stats.affectionLevel >= 80,
+      lockReason: stats.affectionLevel < 80 ? 'Requires: Affection Level 8+' : undefined,
+      outcomes: ['S-Rank Memory Star', 'Ultimate romantic milestone']
+    },
+
+    // Activity 12: Co-op Skill Training (Updated)
+    {
+      id: 'coop_skill_training_advanced',
+      title: 'Advanced Co-op Training',
+      description: 'Intensive synergy training with rhythm-based coordination challenges.',
+      icon: <Zap className="w-5 h-5" />,
+      energyCost: 25,
+      category: 'training',
+      available: stats.affectionLevel >= 30,
+      lockReason: stats.affectionLevel < 30 ? 'Synergy System Unlocked' : undefined,
+      outcomes: ['Permanent synergy buff', 'Combat coordination']
+    },
+
     // Category 3: Home Life
     {
       id: 'order_takeout',

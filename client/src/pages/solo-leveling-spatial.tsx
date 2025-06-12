@@ -107,6 +107,9 @@ interface GameState {
   currentRaidGate?: string;
   raidContext?: string;
   prevailingMood?: string;
+  synergyFillRate?: number;
+  romanticMilestone?: boolean;
+  deepConversationUnlocked?: boolean;
 }
 
 interface WorldLocation {
@@ -3836,6 +3839,50 @@ export default function SoloLevelingSpatial() {
             }, 500);
             return;
           }
+
+          // Handle Visit N Seoul Tower - Activity 11: Romantic Milestone
+          if (activity.id === 'n_seoul_tower') {
+            console.log('🗼 N Seoul Tower selected - romantic milestone date');
+            setPlayerLocation('n_seoul_tower');
+            setGameState(prev => ({ ...prev, currentScene: 'n_seoul_tower' }));
+            setTimeout(() => {
+              setShowNSeoulTower(true);
+            }, 800);
+            return;
+          }
+
+          // Handle Co-op Skill Training - Activity 12: Training with Mini-Game
+          if (activity.id === 'coop_skill_training') {
+            console.log('🎯 Co-op skill training selected - synergy mini-game');
+            setPlayerLocation('training_facility');
+            setGameState(prev => ({ ...prev, currentScene: 'training_facility' }));
+            setTimeout(() => {
+              setShowCoopSkillTraining(true);
+            }, 500);
+            return;
+          }
+
+          // Handle Order Takeout - Activity 13: Home Life
+          if (activity.id === 'order_takeout') {
+            console.log('🍜 Order takeout selected - cozy evening meal');
+            setPlayerLocation('player_apartment');
+            setGameState(prev => ({ ...prev, currentScene: 'player_apartment' }));
+            setTimeout(() => {
+              setShowOrderTakeout(true);
+            }, 500);
+            return;
+          }
+
+          // Handle Talk on Balcony - Activity 14: Deep Conversations
+          if (activity.id === 'talk_on_balcony') {
+            console.log('🌙 Balcony talk selected - deep conversation scene');
+            setPlayerLocation('player_apartment');
+            setGameState(prev => ({ ...prev, currentScene: 'player_apartment_balcony' }));
+            setTimeout(() => {
+              setShowTalkOnBalcony(true);
+            }, 500);
+            return;
+          }
           
           // Route activity to appropriate system
           if (activity.category === 'intimate') {
@@ -4265,6 +4312,117 @@ export default function SoloLevelingSpatial() {
           setChaHaeInExpression('romantic');
 
           console.log(`💆 Back rub completed: +${affectionGain} affection, mood boost: ${moodBoost}`);
+        }}
+      />
+
+      <NSeoulTowerModal
+        isVisible={showNSeoulTower}
+        onClose={() => setShowNSeoulTower(false)}
+        backgroundImage={sceneImage || undefined}
+        hasLovelock={gameState.inventory?.includes('love_padlock') || true}
+        onComplete={(memory) => {
+          setShowNSeoulTower(false);
+          
+          // Apply N Seoul Tower benefits
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + memory.affectionGain),
+            energy: Math.max(0, (prev.energy || 80) - 30),
+            sharedMemories: [...(prev.sharedMemories || []), memory],
+            romanticMilestone: true
+          }));
+
+          // Show affection heart effect
+          setShowAffectionHeart(true);
+          if (affectionHeartTimeout.current) clearTimeout(affectionHeartTimeout.current);
+          affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
+
+          setCurrentDialogue("That was perfect... I'll treasure this memory forever. Thank you for such a beautiful evening.");
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('romantic');
+
+          console.log(`🗼 N Seoul Tower completed: S-Rank memory created, +${memory.affectionGain} affection`);
+        }}
+      />
+
+      <CoopSkillTrainingModal
+        isVisible={showCoopSkillTraining}
+        onClose={() => setShowCoopSkillTraining(false)}
+        backgroundImage={sceneImage || undefined}
+        onComplete={(synergyBonus) => {
+          setShowCoopSkillTraining(false);
+          
+          // Apply training benefits
+          setGameState(prev => ({
+            ...prev,
+            energy: Math.max(0, (prev.energy || 80) - 25),
+            synergyFillRate: (prev.synergyFillRate || 1) + synergyBonus,
+            experience: (prev.experience || 0) + 50
+          }));
+
+          setCurrentDialogue(`Excellent training session! Our coordination is getting much better. I can feel our synergy improving.`);
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('focused');
+
+          console.log(`🎯 Co-op training completed: +${synergyBonus}% synergy fill rate bonus`);
+        }}
+      />
+
+      <OrderTakeoutModal
+        isVisible={showOrderTakeout}
+        onClose={() => setShowOrderTakeout(false)}
+        backgroundImage={sceneImage || undefined}
+        onComplete={(goldCost, energyRestored, affectionGain) => {
+          setShowOrderTakeout(false);
+          
+          // Apply takeout benefits
+          setGameState(prev => ({
+            ...prev,
+            gold: Math.max(0, (prev.gold || 0) - goldCost),
+            energy: Math.min(100, (prev.energy || 80) + energyRestored),
+            affection: Math.min(100, prev.affection + affectionGain)
+          }));
+
+          setCurrentDialogue("That was exactly what I needed tonight. Sometimes the simple moments are the most precious.");
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('happy');
+
+          console.log(`🍜 Takeout completed: -₩${goldCost}, +${energyRestored} energy, +${affectionGain} affection`);
+        }}
+      />
+
+      <TalkOnBalconyModal
+        isVisible={showTalkOnBalcony}
+        onClose={() => setShowTalkOnBalcony(false)}
+        backgroundImage={sceneImage || undefined}
+        onComplete={(affectionGain, deepConversation) => {
+          setShowTalkOnBalcony(false);
+          
+          // Apply conversation benefits
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + affectionGain),
+            energy: Math.max(0, (prev.energy || 80) - 10),
+            deepConversationUnlocked: deepConversation,
+            prevailingMood: 'contemplative'
+          }));
+
+          if (deepConversation) {
+            // Show affection heart effect for deep conversations
+            setShowAffectionHeart(true);
+            if (affectionHeartTimeout.current) clearTimeout(affectionHeartTimeout.current);
+            affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
+          }
+
+          setCurrentDialogue("Thank you for listening to my heart tonight. These quiet conversations mean everything to me.");
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('welcoming');
+
+          console.log(`🌙 Balcony talk completed: +${affectionGain} affection, deep conversation: ${deepConversation}`);
         }}
       />
 
