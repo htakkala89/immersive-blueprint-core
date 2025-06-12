@@ -302,7 +302,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       requirements: undefined,
       spatialRelationships: {
         enhances: undefined,
-        excludes: ['order_counter', 'window_seat'],
+        excludes: ['counter', 'window_seat'],
         proximity: undefined
       },
       environmentalStates: {
@@ -317,7 +317,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       }
     },
     {
-      id: 'order_counter',
+      id: 'counter',
       label: 'Counter',
       icon: Coffee,
       position: { x: 80, y: 25 },
@@ -353,7 +353,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       spatialRelationships: {
         enhances: undefined,
         excludes: undefined,
-        proximity: ['order_counter']
+        proximity: ['counter']
       },
       environmentalStates: {
         weather: ['clear', 'rain', 'cloudy'],
@@ -377,7 +377,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       requirements: undefined,
       spatialRelationships: {
         enhances: undefined,
-        excludes: ['order_counter', 'window_seat'],
+        excludes: ['counter', 'window_seat'],
         proximity: undefined
       },
       environmentalStates: {
@@ -630,12 +630,6 @@ export function LocationInteractiveNodes({
 
   const baseNodes = LOCATION_NODES[locationId] || [];
   
-  // Debug logging for hongdae_cafe
-  if (locationId === 'hongdae_cafe') {
-    console.log('🏪 HONGDAE CAFE DEBUG - Base nodes:', baseNodes);
-    console.log('🏪 Environmental context:', environmentalContext);
-  }
-  
   // System 3: Environmental State Management - Filter nodes based on context
   const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
     if (!environmentalContext) return baseNodes;
@@ -667,12 +661,6 @@ export function LocationInteractiveNodes({
   const nodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
     arr.findIndex(n => n.id === node.id) === index
   ); // Remove duplicates
-  
-  // Debug logging for hongdae_cafe
-  if (locationId === 'hongdae_cafe') {
-    console.log('🏪 HONGDAE CAFE DEBUG - Final filtered nodes:', nodes);
-    console.log('🏪 Available nodes after filtering:', nodes.filter(node => isNodeAvailable(node)));
-  }
 
   // System 3: Spatial Relationship Calculator
   const calculateNodeProximity = (node1: InteractiveNode, node2: InteractiveNode): number => {
@@ -876,12 +864,11 @@ export function LocationInteractiveNodes({
         return (
           <motion.div
             key={node.id}
-            className="absolute pointer-events-auto cursor-pointer opacity-100"
+            className="absolute pointer-events-auto cursor-pointer z-40 opacity-100"
             style={{
               left: `${node.position.x}%`,
               top: `${node.position.y}%`,
-              transform: 'translate(-50%, -50%)',
-              zIndex: 9999 // Force high z-index to ensure visibility
+              transform: 'translate(-50%, -50%)'
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -894,14 +881,12 @@ export function LocationInteractiveNodes({
           >
             {/* Node Orb with 8px spacing system */}
             <motion.div
-              className="w-10 h-10 rounded-full flex items-center justify-center bg-purple-500 border-4 border-white shadow-lg"
+              className="w-6 h-6 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
               style={{
-                minWidth: '40px',
-                minHeight: '40px',
-                padding: '8px',
-                margin: '8px',
-                backgroundColor: 'rgba(147, 51, 234, 0.9)',
-                backdropFilter: 'blur(4px)'
+                minWidth: '24px',
+                minHeight: '24px',
+                padding: '4px', // 4px micro spacing for icon-to-border
+                margin: '8px' // 8px standard element spacing
               }}
               animate={available ? {
                 boxShadow: [
@@ -912,7 +897,7 @@ export function LocationInteractiveNodes({
               } : {}}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <IconComponent className="w-5 h-5 text-white" />
+              <IconComponent className="w-3 h-3 text-white" />
             </motion.div>
 
             {/* Node Label with 8px spacing from orb */}
