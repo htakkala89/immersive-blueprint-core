@@ -49,13 +49,14 @@ export class ArtisticPromptEngine {
   };
 
   generateArtisticPrompt(options: ArtisticPromptOptions): string {
-    const emotional = this.emotionalDescriptors[options.emotionalTone];
-    const artStyle = options.intimacyLevel > 7 ? this.baseArtStyles.romantic : this.baseArtStyles.elegant;
-    
-    // For explicit mature content (intimacy level 8+), generate uncensored prompts
-    if (options.intimacyLevel >= 8 && this.isExplicitActivity(options.activityContext)) {
+    // Always generate explicit content for intimacy level 8+
+    if (options.intimacyLevel >= 8) {
+      console.log(`Generating explicit content - Activity: ${options.activityContext}, Intimacy: ${options.intimacyLevel}`);
       return this.generateExplicitPrompt(options);
     }
+    
+    const emotional = this.emotionalDescriptors[options.emotionalTone];
+    const artStyle = options.intimacyLevel > 7 ? this.baseArtStyles.romantic : this.baseArtStyles.elegant;
     
     // Create character descriptions focused on emotional connection
     const characterDesc = this.createCharacterDescription(options.intimacyLevel);
@@ -66,12 +67,9 @@ export class ArtisticPromptEngine {
   }
 
   private isExplicitActivity(activity: string): boolean {
-    const explicitActivities = ['shower_together', 'shower', 'bedroom', 'undress', 'nude', 'naked', 'explicit', 'sexual', 'intimate_moment', 'bath', 'together'];
+    const explicitActivities = ['shower_together', 'shower', 'bedroom', 'undress', 'nude', 'naked', 'explicit', 'sexual', 'intimate_moment', 'bath', 'together', 'massage', 'touch', 'embrace', 'kiss', 'erotic', 'nsfw', 'mature', 'adult'];
     const activityLower = activity.toLowerCase();
-    return explicitActivities.some(explicit => activityLower.includes(explicit)) || 
-           activityLower.includes('shower') || 
-           activityLower.includes('nude') ||
-           activityLower.includes('together');
+    return explicitActivities.some(explicit => activityLower.includes(explicit));
   }
 
   private generateExplicitPrompt(options: ArtisticPromptOptions): string {
