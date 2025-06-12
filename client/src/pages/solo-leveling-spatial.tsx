@@ -410,6 +410,7 @@ export default function SoloLevelingSpatial() {
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
   const [showCoffeeActivity, setShowCoffeeActivity] = useState(false);
   const [showTrainingActivity, setShowTrainingActivity] = useState(false);
+  const [showCoffeeDialogue, setShowCoffeeDialogue] = useState(false);
   
   // Debug logging for dungeon raid state
   useEffect(() => {
@@ -4169,9 +4170,67 @@ export default function SoloLevelingSpatial() {
             gold: Math.max(0, (prev.gold || 0) - results.goldSpent)
           }));
           setShowCoffeeActivity(false);
+          // Step 5 of spec: Show standard Dialogue UI for conversation
+          setShowCoffeeDialogue(true);
         }}
         backgroundImage="/images/hongdae-cafe.jpg"
       />
+
+      {/* Coffee Dialogue UI - Standard conversation interface (Step 5 of spec) */}
+      {showCoffeeDialogue && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-end justify-center p-4"
+        >
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-t-3xl p-6 max-w-4xl w-full shadow-2xl"
+          >
+            {/* Character Portrait and Name */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                <span className="text-white font-bold text-lg">CH</span>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-lg">Cha Hae-In</h3>
+                <p className="text-white/70 text-sm">S-Rank Hunter • Coffee Date</p>
+              </div>
+            </div>
+
+            {/* Dialogue Content */}
+            <div className="bg-white/5 rounded-xl p-6 mb-4">
+              <p className="text-white/90 text-lg leading-relaxed">
+                "It's nice to take a break like this. Usually I'm so focused on raids and training that I forget to just... enjoy simple moments." 
+                <span className="text-white/70 italic"> *She looks out the window thoughtfully.* </span>
+                "Thank you for suggesting this. How have you been handling the stress of being a hunter?"
+              </p>
+            </div>
+
+            {/* Response Options */}
+            <div className="space-y-3 mb-4">
+              <button className="w-full bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg p-4 text-left transition-all">
+                <span className="text-white font-medium">"I find that spending time with people I care about helps the most."</span>
+              </button>
+              <button className="w-full bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg p-4 text-left transition-all">
+                <span className="text-white font-medium">"Training hard keeps my mind focused and clear."</span>
+              </button>
+              <button className="w-full bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg p-4 text-left transition-all">
+                <span className="text-white font-medium">"Sometimes I wonder if this dangerous life is worth it."</span>
+              </button>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowCoffeeDialogue(false)}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-3 rounded-lg transition-all"
+            >
+              End Conversation
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }

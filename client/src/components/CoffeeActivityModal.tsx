@@ -66,7 +66,7 @@ export function CoffeeActivityModal({
 
   // Generate narrative based on choice
   const generateNarrative = (choice: CoffeeChoice): string => {
-    const narratives = {
+    const narratives: Record<string, string> = {
       'two_americanos': '*You confidently order two iced Americanos without hesitation. Cha Hae-In raises an eyebrow in pleasant surprise.* "You remembered my favorite," *she says with the hint of a smile, taking a sip and giving a small, contented sigh.* "This is exactly what I needed after that last raid."',
       'latte_macchiato': '*You order a latte for yourself and a macchiato for her. She accepts gracefully and takes a thoughtful sip.* "Not bad," *she says, settling into the window seat.* "Though I usually prefer something stronger. The atmosphere here is nice though."',
       'ask_preference': '*"What would you like to drink?" you ask. She considers for a moment.* "An iced Americano, please. I appreciate you asking." *She seems pleased by your consideration as you place the order and find a quiet table by the window.*'
