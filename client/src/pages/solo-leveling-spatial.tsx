@@ -468,6 +468,7 @@ export default function SoloLevelingSpatial() {
   const [showCoopSkillTraining, setShowCoopSkillTraining] = useState(false);
   const [showOrderTakeout, setShowOrderTakeout] = useState(false);
   const [showTalkOnBalcony, setShowTalkOnBalcony] = useState(false);
+  const [showMyeongdongDinner, setShowMyeongdongDinner] = useState(false);
   const [showDevTools, setShowDevTools] = useState(false);
   const [pendingFurnitureItem, setPendingFurnitureItem] = useState<any>(null);
 
@@ -3925,6 +3926,17 @@ export default function SoloLevelingSpatial() {
             }, 500);
             return;
           }
+
+          // Handle Dinner at Myeongdong - Activity 15: Fine Dining Date
+          if (activity.id === 'dinner_myeongdong') {
+            console.log('🍽️ Myeongdong dinner selected - fine dining experience');
+            setPlayerLocation('myeongdong_restaurant');
+            setGameState(prev => ({ ...prev, currentScene: 'myeongdong_restaurant' }));
+            setTimeout(() => {
+              setShowMyeongdongDinner(true);
+            }, 800);
+            return;
+          }
           
           // Route activity to appropriate system
           if (activity.category === 'intimate') {
@@ -4466,6 +4478,39 @@ export default function SoloLevelingSpatial() {
 
           console.log(`🌙 Balcony talk completed: +${affectionGain} affection, deep conversation: ${deepConversation}`);
         }}
+      />
+
+      {/* Myeongdong Dinner Modal - Activity 15: Fine Dining Date */}
+      <MyeongdongDinnerModal
+        isVisible={showMyeongdongDinner}
+        onClose={() => setShowMyeongdongDinner(false)}
+        onComplete={(results) => {
+          setShowMyeongdongDinner(false);
+          
+          setGameState(prev => ({
+            ...prev,
+            energy: Math.max(0, (prev.energy || 80) - results.energySpent),
+            affection: Math.min(100, prev.affection + results.affectionGained),
+            gold: Math.max(0, (prev.gold || 0) - results.goldSpent),
+            experience: (prev.experience || 0) + 200,
+            sharedMemories: [...(prev.sharedMemories || []), results.memory]
+          }));
+
+          // Show affection heart effect for romantic dinner
+          setShowAffectionHeart(true);
+          if (affectionHeartTimeout.current) clearTimeout(affectionHeartTimeout.current);
+          affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
+
+          setCurrentDialogue("That was absolutely wonderful, Jin-Woo. The food was incredible, but spending this time with you made it perfect. Thank you for such a beautiful evening.");
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('romantic');
+
+          console.log(`🍽️ Dinner completed: +${results.affectionGained} affection, -₩${results.goldSpent}, quality: ${results.dinnerQuality}`);
+        }}
+        playerGold={gameState.gold || 0}
+        affectionLevel={gameState.affection}
+        backgroundImage={sceneImage || undefined}
       />
 
       {/* System 15: Hunter's Communicator */}
