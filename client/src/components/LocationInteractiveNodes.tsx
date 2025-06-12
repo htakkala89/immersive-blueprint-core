@@ -131,6 +131,16 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       gameLogic: 'intimate_gateway_unlock',
       requirements: ['apartment_tier_2']
     },
+    {
+      id: 'entertainment_center',
+      label: 'Entertainment Center',
+      icon: Monitor,
+      position: { x: 60, y: 65 },
+      thoughtPrompt: 'Suggest watching a movie together',
+      outcome: 'Movie night on your luxurious sectional sofa with premium entertainment system.',
+      gameLogic: 'movie_night_activity',
+      requirements: ['apartment_tier_2', 'furniture_movie_setup']
+    },
     // Tier 3 - Hannam-dong Penthouse (5 nodes) - Official luxury gateway design
     {
       id: 'infinity_pool',
@@ -728,6 +738,15 @@ export function LocationInteractiveNodes({
 
   const handleThoughtPromptClick = () => {
     if (selectedNode) {
+      // Special handling for movie night activity
+      if (selectedNode.gameLogic === 'movie_night_activity') {
+        // Trigger movie night modal directly
+        onNodeInteraction('movie_night_setup', 'Watch a movie together', 'Opening movie night activity');
+        setShowThoughtPrompt(false);
+        setSelectedNode(null);
+        return;
+      }
+      
       // Use memory-enhanced prompts and outcomes
       const memoryState = getNodeMemoryState(selectedNode);
       onNodeInteraction(selectedNode.id, memoryState.thoughtPrompt, memoryState.outcome);
@@ -779,6 +798,7 @@ export function LocationInteractiveNodes({
     return node.requirements.every(req => {
       if (req === 'apartment_tier_2') return playerStats.apartmentTier >= 2;
       if (req === 'apartment_tier_3') return playerStats.apartmentTier >= 3;
+      if (req === 'furniture_movie_setup') return (playerStats as any).hasPlushSofa && (playerStats as any).hasEntertainmentSystem;
       if (req === 'padlock_item') return true; // Simplified - would check inventory
       return true;
     });
