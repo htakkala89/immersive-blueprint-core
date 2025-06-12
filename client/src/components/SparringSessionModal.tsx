@@ -100,6 +100,34 @@ export function SparringSessionModal({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const cooldownRef = useRef<Record<string, NodeJS.Timeout>>({});
 
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isVisible) {
+      setGamePhase('intro');
+      setSparringStats({
+        playerScore: 0,
+        chaScore: 0,
+        playerHits: 0,
+        chaHits: 0,
+        timeRemaining: 90,
+        round: 1
+      });
+      setActionCooldowns({});
+      setCombatLog([]);
+      setIsPlayerTurn(true);
+      setSessionResult(null);
+      setConversationHistory([]);
+      
+      // Clear any existing timers
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      Object.values(cooldownRef.current).forEach(clearTimeout);
+      cooldownRef.current = {};
+    }
+  }, [isVisible]);
+
   // Start combat timer
   useEffect(() => {
     if (gamePhase === 'combat' && sparringStats.timeRemaining > 0) {
