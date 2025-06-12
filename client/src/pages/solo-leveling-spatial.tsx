@@ -323,6 +323,8 @@ export default function SoloLevelingSpatial() {
     setChaHaeInExpression('focused');
     setThoughtPrompts([]);
     setCurrentDialogue('');
+    // Clear coffee activity context when exiting dialogue
+    setCoffeeActivityContext(null);
   };
 
   const handleGestureActivation = (e: React.TouchEvent | React.MouseEvent) => {
