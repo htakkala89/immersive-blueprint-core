@@ -12,6 +12,7 @@ import {
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
 import { IntimateActivityModal } from '@/components/IntimateActivityModal';
 import { CoffeeActivityModal } from '@/components/CoffeeActivityModal';
+import { SparringSessionModal } from '@/components/SparringSessionModal';
 import { TrainingActivityModal } from '@/components/TrainingActivityModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
@@ -246,6 +247,9 @@ export default function SoloLevelingSpatial() {
 
 
   // System 8: World Map state - activeQuests defined below with other quest states
+  
+  // Activity System states
+  const [showSparringModal, setShowSparringModal] = useState(false);
 
   // System 9: AI Narrative Engine state
   const [showNarrativeProgression, setShowNarrativeProgression] = useState(false);
@@ -4214,6 +4218,30 @@ export default function SoloLevelingSpatial() {
         backgroundImage="/images/hongdae-cafe.jpg"
       />
 
+      {/* Sparring Session Modal */}
+      <SparringSessionModal
+        isVisible={showSparringModal}
+        onClose={() => setShowSparringModal(false)}
+        onReturnToHub={() => {
+          setShowSparringModal(false);
+          setShowDailyLifeHub(true);
+        }}
+        playerStats={{
+          level: gameState.level,
+          strength: gameState.stats?.strength || 10,
+          agility: gameState.stats?.agility || 10,
+          vitality: gameState.stats?.vitality || 10,
+          energy: gameState.energy || 80
+        }}
+        onStatsUpdate={(updates) => {
+          setGameState(prev => ({
+            ...prev,
+            energy: updates.energy !== undefined ? updates.energy : prev.energy,
+            experience: updates.experience !== undefined ? (prev.experience || 0) + updates.experience : prev.experience,
+            affection: updates.affection !== undefined ? Math.min(10, (prev.affection || 0) + updates.affection) : prev.affection
+          }));
+        }}
+      />
 
     </div>
   );
