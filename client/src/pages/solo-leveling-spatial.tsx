@@ -2489,8 +2489,23 @@ export default function SoloLevelingSpatial() {
                 }
                 break;
                 
-              // Generic location nodes
+              // Cafe ordering system - specific choice UI
               case 'counter':
+                if (playerLocation === 'hongdae_cafe') {
+                  console.log('☕ Opening coffee ordering modal');
+                  setShowCoffeeActivity(true);
+                } else {
+                  // Generic counter interaction for other locations
+                  handleEnvironmentalInteraction({
+                    id: nodeId,
+                    action: thoughtPrompt,
+                    name: nodeId.replace(/_/g, ' '),
+                    x: 50,
+                    y: 50
+                  });
+                }
+                break;
+                
               case 'window_seat':
                 // Trigger environmental interaction with thought prompt
                 handleEnvironmentalInteraction({
@@ -3576,10 +3591,11 @@ export default function SoloLevelingSpatial() {
           setActiveActivity(activity.id);
           setShowDailyLifeHub(false);
           
-          // Handle coffee activity specifically
+          // Handle coffee activity specifically - travel to Hongdae Cafe
           if (activity.id === 'grab_coffee') {
-            console.log('☕ Coffee activity selected - opening coffee modal');
-            setShowCoffeeActivity(true);
+            console.log('☕ Coffee activity selected - traveling to Hongdae Cafe');
+            handleLocationTravel('hongdae_cafe');
+            // Coffee activity will be handled through spatial nodes at the cafe
             return;
           }
           
@@ -4143,7 +4159,7 @@ export default function SoloLevelingSpatial() {
           // Update game state based on coffee activity results
           setGameState(prev => ({
             ...prev,
-            energy: Math.max(0, prev.energy - 10), // Coffee costs 10 energy
+            energy: Math.max(0, (prev.energy || 80) - 10), // Coffee costs 10 energy
             affection: Math.min(10, prev.affection + 0.1), // Small affection boost
             gold: Math.max(0, (prev.gold || 0) - 15000) // Coffee costs 15,000 won
           }));
