@@ -576,7 +576,14 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
             {availableActivities.map((activity) => (
               <button
                 key={activity.id}
-                onClick={() => activity.available ? handleActivityClick(activity) : null}
+                onClick={() => {
+                  console.log('🖱️ Button clicked for:', activity.id, 'Available:', activity.available);
+                  if (activity.available) {
+                    handleActivityClick(activity);
+                  } else {
+                    console.log('❌ Activity not available:', activity.id);
+                  }
+                }}
                 disabled={!activity.available}
                 className={`p-4 rounded-xl border transition-all group relative ${
                   activity.available 
