@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useVoice } from '../hooks/useVoice';
 import { CoffeeActivityModal } from './CoffeeActivityModal';
@@ -79,12 +79,12 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     },
     {
       id: 'morning_coffee',
-      title: 'Morning Coffee',
-      description: 'Start the day with Cha Hae-In over coffee',
+      title: 'Coffee Together',
+      description: 'Share a coffee break with Cha Hae-In',
       icon: '☕',
       energyCost: 10,
       affectionReward: 5,
-      available: timeOfDay === 'morning'
+      available: stats.energy >= 10
     },
     {
       id: 'lunch_date',
@@ -343,6 +343,11 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
   const [trainingActivityVisible, setTrainingActivityVisible] = useState(false);
   const [lunchActivityVisible, setLunchActivityVisible] = useState(false);
   const [eveningWalkActivityVisible, setEveningWalkActivityVisible] = useState(false);
+
+  // Debug coffee modal state
+  useEffect(() => {
+    console.log('☕ Coffee modal state changed:', coffeeActivityVisible);
+  }, [coffeeActivityVisible]);
   const [currentTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'morning';
@@ -365,10 +370,21 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
   };
 
   const availableActivities = getAvailableActivities(playerStats, currentTimeOfDay);
+  
+  // Debug activity availability
+  useEffect(() => {
+    const coffeeActivity = availableActivities.find(a => a.id === 'morning_coffee');
+    console.log('☕ Coffee activity found:', coffeeActivity);
+    console.log('☕ Coffee available:', coffeeActivity?.available);
+    console.log('🎮 Player stats:', { energy: playerStats.energy, timeOfDay: currentTimeOfDay });
+  }, [availableActivities, playerStats.energy, currentTimeOfDay]);
 
   const handleActivityClick = async (activity: Activity) => {
+    console.log('🎯 Activity clicked:', activity.id, activity.title);
+    
     // Handle coffee activity
     if (activity.id === 'morning_coffee') {
+      console.log('☕ Opening coffee modal');
       setCoffeeActivityVisible(true);
       return;
     }

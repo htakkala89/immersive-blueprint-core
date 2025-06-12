@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Modal Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .debug-info {
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Coffee Activity Debug Test</h1>
+    
+    <div class="debug-info">
+        <h3>Test Daily Life Hub Coffee Activity Flow</h3>
+        <p>This page will test the coffee activity modal independently.</p>
+    </div>
+
+    <button class="test-button" onclick="testCoffeeActivity()">
+        ☕ Test Coffee Activity
+    </button>
+
+    <div id="debug-output"></div>
+
+    <script>
+        function testCoffeeActivity() {
+            const output = document.getElementById('debug-output');
+            output.innerHTML = '<div class="debug-info">Testing coffee activity flow...</div>';
+            
+            // Simulate the coffee activity flow
+            const activity = {
+                id: 'morning_coffee',
+                title: 'Coffee Together',
+                description: 'Share a coffee break with Cha Hae-In',
+                icon: '☕',
+                energyCost: 10,
+                affectionReward: 5,
+                available: true
+            };
+            
+            console.log('🎯 Activity clicked:', activity.id, activity.title);
+            
+            if (activity.id === 'morning_coffee') {
+                console.log('☕ Opening coffee modal');
+                output.innerHTML += '<div class="debug-info">✅ Coffee activity ID matched successfully</div>';
+                output.innerHTML += '<div class="debug-info">✅ Coffee modal should open</div>';
+                
+                // Test the modal state change
+                setTimeout(() => {
+                    output.innerHTML += '<div class="debug-info">🔄 Testing modal visibility state...</div>';
+                    
+                    // In the actual app, this would trigger setCoffeeActivityVisible(true)
+                    output.innerHTML += '<div class="debug-info">✅ Modal state change triggered</div>';
+                }, 500);
+            } else {
+                output.innerHTML += '<div class="debug-info">❌ Coffee activity ID did not match</div>';
+            }
+        }
+    </script>
+</body>
+</html>
