@@ -1,0 +1,38 @@
+ Review Raid Footage
+Category: Training & Hunter Life
+Narrative Goal: To reinforce their identity as a team of professional hunters, focusing on strategy and mutual improvement.
+User Experience Flow:
+Player selects this card.
+The game transitions to a specific room in the Hunter Association HQ with a large monitor.
+A special UI panel appears, resembling a video player, showing a "highlight reel" (a pre-rendered animation or series of stills) of their last major boss fight.
+This is followed by a conversational scene where they analyze their performance.
+UI Components & Logic: A unique "video player" UI panel.
+Potential Outcomes: Provides a tangible gameplay buff: "+5% Synergy gain on the next raid." Small Affection gain based on mutual respect.
+8. Clear a Low-Rank Gate
+Category: Training & Hunter Life
+Narrative Goal: A "casual" but productive date for two S-Rank Hunters. It's a way to earn money and XP while spending time together.
+User Experience Flow:
+Player selects this card.
+A simple UI modal appears: "Select a target gate:" with options like [D-Rank Goblin Den] or [C-Rank Orc Encampment].
+Selecting an option immediately launches a Dungeon Raid (System 11) instance.
+UI Components & Logic: A simple choice modal, followed by the full combat UI from System 11.
+Potential Outcomes: Gold & XP rewards (System 14). A guaranteed Medium Affection gain upon successful completion.
+9. Assemble New Furniture
+Category: Home Life
+Narrative Goal: A humorous, relatable "couple's challenge" that generates a unique memory about building their home.
+User Experience Flow:
+This is a one-time activity that appears after a new piece of furniture is purchased (System 13).
+Selecting it starts a conversational scene in the apartment with a large, flat-packed box on the floor.
+The scene is a humorous dialogue with choices and passive Intelligence stat checks. (e.g., Player is prompted: "Should we read the instructions or just wing it?").
+UI Components & Logic: Uses the core Dialogue System. The system performs a background stat check to influence flavor text.
+Potential Outcomes: The furniture is always successfully built, but the dialogue creates a unique, funny Memory Star (System 6). Provides a Fun/Humorous Affection gain.
+10. Give a Back Rub
+Category: Intimate
+Narrative Goal: A moment of gentle, non-sexual physical intimacy and care, designed to build trust and show affection through action.
+User Experience Flow:
+Player selects this card, likely in the evening after a tough raid.
+The scene transitions to the apartment living room or bedroom. The mood is calm and quiet.
+The entire scene is narrative, driven by the Dialogue System (System 2). The player's choices are descriptive actions.
+Example Player Choices: "*Gently work the muscles in her shoulders.*", "*Ask if the pressure is okay.*", "*Whisper that she deserves to relax.*"
+UI Components & Logic: Uses the core Dialogue UI. The AI responses are highly sensitive to the player's choices. A gentle, caring approach yields the best results.
+Potential Outcomes: A significant Affection gain. A boost to her "Prevailing Mood." High chance of an "Affection Heart" trigger.

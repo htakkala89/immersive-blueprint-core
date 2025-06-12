@@ -18,6 +18,10 @@ import { MovieNightModal } from '@/components/MovieNightModal';
 import { HangangParkWalkModal } from '@/components/HangangParkWalkModal';
 import { ShoppingDateModal } from '@/components/ShoppingDateModal';
 import { ArcadeVisitModal } from '@/components/ArcadeVisitModal';
+import { ReviewRaidFootageModal } from '@/components/ReviewRaidFootageModal';
+import { ClearLowRankGateModal } from '@/components/ClearLowRankGateModal';
+import { AssembleFurnitureModal } from '@/components/AssembleFurnitureModal';
+import { BackRubActivityModal } from '@/components/BackRubActivityModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -89,6 +93,15 @@ interface GameState {
   // Apartment furniture for Activity 3: Movie Night
   hasPlushSofa?: boolean;
   hasEntertainmentSystem?: boolean;
+  // System 12: Inventory Management
+  ownedFurniture?: string[];
+  // System 6: Relationship Constellation
+  sharedMemories?: any[];
+  // Additional states
+  raidSynergyBuff?: number;
+  currentRaidGate?: string;
+  raidContext?: string;
+  prevailingMood?: string;
 }
 
 interface WorldLocation {
@@ -437,6 +450,11 @@ export default function SoloLevelingSpatial() {
   const [showTrainingActivity, setShowTrainingActivity] = useState(false);
   const [coffeeActivityContext, setCoffeeActivityContext] = useState<string | null>(null);
   const [showArcadeVisit, setShowArcadeVisit] = useState(false);
+  const [showReviewRaidFootage, setShowReviewRaidFootage] = useState(false);
+  const [showClearLowRankGate, setShowClearLowRankGate] = useState(false);
+  const [showAssembleFurniture, setShowAssembleFurniture] = useState(false);
+  const [showBackRubActivity, setShowBackRubActivity] = useState(false);
+  const [pendingFurnitureItem, setPendingFurnitureItem] = useState<any>(null);
 
   
   // Debug logging for dungeon raid state
@@ -3769,6 +3787,46 @@ export default function SoloLevelingSpatial() {
             }, 800);
             return;
           }
+
+          // Handle Review Raid Footage - Activity 7: Training & Hunter Life
+          if (activity.id === 'review_raid_footage') {
+            console.log('📹 Review raid footage selected - transitioning to Hunter Association analysis center');
+            setPlayerLocation('hunter_association');
+            setGameState(prev => ({ ...prev, currentScene: 'hunter_association' }));
+            setTimeout(() => {
+              setShowReviewRaidFootage(true);
+            }, 800);
+            return;
+          }
+
+          // Handle Clear Low-Rank Gate - Activity 8: Training & Hunter Life
+          if (activity.id === 'clear_low_rank_gate') {
+            console.log('⚔️ Clear low-rank gate selected - opening gate selection modal');
+            setShowClearLowRankGate(true);
+            return;
+          }
+
+          // Handle Assemble New Furniture - Activity 9: Home Life
+          if (activity.id === 'assemble_furniture') {
+            console.log('🔧 Assemble furniture selected - starting furniture assembly');
+            setPlayerLocation('player_apartment');
+            setGameState(prev => ({ ...prev, currentScene: 'player_apartment' }));
+            setTimeout(() => {
+              setShowAssembleFurniture(true);
+            }, 500);
+            return;
+          }
+
+          // Handle Give a Back Rub - Activity 10: Intimate
+          if (activity.id === 'give_back_rub') {
+            console.log('💆 Back rub selected - transitioning to intimate care scene');
+            setPlayerLocation('player_apartment');
+            setGameState(prev => ({ ...prev, currentScene: 'player_apartment' }));
+            setTimeout(() => {
+              setShowBackRubActivity(true);
+            }, 500);
+            return;
+          }
           
           // Route activity to appropriate system
           if (activity.category === 'intimate') {
@@ -4093,6 +4151,111 @@ export default function SoloLevelingSpatial() {
           affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
 
           console.log(`🎮 Arcade completed: ${outcome} with score ${score}, +${affectionGain} affection`);
+        }}
+      />
+
+      <ReviewRaidFootageModal
+        isVisible={showReviewRaidFootage}
+        onClose={() => setShowReviewRaidFootage(false)}
+        backgroundImage={sceneImage || undefined}
+        onComplete={(synergyBuff) => {
+          setShowReviewRaidFootage(false);
+          
+          // Apply raid analysis benefits
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + 8),
+            energy: Math.max(0, (prev.energy || 80) - 15),
+            experience: (prev.experience || 0) + 75,
+            raidSynergyBuff: synergyBuff ? (prev.raidSynergyBuff || 0) + 5 : prev.raidSynergyBuff
+          }));
+
+          setCurrentDialogue("That analysis session was really productive. I think we've identified some great areas for improvement in our coordination.");
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('focused');
+
+          console.log(`📹 Raid footage review completed: ${synergyBuff ? '+5% synergy buff' : 'standard analysis'}`);
+        }}
+      />
+
+      <ClearLowRankGateModal
+        isVisible={showClearLowRankGate}
+        onClose={() => setShowClearLowRankGate(false)}
+        backgroundImage={sceneImage || undefined}
+        onGateSelect={(gateId) => {
+          setShowClearLowRankGate(false);
+          
+          // Launch System 11 Dungeon Raid with selected gate
+          console.log(`⚔️ Launching dungeon raid for gate: ${gateId}`);
+          setShowDungeonRaid(true);
+          
+          // Set up the raid context based on selected gate
+          setGameState(prev => ({
+            ...prev,
+            currentRaidGate: gateId,
+            raidContext: 'low_rank_clearing'
+          }));
+        }}
+      />
+
+      <AssembleFurnitureModal
+        isVisible={showAssembleFurniture}
+        onClose={() => setShowAssembleFurniture(false)}
+        backgroundImage={sceneImage || undefined}
+        furnitureItem={pendingFurnitureItem || {
+          name: 'Modern Coffee Table',
+          description: 'A sleek glass-top coffee table with metal legs',
+          complexity: 'moderate'
+        }}
+        playerIntelligence={gameState.intelligence || 50}
+        onComplete={(memory) => {
+          setShowAssembleFurniture(false);
+          
+          // Apply furniture assembly results
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + memory.affectionGain),
+            energy: Math.max(0, (prev.energy || 80) - 20),
+            sharedMemories: [...(prev.sharedMemories || []), memory]
+          }));
+
+          setCurrentDialogue("Well, that was... an adventure. But look what we accomplished together!");
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('amused');
+
+          console.log(`🔧 Furniture assembly completed: ${memory.title}`);
+        }}
+      />
+
+      <BackRubActivityModal
+        isVisible={showBackRubActivity}
+        onClose={() => setShowBackRubActivity(false)}
+        backgroundImage={sceneImage || undefined}
+        onComplete={(affectionGain, moodBoost) => {
+          setShowBackRubActivity(false);
+          
+          // Apply intimate care benefits
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + affectionGain),
+            energy: Math.max(0, (prev.energy || 80) - 10),
+            intimacyLevel: Math.min(100, (prev.intimacyLevel || 0) + 5),
+            prevailingMood: moodBoost ? 'deeply_relaxed' : prev.prevailingMood
+          }));
+
+          // Show affection heart effect
+          setShowAffectionHeart(true);
+          if (affectionHeartTimeout.current) clearTimeout(affectionHeartTimeout.current);
+          affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
+
+          setCurrentDialogue("That was exactly what I needed. Thank you for always knowing how to take care of me.");
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('romantic');
+
+          console.log(`💆 Back rub completed: +${affectionGain} affection, mood boost: ${moodBoost}`);
         }}
       />
 
