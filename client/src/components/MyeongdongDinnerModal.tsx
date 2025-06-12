@@ -351,7 +351,7 @@ export function MyeongdongDinnerModal({
                     </div>
 
                     {/* Order Summary */}
-                    <div className="bg-black/60 backdrop-blur-md rounded-xl p-6 border border-white/20 h-fit">
+                    <div className="bg-black/60 backdrop-blur-md rounded-xl p-6 border border-white/20 h-fit sticky top-4">
                       <h3 className="text-xl font-bold text-white mb-4">Your Order</h3>
                       
                       {selectedItems.length === 0 ? (
@@ -394,9 +394,14 @@ export function MyeongdongDinnerModal({
                         <Button
                           onClick={handleOrderConfirm}
                           disabled={selectedItems.length === 0 || totalCost > playerGold}
-                          className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50"
+                          className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3"
                         >
-                          Confirm Order
+                          {selectedItems.length === 0 
+                            ? 'Select Menu Items' 
+                            : totalCost > playerGold 
+                              ? 'Insufficient Funds' 
+                              : 'Confirm Order & Continue'
+                          }
                         </Button>
                       </div>
                     </div>
