@@ -249,6 +249,15 @@ export default function SoloLevelingSpatial() {
   const [showItemInspection, setShowItemInspection] = useState(false);
   const [itemInspectionCategory, setItemInspectionCategory] = useState<'jewelry' | 'clothing' | 'living_room' | 'bedroom'>('jewelry');
 
+  // System 6: Memory Stars state
+  const [memoryStars, setMemoryStars] = useState<Array<{
+    id: string;
+    title: string;
+    description: string;
+    emotion: string;
+    timestamp: Date;
+  }>>([]);
+
 
 
   // System 8: World Map state - activeQuests defined below with other quest states
