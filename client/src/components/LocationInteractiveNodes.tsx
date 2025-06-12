@@ -809,6 +809,21 @@ export function LocationInteractiveNodes({
     if (node.id === 'red_gate_entrance') {
       return true; // Always available for testing
     }
+
+    // Convert 0-5 affection scale to 0-100 for consistent logic
+    const scaledAffection = playerStats.affection * 20;
+
+    // Hide intimate nodes based on affection levels
+    const intimateNodes = ['bedroom_door', 'master_suite_door', 'bed', 'shower', 'luxury_bathroom', 'wine_cellar_access'];
+    if (intimateNodes.includes(node.id)) {
+      if (scaledAffection < 40) return false; // Need Level 2+ affection
+    }
+
+    // Hide luxury nodes for low affection
+    const luxuryNodes = ['wine_cellar', 'infinity_pool', 'private_elevator', 'panoramic_balcony'];
+    if (luxuryNodes.includes(node.id)) {
+      if (scaledAffection < 60) return false; // Need Level 3+ affection
+    }
     
     // For apartment nodes, show only the appropriate tier
     if (locationId === 'player_apartment' && node.requirements) {
@@ -840,7 +855,7 @@ export function LocationInteractiveNodes({
   return (
     <div className="absolute inset-0 pointer-events-none">
       {/* Interactive Nodes */}
-      {nodes.map((node) => {
+      {nodes.filter(node => isNodeAvailable(node)).map((node) => {
         const available = isNodeAvailable(node);
         const IconComponent = node.icon;
         
@@ -849,9 +864,7 @@ export function LocationInteractiveNodes({
         return (
           <motion.div
             key={node.id}
-            className={`absolute pointer-events-auto cursor-pointer z-40 ${
-              available ? 'opacity-100' : 'opacity-40'
-            }`}
+            className="absolute pointer-events-auto cursor-pointer z-40 opacity-100"
             style={{
               left: `${node.position.x}%`,
               top: `${node.position.y}%`,
@@ -860,24 +873,15 @@ export function LocationInteractiveNodes({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('🎯 NODE CLICKED:', node.id, 'Available:', available);
-              if (available) {
-                console.log('✅ Calling handleNodeClick for:', node.id);
-                handleNodeClick(node);
-              } else {
-                console.log('❌ Node not available:', node.id);
-              }
+              console.log('🎯 NODE CLICKED:', node.id);
+              handleNodeClick(node);
             }}
-            whileHover={available ? { scale: 1.1 } : {}}
-            whileTap={available ? { scale: 0.95 } : {}}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
             {/* Node Orb with 8px spacing system */}
             <motion.div
-              className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                available 
-                  ? 'bg-purple-500 border-2 border-purple-300' 
-                  : 'bg-gray-600 border-2 border-gray-400'
-              }`}
+              className="w-6 h-6 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
               style={{
                 minWidth: '24px',
                 minHeight: '24px',
