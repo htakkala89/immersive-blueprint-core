@@ -22,7 +22,23 @@ interface GangnamFurnishingsProps {
   currentGold: number;
   onPurchase: (item: FurnitureItem) => void;
   backgroundImage?: string;
+  chaHaeInShoppingMode?: boolean;
 }
+
+const getChaHaeInFurnitureCommentary = (item: FurnitureItem): string => {
+  const comments: Record<string, string> = {
+    'luxury_sectional_sofa': "This looks incredibly comfortable. Perfect for relaxing after long missions.",
+    'smart_home_system': "Impressive technology. I appreciate efficiency in all aspects of life.",
+    'modern_coffee_table': "Simple and functional. It would complement the apartment well.",
+    'designer_bookshelf': "I could see myself reading here on quiet evenings.",
+    'premium_dining_set': "Beautiful craftsmanship. It would be nice to share meals together here.",
+    'home_theater_system': "This could make movie nights even more enjoyable.",
+    'workspace_desk': "A clean, organized workspace is essential for productivity.",
+    'ambient_lighting': "The right lighting can transform a space completely."
+  };
+  
+  return comments[item.id] || "This piece has potential. What draws you to it?";
+};
 
 const FURNITURE_ITEMS: FurnitureItem[] = [
   {

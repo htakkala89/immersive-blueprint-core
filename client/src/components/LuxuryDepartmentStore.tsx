@@ -120,11 +120,13 @@ export default function LuxuryDepartmentStore({
   onClose, 
   currentGold, 
   onPurchase,
-  backgroundImage 
+  backgroundImage,
+  chaHaeInShoppingMode = false
 }: LuxuryDepartmentStoreProps) {
   const [selectedItem, setSelectedItem] = useState<LuxuryItem | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [chaCommentary, setChaCommentary] = useState<string | null>(null);
 
   const handleNodeClick = (item: LuxuryItem) => {
     setSelectedItem(item);
@@ -132,6 +134,17 @@ export default function LuxuryDepartmentStore({
 
   const handleItemClick = (item: LuxuryItem) => {
     setSelectedItem(item);
+    if (chaHaeInShoppingMode) {
+      setChaCommentary(getChaHaeInCommentary(item));
+    }
+  };
+
+  const handleItemHover = (item: LuxuryItem | null) => {
+    if (chaHaeInShoppingMode && item) {
+      setChaCommentary(getChaHaeInCommentary(item));
+    } else if (!item) {
+      setChaCommentary(null);
+    }
   };
 
   const handlePurchase = (item: LuxuryItem) => {
@@ -219,8 +232,14 @@ export default function LuxuryDepartmentStore({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleItemClick(item)}
-                  onHoverStart={() => setHoveredItem(item.id)}
-                  onHoverEnd={() => setHoveredItem(null)}
+                  onHoverStart={() => {
+                    setHoveredItem(item.id);
+                    handleItemHover(item);
+                  }}
+                  onHoverEnd={() => {
+                    setHoveredItem(null);
+                    handleItemHover(null);
+                  }}
                 >
                   {/* Display Type - Refined Glass Case */}
                   {item.displayType === 'case' && (
@@ -419,6 +438,27 @@ export default function LuxuryDepartmentStore({
               </div>
             </div>
           )}
+
+          {/* Cha Hae-In Commentary Panel */}
+          {chaHaeInShoppingMode && chaCommentary && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="absolute bottom-6 right-6 max-w-md bg-gradient-to-r from-blue-500/95 to-purple-500/95 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl"
+            >
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Heart className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-white font-semibold mb-2">Cha Hae-In</h4>
+                  <p className="text-white/90 text-sm italic">"{chaCommentary}"</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
         </motion.div>
       </motion.div>
     </AnimatePresence>
