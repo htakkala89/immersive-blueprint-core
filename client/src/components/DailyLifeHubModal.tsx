@@ -406,6 +406,18 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     onActivitySelect(activity);
   };
 
+  // Handle coffee activity completion
+  const handleCoffeeActivityComplete = (results: any) => {
+    // Update game state with results
+    if (gameState) {
+      gameState.gold = Math.max(0, (gameState.gold || 500) - results.goldSpent);
+      gameState.energy = Math.max(0, (gameState.energy || 80) - results.energySpent);
+      gameState.affection = Math.min(5, (gameState.affection || 0) + (results.affectionGained / 20)); // Convert back to 0-5 scale
+    }
+    
+    setCoffeeActivityVisible(false);
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -566,6 +578,14 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
           </div>
         </div>
       </div>
+      
+      {/* Coffee Activity Modal */}
+      <CoffeeActivityModal
+        isVisible={coffeeActivityVisible}
+        onClose={() => setCoffeeActivityVisible(false)}
+        onActivityComplete={handleCoffeeActivityComplete}
+        backgroundImage="/images/hongdae-cafe.jpg"
+      />
     </div>
   );
 }
