@@ -704,6 +704,12 @@ export default function SoloLevelingSpatial() {
         };
       } else if (apartmentTier >= 2) {
         // Tier 2: Gangnam High-Rise
+        console.log('🏠 Generating Tier 2+ apartment with furniture check:', {
+          apartmentTier,
+          hasPlushSofa: (gameState as any).hasPlushSofa,
+          hasEntertainmentSystem: (gameState as any).hasEntertainmentSystem
+        });
+        
         const baseElements = [
           { id: 'modern_bedroom', name: 'Modern Bedroom', position: { x: 25, y: 30 }, action: 'Stylish bedroom romance' },
           { id: 'city_view_couch', name: 'City View Living Room', position: { x: 55, y: 55 }, action: 'Intimate moments with city lights' },
