@@ -312,7 +312,7 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     lockReason: scaledAffection < 100 ? 'EXCLUSIVE: Ultimate trust required (MAX Level 5)' : undefined
   });
 
-  return baseActivities.filter(activity => activity.available); // Only show available activities
+  return baseActivities; // Show all activities for motivation and progression visibility
 };
 
 const getActivityDialogue = (activity: Activity): string => {
@@ -368,7 +368,7 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
 
   const handleActivityClick = async (activity: Activity) => {
     // Handle coffee activity
-    if (activity.id === 'grab_coffee') {
+    if (activity.id === 'morning_coffee') {
       setCoffeeActivityVisible(true);
       return;
     }
