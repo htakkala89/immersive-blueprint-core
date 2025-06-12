@@ -422,6 +422,20 @@ function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOf
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Direct download endpoint for generated images
+  app.get("/download/:filename", (req, res) => {
+    const filename = req.params.filename;
+    const filepath = path.join(process.cwd(), 'public', filename);
+    
+    if (fs.existsSync(filepath)) {
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.sendFile(filepath);
+    } else {
+      res.status(404).json({ error: 'File not found' });
+    }
+  });
+
   // API endpoint to test both models and return results
   app.get("/api/test-models", async (req, res) => {
     try {
