@@ -6,7 +6,7 @@ import { Coffee, X } from 'lucide-react';
 interface ActivityChoice {
   id: string;
   text: string;
-  description?: string;
+  description: string;
   affectionBonus?: number;
   goldCost?: number;
 }

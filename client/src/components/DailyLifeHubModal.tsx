@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { useVoice } from '../hooks/useVoice';
+import { CoffeeActivityModal } from './CoffeeActivityModal';
 
 interface PlayerStats {
   gold: number;
@@ -315,6 +316,7 @@ const getActivityDialogue = (activity: Activity): string => {
 
 export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImageGenerated, gameState, audioMuted = false }: DailyLifeHubModalProps) {
   const { playVoice } = useVoice();
+  const [coffeeActivityVisible, setCoffeeActivityVisible] = useState(false);
   const [currentTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'morning';
@@ -339,6 +341,12 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
   const availableActivities = getAvailableActivities(playerStats, currentTimeOfDay);
 
   const handleActivityClick = async (activity: Activity) => {
+    // Handle coffee activity
+    if (activity.id === 'grab_coffee') {
+      setCoffeeActivityVisible(true);
+      return;
+    }
+
     // Handle special activities that open modals
     if (activity.id === 'solo_raid' || activity.id === 'joint_raid') {
       // Trigger raid system modal

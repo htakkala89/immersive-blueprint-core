@@ -213,29 +213,18 @@ export function CoffeeActivityModal({
               </div>
             )}
 
-            {/* Continue Button */}
+            {/* Complete Activity Button */}
             <Button
-              onClick={handleNarrativeContinue}
+              onClick={handleActivityComplete}
               className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium"
             >
-              Continue Conversation
+              Complete Coffee Date
             </Button>
           </motion.div>
         </motion.div>
       )}
 
-      {/* Conversation Phase */}
-      {currentPhase === 'conversation' && (
-        <ChatSystem2
-          isVisible={true}
-          onClose={handleConversationComplete}
-          activityId="grab_coffee"
-          activityTitle="Coffee at Hongdae Cafe"
-          backgroundImage={backgroundImage}
-          initialContext={`You're having coffee together at a cozy Hongdae cafe. ${selectedChoice?.isCorrectGuess ? 'Cha Hae-In is impressed that you remembered her favorite drink.' : 'You\'re both enjoying your drinks in the comfortable atmosphere.'} The conversation flows naturally in this relaxed setting.`}
-          onConversationEnd={handleConversationComplete}
-        />
-      )}
+
     </AnimatePresence>
   );
 }
