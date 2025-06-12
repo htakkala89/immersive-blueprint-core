@@ -48,6 +48,7 @@ import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
 import { SparkleEffect } from '@/components/SparkleEffect';
 import { MysticalEye } from '@/components/MysticalEye';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
+import SommelierDialog from '@/components/SommelierDialog';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
 import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSystem9';
@@ -269,6 +270,9 @@ export default function SoloLevelingSpatial() {
 
   // System 3: Quest Log state
   const [showQuestLog, setShowQuestLog] = useState(false);
+
+  // Sommelier Dialog state
+  const [showSommelierDialog, setShowSommelierDialog] = useState(false);
 
   // System 7: Item Inspection View state
   const [showItemInspection, setShowItemInspection] = useState(false);
@@ -612,6 +616,46 @@ export default function SoloLevelingSpatial() {
       
       setElevatorTransition(false);
     }, 1500); // 1.5 second transition
+  };
+
+  // Sommelier wine selection handler
+  const handleWineSelection = (wine: any) => {
+    console.log('🍷 Wine selected:', wine.name, 'for ₩' + wine.price.toLocaleString());
+    
+    // Deduct gold and add affection
+    setGameState(prev => ({
+      ...prev,
+      gold: Math.max(0, (prev.gold || 0) - wine.price),
+      affection: Math.min(100, prev.affection + wine.affectionBoost)
+    }));
+
+    // Generate appropriate dialogue based on wine choice
+    let sommelierDialogue = '';
+    let chaResponse = '';
+    
+    switch (wine.rarity) {
+      case 'common':
+        sommelierDialogue = 'An excellent everyday choice that pairs well with your meal.';
+        chaResponse = 'This is nice. I appreciate that you\'re being thoughtful about the selection.';
+        break;
+      case 'rare':
+        sommelierDialogue = 'A distinguished choice. This vintage has exceptional character.';
+        chaResponse = 'Wow, this is really good! You have excellent taste.';
+        break;
+      case 'legendary':
+        sommelierDialogue = 'Ah, from my private collection. You truly know quality when you see it.';
+        chaResponse = 'This is incredible... I\'ve never tasted anything this exquisite. Thank you.';
+        break;
+    }
+
+    // Show environmental interaction with the wine selection results
+    handleEnvironmentalInteraction({
+      id: 'wine_selected',
+      action: `The sommelier nods approvingly. "${sommelierDialogue}" Cha Hae-In takes a sip and her eyes light up. "${chaResponse}" [+${wine.affectionBoost} Affection]`,
+      name: wine.name,
+      x: 60,
+      y: 50
+    });
   };
 
   // Perspective-based scaling system per design specifications
@@ -2533,40 +2577,9 @@ export default function SoloLevelingSpatial() {
                 setShowMyeongdongDinner(true);
                 break;
               case 'speak_sommelier':
-                // NPC dialogue with wine recommendation and purchase option
-                if (gameState.unlockedActivities?.includes('fine_dining_date')) {
-                  if ((gameState.gold || 0) >= 50000) {
-                    setGameState(prev => ({
-                      ...prev,
-                      gold: Math.max(0, (prev.gold || 0) - 50000),
-                      affection: Math.min(100, prev.affection + 12)
-                    }));
-                    handleEnvironmentalInteraction({
-                      id: 'sommelier_recommendation',
-                      action: 'The sommelier recommends a rare vintage. [- ₩50,000]. "An excellent choice," Cha Hae-In says as she savors the wine. "You have refined taste." The expensive gesture shows your commitment to making this evening special.',
-                      name: 'Wine Recommendation',
-                      x: 60,
-                      y: 50
-                    });
-                    console.log('Premium wine ordered - High affection gain');
-                  } else {
-                    handleEnvironmentalInteraction({
-                      id: 'sommelier_budget',
-                      action: 'The sommelier suggests several excellent options within your budget. Cha Hae-In appreciates that you\'re being thoughtful about the selection rather than just ordering the most expensive option.',
-                      name: 'Wine Selection',
-                      x: 60,
-                      y: 50
-                    });
-                  }
-                } else {
-                  handleEnvironmentalInteraction({
-                    id: 'sommelier_unavailable',
-                    action: 'The sommelier is busy with other guests. You would need a reservation to receive their full attention.',
-                    name: 'Sommelier',
-                    x: 60,
-                    y: 50
-                  });
-                }
+                // Open sommelier dialogue interface as per spec
+                console.log('🍷 Sommelier interaction - opening wine selection dialogue');
+                setShowSommelierDialog(true);
                 break;
                 
               // N Seoul Tower - Date Activity Exclusive Nodes
@@ -4456,6 +4469,14 @@ export default function SoloLevelingSpatial() {
 
           console.log(`🌙 Balcony talk completed: +${affectionGain} affection, deep conversation: ${deepConversation}`);
         }}
+      />
+
+      {/* Sommelier Dialog - Wine Selection Interface */}
+      <SommelierDialog
+        isOpen={showSommelierDialog}
+        onClose={() => setShowSommelierDialog(false)}
+        onWineSelected={handleWineSelection}
+        playerGold={gameState.gold || 0}
       />
 
       {/* Myeongdong Dinner Modal - Activity 15: Fine Dining Date */}
