@@ -402,7 +402,7 @@ export default function LuxuryDepartmentStore({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="absolute bottom-6 right-6 max-w-md bg-gradient-to-r from-blue-500/95 to-purple-500/95 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl"
+              className="absolute top-24 left-6 max-w-md bg-gradient-to-r from-blue-500/95 to-purple-500/95 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl z-40"
             >
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
