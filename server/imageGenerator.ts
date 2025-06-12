@@ -152,7 +152,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     }
 
     const location = 'us-central1';
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagegeneration@006:predict`;
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-4.0-generate-001:predict`;
     
     console.log('🎨 Attempting Google Imagen generation...');
     
