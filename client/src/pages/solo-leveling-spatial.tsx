@@ -4004,7 +4004,7 @@ export default function SoloLevelingSpatial() {
         currentGold={gameState.gold || 0}
         onPurchase={handleLuxuryPurchase}
         backgroundImage={currentLocationData.backgroundImage}
-        chaHaeInShoppingMode={gameState.chaHaeInShoppingMode || false}
+        chaHaeInShoppingMode={true}
       />
 
       <GangnamFurnishings
