@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { useVoice } from '../hooks/useVoice';
 import { CoffeeActivityModal } from './CoffeeActivityModal';
+import { TrainingActivityModal } from './TrainingActivityModal';
 
 interface PlayerStats {
   gold: number;
@@ -88,10 +89,10 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       title: 'Train Together',
       description: 'Practice combat techniques as a team',
       icon: '⚔️',
-      energyCost: 30,
-      experienceReward: 50,
-      affectionReward: 10,
-      available: stats.energy >= 30
+      energyCost: 25,
+      experienceReward: 150,
+      affectionReward: 4,
+      available: stats.energy >= 25
     },
     {
       id: 'romantic_dinner',
@@ -289,7 +290,7 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     lockReason: scaledAffection < 100 ? 'EXCLUSIVE: Ultimate trust required (MAX Level 5)' : undefined
   });
 
-  return baseActivities; // Show all activities, including locked ones for motivation
+  return baseActivities.filter(activity => activity.available); // Only show available activities
 };
 
 const getActivityDialogue = (activity: Activity): string => {
@@ -317,6 +318,7 @@ const getActivityDialogue = (activity: Activity): string => {
 export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImageGenerated, gameState, audioMuted = false }: DailyLifeHubModalProps) {
   const { playVoice } = useVoice();
   const [coffeeActivityVisible, setCoffeeActivityVisible] = useState(false);
+  const [trainingActivityVisible, setTrainingActivityVisible] = useState(false);
   const [currentTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'morning';
@@ -344,6 +346,12 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     // Handle coffee activity
     if (activity.id === 'grab_coffee') {
       setCoffeeActivityVisible(true);
+      return;
+    }
+
+    // Handle training activity
+    if (activity.id === 'training_together') {
+      setTrainingActivityVisible(true);
       return;
     }
 
@@ -416,6 +424,24 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
     }
     
     setCoffeeActivityVisible(false);
+  };
+
+  // Handle training activity completion
+  const handleTrainingActivityComplete = (results: any) => {
+    // Update game state with results
+    if (gameState) {
+      gameState.energy = Math.max(0, (gameState.energy || 80) - results.energySpent);
+      gameState.experience = (gameState.experience || 0) + results.experienceGained;
+      gameState.affection = Math.min(5, (gameState.affection || 0) + (results.affectionGained / 20)); // Convert back to 0-5 scale
+      
+      // Check for level up based on experience
+      const newLevel = Math.floor(gameState.experience / 1000) + 1;
+      if (newLevel > (gameState.level || 1)) {
+        gameState.level = newLevel;
+      }
+    }
+    
+    setTrainingActivityVisible(false);
   };
 
   if (!isVisible) return null;
@@ -585,6 +611,14 @@ export function DailyLifeHubModal({ isVisible, onClose, onActivitySelect, onImag
         onClose={() => setCoffeeActivityVisible(false)}
         onActivityComplete={handleCoffeeActivityComplete}
         backgroundImage="/images/hongdae-cafe.jpg"
+      />
+
+      {/* Training Activity Modal */}
+      <TrainingActivityModal
+        isVisible={trainingActivityVisible}
+        onClose={() => setTrainingActivityVisible(false)}
+        onActivityComplete={handleTrainingActivityComplete}
+        backgroundImage="/images/training-grounds.jpg"
       />
     </div>
   );
