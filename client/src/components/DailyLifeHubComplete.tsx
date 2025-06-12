@@ -467,13 +467,14 @@ export function DailyLifeHubComplete({
   if (!isVisible) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center"
-      >
+    <>
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center"
+        >
         {/* Beautiful Background with Glass Effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-blue-900/30" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.1)_0%,transparent_50%)]" />
@@ -641,14 +642,17 @@ export function DailyLifeHubComplete({
           </div>
         </motion.div>
       </motion.div>
+      </AnimatePresence>
       
-      {/* Coffee Activity Modal */}
-      <CoffeeActivityModal
-        isVisible={coffeeActivityVisible}
-        onClose={() => setCoffeeActivityVisible(false)}
-        onActivityComplete={handleCoffeeActivityComplete}
-        backgroundImage="/images/hongdae-cafe.jpg"
-      />
-    </AnimatePresence>
+      {/* Coffee Activity Modal - Outside main modal to avoid z-index conflicts */}
+      {coffeeActivityVisible && (
+        <CoffeeActivityModal
+          isVisible={coffeeActivityVisible}
+          onClose={() => setCoffeeActivityVisible(false)}
+          onActivityComplete={handleCoffeeActivityComplete}
+          backgroundImage="/images/hongdae-cafe.jpg"
+        />
+      )}
+    </>
   );
 }
