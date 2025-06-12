@@ -26,6 +26,7 @@ import { NSeoulTowerModal } from '@/components/NSeoulTowerModal';
 import { CoopSkillTrainingModal } from '@/components/CoopSkillTrainingModal';
 import { OrderTakeoutModal } from '@/components/OrderTakeoutModal';
 import { TalkOnBalconyModal } from '@/components/TalkOnBalconyModal';
+import { MyeongdongDinnerModal } from '@/components/MyeongdongDinnerModal';
 import { DevToolsPanel } from '@/components/DevToolsPanel';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
