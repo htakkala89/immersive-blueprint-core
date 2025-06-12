@@ -17,6 +17,7 @@ import { TrainingActivityModal } from '@/components/TrainingActivityModal';
 import { MovieNightModal } from '@/components/MovieNightModal';
 import { HangangParkWalkModal } from '@/components/HangangParkWalkModal';
 import { ShoppingDateModal } from '@/components/ShoppingDateModal';
+import { ArcadeVisitModal } from '@/components/ArcadeVisitModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -435,6 +436,7 @@ export default function SoloLevelingSpatial() {
   const [showCoffeeActivity, setShowCoffeeActivity] = useState(false);
   const [showTrainingActivity, setShowTrainingActivity] = useState(false);
   const [coffeeActivityContext, setCoffeeActivityContext] = useState<string | null>(null);
+  const [showArcadeVisit, setShowArcadeVisit] = useState(false);
 
   
   // Debug logging for dungeon raid state
@@ -3752,6 +3754,19 @@ export default function SoloLevelingSpatial() {
           if (activity.id === 'shopping_for_gifts') {
             console.log('🛍️ Shopping for gifts selected - opening store selection modal');
             setShowShoppingDateModal(true);
+            return;
+          }
+
+          // Handle Visit an Arcade - Activity 6: Casual Outing with Mini-Game
+          if (activity.id === 'visit_arcade') {
+            console.log('🎮 Arcade visit selected - transitioning to vibrant arcade spatial view');
+            // First transition to arcade location 
+            setPlayerLocation('arcade');
+            setGameState(prev => ({ ...prev, currentScene: 'arcade' }));
+            // Then open the arcade mini-game modal after spatial transition
+            setTimeout(() => {
+              setShowArcadeVisit(true);
+            }, 800);
             return;
           }
           
