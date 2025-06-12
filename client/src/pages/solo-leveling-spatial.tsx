@@ -26,6 +26,7 @@ import { NSeoulTowerModal } from '@/components/NSeoulTowerModal';
 import { CoopSkillTrainingModal } from '@/components/CoopSkillTrainingModal';
 import { OrderTakeoutModal } from '@/components/OrderTakeoutModal';
 import { TalkOnBalconyModal } from '@/components/TalkOnBalconyModal';
+import { DevToolsPanel } from '@/components/DevToolsPanel';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -466,6 +467,7 @@ export default function SoloLevelingSpatial() {
   const [showCoopSkillTraining, setShowCoopSkillTraining] = useState(false);
   const [showOrderTakeout, setShowOrderTakeout] = useState(false);
   const [showTalkOnBalcony, setShowTalkOnBalcony] = useState(false);
+  const [showDevTools, setShowDevTools] = useState(false);
   const [pendingFurnitureItem, setPendingFurnitureItem] = useState<any>(null);
 
   
@@ -511,6 +513,23 @@ export default function SoloLevelingSpatial() {
   
   // Developer Menu - Collapsible state
   const [showDevMenu, setShowDevMenu] = useState(true);
+
+  // Keyboard shortcuts for development
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'k') {
+        event.preventDefault();
+        setShowDailyLifeHub(true);
+      }
+      if (event.ctrlKey && event.shiftKey && event.key === 'D') {
+        event.preventDefault();
+        setShowDevTools(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   // Time and scheduling system
   const getCurrentTimeOfDay = (timeToCheck?: Date) => {
@@ -1175,6 +1194,15 @@ export default function SoloLevelingSpatial() {
     } finally {
       setIsGeneratingAvatar(false);
     }
+  };
+
+  // DevTools game state update handler
+  const handleGameStateUpdate = (updates: any) => {
+    setGameState(prevState => ({
+      ...prevState,
+      ...updates
+    }));
+    console.log('🔧 DevTools updated game state:', updates);
   };
 
   // Real-time expression updates during typing
@@ -4464,6 +4492,14 @@ export default function SoloLevelingSpatial() {
       <MonarchArmory2D
         isVisible={showMonarchArmory}
         onClose={() => setShowMonarchArmory(false)}
+      />
+
+      {/* DevTools Panel for Activity Management */}
+      <DevToolsPanel
+        isVisible={showDevTools}
+        onClose={() => setShowDevTools(false)}
+        gameState={gameState}
+        onGameStateUpdate={handleGameStateUpdate}
       />
 
       {/* Simple Receptionist Dialogue Box - Liquid Glassmorphism */}
