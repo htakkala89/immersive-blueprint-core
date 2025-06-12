@@ -41,7 +41,7 @@ class NovelAIProvider implements ImageProvider {
 
     const requestBody = {
       input: optimizedPrompt,
-      model: 'nai-diffusion-4-5-full',
+      model: 'nai-diffusion-3',
       parameters: {
         width: 832,
         height: 1216,
