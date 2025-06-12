@@ -2209,86 +2209,72 @@ export default function SoloLevelingSpatial() {
         </motion.div>
       )}
 
-      
-      {/* Continue with existing modals and components */}
-              } else if (currentAffection >= 20 && currentIntimacy >= 10) {
-                // Basic intimate activities
-                if (gameState.unlockedActivities?.includes('bedroom_intimacy')) selectedActivity = 'bedroom_intimacy';
-                else if (gameState.unlockedActivities?.includes('first_kiss')) selectedActivity = 'first_kiss';
+      {/* Modals and UI Components */}
+      <AnimatePresence>
+        {showDailyLifeHub && (
+          <DailyLifeHubComplete
+            gameState={gameState}
+            setGameState={setGameState}
+            onClose={() => setShowDailyLifeHub(false)}
+            onActivitySelect={(activity) => {
+              console.log('Daily Life Hub - Activity selected:', activity);
+              setSelectedActivity(activity);
+              
+              if (activity === 'coffee') {
+                console.log('Coffee activity selected - navigating to Hongdae Cafe');
+                setShowDailyLifeHub(false);
+                setPlayerLocation('hongdae_cafe');
+                setShowCoffeeModal(true);
+              } else if (activity === 'intimate') {
+                setActiveActivity('cuddling');
+                setShowIntimateModal(true);
+                setShowDailyLifeHub(false);
               } else {
-                // Very early game - only basic cuddling
-                selectedActivity = 'cuddling';
+                setShowDailyLifeHub(false);
               }
-              
-              setActiveActivity(selectedActivity);
-              setShowIntimateModal(true);
-              console.log(`Bedroom - Opening System 5 with ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
-              return; // Exit early to prevent other handlers
-            }
-            
-            switch (nodeId) {
-              case 'red_gate_entrance':
-              case 'red_gate':
-                // Enter the Red Gate dungeon for quest completion
-                console.log('🚪 RED GATE ENTRANCE CASE MATCHED - Opening dungeon raid');
-                console.log('Current showDungeonRaid state:', showDungeonRaid);
-                setShowDungeonRaid(true);
-                console.log('Dungeon raid state set to true');
-                console.log('🎯 Red Gate case executed successfully');
-                break;
-              case 'jewelry_counter':
-                // Open Item Inspection View for jewelry
-                setItemInspectionCategory('jewelry');
-                setShowItemInspection(true);
-                console.log('Opening jewelry collection view');
-                break;
-              case 'designer_apparel':
-                // Open Item Inspection View for clothing
-                setItemInspectionCategory('clothing');
-                setShowItemInspection(true);
-                console.log('Opening designer apparel collection view');
-                break;
-              case 'luxury_confections':
-                // Intimate treat sharing experience (keeping as simple interaction)
-                if ((gameState.gold || 0) >= 15000) {
-                  setGameState(prev => ({
-                    ...prev,
-                    gold: Math.max(0, (prev.gold || 0) - 15000),
-                    affection: Math.min(100, prev.affection + 8)
-                  }));
-                  handleEnvironmentalInteraction({
-                    id: 'chocolate_sharing',
-                    action: 'You purchase an assortment of artisan chocolates. [- ₩15,000]. As you both sample the delicate truffles, Cha Hae-In closes her eyes to savor the flavors. "This one tastes like cherry blossoms," she murmurs with delight. The intimate moment of shared indulgence brings you closer.',
-                    name: 'Luxury Confections',
-                    x: 50,
-                    y: 60
-                  });
-                  console.log('Chocolate purchase - Affection gained through intimate sharing');
-                } else {
-                  handleEnvironmentalInteraction({
-                    id: 'confection_sampling',
-                    action: 'The chocolatier offers you both a small sample of their signature truffle. Cha Hae-In\'s face lights up with pleasure at the exquisite taste. "I\'ve never had chocolate this refined," she admits, enjoying the luxurious experience even without a purchase.',
-                    name: 'Luxury Confections',
-                    x: 50,
-                    y: 60
-                  });
-                }
-                break;
-              case 'living_room_collection':
-                // Open Item Inspection View for living room furniture
-                setItemInspectionCategory('living_room');
-                setShowItemInspection(true);
-                console.log('Opening living room furniture collection view');
-                break;
-              case 'bedroom_collection':
-                // Open Item Inspection View for bedroom furniture
-                setItemInspectionCategory('bedroom');
-                setShowItemInspection(true);
-                console.log('Opening bedroom furniture collection view');
-                break;
-              
-              // Hongdae Cafe simple interactions
-              case 'order_counter':
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Coffee Activity Modal */}
+      <AnimatePresence>
+        {showCoffeeModal && (
+          <CoffeeActivityModal
+            gameState={gameState}
+            setGameState={setGameState}
+            onClose={() => setShowCoffeeModal(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Intimate Activity Modal */}
+      <AnimatePresence>
+        {showIntimateModal && (
+          <IntimateActivityModal
+            gameState={gameState}
+            setGameState={setGameState}
+            activity={activeActivity}
+            onClose={() => setShowIntimateModal(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* System 5: Intimate Activity System */}
+      <AnimatePresence>
+        {showIntimateSystem5 && (
+          <IntimateActivitySystem5
+            gameState={gameState}
+            setGameState={setGameState}
+            onClose={() => setShowIntimateSystem5(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Other modal components continue here... */}
+    </div>
+  );
+}
                 // Simple drink ordering with preference detection
                 if ((gameState.gold || 0) >= 8000) {
                   setGameState(prev => ({
