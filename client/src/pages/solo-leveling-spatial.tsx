@@ -410,6 +410,7 @@ export default function SoloLevelingSpatial() {
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
   const [showCoffeeActivity, setShowCoffeeActivity] = useState(false);
   const [showTrainingActivity, setShowTrainingActivity] = useState(false);
+  const [coffeeActivityContext, setCoffeeActivityContext] = useState<string | null>(null);
 
   
   // Debug logging for dungeon raid state
@@ -957,7 +958,7 @@ export default function SoloLevelingSpatial() {
             location: playerLocation,
             timeOfDay,
             weather,
-            activity: currentLocationData.chaActivity,
+            activity: coffeeActivityContext || currentLocationData.chaActivity,
             affectionLevel: gameState.affection
           }
         })
@@ -4171,19 +4172,15 @@ export default function SoloLevelingSpatial() {
           }));
           setShowCoffeeActivity(false);
           // Step 5 of spec: Show standard Dialogue UI for conversation
-          // Set coffee date context before triggering dialogue
+          // Set coffee date context for AI to understand this is a coffee date
+          setCoffeeActivityContext("enjoying coffee date with Jin-Woo");
           setCurrentDialogue("*Taking a sip of her drink and looking more relaxed* This is nice, Jin-Woo. It's been a while since I've had time to just sit and enjoy a coffee without thinking about the next raid or mission.");
           setThoughtPrompts([
             "I'm glad we could do this together.",
             "You seem more relaxed than usual.",
             "How's the coffee? I wasn't sure what you'd prefer."
           ]);
-          // Update location data to reflect coffee activity context
-          setWorldLocations(prev => prev.map(loc => 
-            loc.id === 'hongdae_cafe' 
-              ? { ...loc, chaActivity: 'enjoying coffee date with Jin-Woo' }
-              : loc
-          ));
+
           // Trigger the sophisticated dialogue system with coffee context
           handleChaHaeInInteraction();
         }}
