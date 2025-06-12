@@ -15,6 +15,7 @@ import { CoffeeActivityModal } from '@/components/CoffeeActivityModal';
 import { SparringSessionModal } from '@/components/SparringSessionModal';
 import { TrainingActivityModal } from '@/components/TrainingActivityModal';
 import { MovieNightModal } from '@/components/MovieNightModal';
+import { HangangParkWalkModal } from '@/components/HangangParkWalkModal';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
@@ -255,6 +256,7 @@ export default function SoloLevelingSpatial() {
   // Activity System states
   const [showSparringModal, setShowSparringModal] = useState(false);
   const [showMovieNightModal, setShowMovieNightModal] = useState(false);
+  const [showHangangParkModal, setShowHangangParkModal] = useState(false);
 
   // System 9: AI Narrative Engine state
   const [showNarrativeProgression, setShowNarrativeProgression] = useState(false);
@@ -3718,6 +3720,19 @@ export default function SoloLevelingSpatial() {
             // Then open the movie night modal after a brief delay for transition
             setTimeout(() => {
               setShowMovieNightModal(true);
+            }, 500);
+            return;
+          }
+
+          // Handle Hangang Park Walk - Activity 4: Casual Outing
+          if (activity.id === 'hangang_walk') {
+            console.log('🌊 Hangang Park walk selected - transitioning to riverfront location');
+            // First transition to Hangang Park location
+            setPlayerLocation('hangang_park');
+            setGameState(prev => ({ ...prev, currentScene: 'hangang_park' }));
+            // Then open the Hangang Park walk modal after a brief delay for transition
+            setTimeout(() => {
+              setShowHangangParkModal(true);
             }, 500);
             return;
           }

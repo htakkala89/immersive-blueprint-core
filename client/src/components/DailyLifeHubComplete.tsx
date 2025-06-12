@@ -86,15 +86,14 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     {
       id: 'hangang_walk',
       title: 'Walk in Hangang Park',
-      description: 'Take a relaxing stroll along the river. A good place for heartfelt conversations.',
+      description: 'Take a peaceful stroll along Seoul\'s iconic river for deep conversations.',
       icon: <MapPin className="w-5 h-5" />,
-      energyCost: 15,
+      energyCost: 10,
       category: 'casual',
-      affectionReward: 1,
+      affectionReward: 3,
       memoryReward: true,
-      available: stats.affectionLevel >= 20,
-      lockReason: stats.affectionLevel < 20 ? 'Requires: Affection Level 2+' : undefined,
-      outcomes: ['Small Affection Gain', 'Chance for New Memory']
+      available: true,
+      outcomes: ['Medium Affection Gain', 'Memory Star Creation', 'Deep Conversations']
     },
     {
       id: 'shopping_for_gifts',
