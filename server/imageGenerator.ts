@@ -147,17 +147,25 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   return null;
 }
 
-// Google Cloud authentication using service account with direct API key approach
+// Google Cloud authentication using service account
 async function getGoogleAccessToken(): Promise<string | null> {
   try {
-    // Use Google API key directly for Vertex AI if available
-    if (process.env.GOOGLE_API_KEY) {
-      console.log('Using Google API key for authentication');
-      return process.env.GOOGLE_API_KEY;
-    }
+    const credentialsPath = join(process.cwd(), 'google-service-account.json');
     
-    console.log('Google API key not available');
-    return null;
+    if (!existsSync(credentialsPath)) {
+      console.log('Google service account file not found');
+      return null;
+    }
+
+    const credentialsData = readFileSync(credentialsPath, 'utf8');
+    const serviceAccount = JSON.parse(credentialsData);
+    
+    // Create JWT for authentication
+    const { createJWT, exchangeJWTForAccessToken } = await import('./googleAuth');
+    const jwt = createJWT(serviceAccount, ['https://www.googleapis.com/auth/cloud-platform']);
+    const accessToken = await exchangeJWTForAccessToken(jwt, serviceAccount.token_uri);
+    
+    return accessToken;
   } catch (error) {
     console.error('Error getting Google access token:', error);
     return null;
@@ -166,30 +174,40 @@ async function getGoogleAccessToken(): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Use Google API key directly
-    const apiKey = process.env.GOOGLE_API_KEY;
-    if (!apiKey) {
-      console.log('Google API key not available - cannot use Imagen');
+    // Get authentication and project details
+    const accessToken = await getGoogleAccessToken();
+    if (!accessToken) {
+      console.log('Google access token not available - cannot use Imagen');
       return null;
     }
 
-    console.log('🎨 Attempting Google Generative AI image generation...');
+    const credentialsPath = join(process.cwd(), 'google-service-account.json');
+    const credentialsData = readFileSync(credentialsPath, 'utf8');
+    const serviceAccount = JSON.parse(credentialsData);
+    const projectId = serviceAccount.project_id;
+
+    console.log('🎨 Attempting Vertex AI Imagen generation...');
     
     const enhancedPrompt = prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. High quality digital art, Korean webtoon aesthetic, romantic cinematic lighting";
     
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`, {
+    const location = 'us-central1';
+    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-001:predict`;
+    
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        prompt: enhancedPrompt,
-        safetySettings: [
-          {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_ONLY_HIGH"
-          }
-        ]
+        instances: [{
+          prompt: enhancedPrompt
+        }],
+        parameters: {
+          sampleCount: 1,
+          aspectRatio: "1:1",
+          safetyFilterLevel: "block_only_high"
+        }
       })
     });
 

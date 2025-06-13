@@ -18,7 +18,7 @@ interface ServiceAccountKey {
 }
 
 // Create JWT for Google Cloud authentication
-function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string {
+export function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string {
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     iss: serviceAccount.client_email,
@@ -89,7 +89,17 @@ export async function getGoogleAccessToken(): Promise<string | null> {
     const jwt = createJWT(serviceAccount, scopes);
     
     // Exchange JWT for access token
-    const response = await fetch(serviceAccount.token_uri, {
+    return await exchangeJWTForAccessToken(jwt, serviceAccount.token_uri);
+  } catch (error) {
+    console.error('Error getting Google access token:', error);
+    return null;
+  }
+}
+
+// Exchange JWT for access token
+export async function exchangeJWTForAccessToken(jwt: string, tokenUri: string): Promise<string | null> {
+  try {
+    const response = await fetch(tokenUri, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -101,14 +111,14 @@ export async function getGoogleAccessToken(): Promise<string | null> {
     });
 
     if (!response.ok) {
-      console.error('Failed to get Google access token:', response.status, await response.text());
+      console.error('Failed to exchange JWT for access token:', response.status, await response.text());
       return null;
     }
 
     const tokenData = await response.json();
     return tokenData.access_token;
   } catch (error) {
-    console.error('Error getting Google access token:', error);
+    console.error('Error exchanging JWT for access token:', error);
     return null;
   }
 }
