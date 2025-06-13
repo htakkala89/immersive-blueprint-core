@@ -1,0 +1,74 @@
+{
+  "id": "TEST_Episode",
+  "title": "Test Episode: System Check",
+  "prerequisite": {
+    "player_level": 1,
+    "relationship_level": 1
+  },
+  "beats": [
+    {
+      "beat_id": 1.0,
+      "title": "System Test Initialization",
+      "trigger": "initial",
+      "actions": [
+        {
+          "command": "DELIVER_MESSAGE",
+          "params": { 
+            "target_system": 15, 
+            "sender": "System Administrator", 
+            "message_id": "TEST_Alert_Message" 
+          }
+        },
+        {
+          "command": "ACTIVATE_QUEST",
+          "params": { 
+            "quest_id": "TEST_Main_Quest", 
+            "title": "Complete the system test verification." 
+          }
+        }
+      ],
+      "completion_condition": {
+        "event": "player_accepts_episode",
+        "params": { "quest_id": "TEST_Main_Quest" }
+      }
+    },
+    {
+      "beat_id": 1.1,
+      "title": "Test Dialogue Sequence",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "SET_CHA_MOOD",
+          "params": { "mood": "Curious" }
+        },
+        {
+          "command": "FORCE_CHA_LOCATION",
+          "params": { "location_id": "Hunter Association HQ" }
+        },
+        {
+          "command": "START_DIALOGUE_SCENE",
+          "params": { "dialogue_id": "TEST_Dialogue_Scene" }
+        }
+      ],
+      "completion_condition": {
+        "event": "dialogue_scene_complete",
+        "params": { "dialogue_id": "TEST_Dialogue_Scene" }
+      }
+    },
+    {
+      "beat_id": 1.2,
+      "title": "Test Completion",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "COMPLETE_EPISODE",
+          "params": { "episode_id": "TEST_Episode", "reward": 10000 }
+        }
+      ],
+      "completion_condition": {
+        "event": "episode_complete",
+        "params": {}
+      }
+    }
+  ]
+}
