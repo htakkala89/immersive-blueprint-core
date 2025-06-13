@@ -127,7 +127,7 @@ Completion Condition Types:
     const metaPrompt = this.constructMetaPrompt(request);
 
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
       const systemInstruction = `You are the Narrative Architect AI for a Solo Leveling romance game. You transform natural language story visions into structured episode JSON. 
 
@@ -148,7 +148,36 @@ CRITICAL REQUIREMENTS:
       
       // Parse and validate the JSON response
       try {
-        const episodeData = JSON.parse(responseText);
+        // Clean up the response text - remove markdown formatting if present
+        let cleanedText = responseText;
+        
+        // Remove markdown code blocks
+        if (cleanedText.includes('```json')) {
+          const parts = cleanedText.split('```json');
+          if (parts.length > 1) {
+            cleanedText = parts[1].split('```')[0];
+          }
+        } else if (cleanedText.includes('```')) {
+          const parts = cleanedText.split('```');
+          if (parts.length > 1) {
+            cleanedText = parts[1];
+            if (parts.length > 2) {
+              cleanedText = cleanedText.split('```')[0];
+            }
+          }
+        }
+        
+        // Find JSON object boundaries
+        const startIndex = cleanedText.indexOf('{');
+        const lastIndex = cleanedText.lastIndexOf('}');
+        
+        if (startIndex !== -1 && lastIndex !== -1 && lastIndex > startIndex) {
+          cleanedText = cleanedText.substring(startIndex, lastIndex + 1);
+        }
+        
+        cleanedText = cleanedText.trim();
+        
+        const episodeData = JSON.parse(cleanedText);
         return this.validateEpisodeStructure(episodeData);
       } catch (parseError) {
         console.error('AI response was not valid JSON:', responseText);
