@@ -123,6 +123,11 @@ export function OrderTakeoutModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -134,6 +139,7 @@ export function OrderTakeoutModal({
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Cozy evening overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-orange-900/20 via-amber-900/30 to-yellow-900/20" />
@@ -176,14 +182,20 @@ export function OrderTakeoutModal({
                   <p className="text-orange-700 text-lg">Too tired to cook? Let's order something delicious</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 relative z-50">
                   {foodOptions.map((food) => (
                     <motion.button
                       key={food.id}
-                      onClick={() => handleFoodSelection(food.id)}
-                      className="p-6 bg-white/80 hover:bg-white/95 rounded-xl border border-orange-200 transition-all duration-200 text-left shadow-md"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log(`Food selected: ${food.name}`);
+                        handleFoodSelection(food.id);
+                      }}
+                      className="p-6 bg-white/80 hover:bg-white/95 rounded-xl border border-orange-200 transition-all duration-200 text-left shadow-md relative z-50 cursor-pointer"
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
+                      style={{ pointerEvents: 'auto' }}
                     >
                       <div className="flex items-start space-x-4">
                         <div className="text-4xl">{food.emoji}</div>
