@@ -1048,13 +1048,70 @@ export function DeepTFTRaidSystem({
           </div>
         )}
 
+        {/* Permanent Bench Area */}
+        <div className="absolute bottom-4 left-4 right-4 h-20 bg-gradient-to-r from-slate-800 to-slate-700 rounded-lg border border-slate-600 p-2">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-white font-bold text-sm">Bench ({bench.filter(u => u !== null).length}/9)</h4>
+          </div>
+          <div className="flex gap-1 justify-center">
+            {bench.map((unit, index) => (
+              <div
+                key={index}
+                className={`relative w-12 h-12 rounded border-2 ${
+                  unit ? 'border-green-400 bg-green-900/30' : 'border-slate-600 bg-slate-700/30'
+                } hover:border-green-300 transition-colors ${
+                  isDragging ? 'border-yellow-400' : ''
+                }`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.add('border-yellow-400', 'bg-yellow-900/20');
+                }}
+                onDragLeave={(e) => {
+                  e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
+                  handleDrop(index, 'bench');
+                }}
+              >
+                {unit && (
+                  <div
+                    draggable
+                    onDragStart={() => handleDragStart(unit, 'bench', index)}
+                    onDragEnd={handleDragEnd}
+                    className={`absolute inset-0 flex flex-col items-center justify-center text-white cursor-move ${
+                      isDragging && draggedUnit?.id === unit.id ? 'opacity-50' : ''
+                    }`}
+                  >
+                    <div className="text-xs font-bold truncate w-full text-center px-1">
+                      {unit.name.substring(0, 3)}
+                    </div>
+                    <div className="flex">
+                      {Array.from({ length: unit.stars }).map((_, i) => (
+                        <Star key={i} className="w-1 h-1 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {!unit && isDragging && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-yellow-400 text-xs font-bold">+</div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Main Board Area */}
-        <div className={`absolute inset-x-4 top-32 ${isShopExpanded ? 'bottom-80' : 'bottom-20'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
+        <div className={`absolute inset-x-4 top-32 ${isShopExpanded ? 'bottom-80' : 'bottom-28'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
           {gamePhase === 'setup' && (
             /* Setup Phase - TFT Authentic Board Layout */
             <div className="absolute inset-4">
               {/* Full 8x7 TFT Board Grid */}
-              <div className="grid grid-cols-7 grid-rows-8 gap-2 h-full p-2">
+              <div className="grid grid-cols-7 grid-rows-8 gap-1 h-full p-4">
                 {Array.from({ length: 56 }).map((_, index) => {
                   const col = index % 7;
                   const row = Math.floor(index / 7);
@@ -1328,61 +1385,7 @@ export function DeepTFTRaidSystem({
                 </div>
               </div>
 
-              {/* Bench */}
-              <div className="mb-4">
-                <h4 className="text-white font-bold mb-2">Bench ({bench.filter(u => u !== null).length}/9)</h4>
-                <div className="flex gap-2">
-                  {bench.map((unit, index) => (
-                    <div
-                      key={index}
-                      className={`relative w-16 h-16 rounded border-2 ${
-                        unit ? 'border-green-400 bg-green-900/30' : 'border-slate-600 bg-slate-700/30'
-                      } hover:border-green-300 transition-colors ${
-                        isDragging ? 'border-yellow-400' : ''
-                      }`}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.classList.add('border-yellow-400', 'bg-yellow-900/20');
-                      }}
-                      onDragLeave={(e) => {
-                        e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
-                      }}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
-                        handleDrop(index, 'bench');
-                      }}
-                    >
-                      {unit && (
-                        <div
-                          draggable
-                          onDragStart={() => handleDragStart(unit, 'bench', index)}
-                          onDragEnd={handleDragEnd}
-                          className={`absolute inset-0 flex flex-col items-center justify-center text-white cursor-move ${
-                            isDragging && draggedUnit?.id === unit.id ? 'opacity-50' : ''
-                          }`}
-                        >
-                          <div className="text-xs font-bold truncate w-full text-center px-1">
-                            {unit.name.substring(0, 4)}
-                          </div>
-                          <div className="flex">
-                            {Array.from({ length: unit.stars }).map((_, i) => (
-                              <Star key={i} className="w-1.5 h-1.5 fill-yellow-400 text-yellow-400" />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Drop Zone Indicator */}
-                      {!unit && isDragging && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-yellow-400 text-xs font-bold">DROP</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+
 
               {/* Game Controls */}
               <div className="flex justify-center">
