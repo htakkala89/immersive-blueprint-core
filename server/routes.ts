@@ -1362,6 +1362,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Episode System - Trigger episode start (creates communicator message)
+  app.post("/api/episodes/:episodeId/trigger", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const { profileId } = req.body;
+      
+      if (!profileId) {
+        return res.status(400).json({ error: "Missing profileId" });
+      }
+      
+      const episode = episodeEngine.getEpisode(episodeId);
+      if (!episode) {
+        return res.status(404).json({ error: "Episode not found" });
+      }
+
+      // Create the episode alert message for the Hunter Communicator
+      const episodeAlert = {
+        id: `episode_${episodeId}`,
+        title: episode.title,
+        sender: "Hunter Association",
+        content: "A new critical mission has been detected. This appears to be related to unusual gate activity in the area. Your expertise is required for this investigation.",
+        timestamp: new Date(),
+        type: "quest" as const,
+        read: false,
+        questData: {
+          rank: "A",
+          type: "investigation",
+          reward: 50000000,
+          location: "hunter_association",
+          description: "Investigate the A-Rank Gate Alert",
+          longDescription: "A powerful magical anomaly has been detected. Work with Cha Hae-In to investigate and eliminate the threat.",
+          objectives: [
+            {
+              id: "investigate_gate",
+              description: "Meet with Cha Hae-In at the Hunter Association",
+              completed: false
+            }
+          ],
+          timeLimit: 24,
+          difficulty: 8,
+          estimatedDuration: 2,
+          isUrgent: true,
+          guildSupport: false
+        }
+      };
+
+      res.json({ 
+        success: true, 
+        message: "Episode triggered successfully",
+        episodeAlert
+      });
+    } catch (error) {
+      console.error("Failed to trigger episode:", error);
+      res.status(500).json({ error: "Failed to trigger episode" });
+    }
+  });
+
   // Additional core gameplay endpoints
   
   // Mature content detection and generation system

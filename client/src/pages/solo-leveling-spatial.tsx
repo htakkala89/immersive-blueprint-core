@@ -4119,6 +4119,39 @@ export default function SoloLevelingSpatial() {
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
+            { icon: Bell, label: 'Start Episode 1', color: 'text-red-300', onClick: async () => { 
+              setMonarchAuraVisible(false);
+              try {
+                const response = await fetch('/api/episodes/EP01_Red_Echo/trigger', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ profileId: loadedProfileId })
+                });
+                
+                if (response.ok) {
+                  const data = await response.json();
+                  console.log('Episode 1 triggered successfully:', data);
+                  
+                  setCurrentDialogue("A priority alert has been sent to your Hunter's Communicator. Check your messages for an urgent mission briefing from the Hunter Association.");
+                  setDialogueActive(true);
+                  setShowLivingPortrait(true);
+                  setChaHaeInExpression('concerned');
+                  
+                  setTimeout(() => {
+                    setNotifications(prev => [...prev, {
+                      id: 'episode1_alert',
+                      type: 'episode_available',
+                      title: 'Episode 1: Echoes of the Red Gate',
+                      content: 'A critical mission has been detected.',
+                      timestamp: new Date(),
+                      action: () => setShowCommunicator(true)
+                    }]);
+                  }, 1000);
+                }
+              } catch (error) {
+                console.error('Failed to trigger episode:', error);
+              }
+            }},
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
             { icon: Power, label: 'Exit Game', color: 'text-red-300', onClick: () => { 
               if (confirm('Are you sure you want to exit the game?')) {
