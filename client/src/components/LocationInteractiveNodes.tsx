@@ -850,7 +850,6 @@ export function LocationInteractiveNodes({
             style={{
               left: `${node.position.x}%`,
               top: `${node.position.y}%`,
-              transform: 'translate(-50%, -50%)',
               minWidth: '80px',
               minHeight: '80px'
             }}
