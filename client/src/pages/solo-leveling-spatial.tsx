@@ -49,9 +49,10 @@ import { SparkleEffect } from '@/components/SparkleEffect';
 import { MysticalEye } from '@/components/MysticalEye';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
 import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
-import { NarrativeArchitectAI } from '@/components/NarrativeArchitectAI';
 import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
 import { CreatorPortalDashboard } from '@/components/CreatorPortalDashboard';
+import EpisodeSelector from '@/components/EpisodeSelector';
+import EpisodePlayer from '@/components/EpisodePlayer';
 import SommelierDialog from '@/components/SommelierDialog';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
@@ -278,9 +279,6 @@ export default function SoloLevelingSpatial() {
 
   // System 18: Episodic Story Engine state
   const [showStoryEngine, setShowStoryEngine] = useState(false);
-
-  // System 18.5: Narrative Architect AI state
-  const [showNarrativeArchitect, setShowNarrativeArchitect] = useState(false);
 
   // System 18: Episode Playback System state
   const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
@@ -3725,8 +3723,7 @@ export default function SoloLevelingSpatial() {
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
-            { icon: BookOpen, label: 'Story Engine', color: 'text-orange-300', onClick: () => { setShowStoryEngine(true); setMonarchAuraVisible(false); } },
-            { icon: Wand2, label: 'AI Creator', color: 'text-purple-300', onClick: () => { setShowNarrativeArchitect(true); setMonarchAuraVisible(false); } },
+            { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
             { icon: Brain, label: 'Story Progress', color: 'text-violet-300', onClick: () => { setShowNarrativeProgression(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
@@ -4224,11 +4221,31 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      {/* System 18.5: Narrative Architect AI Creator Tool */}
-      <NarrativeArchitectAI
-        isVisible={showNarrativeArchitect}
-        onClose={() => setShowNarrativeArchitect(false)}
-      />
+      {/* System 18: Episode Selection and Player */}
+      {showEpisodeSelector && (
+        <EpisodeSelector
+          onSelectEpisode={(episode) => {
+            setCurrentEpisode(episode.id);
+            setShowEpisodeSelector(false);
+          }}
+          onBack={() => setShowEpisodeSelector(false)}
+        />
+      )}
+
+      {currentEpisode && (
+        <EpisodePlayer
+          episodeId={currentEpisode}
+          onBack={() => {
+            setCurrentEpisode(null);
+            setShowEpisodeSelector(true);
+          }}
+          onComplete={(episodeId) => {
+            setCurrentEpisode(null);
+            setShowEpisodeSelector(false);
+            // TODO: Mark episode as completed in player progress
+          }}
+        />
+      )}
 
 
 
