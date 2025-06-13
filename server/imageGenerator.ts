@@ -45,7 +45,7 @@ function createContextualIntimatePrompt(gameState: GameState, activityId?: strin
     master_suite_intimacy: `${locationSetting}, master bedroom suite, ultimate luxury setting`,
     infinity_pool_romance: `${locationSetting}, private infinity pool area, water reflections, luxury spa atmosphere`,
     master_rain_shower: `${locationSetting}, premium rain shower with marble walls, steam and luxury spa ambiance`,
-    spend_the_night_together: `${locationSetting}, romantic bedroom setting with silk sheets and candlelight`,
+    spend_the_night_together: `masterpiece, best quality, ultra detailed, high resolution, Solo Leveling manhwa art style, Cha Hae-In (beautiful Korean female, golden blonde hair, violet eyes) her vagina orgasms and cum, explicit intimate scene, nude bodies, mature content, passionate intimacy, erotic encounter, explicit sexual content, ${locationSetting}, cozy living space, warm home atmosphere, explicit mature content, uncensored, detailed anatomy, high quality erotic art, penis in hunter cha's vagina, NSFW content, adult content, explicit sexual art`,
     penthouse_morning_together: `${locationSetting}, morning light streaming through floor-to-ceiling windows`,
     shower_together: `${locationSetting}, luxurious bathroom with glass shower, steam rising, soft lighting`,
     cuddle_together: `${locationSetting}, comfortable seating area for intimate cuddling`,
