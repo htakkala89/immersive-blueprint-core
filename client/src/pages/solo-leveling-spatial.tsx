@@ -2201,35 +2201,7 @@ export default function SoloLevelingSpatial() {
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
       
-      {/* Leave World Button */}
-      <motion.button
-        className="fixed top-6 right-20 w-11 h-11 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden"
-        style={{ 
-          position: 'fixed',
-          top: '24px',
-          right: '80px',
-          zIndex: 9999,
-          pointerEvents: 'auto',
-          background: 'radial-gradient(circle at 30% 30%, rgba(220, 38, 38, 0.9) 0%, rgba(185, 28, 28, 0.8) 30%, rgba(127, 29, 29, 0.9) 70%, rgba(0, 0, 0, 0.95) 100%)',
-          border: '2px solid rgba(220, 38, 38, 0.6)',
-          boxShadow: '0 0 30px rgba(220, 38, 38, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3)'
-        }}
-        whileHover={{ 
-          scale: 1.1,
-          boxShadow: '0 0 40px rgba(220, 38, 38, 0.7), inset 0 2px 0 rgba(255, 255, 255, 0.3)'
-        }}
-        whileTap={{ scale: 0.95 }}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          leaveWorld();
-        }}
-        title="Leave World (Auto-saves progress)"
-      >
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-      </motion.button>
+
 
       {/* Monarch's Aura - Shadow Crown */}
       <motion.button
