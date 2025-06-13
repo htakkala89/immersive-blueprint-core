@@ -547,13 +547,42 @@ export function DeepTFTRaidSystem({
                   unit ? 'border-blue-400 bg-blue-900/30' : 'border-slate-600 bg-slate-700/30'
                 } hover:border-blue-300 transition-colors cursor-pointer`}
                 onClick={() => {
-                  // Handle board positioning
+                  if (!unit && bench.some(b => b !== null)) {
+                    // Find first unit on bench and move to board
+                    const firstBenchUnit = bench.find(b => b !== null);
+                    if (firstBenchUnit && board.filter(b => b !== null).length < maxTeamSize) {
+                      const benchIndex = bench.findIndex(b => b?.id === firstBenchUnit.id);
+                      const newBench = [...bench];
+                      const newBoard = [...board];
+                      
+                      newBench[benchIndex] = null;
+                      newBoard[index] = firstBenchUnit;
+                      
+                      setBench(newBench);
+                      setBoard(newBoard);
+                      calculateTraits();
+                    }
+                  } else if (unit) {
+                    // Move unit back to bench
+                    const benchSlot = bench.findIndex(b => b === null);
+                    if (benchSlot !== -1) {
+                      const newBench = [...bench];
+                      const newBoard = [...board];
+                      
+                      newBench[benchSlot] = unit;
+                      newBoard[index] = null;
+                      
+                      setBench(newBench);
+                      setBoard(newBoard);
+                      calculateTraits();
+                    }
+                  }
                 }}
               >
                 {unit && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
                     <div className="text-xs font-bold truncate w-full text-center px-1">
-                      {unit.name}
+                      {unit.name.split(' ')[0]}
                     </div>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: unit.stars }).map((_, i) => (
