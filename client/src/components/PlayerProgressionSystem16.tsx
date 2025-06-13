@@ -579,7 +579,7 @@ export function PlayerProgressionSystem16({
                   {/* Stats Grid */}
                   <div className="p-6">
                     <div className="grid gap-4">
-                      {Object.entries(playerData.stats).map(([statKey, value], index) => {
+                      {Object.entries(playerData.stats || {}).map(([statKey, value], index) => {
                         const IconComponent = getStatIcon(statKey as keyof CoreStats);
                         const colorClass = getStatColor(statKey as keyof CoreStats);
                         
