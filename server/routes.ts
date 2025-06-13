@@ -1605,6 +1605,9 @@ Respond naturally as if you're texting Jin-Woo back:`;
 
         const personalityPrompt = getPersonalityPrompt(conversationContext);
         
+        // Check for episode guidance - inject natural story progression
+        const episodeGuidance = await episodeEngine.getEpisodeGuidance('GAMEPLAY_TEST', 2);
+        
         const fullPrompt = `${personalityPrompt}
 
 CURRENT SITUATION:
@@ -1615,6 +1618,8 @@ CURRENT SITUATION:
 
 Jin-Woo just said: "${message}"
 
+${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide the conversation toward: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
+
 RESPONSE INSTRUCTIONS:
 - Respond naturally as Cha Hae-In in character
 - Reference the current location and situation
@@ -1622,7 +1627,8 @@ RESPONSE INSTRUCTIONS:
 - Keep response conversational and under 100 words
 - Use "Jin-Woo" when addressing him directly
 - Show your hunter expertise when relevant
-- Express growing feelings if affection is high enough`;
+- Express growing feelings if affection is high enough
+${episodeGuidance ? '- After responding to the current message, naturally suggest the story progression mentioned above' : ''}`;
         
         const result = await model.generateContent(fullPrompt);
         response = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
