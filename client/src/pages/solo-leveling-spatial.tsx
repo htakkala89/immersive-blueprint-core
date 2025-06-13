@@ -498,7 +498,9 @@ export default function SoloLevelingSpatial() {
   const [showTalkOnBalcony, setShowTalkOnBalcony] = useState(false);
   const [showMyeongdongDinner, setShowMyeongdongDinner] = useState(false);
   const [showDevTools, setShowDevTools] = useState(false);
-  const [pendingFurnitureItem, setPendingFurnitureItem] = useState<any>(null);
+  
+  // Episode system state
+  const [chaHaeInCurrentLocation, setChaHaeInCurrentLocation] = useState<string | null>(null);
 
   
   // Debug logging for dungeon raid state
@@ -593,7 +595,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const chaHaeInCurrentLocation = getChaHaeInLocation();
+  const currentChaHaeInLocation = chaHaeInCurrentLocation || getChaHaeInLocation();
 
   // Helper function for receptionist dialogue - rotating pre-scripted hints
   const getReceptionistDialogue = (): string => {
@@ -1932,55 +1934,204 @@ export default function SoloLevelingSpatial() {
     const beat = episode.beats[beatIndex];
     if (!beat) return;
 
-    const action = beat.actions[0]; // Get first action from beat
-    if (!action) return;
+    // Execute all actions in the beat sequentially
+    beat.actions.forEach((action: any, actionIndex: number) => {
+      setTimeout(() => {
+        executeStoryAction(action);
+      }, actionIndex * 1000); // 1 second delay between actions
+    });
+  };
 
-    // Execute action based on type - driving the spatial world
+  const executeStoryAction = (action: any) => {
     switch (action.type) {
-      case 'system_message':
-        // Show system message as dialogue
-        setCurrentDialogue(action.content);
-        setDialogueActive(true);
-        setShowLivingPortrait(true);
-        setChaHaeInExpression('neutral');
+      case 'DELIVER_MESSAGE':
+        // System 15: Hunter's Communicator integration
+        setNotifications(prev => [...prev, {
+          id: `ep_${Date.now()}`,
+          type: 'message',
+          title: action.title || 'System Alert',
+          content: action.message || action.content,
+          timestamp: new Date()
+        }]);
         break;
+
+      case 'ACTIVATE_QUEST':
+        // System 3: Quest Log integration
+        const newQuest = {
+          id: action.quest_id,
+          title: action.title,
+          description: action.description || '',
+          objectives: action.objectives || [],
+          targetLocation: action.target_location || 'current',
+          status: 'active' as const,
+          rewards: action.rewards || {}
+        };
         
-      case 'narrative_text':
-        // Display narrative as Cha Hae-In speaking to the player
-        setCurrentDialogue(action.content);
+        setGameState(prev => ({
+          ...prev,
+          activeQuests: [...(prev.activeQuests || []), newQuest]
+        }));
+        
+        // Show quest activation notification
+        setCurrentDialogue(`New quest: ${action.title}`);
         setDialogueActive(true);
         setShowLivingPortrait(true);
-        setChaHaeInExpression('welcoming');
         break;
-      
-      case 'set_location':
-        // Actually change the spatial world location
+
+      case 'SET_CHA_MOOD':
+        // Update Cha Hae-In's expression and mood
+        const moodToExpression: Record<string, any> = {
+          'Anxious': 'concerned',
+          'Relieved': 'happy',
+          'Vulnerable': 'contemplative',
+          'Confident': 'welcoming',
+          'Romantic': 'romantic',
+          'Focused': 'focused'
+        };
+        setChaHaeInExpression(moodToExpression[action.mood] || 'neutral');
+        break;
+
+      case 'FORCE_CHA_LOCATION':
+        // Override Cha Hae-In's location presence
+        setChaHaeInCurrentLocation(action.location);
+        break;
+
+      case 'START_DIALOGUE_SCENE':
+        // Initiate structured dialogue
+        if (action.dialogue_file) {
+          setCurrentDialogue(action.opening_line || "Let's talk about what's happening.");
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          
+          // Set dialogue choices as thought prompts
+          if (action.choices) {
+            setThoughtPrompts(action.choices.map((choice: any) => choice.text));
+          }
+        }
+        break;
+
+      case 'SET_QUEST_OBJECTIVE':
+        // Update existing quest objective
+        setGameState(prev => ({
+          ...prev,
+          activeQuests: prev.activeQuests?.map(quest => 
+            quest.id === action.quest_id 
+              ? { ...quest, objectives: [...quest.objectives, action.objective] }
+              : quest
+          ) || []
+        }));
+        break;
+
+      case 'LOAD_DUNGEON_ENVIRONMENT':
+        // Prepare dungeon raid environment
+        setGameState(prev => ({
+          ...prev,
+          currentRaidGate: action.gate_id,
+          raidContext: action.context || 'story_mission'
+        }));
+        break;
+
+      case 'START_BOSS_BATTLE':
+        // Trigger dungeon raid system
+        setShowDungeonRaid(true);
+        break;
+
+      case 'REMOVE_CHA_LOCATION_OVERRIDE':
+        // Return Cha Hae-In to normal scheduling
+        setChaHaeInCurrentLocation(null);
+        break;
+
+      case 'COMPLETE_QUEST':
+        // Move quest from active to completed
+        setGameState(prev => {
+          const questToComplete = prev.activeQuests?.find(q => q.id === action.quest_id);
+          if (questToComplete) {
+            return {
+              ...prev,
+              activeQuests: prev.activeQuests?.filter(q => q.id !== action.quest_id) || [],
+              completedQuests: [
+                ...(prev.completedQuests || []),
+                { ...questToComplete, status: 'completed' as const, completedAt: new Date().toISOString() }
+              ]
+            };
+          }
+          return prev;
+        });
+        break;
+
+      case 'REWARD_PLAYER':
+        // Apply episode rewards
+        if (action.gold) {
+          setGameState(prev => ({ ...prev, gold: (prev.gold || 0) + action.gold }));
+        }
+        if (action.experience) {
+          setGameState(prev => ({ ...prev, experience: (prev.experience || 0) + action.experience }));
+        }
+        if (action.items) {
+          action.items.forEach((item: any) => {
+            setGameState(prev => ({
+              ...prev,
+              inventory: [...prev.inventory, item]
+            }));
+          });
+        }
+        break;
+
+      case 'CREATE_MEMORY_STAR':
+        // System 6: Relationship Constellation integration
+        const newMemory = {
+          id: `mem_${Date.now()}`,
+          title: action.title,
+          description: action.description,
+          emotion: action.emotion || 'happy',
+          timestamp: new Date()
+        };
+        setMemoryStars(prev => [...prev, newMemory]);
+        break;
+
+      case 'UNLOCK_ACTIVITY':
+        // System 4: Daily Life Hub integration
+        setGameState(prev => ({
+          ...prev,
+          unlockedActivities: [...(prev.unlockedActivities || []), action.activity_id]
+        }));
+        break;
+
+      case 'SHOW_NOTIFICATION':
+        // Display episode notification
+        setNotifications(prev => [...prev, {
+          id: `ep_notif_${Date.now()}`,
+          type: 'message',
+          title: action.title || 'Episode Update',
+          content: action.message,
+          timestamp: new Date()
+        }]);
+        break;
+
+      case 'SET_LOCATION':
+        // Change player location
         setPlayerLocation(action.location);
-        if (action.time) {
-          setTimeOfDay(action.time);
+        if (action.time_of_day) {
+          setTimeOfDay(action.time_of_day);
         }
-        // Add location transition dialogue
-        setCurrentDialogue(`You arrive at ${action.location.replace('_', ' ')}. The atmosphere changes as you take in your new surroundings.`);
+        setCurrentDialogue(`You arrive at ${action.location.replace(/_/g, ' ')}. The scene is set for what comes next.`);
         setDialogueActive(true);
         setShowLivingPortrait(true);
         break;
-      
-      case 'show_shop':
-        // Open the actual shop interface in the spatial world
-        setShowUnifiedShop(true);
-        // Set custom shop data if provided
-        if (action.shop_data) {
-          // Could store shop data to customize the shop interface
-          setCurrentDialogue(`Welcome to ${action.shop_data.name}! Browse the available items and make your selections.`);
-        } else {
-          setCurrentDialogue("A shop is now available. Check what's for sale!");
-        }
+
+      case 'CHOICE_NODE':
+        // Present choices through thought prompts
+        setCurrentDialogue(action.prompt);
         setDialogueActive(true);
         setShowLivingPortrait(true);
+        
+        if (action.choices) {
+          setThoughtPrompts(action.choices.map((choice: any) => choice.text));
+        }
         break;
-      
-      case 'dialogue_sequence':
-        // Display character dialogue through the spatial interface
+
+      case 'DIALOGUE_SEQUENCE':
+        // Display character dialogue
         if (action.dialogue && action.dialogue[0]) {
           setCurrentDialogue(action.dialogue[0].text);
           setDialogueActive(true);
@@ -1988,60 +2139,23 @@ export default function SoloLevelingSpatial() {
           setChaHaeInExpression(action.dialogue[0].emotion || 'welcoming');
         }
         break;
-      
-      case 'choice_node':
-        // Present choices through thought prompts in spatial interface
-        setCurrentDialogue(action.prompt);
-        setDialogueActive(true);
-        setShowLivingPortrait(true);
-        
-        // Set episode choices as thought prompts
-        if (action.choices) {
-          setThoughtPrompts(action.choices.map((choice: any) => choice.text));
-        }
-        break;
-      
-      case 'add_quest':
-        // Add quest to the spatial world quest system
-        if (action.quest) {
-          const newQuest = {
-            id: action.quest.id,
-            title: action.quest.title,
-            description: action.quest.description,
-            objectives: action.quest.objectives || [],
-            targetLocation: 'current',
-            status: 'active' as const,
-            rewards: action.quest.rewards || {}
-          };
-          
-          setGameState(prev => ({
-            ...prev,
-            activeQuests: [...(prev.activeQuests || []), newQuest]
-          }));
-          
-          setCurrentDialogue(`New quest received: ${action.quest.title}`);
-          setDialogueActive(true);
-          setShowLivingPortrait(true);
-        }
-        break;
-      
-      case 'intimate_moment':
-        // Trigger intimate activity through spatial world system
+
+      case 'INTIMATE_MOMENT':
+        // Trigger intimate activity
         if (action.moment) {
           setCurrentDialogue(action.moment.description);
           setDialogueActive(true);
           setShowLivingPortrait(true);
           setChaHaeInExpression('loving');
           
-          // Set intimate choices as thought prompts
           if (action.moment.choices) {
             setThoughtPrompts(action.moment.choices.map((choice: any) => choice.text));
           }
         }
         break;
-      
-      case 'relationship_progression':
-        // Apply relationship changes to spatial world game state
+
+      case 'RELATIONSHIP_PROGRESSION':
+        // Apply relationship milestone
         if (action.milestone?.rewards) {
           const rewards = action.milestone.rewards;
           setGameState(prev => ({
@@ -2051,37 +2165,19 @@ export default function SoloLevelingSpatial() {
             gold: (prev.gold || 0) + (rewards.money || 0)
           }));
           
-          // Show achievement-style notification
           setCurrentDialogue(`${action.milestone.name}: ${action.milestone.description}`);
           setDialogueActive(true);
           setShowLivingPortrait(true);
           setChaHaeInExpression('happy');
           
-          // Show affection heart effect for major milestones
           setShowAffectionHeart(true);
           if (affectionHeartTimeout.current) clearTimeout(affectionHeartTimeout.current);
           affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
         }
         break;
-        
-      case 'episode_completion':
-        // Apply final episode rewards and show completion
-        if (action.rewards) {
-          setGameState(prev => ({
-            ...prev,
-            experience: (prev.experience || 0) + (action.rewards.experience || 0),
-            gold: (prev.gold || 0) + (action.rewards.money || 0),
-            affection: Math.min(100, prev.affection + (action.rewards.affection || 0)),
-            intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + (action.rewards.intimacy || 0)),
-            unlockedActivities: [...(prev.unlockedActivities || []), ...(action.rewards.unlocked_activities || [])]
-          }));
-          
-          setCurrentDialogue(`Episode complete! Your bond with Cha Hae-In has deepened significantly. New activities and possibilities await.`);
-          setDialogueActive(true);
-          setShowLivingPortrait(true);
-          setChaHaeInExpression('loving');
-        }
-        break;
+
+      default:
+        console.log('Unknown story action type:', action.type);
     }
   };
 
@@ -2097,6 +2193,63 @@ export default function SoloLevelingSpatial() {
       setActiveEpisode(null);
       setEpisodeBeatIndex(0);
       setCurrentDialogue("Episode completed! Your relationship with Cha Hae-In has deepened.");
+    }
+  };
+
+  const checkCompletionCondition = (condition: string, ...args: any[]) => {
+    if (!activeEpisode) return false;
+
+    switch (condition) {
+      case 'player_accepts_episode':
+        return args[0] === activeEpisode.id;
+      
+      case 'dialogue_scene_complete':
+        return args[0] === 'completed';
+      
+      case 'player_enters_dungeon':
+        return args[0] && playerLocation.includes('dungeon');
+      
+      case 'boss_defeated':
+        return args[0] === 'defeated';
+      
+      case 'quest_accepted':
+        return gameState.activeQuests?.some(q => q.id === args[0]);
+      
+      case 'location_reached':
+        return playerLocation === args[0];
+      
+      case 'choice_selected':
+        return args[0] && args[1];
+      
+      default:
+        return false;
+    }
+  };
+
+  const handleEpisodeEvent = (eventType: string, ...args: any[]) => {
+    if (!activeEpisode) return;
+
+    const currentBeat = activeEpisode.beats[episodeBeatIndex];
+    if (!currentBeat) return;
+
+    const completionCondition = currentBeat.completion_condition;
+    if (completionCondition && checkCompletionCondition(completionCondition, ...args)) {
+      setTimeout(() => {
+        continueEpisode();
+      }, 1500);
+    }
+  };
+
+  const checkEpisodePrerequisites = (episodeId: string) => {
+    switch (episodeId) {
+      case 'EP_DEMO_COMPLETE':
+        return gameState.level >= 1 && gameState.affection >= 0;
+      
+      case 'EP01_Red_Echo':
+        return gameState.level >= 25 && gameState.affection >= 40;
+      
+      default:
+        return true;
     }
   };
 
