@@ -25,7 +25,7 @@ interface GameState {
   flags: Record<string, boolean>;
 }
 
-export default function EpisodePlayer({ episodeId, onBack, onComplete }: EpisodePlayerProps) {
+export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState: externalGameState, onGameStateUpdate }: EpisodePlayerProps) {
   const [currentCommandIndex, setCurrentCommandIndex] = useState(0);
   const [gameState, setGameState] = useState<GameState>({
     currentLocation: 'default',

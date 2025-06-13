@@ -331,6 +331,23 @@ export default function SoloLevelingSpatial() {
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
     console.log('Starting Cha Hae-In interaction...');
+    
+    // Check for available episodes at current location first
+    const locationEpisodes = getLocationEpisodes();
+    if (locationEpisodes.length > 0) {
+      const episode = locationEpisodes[0];
+      setNotifications(prev => [...prev, {
+        id: `episode_interaction_${Date.now()}`,
+        type: 'episode_available' as const,
+        title: 'Story Episode Available',
+        content: `"${episode.title}" - Begin this story with Cha Hae-In?`,
+        timestamp: new Date(),
+        action: () => triggerEpisode(episode.id)
+      }]);
+      setShowCommunicator(true);
+      return; // Exit early to show episode option
+    }
+    
     // Step 1: Focus Animation (300ms)
     setIsFocusMode(true);
     console.log('Focus mode activated');
@@ -4059,7 +4076,8 @@ export default function SoloLevelingSpatial() {
           >
             <div className="flex items-start gap-3">
               <div className={`w-3 h-3 rounded-full mt-1 ${
-                notification.type === 'quest' ? 'bg-yellow-400' : 'bg-pink-400'
+                notification.type === 'quest' ? 'bg-yellow-400' : 
+                notification.type === 'episode_available' ? 'bg-orange-400' : 'bg-pink-400'
               }`} />
               <div 
                 className="flex-1 cursor-pointer"
@@ -4528,6 +4546,10 @@ export default function SoloLevelingSpatial() {
       {episodeInProgress && currentEpisode && (
         <EpisodePlayer
           episodeId={currentEpisode}
+          onBack={() => {
+            setEpisodeInProgress(false);
+            setCurrentEpisode(null);
+          }}
           onComplete={handleEpisodeComplete}
           gameState={gameState}
           onGameStateUpdate={setGameState}
