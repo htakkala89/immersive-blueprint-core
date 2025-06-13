@@ -4129,7 +4129,11 @@ export default function SoloLevelingSpatial() {
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="flex-1 space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
+                      className="space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
+                      style={{ 
+                        maxHeight: '400px',
+                        height: '400px'
+                      }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
@@ -5252,6 +5256,7 @@ export default function SoloLevelingSpatial() {
         playerLocation={gameState.currentScene}
         timeOfDay={timeOfDay}
         activeQuests={gameState.activeQuests || []}
+        chaHaeInAvatar={avatarImage}
       />
 
       {/* System 3: Quest Log - Accessed via Monarch's Aura */}
