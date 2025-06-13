@@ -503,21 +503,74 @@ export function DeepTFTRaidSystem({
         });
       }, 1000);
 
-      // Combat damage simulation
+      // Combat damage and animation simulation
       combatInterval = setInterval(() => {
         setCombatUnits(prevUnits => {
           return prevUnits.map(unit => {
-            if (unit.health <= 0) return unit;
+            if (unit.health <= 0) return { ...unit, isAttacking: false };
             
             const isPlayerUnit = unit.isPlayer;
             const enemies = prevUnits.filter(u => u.isPlayer !== isPlayerUnit && u.health > 0);
             
             if (enemies.length > 0) {
-              // Calculate damage based on enemy attacks
-              const nearestEnemy = enemies[0]; // Simplified targeting
-              const baseDamage = 25 + (nearestEnemy.attack * 0.3);
-              const randomVariance = Math.random() * 20 - 10; // ±10 variance
-              const totalDamage = Math.max(5, baseDamage + randomVariance);
+              // Find nearest enemy for targeting
+              const nearestEnemy = enemies.reduce((closest, enemy) => {
+                const distToCurrent = Math.abs(unit.x - enemy.x) + Math.abs(unit.y - enemy.y);
+                const distToClosest = Math.abs(unit.x - closest.x) + Math.abs(unit.y - closest.y);
+                return distToCurrent < distToClosest ? enemy : closest;
+              });
+              
+              // Move toward enemy and attack
+              const moveDirection = isPlayerUnit ? 1 : -1;
+              const shouldAttack = Math.random() > 0.3; // 70% attack chance per tick
+              
+              if (shouldAttack) {
+                // Calculate damage with unit stats and trait bonuses
+                const baseDamage = 20 + (unit.attack * 0.4);
+                const traitBonus = isPlayerUnit ? activeTraits.reduce((sum, trait) => 
+                  sum + (trait.activeLevel * 8), 0) : 0;
+                const randomVariance = Math.random() * 15 - 7.5;
+                const totalDamage = Math.max(8, baseDamage + traitBonus + randomVariance);
+                
+                // Apply damage to nearest enemy
+                const targetId = nearestEnemy.id;
+                
+                return {
+                  ...unit,
+                  isAttacking: true,
+                  x: unit.x + (moveDirection * 15), // Move forward when attacking
+                  attackCooldown: 0
+                };
+              } else {
+                // Reset attack animation
+                return {
+                  ...unit,
+                  isAttacking: false,
+                  x: unit.x - (moveDirection * 5) // Slight retreat
+                };
+              }
+            }
+            
+            return { ...unit, isAttacking: false };
+          });
+        });
+
+        // Apply damage to enemies based on attacking units
+        setCombatUnits(prevUnits => {
+          const attackingUnits = prevUnits.filter(u => u.isAttacking && u.health > 0);
+          
+          return prevUnits.map(unit => {
+            if (unit.health <= 0) return unit;
+            
+            // Check if this unit is being attacked
+            const attackers = attackingUnits.filter(attacker => 
+              attacker.isPlayer !== unit.isPlayer
+            );
+            
+            if (attackers.length > 0) {
+              const attacker = attackers[0]; // First attacker
+              const baseDamage = 20 + (attacker.attack * 0.4);
+              const totalDamage = Math.max(8, baseDamage + Math.random() * 15);
               
               return {
                 ...unit,
@@ -528,7 +581,7 @@ export function DeepTFTRaidSystem({
             return unit;
           });
         });
-      }, 1200); // Damage every 1.2 seconds
+      }, 800); // Faster combat for better animations
     }
     
     return () => {
@@ -678,86 +731,88 @@ export function DeepTFTRaidSystem({
           )}
 
           {gamePhase === 'combat' && (
-            /* Combat Phase - Animated Battle Arena */
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-purple-900/20 to-red-900/20">
+            /* Combat Phase - TFT-Style Arena */
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800">
               {/* Combat Timer */}
-              <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-black/60 px-4 py-2 rounded-lg">
-                  <div className="text-white font-bold text-lg">Combat: {combatTimer}s</div>
+              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="bg-black/80 px-4 py-2 rounded-lg border border-gold-400">
+                  <div className="text-gold-300 font-bold text-lg">Combat: {combatTimer}s</div>
                 </div>
               </div>
 
-              {/* Player Units (Left Side) */}
-              <div className="absolute left-4 top-16 bottom-4 w-80">
-                <div className="text-blue-300 font-bold mb-2">Your Shadow Army</div>
-                {combatUnits.filter(u => u.isPlayer).map((unit, index) => (
+              {/* TFT-Style Unit Arena */}
+              <div className="absolute inset-8 bg-gradient-to-r from-blue-900/10 to-red-900/10 rounded-lg border border-slate-600">
+                {combatUnits.map((unit, index) => (
                   <div
                     key={unit.id}
-                    className="relative mb-3 p-2 bg-blue-900/40 rounded-lg border border-blue-400"
+                    className={`absolute transition-all duration-700 ease-in-out ${
+                      unit.isAttacking ? 'scale-110' : 'scale-100'
+                    }`}
                     style={{
-                      transform: `translateX(${unit.x - 100}px) translateY(${unit.y - 150}px)`,
-                      transition: 'all 0.5s ease'
+                      left: `${unit.x}px`,
+                      top: `${unit.y}px`,
+                      transform: unit.isAttacking ? 'translateX(20px)' : 'translateX(0)',
+                      zIndex: unit.health <= 0 ? 1 : 10
                     }}
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
-                        {unit.name.charAt(0)}
+                    {/* Unit Icon */}
+                    <div className={`relative w-12 h-12 rounded-lg border-2 ${
+                      unit.isPlayer 
+                        ? 'bg-blue-600 border-blue-400 shadow-blue-400/50' 
+                        : 'bg-red-600 border-red-400 shadow-red-400/50'
+                    } shadow-lg flex items-center justify-center ${
+                      unit.health <= 0 ? 'opacity-30 grayscale' : ''
+                    }`}>
+                      <div className="text-white font-bold text-sm">
+                        {unit.name.substring(0, 2).toUpperCase()}
                       </div>
-                      <div className="flex-1">
-                        <div className="text-white text-sm font-bold">{unit.name.split(' ')[0]}</div>
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div 
-                            className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${(unit.health / unit.maxHealth) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-300">
-                        {Math.ceil(unit.health)}/{unit.maxHealth}
+                      
+                      {/* Tier Stars */}
+                      <div className="absolute -top-1 -right-1 flex">
+                        {Array.from({ length: unit.stars }).map((_, i) => (
+                          <Star key={i} className="w-2 h-2 fill-yellow-400 text-yellow-400" />
+                        ))}
                       </div>
                     </div>
+
+                    {/* Compact Health Bar */}
+                    <div className="absolute -bottom-3 left-0 right-0">
+                      <div className="bg-black/60 rounded-full h-1.5 border border-gray-600">
+                        <div 
+                          className={`h-full rounded-full transition-all duration-300 ${
+                            unit.health / unit.maxHealth > 0.6 ? 'bg-green-500' :
+                            unit.health / unit.maxHealth > 0.3 ? 'bg-yellow-500' : 'bg-red-500'
+                          }`}
+                          style={{ width: `${Math.max(0, (unit.health / unit.maxHealth) * 100)}%` }}
+                        />
+                      </div>
+                      {/* Health Numbers */}
+                      <div className="text-center text-xs text-white bg-black/50 rounded px-1 mt-0.5">
+                        {Math.ceil(Math.max(0, unit.health))}
+                      </div>
+                    </div>
+
+                    {/* Attack Animation Effect */}
+                    {unit.isAttacking && (
+                      <div className="absolute inset-0 pointer-events-none">
+                        <div className="w-full h-full bg-yellow-400/30 rounded-lg animate-pulse" />
+                        <div className="absolute -top-2 -right-2 text-yellow-400 font-bold animate-bounce">
+                          ⚡
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
 
-              {/* Enemy Units (Right Side) */}
-              <div className="absolute right-4 top-16 bottom-4 w-80">
-                <div className="text-red-300 font-bold mb-2">Enemy Forces</div>
-                {combatUnits.filter(u => !u.isPlayer).map((unit, index) => (
-                  <div
-                    key={unit.id}
-                    className="relative mb-3 p-2 bg-red-900/40 rounded-lg border border-red-400"
-                    style={{
-                      transform: `translateX(${unit.x - 500}px) translateY(${unit.y - 150}px)`,
-                      transition: 'all 0.5s ease'
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white text-xs font-bold">
-                        {unit.name.charAt(0)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-white text-sm font-bold">{unit.name.split(' ')[0]}</div>
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div 
-                            className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${(unit.health / unit.maxHealth) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-300">
-                        {Math.ceil(unit.health)}/{unit.maxHealth}
-                      </div>
-                    </div>
+              {/* Battle Info Overlay */}
+              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 rounded-lg px-6 py-3 border border-slate-600">
+                <div className="text-center text-white">
+                  <div className="text-sm font-bold">⚔️ SHADOW ARMY vs DUNGEON FORCES ⚔️</div>
+                  <div className="text-xs text-gray-300 mt-1">
+                    Player: {combatUnits.filter(u => u.isPlayer && u.health > 0).length} | 
+                    Enemy: {combatUnits.filter(u => !u.isPlayer && u.health > 0).length}
                   </div>
-                ))}
-              </div>
-
-              {/* Combat Effects Area */}
-              <div className="absolute inset-x-4 top-1/2 transform -translate-y-1/2 h-32 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white mb-2">⚔️ BATTLE IN PROGRESS ⚔️</div>
-                  <div className="text-sm text-gray-300">Shadow abilities activating...</div>
                 </div>
               </div>
             </div>
