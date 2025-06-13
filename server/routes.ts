@@ -473,7 +473,7 @@ function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOf
   return `${baseCharacterDescription} ${emotionDesc}, positioned ${locationDesc} ${timeDesc}. High quality anime art style, detailed facial features, atmospheric lighting, cinematic composition, masterpiece quality. Focus on her emotional expression and the romantic atmosphere of the scene.`;
 }
 
-export async function registerRoutes(app: Express): Promise<Server> {
+async function registerRoutes(app: Express): Promise<Server> {
   // Direct download endpoint for generated images
   app.get("/download/:filename", (req, res) => {
     const filename = req.params.filename;
