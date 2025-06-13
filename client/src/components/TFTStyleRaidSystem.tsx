@@ -275,7 +275,7 @@ export function TFTStyleRaidSystem({
         health: 100, maxHealth: 100,
         mana: 0, maxMana: 60,
         attack: 30, defense: 20, speed: 5,
-        x: 500, y: 200,
+        x: 700, y: 200,
         facing: 'left',
         isPlayer: false,
         traits: ['Beast'],
@@ -293,7 +293,7 @@ export function TFTStyleRaidSystem({
         health: 120, maxHealth: 120,
         mana: 0, maxMana: 80,
         attack: 35, defense: 15, speed: 7,
-        x: 550, y: 150,
+        x: 750, y: 150,
         facing: 'left',
         isPlayer: false,
         traits: ['Shadow', 'Beast'],
@@ -316,6 +316,7 @@ export function TFTStyleRaidSystem({
         ]
       }
     ];
+    console.log('Generated enemies:', enemies);
     setEnemyTeam(enemies);
   };
 
@@ -599,6 +600,33 @@ export function TFTStyleRaidSystem({
                 <div 
                   className="h-full bg-blue-500 rounded transition-all duration-200"
                   style={{ width: `${(char.mana / char.maxMana) * 100}%` }}
+                />
+              </div>
+            </motion.div>
+          ))}
+
+          {/* Enemy Characters */}
+          {enemyTeam.map(char => (
+            <motion.div
+              key={char.id}
+              className={`absolute w-12 h-12 rounded-full border-2 border-red-400 bg-red-600 flex items-center justify-center text-white font-bold text-xs ${
+                char.health <= 0 ? 'bg-gray-600 border-gray-500' : ''
+              } ${char.isAttacking ? 'animate-pulse' : ''}`}
+              style={{ left: char.x, top: char.y }}
+              animate={{ 
+                x: char.x, 
+                y: char.y,
+                scale: char.isAttacking ? 1.2 : 1.0 
+              }}
+              transition={{ duration: 0.1 }}
+            >
+              {char.name.substring(0, 2)}
+              
+              {/* Health bar */}
+              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gray-700 rounded">
+                <div 
+                  className="h-full bg-green-500 rounded transition-all duration-200"
+                  style={{ width: `${(char.health / char.maxHealth) * 100}%` }}
                 />
               </div>
             </motion.div>
