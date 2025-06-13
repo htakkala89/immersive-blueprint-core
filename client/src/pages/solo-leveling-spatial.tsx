@@ -284,6 +284,9 @@ export default function SoloLevelingSpatial() {
   // System 18: Episode Playback System state
   const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
   const [currentEpisode, setCurrentEpisode] = useState<string | null>(null);
+  const [activeEpisode, setActiveEpisode] = useState<any>(null);
+  const [episodeBeatIndex, setEpisodeBeatIndex] = useState(0);
+  const [episodeChoices, setEpisodeChoices] = useState<Record<string, any>>({});
 
   // Profile Management System state
   const [showProfileManager, setShowProfileManager] = useState(false);
@@ -1868,6 +1871,228 @@ export default function SoloLevelingSpatial() {
     } catch (error) {
       console.error('Error loading profile:', error);
     }
+  };
+
+  // Episode execution functions
+  const startEpisode = async (episodeId: string) => {
+    try {
+      const response = await fetch(`/api/episodes/${episodeId}`);
+      if (!response.ok) throw new Error('Failed to load episode');
+      
+      const { episode } = await response.json();
+      setActiveEpisode(episode);
+      setEpisodeBeatIndex(0);
+      setEpisodeChoices({});
+      
+      // Execute first beat
+      executeEpisodeBeat(episode, 0);
+    } catch (error) {
+      console.error('Error starting episode:', error);
+    }
+  };
+
+  const executeEpisodeBeat = (episode: any, beatIndex: number) => {
+    const beat = episode.beats[beatIndex];
+    if (!beat) return;
+
+    const action = beat.actions[0]; // Get first action from beat
+    if (!action) return;
+
+    // Execute action based on type - driving the spatial world
+    switch (action.type) {
+      case 'system_message':
+        // Show system message as dialogue
+        setCurrentDialogue(action.content);
+        setDialogueActive(true);
+        setShowLivingPortrait(true);
+        setChaHaeInExpression('neutral');
+        break;
+        
+      case 'narrative_text':
+        // Display narrative as Cha Hae-In speaking to the player
+        setCurrentDialogue(action.content);
+        setDialogueActive(true);
+        setShowLivingPortrait(true);
+        setChaHaeInExpression('welcoming');
+        break;
+      
+      case 'set_location':
+        // Actually change the spatial world location
+        setPlayerLocation(action.location);
+        if (action.time) {
+          setTimeOfDay(action.time);
+        }
+        // Add location transition dialogue
+        setCurrentDialogue(`You arrive at ${action.location.replace('_', ' ')}. The atmosphere changes as you take in your new surroundings.`);
+        setDialogueActive(true);
+        setShowLivingPortrait(true);
+        break;
+      
+      case 'show_shop':
+        // Open the actual shop interface in the spatial world
+        setShowUnifiedShop(true);
+        // Set custom shop data if provided
+        if (action.shop_data) {
+          // Could store shop data to customize the shop interface
+          setCurrentDialogue(`Welcome to ${action.shop_data.name}! Browse the available items and make your selections.`);
+        } else {
+          setCurrentDialogue("A shop is now available. Check what's for sale!");
+        }
+        setDialogueActive(true);
+        setShowLivingPortrait(true);
+        break;
+      
+      case 'dialogue_sequence':
+        // Display character dialogue through the spatial interface
+        if (action.dialogue && action.dialogue[0]) {
+          setCurrentDialogue(action.dialogue[0].text);
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression(action.dialogue[0].emotion || 'welcoming');
+        }
+        break;
+      
+      case 'choice_node':
+        // Present choices through thought prompts in spatial interface
+        setCurrentDialogue(action.prompt);
+        setDialogueActive(true);
+        setShowLivingPortrait(true);
+        
+        // Set episode choices as thought prompts
+        if (action.choices) {
+          setThoughtPrompts(action.choices.map((choice: any) => choice.text));
+        }
+        break;
+      
+      case 'add_quest':
+        // Add quest to the spatial world quest system
+        if (action.quest) {
+          const newQuest = {
+            id: action.quest.id,
+            title: action.quest.title,
+            description: action.quest.description,
+            objectives: action.quest.objectives || [],
+            targetLocation: 'current',
+            status: 'active' as const,
+            rewards: action.quest.rewards || {}
+          };
+          
+          setGameState(prev => ({
+            ...prev,
+            activeQuests: [...(prev.activeQuests || []), newQuest]
+          }));
+          
+          setCurrentDialogue(`New quest received: ${action.quest.title}`);
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+        }
+        break;
+      
+      case 'intimate_moment':
+        // Trigger intimate activity through spatial world system
+        if (action.moment) {
+          setCurrentDialogue(action.moment.description);
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('loving');
+          
+          // Set intimate choices as thought prompts
+          if (action.moment.choices) {
+            setThoughtPrompts(action.moment.choices.map((choice: any) => choice.text));
+          }
+        }
+        break;
+      
+      case 'relationship_progression':
+        // Apply relationship changes to spatial world game state
+        if (action.milestone?.rewards) {
+          const rewards = action.milestone.rewards;
+          setGameState(prev => ({
+            ...prev,
+            affection: Math.min(100, prev.affection + (rewards.affection || 0)),
+            intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + (rewards.intimacy || 0)),
+            gold: (prev.gold || 0) + (rewards.money || 0)
+          }));
+          
+          // Show achievement-style notification
+          setCurrentDialogue(`${action.milestone.name}: ${action.milestone.description}`);
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('happy');
+          
+          // Show affection heart effect for major milestones
+          setShowAffectionHeart(true);
+          if (affectionHeartTimeout.current) clearTimeout(affectionHeartTimeout.current);
+          affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
+        }
+        break;
+        
+      case 'episode_completion':
+        // Apply final episode rewards and show completion
+        if (action.rewards) {
+          setGameState(prev => ({
+            ...prev,
+            experience: (prev.experience || 0) + (action.rewards.experience || 0),
+            gold: (prev.gold || 0) + (action.rewards.money || 0),
+            affection: Math.min(100, prev.affection + (action.rewards.affection || 0)),
+            intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + (action.rewards.intimacy || 0)),
+            unlockedActivities: [...(prev.unlockedActivities || []), ...(action.rewards.unlocked_activities || [])]
+          }));
+          
+          setCurrentDialogue(`Episode complete! Your bond with Cha Hae-In has deepened significantly. New activities and possibilities await.`);
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          setChaHaeInExpression('loving');
+        }
+        break;
+    }
+  };
+
+  const continueEpisode = () => {
+    if (!activeEpisode) return;
+    
+    const nextBeatIndex = episodeBeatIndex + 1;
+    if (nextBeatIndex < activeEpisode.beats.length) {
+      setEpisodeBeatIndex(nextBeatIndex);
+      executeEpisodeBeat(activeEpisode, nextBeatIndex);
+    } else {
+      // Episode completed
+      setActiveEpisode(null);
+      setEpisodeBeatIndex(0);
+      setCurrentDialogue("Episode completed! Your relationship with Cha Hae-In has deepened.");
+    }
+  };
+
+  const makeEpisodeChoice = (choice: any) => {
+    if (!activeEpisode) return;
+    
+    const currentBeat = activeEpisode.beats[episodeBeatIndex];
+    setEpisodeChoices(prev => ({
+      ...prev,
+      [currentBeat.beat_id]: choice
+    }));
+    
+    // Apply choice effects
+    if (choice.effects) {
+      setGameState(prev => {
+        let newState = { ...prev };
+        
+        if (choice.effects.add_affection) {
+          newState.affection = Math.min(100, prev.affection + choice.effects.add_affection);
+        }
+        if (choice.effects.add_intimacy) {
+          newState.intimacyLevel = Math.min(10, (prev.intimacyLevel || 1) + choice.effects.add_intimacy);
+        }
+        if (choice.effects.remove_money) {
+          newState.gold = Math.max(0, (prev.gold || 0) - choice.effects.remove_money);
+        }
+        
+        return newState;
+      });
+    }
+    
+    // Continue to next beat
+    continueEpisode();
   };
 
   // Auto-save functionality
@@ -5019,6 +5244,124 @@ export default function SoloLevelingSpatial() {
             >
               ✕
             </motion.button>
+          </div>
+        </div>
+      )}
+
+      {/* Episode Selector Modal - Integrated with Spatial World */}
+      {showEpisodeSelector && (
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-xl flex items-center justify-center">
+          <div className="bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 rounded-2xl border border-purple-600/30 p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-6 h-6 text-purple-400" />
+                <h2 className="text-2xl font-bold text-white">Story Episodes</h2>
+              </div>
+              <Button
+                variant="ghost"
+                onClick={() => setShowEpisodeSelector(false)}
+                className="text-white hover:bg-purple-800/50"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="text-purple-200 mb-4">
+              Experience curated story moments that unfold in your spatial world. These episodes integrate seamlessly with your current location and relationship progress.
+            </div>
+
+            <div className="grid gap-4 max-h-[60vh] overflow-y-auto">
+              <div 
+                className="bg-white/10 backdrop-blur-md border border-purple-600/30 rounded-lg p-4 cursor-pointer hover:bg-purple-600/20 transition-all"
+                onClick={() => {
+                  setShowEpisodeSelector(false);
+                  startEpisode('EP_DEMO_COMPLETE');
+                }}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-white font-bold text-lg mb-2">A Perfect Evening Together</h3>
+                    <p className="text-purple-200 text-sm mb-3">
+                      Experience a complete Solo Leveling romance episode featuring shopping, dining, deep conversations, and intimate moments with Cha Hae-In.
+                    </p>
+                    <div className="flex items-center space-x-4 text-xs text-purple-300">
+                      <span>📍 Multiple Locations</span>
+                      <span>💝 Romance Focus</span>
+                      <span>⏱️ 15-20 minutes</span>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <Button 
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowEpisodeSelector(false);
+                        startEpisode('EP_DEMO_COMPLETE');
+                      }}
+                    >
+                      Begin Episode
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional episode slots for future episodes */}
+              <div className="bg-white/5 backdrop-blur-md border border-gray-600/30 rounded-lg p-4 opacity-60">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-gray-300 font-bold text-lg mb-2">More Episodes Coming Soon</h3>
+                    <p className="text-gray-400 text-sm mb-3">
+                      Additional story episodes are being crafted to expand your relationship journey with Cha Hae-In.
+                    </p>
+                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                      <span>📍 Various Locations</span>
+                      <span>💝 Deep Relationships</span>
+                      <span>⏱️ Coming Soon</span>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <Button 
+                      className="bg-gray-600 text-gray-300"
+                      disabled
+                    >
+                      Not Available
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Episode Progress Indicator */}
+            {activeEpisode && (
+              <div className="mt-6 p-4 bg-green-500/10 border border-green-600/30 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                  <div>
+                    <p className="text-green-200 font-medium">Episode Active: {activeEpisode.title}</p>
+                    <p className="text-green-300 text-sm">Beat {episodeBeatIndex + 1} of {activeEpisode.beats?.length || 0}</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex space-x-2">
+                  <Button 
+                    onClick={continueEpisode}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Continue Episode
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      setActiveEpisode(null);
+                      setEpisodeBeatIndex(0);
+                      setCurrentDialogue("Episode ended. You're back in the world.");
+                    }}
+                    variant="outline"
+                    className="border-green-600 text-green-200 hover:bg-green-600/20"
+                  >
+                    End Episode
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
