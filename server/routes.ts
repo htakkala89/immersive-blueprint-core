@@ -677,12 +677,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const content = fs.readFileSync(episodePath, 'utf-8');
       const episodeData = JSON.parse(content);
       
-      console.log(`Loading episode ${episodeId}:`, {
-        hasBeats: !!episodeData.beats,
-        beatsLength: episodeData.beats?.length || 0,
-        firstBeat: episodeData.beats?.[0]?.beat_id || 'none'
-      });
-      
       // Ensure beats array exists and has proper structure
       const episode = {
         ...episodeData,
