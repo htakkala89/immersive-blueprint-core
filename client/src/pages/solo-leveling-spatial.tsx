@@ -3794,6 +3794,32 @@ export default function SoloLevelingSpatial() {
             return;
           }
 
+          // Handle TFT-style raid activity specifically
+          if (activity.id === 'tft_style_raid') {
+            console.log('⚔️ TFT raid activity selected - launching strategic dungeon raid system');
+            // The TFT raid system is already integrated in DailyLifeHubComplete component
+            // Just need to consume the energy and provide rewards
+            setGameState(prev => ({
+              ...prev,
+              energy: Math.max(0, (prev.energy || 80) - activity.energyCost),
+              experience: (prev.experience || 0) + 500,
+              gold: (prev.gold || 0) + 300,
+              affection: Math.min(100, prev.affection + (activity.affectionReward || 0))
+            }));
+            return;
+          }
+
+          // Handle shadow army management activity
+          if (activity.id === 'shadow_army_management') {
+            console.log('👥 Shadow army management selected - opening character progression');
+            setShowPlayerProgression(true);
+            setGameState(prev => ({
+              ...prev,
+              energy: Math.max(0, (prev.energy || 80) - activity.energyCost)
+            }));
+            return;
+          }
+
           // Handle training activity specifically
           if (activity.id === 'training_session') {
             console.log('🥋 Training activity selected - transitioning to Hunter Association Training Center');
