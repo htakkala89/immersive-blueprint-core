@@ -1,5 +1,6 @@
-import { pgTable, text, serial, integer, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, jsonb, timestamp, varchar, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 import { z } from "zod";
 
 export const gameStates = pgTable("game_states", {
@@ -37,6 +38,59 @@ export const gameStates = pgTable("game_states", {
   activeQuests: jsonb("active_quests").notNull().default([]).$type<z.infer<typeof Quest>[]>(),
   completedQuests: jsonb("completed_quests").notNull().default([]).$type<z.infer<typeof Quest>[]>(),
 });
+
+// Player Profiles for Save/Load System
+export const playerProfiles = pgTable("player_profiles", {
+  id: serial("id").primaryKey(),
+  profileName: varchar("profile_name", { length: 100 }).notNull(),
+  gameStateId: integer("game_state_id").references(() => gameStates.id),
+  completedEpisodes: jsonb("completed_episodes").notNull().default([]).$type<string[]>(),
+  currentEpisode: text("current_episode"),
+  currentEpisodeBeat: integer("current_episode_beat").default(0),
+  episodeProgress: jsonb("episode_progress").notNull().default({}).$type<Record<string, any>>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  lastPlayed: timestamp("last_played").defaultNow().notNull(),
+  isActive: boolean("is_active").default(false).notNull(),
+});
+
+// Episode Progress Tracking
+export const episodeProgress = pgTable("episode_progress", {
+  id: serial("id").primaryKey(),
+  profileId: integer("profile_id").references(() => playerProfiles.id).notNull(),
+  episodeId: text("episode_id").notNull(),
+  currentBeat: integer("current_beat").default(0).notNull(),
+  isCompleted: boolean("is_completed").default(false).notNull(),
+  playerChoices: jsonb("player_choices").notNull().default({}).$type<Record<string, any>>(),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+  lastPlayedAt: timestamp("last_played_at").defaultNow().notNull(),
+});
+
+// Relations
+export const playerProfilesRelations = relations(playerProfiles, ({ one, many }) => ({
+  gameState: one(gameStates, {
+    fields: [playerProfiles.gameStateId],
+    references: [gameStates.id]
+  }),
+  episodeProgress: many(episodeProgress)
+}));
+
+export const episodeProgressRelations = relations(episodeProgress, ({ one }) => ({
+  profile: one(playerProfiles, {
+    fields: [episodeProgress.profileId],
+    references: [playerProfiles.id]
+  })
+}));
+
+// Schema types for TypeScript
+export type PlayerProfile = typeof playerProfiles.$inferSelect;
+export type InsertPlayerProfile = typeof playerProfiles.$inferInsert;
+export type EpisodeProgress = typeof episodeProgress.$inferSelect;
+export type InsertEpisodeProgress = typeof episodeProgress.$inferInsert;
+
+// Zod schemas for validation
+export const insertPlayerProfileSchema = createInsertSchema(playerProfiles).omit({ id: true, createdAt: true, lastPlayed: true });
+export const insertEpisodeProgressSchema = createInsertSchema(episodeProgress).omit({ id: true, startedAt: true, lastPlayedAt: true });
 
 export const Choice = z.object({
   id: z.string(),

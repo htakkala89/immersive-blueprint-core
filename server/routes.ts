@@ -681,6 +681,257 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile Management - Get all profiles
+  app.get('/api/profiles', async (req, res) => {
+    try {
+      const { db } = await import('./db');
+      const { playerProfiles, gameStates } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const profiles = await db
+        .select()
+        .from(playerProfiles)
+        .leftJoin(gameStates, eq(playerProfiles.gameStateId, gameStates.id))
+        .orderBy(playerProfiles.lastPlayed);
+      
+      res.json({ profiles: profiles.map(p => ({ ...p.player_profiles, gameState: p.game_states })) });
+    } catch (error) {
+      console.error('Error fetching profiles:', error);
+      res.status(500).json({ error: 'Failed to fetch profiles' });
+    }
+  });
+
+  // Profile Management - Create new profile
+  app.post('/api/profiles', async (req, res) => {
+    try {
+      const { profileName, gameState } = req.body;
+      const { db } = await import('./db');
+      const { playerProfiles, gameStates, insertPlayerProfileSchema } = await import('@shared/schema');
+      
+      if (!profileName?.trim()) {
+        return res.status(400).json({ error: 'Profile name is required' });
+      }
+      
+      // Create game state first
+      const [newGameState] = await db
+        .insert(gameStates)
+        .values({
+          sessionId: `profile_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          narration: gameState?.narration || "Welcome to your romantic adventure with Cha Hae-In!",
+          health: gameState?.health || 100,
+          maxHealth: gameState?.maxHealth || 100,
+          mana: gameState?.mana || 50,
+          maxMana: gameState?.maxMana || 50,
+          level: gameState?.level || 1,
+          experience: gameState?.experience || 0,
+          statPoints: gameState?.statPoints || 0,
+          skillPoints: gameState?.skillPoints || 0,
+          gold: gameState?.gold || 100,
+          affectionLevel: gameState?.affectionLevel || 0,
+          energy: gameState?.energy || 100,
+          maxEnergy: gameState?.maxEnergy || 100,
+          relationshipStatus: gameState?.relationshipStatus || "dating",
+          intimacyLevel: gameState?.intimacyLevel || 1,
+          sharedMemories: gameState?.sharedMemories || 0,
+          livingTogether: gameState?.livingTogether || 0,
+          daysTogether: gameState?.daysTogether || 1,
+          apartmentTier: gameState?.apartmentTier || 1,
+          currentScene: gameState?.currentScene || "entrance",
+          choices: gameState?.choices || [
+            { id: "greet", icon: "👋", text: "Greet Cha Hae-In warmly" },
+            { id: "compliment", icon: "💝", text: "Compliment her appearance" }
+          ],
+          sceneData: gameState?.sceneData || null,
+          storyPath: gameState?.storyPath || "entrance",
+          choiceHistory: gameState?.choiceHistory || [],
+          storyFlags: gameState?.storyFlags || {},
+          inventory: gameState?.inventory || [],
+          stats: gameState?.stats || {},
+          skills: gameState?.skills || [],
+          scheduledActivities: gameState?.scheduledActivities || [],
+          activeQuests: gameState?.activeQuests || [],
+          completedQuests: gameState?.completedQuests || []
+        })
+        .returning();
+      
+      // Create player profile
+      const [newProfile] = await db
+        .insert(playerProfiles)
+        .values({
+          profileName: profileName.trim(),
+          gameStateId: newGameState.id,
+          completedEpisodes: [],
+          currentEpisode: null,
+          currentEpisodeBeat: 0,
+          episodeProgress: {},
+          isActive: true
+        })
+        .returning();
+      
+      // Deactivate other profiles
+      await db
+        .update(playerProfiles)
+        .set({ isActive: false })
+        .where(eq(playerProfiles.id, newProfile.id));
+      
+      res.json({ profile: newProfile });
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      res.status(500).json({ error: 'Failed to create profile' });
+    }
+  });
+
+  // Profile Management - Load profile
+  app.get('/api/profiles/:profileId/load', async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      const { db } = await import('./db');
+      const { playerProfiles, gameStates } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const profileWithGameState = await db
+        .select()
+        .from(playerProfiles)
+        .leftJoin(gameStates, eq(playerProfiles.gameStateId, gameStates.id))
+        .where(eq(playerProfiles.id, parseInt(profileId)))
+        .limit(1);
+      
+      if (!profileWithGameState.length) {
+        return res.status(404).json({ error: 'Profile not found' });
+      }
+      
+      // Set as active profile
+      await db.update(playerProfiles).set({ isActive: false });
+      await db
+        .update(playerProfiles)
+        .set({ isActive: true, lastPlayed: new Date() })
+        .where(eq(playerProfiles.id, parseInt(profileId)));
+      
+      const profile = profileWithGameState[0];
+      res.json({ 
+        profile: profile.player_profiles, 
+        gameState: profile.game_states 
+      });
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      res.status(500).json({ error: 'Failed to load profile' });
+    }
+  });
+
+  // Profile Management - Save current progress to profile
+  app.post('/api/profiles/:profileId/save', async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      const { gameState } = req.body;
+      const { db } = await import('./db');
+      const { playerProfiles, gameStates } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const profile = await db
+        .select()
+        .from(playerProfiles)
+        .where(eq(playerProfiles.id, parseInt(profileId)))
+        .limit(1);
+      
+      if (!profile.length) {
+        return res.status(404).json({ error: 'Profile not found' });
+      }
+      
+      // Update game state
+      if (profile[0].gameStateId) {
+        await db
+          .update(gameStates)
+          .set({
+            narration: gameState.narration,
+            health: gameState.health,
+            maxHealth: gameState.maxHealth,
+            mana: gameState.mana,
+            maxMana: gameState.maxMana,
+            level: gameState.level,
+            experience: gameState.experience,
+            statPoints: gameState.statPoints,
+            skillPoints: gameState.skillPoints,
+            gold: gameState.gold,
+            affectionLevel: gameState.affectionLevel,
+            energy: gameState.energy,
+            maxEnergy: gameState.maxEnergy,
+            relationshipStatus: gameState.relationshipStatus,
+            intimacyLevel: gameState.intimacyLevel,
+            sharedMemories: gameState.sharedMemories,
+            livingTogether: gameState.livingTogether,
+            daysTogether: gameState.daysTogether,
+            apartmentTier: gameState.apartmentTier,
+            currentScene: gameState.currentScene,
+            choices: gameState.choices,
+            sceneData: gameState.sceneData,
+            storyPath: gameState.storyPath,
+            choiceHistory: gameState.choiceHistory,
+            storyFlags: gameState.storyFlags,
+            inventory: gameState.inventory,
+            stats: gameState.stats,
+            skills: gameState.skills,
+            scheduledActivities: gameState.scheduledActivities,
+            activeQuests: gameState.activeQuests,
+            completedQuests: gameState.completedQuests
+          })
+          .where(eq(gameStates.id, profile[0].gameStateId));
+      }
+      
+      // Update profile last played
+      await db
+        .update(playerProfiles)
+        .set({ lastPlayed: new Date() })
+        .where(eq(playerProfiles.id, parseInt(profileId)));
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      res.status(500).json({ error: 'Failed to save profile' });
+    }
+  });
+
+  // Profile Management - Delete profile
+  app.delete('/api/profiles/:profileId', async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      const { db } = await import('./db');
+      const { playerProfiles, gameStates, episodeProgress } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const profile = await db
+        .select()
+        .from(playerProfiles)
+        .where(eq(playerProfiles.id, parseInt(profileId)))
+        .limit(1);
+      
+      if (!profile.length) {
+        return res.status(404).json({ error: 'Profile not found' });
+      }
+      
+      // Delete episode progress
+      await db
+        .delete(episodeProgress)
+        .where(eq(episodeProgress.profileId, parseInt(profileId)));
+      
+      // Delete game state
+      if (profile[0].gameStateId) {
+        await db
+          .delete(gameStates)
+          .where(eq(gameStates.id, profile[0].gameStateId));
+      }
+      
+      // Delete profile
+      await db
+        .delete(playerProfiles)
+        .where(eq(playerProfiles.id, parseInt(profileId)));
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error deleting profile:', error);
+      res.status(500).json({ error: 'Failed to delete profile' });
+    }
+  });
+
   // Get or create game state
   app.get("/api/game-state/:sessionId", async (req, res) => {
     try {
