@@ -6,7 +6,7 @@ import {
   Heart, Crown, Zap, Coins, User, Sword, Star, 
   Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
   MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
-  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target, BookOpen, Wand2
+  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target, BookOpen, Wand2, Power
 } from 'lucide-react';
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
@@ -4113,7 +4113,13 @@ export default function SoloLevelingSpatial() {
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
-            { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } }
+            { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
+            { icon: Power, label: 'Exit Game', color: 'text-red-300', onClick: () => { 
+              if (confirm('Are you sure you want to exit the game?')) {
+                window.location.href = '/';
+              }
+              setMonarchAuraVisible(false);
+            }}
           ].map((item, index) => (
             <button
               key={item.label}
