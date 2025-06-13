@@ -600,9 +600,46 @@ export function LocationInteractiveNodes({
     });
   };
 
-  const nodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
+  // Anti-overlap system: Ensure minimum distance between nodes
+  const adjustNodePositions = (rawNodes: InteractiveNode[]): InteractiveNode[] => {
+    const MINIMUM_DISTANCE = 15; // 15% screen distance minimum
+    const adjustedNodes = [...rawNodes];
+    
+    for (let i = 0; i < adjustedNodes.length; i++) {
+      for (let j = i + 1; j < adjustedNodes.length; j++) {
+        const node1 = adjustedNodes[i];
+        const node2 = adjustedNodes[j];
+        
+        const dx = node1.position.x - node2.position.x;
+        const dy = node1.position.y - node2.position.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < MINIMUM_DISTANCE) {
+          // Move node2 away from node1
+          const angle = Math.atan2(dy, dx);
+          const newX = node1.position.x + Math.cos(angle) * MINIMUM_DISTANCE;
+          const newY = node1.position.y + Math.sin(angle) * MINIMUM_DISTANCE;
+          
+          // Keep within screen bounds
+          adjustedNodes[j] = {
+            ...node2,
+            position: {
+              x: Math.max(10, Math.min(90, newX)),
+              y: Math.max(10, Math.min(90, newY))
+            }
+          };
+        }
+      }
+    }
+    
+    return adjustedNodes;
+  };
+
+  const rawNodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
     arr.findIndex(n => n.id === node.id) === index
   ); // Remove duplicates
+  
+  const nodes = adjustNodePositions(rawNodes);
 
   // System 3: Spatial Relationship Calculator
   const calculateNodeProximity = (node1: InteractiveNode, node2: InteractiveNode): number => {
@@ -813,14 +850,14 @@ export function LocationInteractiveNodes({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            {/* Node Orb with 8px spacing system */}
+            {/* Node Orb with reduced size to prevent overlapping */}
             <motion.div
-              className="w-6 h-6 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
+              className="w-4 h-4 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
               style={{
-                minWidth: '24px',
-                minHeight: '24px',
-                padding: '4px', // 4px micro spacing for icon-to-border
-                margin: '8px' // 8px standard element spacing
+                minWidth: '16px',
+                minHeight: '16px',
+                padding: '2px', // Reduced padding
+                margin: '4px' // Reduced margin
               }}
               animate={available ? {
                 boxShadow: [
@@ -831,7 +868,7 @@ export function LocationInteractiveNodes({
               } : {}}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <IconComponent className="w-3 h-3 text-white" />
+              <IconComponent className="w-2 h-2 text-white" />
             </motion.div>
 
             {/* Node Label with 8px spacing from orb */}
