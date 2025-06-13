@@ -242,7 +242,7 @@ export default function SoloLevelingSpatial() {
   const [isLongPressing, setIsLongPressing] = useState(false);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const [isFocusMode, setIsFocusMode] = useState(false);
-  const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy' | 'romantic' | 'surprised' | 'contemplative' | 'amused' | 'concerned' | 'loving'>('focused');
+  const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy' | 'romantic' | 'surprised' | 'contemplative' | 'amused' | 'concerned'>('focused');
   const [showLivingPortrait, setShowLivingPortrait] = useState(false);
   const [emotionalImage, setEmotionalImage] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
@@ -284,9 +284,6 @@ export default function SoloLevelingSpatial() {
   // System 18: Episode Playback System state
   const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
   const [currentEpisode, setCurrentEpisode] = useState<string | null>(null);
-  const [activeEpisode, setActiveEpisode] = useState<any>(null);
-  const [episodeBeatIndex, setEpisodeBeatIndex] = useState(0);
-  const [episodeChoices, setEpisodeChoices] = useState<Record<string, any>>({});
 
   // Profile Management System state
   const [showProfileManager, setShowProfileManager] = useState(false);
@@ -498,9 +495,7 @@ export default function SoloLevelingSpatial() {
   const [showTalkOnBalcony, setShowTalkOnBalcony] = useState(false);
   const [showMyeongdongDinner, setShowMyeongdongDinner] = useState(false);
   const [showDevTools, setShowDevTools] = useState(false);
-  
-  // Episode system state
-  const [chaHaeInCurrentLocation, setChaHaeInCurrentLocation] = useState<string | null>(null);
+  const [pendingFurnitureItem, setPendingFurnitureItem] = useState<any>(null);
 
   
   // Debug logging for dungeon raid state
@@ -595,7 +590,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const currentChaHaeInLocation = chaHaeInCurrentLocation || getChaHaeInLocation();
+  const chaHaeInCurrentLocation = getChaHaeInLocation();
 
   // Helper function for receptionist dialogue - rotating pre-scripted hints
   const getReceptionistDialogue = (): string => {
@@ -1120,43 +1115,6 @@ export default function SoloLevelingSpatial() {
 
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
-    
-    // Check if this is an episode choice selection
-    if (activeEpisode && thoughtPrompts.length > 0) {
-      // Handle episode choice selection
-      const currentBeat = activeEpisode.beats[episodeBeatIndex];
-      if (currentBeat?.actions[0]?.type === 'choice_node') {
-        const action = currentBeat.actions[0];
-        const selectedChoice = action.choices?.find((choice: any) => choice.text === message);
-        
-        if (selectedChoice) {
-          // Process the selected choice
-          setCurrentDialogue(selectedChoice.result || `You chose: ${message}`);
-          setDialogueActive(true);
-          setShowLivingPortrait(true);
-          
-          // Apply choice effects if any
-          if (selectedChoice.effects) {
-            setGameState(prev => ({
-              ...prev,
-              affection: Math.min(100, prev.affection + (selectedChoice.effects.affection || 0)),
-              gold: (prev.gold || 0) + (selectedChoice.effects.money || 0),
-              intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + (selectedChoice.effects.intimacy || 0))
-            }));
-          }
-          
-          // Clear thought prompts and advance episode
-          setThoughtPrompts([]);
-          
-          // Auto-advance episode after a brief pause
-          setTimeout(() => {
-            continueEpisode();
-          }, 2000);
-          
-          return;
-        }
-      }
-    }
     
     // Add user message to conversation history
     setConversationHistory(prev => [...prev, {
@@ -1910,379 +1868,6 @@ export default function SoloLevelingSpatial() {
     } catch (error) {
       console.error('Error loading profile:', error);
     }
-  };
-
-  // Episode execution functions
-  const startEpisode = async (episodeId: string) => {
-    try {
-      const response = await fetch(`/api/episodes/${episodeId}`);
-      if (!response.ok) throw new Error('Failed to load episode');
-      
-      const { episode } = await response.json();
-      setActiveEpisode(episode);
-      setEpisodeBeatIndex(0);
-      setEpisodeChoices({});
-      
-      // Execute first beat
-      executeEpisodeBeat(episode, 0);
-    } catch (error) {
-      console.error('Error starting episode:', error);
-    }
-  };
-
-  const executeEpisodeBeat = (episode: any, beatIndex: number) => {
-    const beat = episode.beats[beatIndex];
-    if (!beat) return;
-
-    // Execute all actions in the beat sequentially
-    beat.actions.forEach((action: any, actionIndex: number) => {
-      setTimeout(() => {
-        executeStoryAction(action);
-      }, actionIndex * 1000); // 1 second delay between actions
-    });
-  };
-
-  const executeStoryAction = (action: any) => {
-    switch (action.type) {
-      case 'DELIVER_MESSAGE':
-        // System 15: Hunter's Communicator integration
-        setNotifications(prev => [...prev, {
-          id: `ep_${Date.now()}`,
-          type: 'message',
-          title: action.title || 'System Alert',
-          content: action.message || action.content,
-          timestamp: new Date()
-        }]);
-        break;
-
-      case 'ACTIVATE_QUEST':
-        // System 3: Quest Log integration
-        const newQuest = {
-          id: action.quest_id,
-          title: action.title,
-          description: action.description || '',
-          objectives: action.objectives || [],
-          targetLocation: action.target_location || 'current',
-          status: 'active' as const,
-          rewards: action.rewards || {}
-        };
-        
-        setGameState(prev => ({
-          ...prev,
-          activeQuests: [...(prev.activeQuests || []), newQuest]
-        }));
-        
-        // Show quest activation notification
-        setCurrentDialogue(`New quest: ${action.title}`);
-        setDialogueActive(true);
-        setShowLivingPortrait(true);
-        break;
-
-      case 'SET_CHA_MOOD':
-        // Update Cha Hae-In's expression and mood
-        const moodToExpression: Record<string, any> = {
-          'Anxious': 'concerned',
-          'Relieved': 'happy',
-          'Vulnerable': 'contemplative',
-          'Confident': 'welcoming',
-          'Romantic': 'romantic',
-          'Focused': 'focused'
-        };
-        setChaHaeInExpression(moodToExpression[action.mood] || 'neutral');
-        break;
-
-      case 'FORCE_CHA_LOCATION':
-        // Override Cha Hae-In's location presence
-        setChaHaeInCurrentLocation(action.location);
-        break;
-
-      case 'START_DIALOGUE_SCENE':
-        // Initiate structured dialogue
-        if (action.dialogue_file) {
-          setCurrentDialogue(action.opening_line || "Let's talk about what's happening.");
-          setDialogueActive(true);
-          setShowLivingPortrait(true);
-          
-          // Set dialogue choices as thought prompts
-          if (action.choices) {
-            setThoughtPrompts(action.choices.map((choice: any) => choice.text));
-          }
-        }
-        break;
-
-      case 'SET_QUEST_OBJECTIVE':
-        // Update existing quest objective
-        setGameState(prev => ({
-          ...prev,
-          activeQuests: prev.activeQuests?.map(quest => 
-            quest.id === action.quest_id 
-              ? { ...quest, objectives: [...quest.objectives, action.objective] }
-              : quest
-          ) || []
-        }));
-        break;
-
-      case 'LOAD_DUNGEON_ENVIRONMENT':
-        // Prepare dungeon raid environment
-        setGameState(prev => ({
-          ...prev,
-          currentRaidGate: action.gate_id,
-          raidContext: action.context || 'story_mission'
-        }));
-        break;
-
-      case 'START_BOSS_BATTLE':
-        // Trigger dungeon raid system
-        setShowDungeonRaid(true);
-        break;
-
-      case 'REMOVE_CHA_LOCATION_OVERRIDE':
-        // Return Cha Hae-In to normal scheduling
-        setChaHaeInCurrentLocation(null);
-        break;
-
-      case 'COMPLETE_QUEST':
-        // Move quest from active to completed
-        setGameState(prev => {
-          const questToComplete = prev.activeQuests?.find(q => q.id === action.quest_id);
-          if (questToComplete) {
-            return {
-              ...prev,
-              activeQuests: prev.activeQuests?.filter(q => q.id !== action.quest_id) || [],
-              completedQuests: [
-                ...(prev.completedQuests || []),
-                { ...questToComplete, status: 'completed' as const, completedAt: new Date().toISOString() }
-              ]
-            };
-          }
-          return prev;
-        });
-        break;
-
-      case 'REWARD_PLAYER':
-        // Apply episode rewards
-        if (action.gold) {
-          setGameState(prev => ({ ...prev, gold: (prev.gold || 0) + action.gold }));
-        }
-        if (action.experience) {
-          setGameState(prev => ({ ...prev, experience: (prev.experience || 0) + action.experience }));
-        }
-        if (action.items) {
-          action.items.forEach((item: any) => {
-            setGameState(prev => ({
-              ...prev,
-              inventory: [...prev.inventory, item]
-            }));
-          });
-        }
-        break;
-
-      case 'CREATE_MEMORY_STAR':
-        // System 6: Relationship Constellation integration
-        const newMemory = {
-          id: `mem_${Date.now()}`,
-          title: action.title,
-          description: action.description,
-          emotion: action.emotion || 'happy',
-          timestamp: new Date()
-        };
-        setMemoryStars(prev => [...prev, newMemory]);
-        break;
-
-      case 'UNLOCK_ACTIVITY':
-        // System 4: Daily Life Hub integration
-        setGameState(prev => ({
-          ...prev,
-          unlockedActivities: [...(prev.unlockedActivities || []), action.activity_id]
-        }));
-        break;
-
-      case 'SHOW_NOTIFICATION':
-        // Display episode notification
-        setNotifications(prev => [...prev, {
-          id: `ep_notif_${Date.now()}`,
-          type: 'message',
-          title: action.title || 'Episode Update',
-          content: action.message,
-          timestamp: new Date()
-        }]);
-        break;
-
-      case 'SET_LOCATION':
-        // Change player location
-        setPlayerLocation(action.location);
-        if (action.time_of_day) {
-          setTimeOfDay(action.time_of_day);
-        }
-        setCurrentDialogue(`You arrive at ${action.location.replace(/_/g, ' ')}. The scene is set for what comes next.`);
-        setDialogueActive(true);
-        setShowLivingPortrait(true);
-        break;
-
-      case 'CHOICE_NODE':
-        // Present choices through thought prompts
-        setCurrentDialogue(action.prompt);
-        setDialogueActive(true);
-        setShowLivingPortrait(true);
-        
-        if (action.choices) {
-          setThoughtPrompts(action.choices.map((choice: any) => choice.text));
-        }
-        break;
-
-      case 'DIALOGUE_SEQUENCE':
-        // Display character dialogue
-        if (action.dialogue && action.dialogue[0]) {
-          setCurrentDialogue(action.dialogue[0].text);
-          setDialogueActive(true);
-          setShowLivingPortrait(true);
-          setChaHaeInExpression(action.dialogue[0].emotion || 'welcoming');
-        }
-        break;
-
-      case 'INTIMATE_MOMENT':
-        // Trigger intimate activity
-        if (action.moment) {
-          setCurrentDialogue(action.moment.description);
-          setDialogueActive(true);
-          setShowLivingPortrait(true);
-          setChaHaeInExpression('loving');
-          
-          if (action.moment.choices) {
-            setThoughtPrompts(action.moment.choices.map((choice: any) => choice.text));
-          }
-        }
-        break;
-
-      case 'RELATIONSHIP_PROGRESSION':
-        // Apply relationship milestone
-        if (action.milestone?.rewards) {
-          const rewards = action.milestone.rewards;
-          setGameState(prev => ({
-            ...prev,
-            affection: Math.min(100, prev.affection + (rewards.affection || 0)),
-            intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + (rewards.intimacy || 0)),
-            gold: (prev.gold || 0) + (rewards.money || 0)
-          }));
-          
-          setCurrentDialogue(`${action.milestone.name}: ${action.milestone.description}`);
-          setDialogueActive(true);
-          setShowLivingPortrait(true);
-          setChaHaeInExpression('happy');
-          
-          setShowAffectionHeart(true);
-          if (affectionHeartTimeout.current) clearTimeout(affectionHeartTimeout.current);
-          affectionHeartTimeout.current = setTimeout(() => setShowAffectionHeart(false), 3000);
-        }
-        break;
-
-      default:
-        console.log('Unknown story action type:', action.type);
-    }
-  };
-
-  const continueEpisode = () => {
-    if (!activeEpisode) return;
-    
-    const nextBeatIndex = episodeBeatIndex + 1;
-    if (nextBeatIndex < activeEpisode.beats.length) {
-      setEpisodeBeatIndex(nextBeatIndex);
-      executeEpisodeBeat(activeEpisode, nextBeatIndex);
-    } else {
-      // Episode completed
-      setActiveEpisode(null);
-      setEpisodeBeatIndex(0);
-      setCurrentDialogue("Episode completed! Your relationship with Cha Hae-In has deepened.");
-    }
-  };
-
-  const checkCompletionCondition = (condition: string, ...args: any[]) => {
-    if (!activeEpisode) return false;
-
-    switch (condition) {
-      case 'player_accepts_episode':
-        return args[0] === activeEpisode.id;
-      
-      case 'dialogue_scene_complete':
-        return args[0] === 'completed';
-      
-      case 'player_enters_dungeon':
-        return args[0] && playerLocation.includes('dungeon');
-      
-      case 'boss_defeated':
-        return args[0] === 'defeated';
-      
-      case 'quest_accepted':
-        return gameState.activeQuests?.some(q => q.id === args[0]);
-      
-      case 'location_reached':
-        return playerLocation === args[0];
-      
-      case 'choice_selected':
-        return args[0] && args[1];
-      
-      default:
-        return false;
-    }
-  };
-
-  const handleEpisodeEvent = (eventType: string, ...args: any[]) => {
-    if (!activeEpisode) return;
-
-    const currentBeat = activeEpisode.beats[episodeBeatIndex];
-    if (!currentBeat) return;
-
-    const completionCondition = currentBeat.completion_condition;
-    if (completionCondition && checkCompletionCondition(completionCondition, ...args)) {
-      setTimeout(() => {
-        continueEpisode();
-      }, 1500);
-    }
-  };
-
-  const checkEpisodePrerequisites = (episodeId: string) => {
-    switch (episodeId) {
-      case 'EP_DEMO_COMPLETE':
-        return gameState.level >= 1 && gameState.affection >= 0;
-      
-      case 'EP01_Red_Echo':
-        return gameState.level >= 25 && gameState.affection >= 40;
-      
-      default:
-        return true;
-    }
-  };
-
-  const makeEpisodeChoice = (choice: any) => {
-    if (!activeEpisode) return;
-    
-    const currentBeat = activeEpisode.beats[episodeBeatIndex];
-    setEpisodeChoices(prev => ({
-      ...prev,
-      [currentBeat.beat_id]: choice
-    }));
-    
-    // Apply choice effects
-    if (choice.effects) {
-      setGameState(prev => {
-        let newState = { ...prev };
-        
-        if (choice.effects.add_affection) {
-          newState.affection = Math.min(100, prev.affection + choice.effects.add_affection);
-        }
-        if (choice.effects.add_intimacy) {
-          newState.intimacyLevel = Math.min(10, (prev.intimacyLevel || 1) + choice.effects.add_intimacy);
-        }
-        if (choice.effects.remove_money) {
-          newState.gold = Math.max(0, (prev.gold || 0) - choice.effects.remove_money);
-        }
-        
-        return newState;
-      });
-    }
-    
-    // Continue to next beat
-    continueEpisode();
   };
 
   // Auto-save functionality
@@ -4126,7 +3711,6 @@ export default function SoloLevelingSpatial() {
                                           chaHaeInExpression === 'amused' ? '#06b6d4' :
                                           chaHaeInExpression === 'contemplative' ? '#6366f1' :
                                           chaHaeInExpression === 'concerned' ? '#ef4444' :
-                                          chaHaeInExpression === 'loving' ? '#f472b6' :
                                           chaHaeInExpression === 'focused' ? '#8b5cf6' : '#64748b'
                         }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -4138,7 +3722,6 @@ export default function SoloLevelingSpatial() {
                            chaHaeInExpression === 'amused' ? '😄' :
                            chaHaeInExpression === 'contemplative' ? '🤔' :
                            chaHaeInExpression === 'concerned' ? '😟' :
-                           chaHaeInExpression === 'loving' ? '🥰' :
                            chaHaeInExpression === 'focused' ? '🎯' : '😐'}
                         </span>
                       </motion.div>
@@ -5436,124 +5019,6 @@ export default function SoloLevelingSpatial() {
             >
               ✕
             </motion.button>
-          </div>
-        </div>
-      )}
-
-      {/* Episode Selector Modal - Integrated with Spatial World */}
-      {showEpisodeSelector && (
-        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-xl flex items-center justify-center">
-          <div className="bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 rounded-2xl border border-purple-600/30 p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-3">
-                <BookOpen className="w-6 h-6 text-purple-400" />
-                <h2 className="text-2xl font-bold text-white">Story Episodes</h2>
-              </div>
-              <Button
-                variant="ghost"
-                onClick={() => setShowEpisodeSelector(false)}
-                className="text-white hover:bg-purple-800/50"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-
-            <div className="text-purple-200 mb-4">
-              Experience curated story moments that unfold in your spatial world. These episodes integrate seamlessly with your current location and relationship progress.
-            </div>
-
-            <div className="grid gap-4 max-h-[60vh] overflow-y-auto">
-              <div 
-                className="bg-white/10 backdrop-blur-md border border-purple-600/30 rounded-lg p-4 cursor-pointer hover:bg-purple-600/20 transition-all"
-                onClick={() => {
-                  setShowEpisodeSelector(false);
-                  startEpisode('EP_DEMO_COMPLETE');
-                }}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-white font-bold text-lg mb-2">A Perfect Evening Together</h3>
-                    <p className="text-purple-200 text-sm mb-3">
-                      Experience a complete Solo Leveling romance episode featuring shopping, dining, deep conversations, and intimate moments with Cha Hae-In.
-                    </p>
-                    <div className="flex items-center space-x-4 text-xs text-purple-300">
-                      <span>📍 Multiple Locations</span>
-                      <span>💝 Romance Focus</span>
-                      <span>⏱️ 15-20 minutes</span>
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <Button 
-                      className="bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowEpisodeSelector(false);
-                        startEpisode('EP_DEMO_COMPLETE');
-                      }}
-                    >
-                      Begin Episode
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Additional episode slots for future episodes */}
-              <div className="bg-white/5 backdrop-blur-md border border-gray-600/30 rounded-lg p-4 opacity-60">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-gray-300 font-bold text-lg mb-2">More Episodes Coming Soon</h3>
-                    <p className="text-gray-400 text-sm mb-3">
-                      Additional story episodes are being crafted to expand your relationship journey with Cha Hae-In.
-                    </p>
-                    <div className="flex items-center space-x-4 text-xs text-gray-500">
-                      <span>📍 Various Locations</span>
-                      <span>💝 Deep Relationships</span>
-                      <span>⏱️ Coming Soon</span>
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <Button 
-                      className="bg-gray-600 text-gray-300"
-                      disabled
-                    >
-                      Not Available
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Episode Progress Indicator */}
-            {activeEpisode && (
-              <div className="mt-6 p-4 bg-green-500/10 border border-green-600/30 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                  <div>
-                    <p className="text-green-200 font-medium">Episode Active: {activeEpisode.title}</p>
-                    <p className="text-green-300 text-sm">Beat {episodeBeatIndex + 1} of {activeEpisode.beats?.length || 0}</p>
-                  </div>
-                </div>
-                <div className="mt-3 flex space-x-2">
-                  <Button 
-                    onClick={continueEpisode}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    Continue Episode
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      setActiveEpisode(null);
-                      setEpisodeBeatIndex(0);
-                      setCurrentDialogue("Episode ended. You're back in the world.");
-                    }}
-                    variant="outline"
-                    className="border-green-600 text-green-200 hover:bg-green-600/20"
-                  >
-                    End Episode
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
