@@ -1886,19 +1886,65 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
         dynamicPrompts = generateFallbackPrompts(response, message, context).slice(0, 4);
       }
       
+      // Calculate final affection value - use affectionLevel if available, fallback to affection
+      const currentAffection = gameState.affectionLevel || gameState.affection || 25;
+      const newAffectionLevel = Math.min(100, currentAffection + 1 + affectionBonus);
+      
+      // Create final updated game state
+      const finalGameState = updatedGameState.scheduledActivities ? {
+        ...updatedGameState,
+        affection: newAffectionLevel,
+        affectionLevel: newAffectionLevel
+      } : {
+        ...gameState,
+        affection: newAffectionLevel,
+        affectionLevel: newAffectionLevel
+      };
+
+      // Persist affection gain to database if profileId is available
+      if (gameState.profileId || context?.profileId) {
+        try {
+          const { db } = await import('./db');
+          const { gameStates } = await import('@shared/schema');
+          const { eq } = await import('drizzle-orm');
+          
+          const profileId = gameState.profileId || context?.profileId;
+          
+          // Get the current game state from database to find the gameStateId
+          const { playerProfiles } = await import('@shared/schema');
+          const profileData = await db
+            .select()
+            .from(playerProfiles)
+            .where(eq(playerProfiles.id, profileId))
+            .limit(1);
+
+          if (profileData.length > 0 && profileData[0].gameStateId) {
+            // Update the game state in database with new affection level
+            await db
+              .update(gameStates)
+              .set({ 
+                affectionLevel: newAffectionLevel,
+                // Also update scheduled activities if they changed
+                ...(finalGameState.scheduledActivities && {
+                  scheduledActivities: finalGameState.scheduledActivities
+                })
+              })
+              .where(eq(gameStates.id, profileData[0].gameStateId));
+              
+            console.log(`💕 Affection updated in database: ${gameState.affection || 25} → ${newAffectionLevel} (+${1 + affectionBonus})`);
+          }
+        } catch (error) {
+          console.error('Failed to persist affection gain to database:', error);
+        }
+      }
+
       res.json({ 
         response, 
         audioUrl,
         expression: expressionUpdate,
         thoughtPrompts: dynamicPrompts,
         showAffectionHeart,
-        gameState: updatedGameState.scheduledActivities ? {
-          ...updatedGameState,
-          affection: Math.min(100, (gameState.affection || 25) + 1 + affectionBonus)
-        } : {
-          ...gameState,
-          affection: Math.min(100, (gameState.affection || 25) + 1 + affectionBonus)
-        }
+        gameState: finalGameState
       });
     } catch (error) {
       console.error("Chat error:", error);
