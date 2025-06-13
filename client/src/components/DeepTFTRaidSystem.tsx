@@ -470,23 +470,76 @@ export function DeepTFTRaidSystem({
     return enemies;
   };
 
+  // Combat simulation with real-time health updates
+  useEffect(() => {
+    let combatInterval: NodeJS.Timeout;
+    let timerInterval: NodeJS.Timeout;
+    
+    if (gamePhase === 'combat' && isAutoCombat && combatUnits.length > 0) {
+      // Combat timer countdown
+      timerInterval = setInterval(() => {
+        setCombatTimer(prev => {
+          if (prev <= 1) {
+            // Combat finished - determine winner
+            const playerAlive = combatUnits.filter(u => u.isPlayer && u.health > 0).length;
+            const enemyAlive = combatUnits.filter(u => !u.isPlayer && u.health > 0).length;
+            
+            if (playerAlive > 0 && enemyAlive === 0) {
+              handleVictory();
+            } else if (enemyAlive > 0 && playerAlive === 0) {
+              handleDefeat();
+            } else {
+              // Tie or timeout - player wins if more units alive
+              if (playerAlive >= enemyAlive) {
+                handleVictory();
+              } else {
+                handleDefeat();
+              }
+            }
+            setIsAutoCombat(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      // Combat damage simulation
+      combatInterval = setInterval(() => {
+        setCombatUnits(prevUnits => {
+          return prevUnits.map(unit => {
+            if (unit.health <= 0) return unit;
+            
+            const isPlayerUnit = unit.isPlayer;
+            const enemies = prevUnits.filter(u => u.isPlayer !== isPlayerUnit && u.health > 0);
+            
+            if (enemies.length > 0) {
+              // Calculate damage based on enemy attacks
+              const nearestEnemy = enemies[0]; // Simplified targeting
+              const baseDamage = 25 + (nearestEnemy.attack * 0.3);
+              const randomVariance = Math.random() * 20 - 10; // ±10 variance
+              const totalDamage = Math.max(5, baseDamage + randomVariance);
+              
+              return {
+                ...unit,
+                health: Math.max(0, unit.health - totalDamage)
+              };
+            }
+            
+            return unit;
+          });
+        });
+      }, 1200); // Damage every 1.2 seconds
+    }
+    
+    return () => {
+      clearInterval(combatInterval);
+      clearInterval(timerInterval);
+    };
+  }, [gamePhase, isAutoCombat, combatUnits]);
+
   const runCombatSimulation = () => {
-    // Simplified combat simulation
-    setTimeout(() => {
-      const playerUnits = board.filter(c => c !== null).length;
-      const enemyUnits = enemyBoard.filter(c => c !== null).length;
-      
-      // Simple win condition based on team strength and traits
-      const playerStrength = playerUnits + activeTraits.reduce((sum, trait) => 
-        sum + (trait.activeLevel * 2), 0);
-      const enemyStrength = enemyUnits + round;
-      
-      if (playerStrength > enemyStrength) {
-        handleVictory();
-      } else {
-        handleDefeat();
-      }
-    }, 3000);
+    // Combat is now handled by useEffect above
+    console.log('Combat simulation started with', combatUnits.length, 'units');
   };
 
   const handleVictory = () => {
