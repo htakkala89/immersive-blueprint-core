@@ -1,6 +1,6 @@
 # Complete Activity List - Solo Leveling RPG
 
-## ✅ All 22 Activities Implemented
+## ✅ Core 22 Activities - Final Clean List
 
 ### Casual Outings (7 activities)
 1. **Grab a Coffee** - `grab_coffee` ✓
@@ -11,14 +11,13 @@
 6. **Dinner at Myeongdong** - `dinner_myeongdong` ✓
 7. **Visit N Seoul Tower** - `n_seoul_tower` ✓
 
-### Training & Hunter Life (5 activities)
+### Training & Hunter Life (4 activities)
 1. **Sparring Session** - `sparring_session` ✓
 2. **Review Raid Footage** - `review_raid_footage` ✓
 3. **Clear a Low-Rank Gate** - `clear_low_rank_gate` ✓
 4. **Co-op Skill Training** - `coop_skill_training` ✓
-5. **Strategic Dungeon Raid** - `tft_style_raid` ✓ (Enhanced TFT system)
 
-### Home Life (5 activities)
+### Home Life (6 activities)
 1. **Watch a Movie on the Couch** - `movie_on_couch` ✓
 2. **Order Takeout** - `order_takeout` ✓
 3. **Cook Dinner Together** - `cook_dinner_together` ✓

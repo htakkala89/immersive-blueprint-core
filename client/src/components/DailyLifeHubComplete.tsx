@@ -176,29 +176,7 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       available: true,
       outcomes: ['Mutual Respect', 'Small Affection Gain']
     },
-    {
-      id: 'tft_style_raid',
-      title: 'Strategic Dungeon Raid',
-      description: 'Command your team in an advanced tactical raid with auto-battler mechanics and synergy bonuses.',
-      icon: <Users className="w-5 h-5" />,
-      energyCost: 40,
-      category: 'training',
-      affectionReward: 3,
-      available: true, // Always available for testing
-      lockReason: undefined,
-      outcomes: ['High Gold & XP rewards', 'Team synergy bonuses', 'Character collection progress']
-    },
-    {
-      id: 'shadow_army_management',
-      title: 'Shadow Army Training',
-      description: 'Organize and upgrade your shadow soldiers with TFT-style progression mechanics.',
-      icon: <Crown className="w-5 h-5" />,
-      energyCost: 30,
-      category: 'training',
-      available: stats.level >= 10,
-      lockReason: stats.level < 10 ? 'Requires: Shadow Extraction ability unlocked' : undefined,
-      outcomes: ['Shadow soldier upgrades', 'Army composition optimization']
-    },
+
     {
       id: 'review_raid_footage',
       title: 'Review Raid Footage',
@@ -375,18 +353,7 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       outcomes: ['Ultimate Relationship Milestone']
     },
 
-    // Special Activities
-    {
-      id: 'give_gift',
-      title: 'Give a Special Gift',
-      description: 'Present one of your carefully chosen gifts to Cha Hae-In.',
-      icon: <Gift className="w-5 h-5" />,
-      energyCost: 5,
-      category: 'special',
-      affectionReward: 3,
-      available: true,
-      outcomes: ['Affection+++', 'Gratitude+']
-    }
+
   ];
 
   return activities;
