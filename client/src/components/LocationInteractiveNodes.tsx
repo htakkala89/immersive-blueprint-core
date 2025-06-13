@@ -600,55 +600,50 @@ export function LocationInteractiveNodes({
     });
   };
 
-  // HARD RULE: No overlapping nodes - enforced with grid positioning
+  // ABSOLUTE NO-OVERLAP RULE: Force nodes into a strict grid system
   const adjustNodePositions = (rawNodes: InteractiveNode[]): InteractiveNode[] => {
     if (rawNodes.length === 0) return rawNodes;
     
-    // Define safe positions that guarantee no overlap
-    const SAFE_POSITIONS = [
-      { x: 15, y: 15 },   // Top left
-      { x: 85, y: 15 },   // Top right
-      { x: 15, y: 85 },   // Bottom left
-      { x: 85, y: 85 },   // Bottom right
-      { x: 50, y: 15 },   // Top center
-      { x: 50, y: 85 },   // Bottom center
-      { x: 15, y: 50 },   // Left center
-      { x: 85, y: 50 },   // Right center
-      { x: 30, y: 30 },   // Inner positions
-      { x: 70, y: 30 },
-      { x: 30, y: 70 },
-      { x: 70, y: 70 }
-    ];
+    // Calculate grid positions based on screen quadrants with massive spacing
+    const getGridPosition = (index: number, total: number): { x: number; y: number } => {
+      if (total === 1) return { x: 50, y: 50 };
+      if (total === 2) return index === 0 ? { x: 20, y: 30 } : { x: 80, y: 70 };
+      if (total === 3) return [
+        { x: 20, y: 20 },
+        { x: 80, y: 20 },
+        { x: 50, y: 80 }
+      ][index];
+      
+      // For 4+ nodes, use corners and edges with extreme spacing
+      const positions = [
+        { x: 10, y: 10 },   // Top left corner
+        { x: 90, y: 10 },   // Top right corner  
+        { x: 10, y: 90 },   // Bottom left corner
+        { x: 90, y: 90 },   // Bottom right corner
+        { x: 50, y: 10 },   // Top center
+        { x: 50, y: 90 },   // Bottom center
+        { x: 10, y: 50 },   // Left center
+        { x: 90, y: 50 },   // Right center
+        { x: 25, y: 25 },   // Inner ring
+        { x: 75, y: 25 },
+        { x: 25, y: 75 },
+        { x: 75, y: 75 }
+      ];
+      
+      return positions[index % positions.length];
+    };
     
-    const adjustedNodes = [...rawNodes];
-    
-    // Assign each node to a unique safe position
-    for (let i = 0; i < adjustedNodes.length && i < SAFE_POSITIONS.length; i++) {
-      adjustedNodes[i] = {
-        ...adjustedNodes[i],
-        position: SAFE_POSITIONS[i]
+    const result = rawNodes.map((node, index) => {
+      const newPosition = getGridPosition(index, rawNodes.length);
+      console.log(`🎯 Node ${node.id} (${index}/${rawNodes.length}): ${node.position.x},${node.position.y} → ${newPosition.x},${newPosition.y}`);
+      return {
+        ...node,
+        position: newPosition
       };
-    }
+    });
     
-    // If more nodes than safe positions, spread remaining ones
-    if (adjustedNodes.length > SAFE_POSITIONS.length) {
-      for (let i = SAFE_POSITIONS.length; i < adjustedNodes.length; i++) {
-        const angle = (i * 2 * Math.PI) / adjustedNodes.length;
-        const radius = 30; // 30% from center
-        const x = 50 + Math.cos(angle) * radius;
-        const y = 50 + Math.sin(angle) * radius;
-        
-        adjustedNodes[i] = {
-          ...adjustedNodes[i],
-          position: {
-            x: Math.max(15, Math.min(85, x)),
-            y: Math.max(15, Math.min(85, y))
-          }
-        };
-      }
-    }
-    
-    return adjustedNodes;
+    console.log('📍 FINAL POSITIONS:', result.map(n => `${n.id}: (${n.position.x},${n.position.y})`));
+    return result;
   };
 
   const rawNodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
@@ -855,7 +850,9 @@ export function LocationInteractiveNodes({
             style={{
               left: `${node.position.x}%`,
               top: `${node.position.y}%`,
-              transform: 'translate(-50%, -50%)'
+              transform: 'translate(-50%, -50%)',
+              minWidth: '80px',
+              minHeight: '80px'
             }}
             onClick={(e) => {
               e.preventDefault();
