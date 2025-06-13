@@ -672,43 +672,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // System 18: Episode Management - Get Specific Episode
-  app.get('/api/episodes/:episodeId', async (req, res) => {
-    try {
-      const { episodeId } = req.params;
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      const episodePath = path.join(process.cwd(), 'server/episodes', `${episodeId}.json`);
-      
-      if (!fs.existsSync(episodePath)) {
-        return res.status(404).json({ error: 'Episode not found' });
-      }
-      
-      const content = fs.readFileSync(episodePath, 'utf-8');
-      const episodeData = JSON.parse(content);
-      
-      // Transform commands to beats format for frontend compatibility
-      const episode = {
-        ...episodeData,
-        beats: episodeData.commands ? episodeData.commands.map((command: any, index: number) => ({
-          beat_id: `${index + 1}.0`,
-          title: command.type || `Beat ${index + 1}`,
-          description: command.content || command.narrative_text || `Story beat ${index + 1}`,
-          trigger: { type: 'previous_beat_complete' },
-          actions: [command],
-          completion_condition: { type: 'player_accept' }
-        })) : [],
-        status: 'available',
-        currentBeatIndex: 0
-      };
-      
-      res.json({ episode });
-    } catch (error) {
-      console.error('Error fetching episode:', error);
-      res.status(500).json({ error: 'Failed to fetch episode' });
-    }
-  });
+
 
   // Profile Management - Get all profiles
   app.get('/api/profiles', async (req, res) => {
@@ -1280,16 +1244,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Episode System - Get specific episode details
-  app.get("/api/episodes/:episodeId", (req, res) => {
+  app.get("/api/episodes/:episodeId", async (req, res) => {
     try {
       const { episodeId } = req.params;
-      const episode = episodeEngine.getEpisode(episodeId);
+      const episode = await episodeEngine.getEpisode(episodeId);
       
       if (!episode) {
         return res.status(404).json({ error: "Episode not found" });
       }
       
-      res.json({ episode });
+      // Add status and progress tracking for frontend compatibility
+      const episodeWithStatus = {
+        ...episode,
+        status: 'available',
+        currentBeatIndex: 0
+      };
+      
+      res.json({ episode: episodeWithStatus });
     } catch (error) {
       console.error("Failed to get episode:", error);
       res.status(500).json({ error: "Failed to retrieve episode" });
