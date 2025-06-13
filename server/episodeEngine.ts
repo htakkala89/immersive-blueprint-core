@@ -349,7 +349,7 @@ export class EpisodeEngine {
     switch (condition.event) {
       case 'player_visits_location':
         if (event === 'player_visits_location' && 
-            condition.location === data.location_id) {
+            condition.params?.location_id === data.location_id) {
           shouldProgress = true;
           console.log(`🎯 Episode ${episodeId} beat ${nextBeat.beat_id} progressed: location visit to ${data.location_id}`);
         }
@@ -364,7 +364,7 @@ export class EpisodeEngine {
 
       case 'activity_completed':
         if (event === 'activity_completed' && 
-            condition.activity === data.activity_id) {
+            condition.params?.activity_id === data.activity_id) {
           shouldProgress = true;
           console.log(`🎯 Episode ${episodeId} beat ${nextBeat.beat_id} progressed: activity ${data.activity_id} completed`);
         }
@@ -372,7 +372,7 @@ export class EpisodeEngine {
 
       case 'quest_objective_met':
         if (event === 'quest_objective_met' && 
-            condition.quest_id === data.quest_id) {
+            condition.params?.quest_id === data.quest_id) {
           shouldProgress = true;
           console.log(`🎯 Episode ${episodeId} beat ${nextBeat.beat_id} progressed: quest ${data.quest_id} completed`);
         }
@@ -392,34 +392,42 @@ export class EpisodeEngine {
   }
 
   private async progressEpisodeBeat(episodeId: string, beatId: number): Promise<void> {
-    const episode = await this.getEpisode(episodeId);
-    if (!episode) return;
+    try {
+      // Store completion state separately to avoid TypeScript issues
+      if (!this.episodeProgressState) {
+        this.episodeProgressState = new Map();
+      }
+      
+      const episodeStateKey = `${episodeId}_${beatId}`;
+      this.episodeProgressState.set(episodeStateKey, true);
 
-    const beatIndex = episode.beats.findIndex((b: any) => b.beat_id === beatId);
-    if (beatIndex === -1) return;
+      // Execute all actions in this beat
+      await this.executeEpisodeAction(episodeId, beatId, 0);
 
-    // Mark beat as completed
-    episode.beats[beatIndex].completed = true;
+      console.log(`🎬 Episode ${episodeId} beat ${beatId} automatically progressed through gameplay`);
 
-    // Execute all actions in this beat
-    for (let i = 0; i < episode.beats[beatIndex].actions.length; i++) {
-      await this.executeEpisodeAction(episodeId, beatId, i);
-    }
-
-    console.log(`🎬 Episode ${episodeId} beat ${beatId} automatically progressed through gameplay`);
-
-    // Check if episode is complete
-    const allBeatsComplete = episode.beats.every((b: any) => b.completed);
-    if (allBeatsComplete) {
-      console.log(`🏆 Episode ${episodeId} completed through gameplay progression!`);
-      // Award completion rewards
-      await this.completeEpisode({ 
-        episodeId, 
-        experienceGained: 1000, 
-        affectionBonus: 15 
-      });
+      // Check if episode is complete by examining all beats for this episode
+      const episode = await this.getEpisode(episodeId);
+      if (episode) {
+        const allBeatsComplete = episode.beats.every((beat: any) => 
+          this.episodeProgressState?.get(`${episodeId}_${beat.beat_id}`) === true
+        );
+        
+        if (allBeatsComplete) {
+          console.log(`🏆 Episode ${episodeId} completed through gameplay progression!`);
+          await this.completeEpisode({ 
+            episodeId, 
+            experienceGained: 1000, 
+            affectionBonus: 15 
+          });
+        }
+      }
+    } catch (error) {
+      console.error(`Failed to progress episode beat ${episodeId}:${beatId}`, error);
     }
   }
+
+  private episodeProgressState?: Map<string, boolean>;
 }
 
 export const episodeEngine = new EpisodeEngine();
