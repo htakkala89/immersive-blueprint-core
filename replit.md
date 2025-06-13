@@ -109,6 +109,7 @@ This is a comprehensive romantic RPG based on the Solo Leveling manhwa, featurin
 
 ## Changelog
 
+- June 13, 2025. UI Cleanup - Removed redundant "Start Episode 1" menu item from Monarch's Aura interface. Streamlined episode access through the proper Episodes selector system, reducing menu clutter and user confusion.
 - June 13, 2025. Enhanced Romance Constellation System - Redesigned the relationship visualization with improved 3D constellation interface featuring emotional weight-based star sizing, category-based memory organization (first moments, growing closer, intimate bonds, special occasions), interactive memory replay system, connection lines showing relationship progression, and immersive ambient effects. Includes music integration and enhanced storytelling elements.
 - June 13, 2025. Hybrid Multi-Episode System Implementation - Completed advanced episode orchestration allowing multiple active episodes with intelligent priority weighting (Primary 60%, Secondary 30%, Background 10%). Features contextual blending based on location and time, dynamic priority adjustment, backwards compatibility with single-episode focus, and seamless AI chat integration for emergent storytelling.
 - June 13, 2025. Episode Focus System Chat Integration - Fixed narrative confusion by ensuring only the focused episode influences AI responses
