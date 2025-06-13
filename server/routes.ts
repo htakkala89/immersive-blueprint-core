@@ -1365,7 +1365,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Episode System - Get focused episode
+  // Episode System - Set multiple active episodes with priority weighting
+  app.post("/api/episodes/active/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      const { episodes } = req.body;
+      
+      if (!Array.isArray(episodes)) {
+        return res.status(400).json({ error: "Episodes must be an array" });
+      }
+      
+      await episodeEngine.setActiveEpisodes(Number(profileId), episodes);
+      
+      res.json({
+        success: true,
+        activeEpisodes: episodes,
+        message: `Set ${episodes.length} active episodes with priority weighting`
+      });
+    } catch (error) {
+      console.error("Failed to set active episodes:", error);
+      res.status(500).json({ error: "Failed to set active episodes" });
+    }
+  });
+
+  // Episode System - Get active episodes with priorities
+  app.get("/api/episodes/active/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      
+      const activeEpisodes = await episodeEngine.getActiveEpisodes(Number(profileId));
+      
+      res.json({
+        activeEpisodes,
+        count: activeEpisodes.length,
+        message: `Found ${activeEpisodes.length} active episodes`
+      });
+    } catch (error) {
+      console.error("Failed to get active episodes:", error);
+      res.status(500).json({ error: "Failed to get active episodes" });
+    }
+  });
+
+  // Episode System - Get focused episode (backwards compatibility)
   app.get("/api/episodes/focus/:profileId", async (req, res) => {
     try {
       const { profileId } = req.params;
@@ -1578,7 +1619,7 @@ ${episodeGuidance ? `STORY GUIDANCE: After a few exchanges, naturally suggest: "
 
 IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses. Keep your response conversational and authentic to Cha Hae-In's character - professional but warm, strong but caring. Vary your responses based on the conversation history.
 
-${focusedEpisode && episodeGuidance ? 'After responding to the current message naturally, guide the conversation toward the story progression mentioned above.' : ''}
+${episodeGuidance ? 'After responding to the current message naturally, guide the conversation toward the story progression mentioned above.' : ''}
 
 Respond naturally as if you're texting Jin-Woo back:`;
 
