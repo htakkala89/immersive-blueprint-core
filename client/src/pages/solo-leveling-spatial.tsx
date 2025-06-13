@@ -1598,6 +1598,30 @@ export default function SoloLevelingSpatial() {
     
     // Handle intimate spatial interactions at romantic locations
     if (playerLocation === 'chahaein_apartment') {
+      if (interactionPoint.id === 'bed') {
+        // Bed in Cha Hae-In's apartment - gateway to intimate activities
+        const currentAffection = gameState.affection || 0;
+        const currentIntimacy = gameState.intimacyLevel || 0;
+        let selectedActivity = 'cuddling'; // Safe default
+        
+        // Progressive intimacy based on relationship progress
+        if (currentAffection >= 80 && currentIntimacy >= 70) {
+          selectedActivity = 'make_love';
+        } else if (currentAffection >= 60 && currentIntimacy >= 50) {
+          selectedActivity = 'passionate_night';
+        } else if (currentAffection >= 40 && currentIntimacy >= 30) {
+          selectedActivity = 'bedroom_intimacy';
+        } else if (currentAffection >= 20 && currentIntimacy >= 10) {
+          selectedActivity = 'intimate_massage';
+        } else {
+          selectedActivity = 'cuddling';
+        }
+        
+        setActiveActivity(selectedActivity);
+        setShowIntimateModal(true);
+        console.log(`Cha Hae-In's bed - Opening ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
+        return;
+      }
       if (interactionPoint.id === 'bedroom_door') {
         setActiveActivity('bedroom_intimacy');
         setShowIntimateModal(true);
