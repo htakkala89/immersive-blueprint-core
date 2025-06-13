@@ -600,35 +600,51 @@ export function LocationInteractiveNodes({
     });
   };
 
-  // Anti-overlap system: Ensure minimum distance between nodes for mobile touch
+  // HARD RULE: No overlapping nodes - enforced with grid positioning
   const adjustNodePositions = (rawNodes: InteractiveNode[]): InteractiveNode[] => {
-    const MINIMUM_DISTANCE = 25; // 25% screen distance minimum for mobile touch
+    if (rawNodes.length === 0) return rawNodes;
+    
+    // Define safe positions that guarantee no overlap
+    const SAFE_POSITIONS = [
+      { x: 15, y: 15 },   // Top left
+      { x: 85, y: 15 },   // Top right
+      { x: 15, y: 85 },   // Bottom left
+      { x: 85, y: 85 },   // Bottom right
+      { x: 50, y: 15 },   // Top center
+      { x: 50, y: 85 },   // Bottom center
+      { x: 15, y: 50 },   // Left center
+      { x: 85, y: 50 },   // Right center
+      { x: 30, y: 30 },   // Inner positions
+      { x: 70, y: 30 },
+      { x: 30, y: 70 },
+      { x: 70, y: 70 }
+    ];
+    
     const adjustedNodes = [...rawNodes];
     
-    for (let i = 0; i < adjustedNodes.length; i++) {
-      for (let j = i + 1; j < adjustedNodes.length; j++) {
-        const node1 = adjustedNodes[i];
-        const node2 = adjustedNodes[j];
+    // Assign each node to a unique safe position
+    for (let i = 0; i < adjustedNodes.length && i < SAFE_POSITIONS.length; i++) {
+      adjustedNodes[i] = {
+        ...adjustedNodes[i],
+        position: SAFE_POSITIONS[i]
+      };
+    }
+    
+    // If more nodes than safe positions, spread remaining ones
+    if (adjustedNodes.length > SAFE_POSITIONS.length) {
+      for (let i = SAFE_POSITIONS.length; i < adjustedNodes.length; i++) {
+        const angle = (i * 2 * Math.PI) / adjustedNodes.length;
+        const radius = 30; // 30% from center
+        const x = 50 + Math.cos(angle) * radius;
+        const y = 50 + Math.sin(angle) * radius;
         
-        const dx = node1.position.x - node2.position.x;
-        const dy = node1.position.y - node2.position.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < MINIMUM_DISTANCE) {
-          // Move node2 away from node1
-          const angle = Math.atan2(dy, dx);
-          const newX = node1.position.x + Math.cos(angle) * MINIMUM_DISTANCE;
-          const newY = node1.position.y + Math.sin(angle) * MINIMUM_DISTANCE;
-          
-          // Keep within screen bounds with more padding for mobile
-          adjustedNodes[j] = {
-            ...node2,
-            position: {
-              x: Math.max(15, Math.min(85, newX)),
-              y: Math.max(15, Math.min(85, newY))
-            }
-          };
-        }
+        adjustedNodes[i] = {
+          ...adjustedNodes[i],
+          position: {
+            x: Math.max(15, Math.min(85, x)),
+            y: Math.max(15, Math.min(85, y))
+          }
+        };
       }
     }
     
