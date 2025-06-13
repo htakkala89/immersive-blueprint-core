@@ -281,6 +281,18 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       lockReason: stats.affectionLevel < 30 ? 'Synergy System Unlocked' : undefined,
       outcomes: ['Permanent synergy buff', 'Combat coordination']
     },
+    {
+      id: 'tft_style_raid',
+      title: 'Strategic Dungeon Raid',
+      description: 'Command your shadow army in a tactical auto-battler raid with team positioning and synergy bonuses.',
+      icon: <Users className="w-5 h-5" />,
+      energyCost: 40,
+      category: 'training',
+      affectionReward: 3,
+      available: stats.level >= 5,
+      lockReason: stats.level < 5 ? 'Requires: Player Level 5+' : undefined,
+      outcomes: ['High Gold & XP rewards', 'Team synergy bonuses', 'Shadow army upgrades']
+    },
 
     // Category 3: Home Life
     {
