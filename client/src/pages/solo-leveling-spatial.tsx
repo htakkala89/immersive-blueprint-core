@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -500,8 +500,7 @@ export default function SoloLevelingSpatial() {
   const [showDevTools, setShowDevTools] = useState(false);
   
   // Episode system state
-  const [chaHaeInLocationOverride, setChaHaeInLocationOverride] = useState<string | null>(null);
-  const [pendingFurnitureItem, setPendingFurnitureItem] = useState<any>(null);
+  const [chaHaeInCurrentLocation, setChaHaeInCurrentLocation] = useState<string | null>(null);
 
   
   // Debug logging for dungeon raid state
@@ -596,7 +595,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const currentChaHaeInLocation = chaHaeInLocationOverride || getChaHaeInLocation();
+  const currentChaHaeInLocation = chaHaeInCurrentLocation || getChaHaeInLocation();
 
   // Helper function for receptionist dialogue - rotating pre-scripted hints
   const getReceptionistDialogue = (): string => {
@@ -725,7 +724,7 @@ export default function SoloLevelingSpatial() {
       name: 'Hunter Association HQ',
       description: 'The prestigious headquarters in Gangnam where elite hunters gather',
       backgroundImage: '/api/scenes/hunter_association.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'hunter_association',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_association',
       chaActivity: 'reviewing mission reports at her desk',
       chaPosition: { x: 50, y: 50 },
       chaExpression: 'focused' as const,
@@ -741,7 +740,7 @@ export default function SoloLevelingSpatial() {
       name: 'Gangnam Business Tower',
       description: 'High-end corporate district with view of Seoul',
       backgroundImage: '/api/scenes/gangnam_tower.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'hunter_association',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_association',
       chaActivity: 'attending a hunter briefing meeting',
       chaPosition: { x: 50, y: 35 },
       chaExpression: 'focused' as const,
@@ -757,7 +756,7 @@ export default function SoloLevelingSpatial() {
       name: 'Artisan Coffee House',
       description: 'Trendy café in the heart of Hongdae\'s artistic district',
       backgroundImage: '/api/scenes/hongdae_cafe.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'hongdae_cafe',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hongdae_cafe',
       chaActivity: 'enjoying her morning latte while reading',
       chaPosition: { x: 45, y: 50 },
       chaExpression: 'happy' as const,
@@ -773,7 +772,7 @@ export default function SoloLevelingSpatial() {
       name: 'Underground Music Venue',
       description: 'Popular nightclub where hunters sometimes unwind',
       backgroundImage: '/api/scenes/hongdae_club.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'hongdae_cafe',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hongdae_cafe',
       chaActivity: 'reluctantly chaperoning younger hunters',
       chaPosition: { x: 65, y: 45 },
       chaExpression: 'shy' as const,
@@ -789,7 +788,7 @@ export default function SoloLevelingSpatial() {
       name: 'Traditional Korean Restaurant',
       description: 'Elegant dining establishment in Myeongdong',
       backgroundImage: '/api/scenes/myeongdong_restaurant.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'myeongdong_restaurant',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'myeongdong_restaurant',
       chaActivity: 'enjoying a quiet dinner',
       chaPosition: { x: 55, y: 50 },
       chaExpression: 'happy' as const,
@@ -804,7 +803,7 @@ export default function SoloLevelingSpatial() {
       name: 'Myeongdong Shopping District',
       description: 'Bustling shopping area with luxury brands and street food',
       backgroundImage: '/api/scenes/myeongdong_shopping.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'myeongdong_restaurant',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'myeongdong_restaurant',
       chaActivity: 'window shopping for hunter gear accessories',
       chaPosition: { x: 40, y: 45 },
       chaExpression: 'neutral' as const,
@@ -826,7 +825,7 @@ export default function SoloLevelingSpatial() {
           name: 'Hannam-dong Penthouse',
           description: 'Your luxurious penthouse with panoramic city views and premium amenities',
           backgroundImage: '/api/scenes/hannam_penthouse.jpg',
-          chaHaeInPresent: currentChaHaeInLocation === 'player_apartment',
+          chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
           chaActivity: 'admiring the city skyline from your floor-to-ceiling windows',
           chaPosition: { x: 50, y: 45 },
           chaExpression: 'loving' as const,
@@ -876,7 +875,7 @@ export default function SoloLevelingSpatial() {
           name: 'Gangnam High-Rise',
           description: 'Your upscale apartment in Seoul\'s premier district with modern amenities',
           backgroundImage: '/api/scenes/gangnam_apartment.jpg',
-          chaHaeInPresent: currentChaHaeInLocation === 'player_apartment',
+          chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
           chaActivity: 'enjoying the sophisticated atmosphere of your upgraded home',
           chaPosition: { x: 45, y: 50 },
           chaExpression: 'loving' as const,
@@ -889,7 +888,7 @@ export default function SoloLevelingSpatial() {
           name: 'Your Apartment',
           description: 'Your modest but comfortable home base in Seoul',
           backgroundImage: '/api/scenes/player_apartment.jpg',
-          chaHaeInPresent: currentChaHaeInLocation === 'player_apartment',
+          chaHaeInPresent: chaHaeInCurrentLocation === 'player_apartment',
           chaActivity: 'relaxing on your couch, looking comfortable in your space',
           chaPosition: { x: 40, y: 55 },
           chaExpression: 'loving' as const,
@@ -909,7 +908,7 @@ export default function SoloLevelingSpatial() {
       name: 'Luxury Department Store',
       description: 'Premium boutique with high-end gifts, jewelry, and designer accessories',
       backgroundImage: '/api/scenes/luxury_department_store.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'luxury_department_store',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'luxury_department_store',
       chaActivity: 'examining elegant jewelry displays',
       chaPosition: { x: 45, y: 40 },
       chaExpression: 'focused' as const,
@@ -925,7 +924,7 @@ export default function SoloLevelingSpatial() {
       name: 'Gangnam Modern Furnishings',
       description: 'Designer furniture showroom for luxury living spaces',
       backgroundImage: '/api/scenes/gangnam_furnishings.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'gangnam_furnishings',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'gangnam_furnishings',
       chaActivity: 'appreciating modern design aesthetics',
       chaPosition: { x: 55, y: 45 },
       chaExpression: 'happy' as const,
@@ -941,7 +940,7 @@ export default function SoloLevelingSpatial() {
       name: 'Seoul Luxury Realty',
       description: 'Exclusive real estate office for premium properties',
       backgroundImage: '/api/scenes/luxury_realtor.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'luxury_realtor',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'luxury_realtor',
       chaActivity: 'discussing property investments with an agent',
       chaPosition: { x: 50, y: 40 },
       chaExpression: 'focused' as const,
@@ -958,7 +957,7 @@ export default function SoloLevelingSpatial() {
       name: 'International Hunter Market',
       description: 'Diverse marketplace with global hunter supplies',
       backgroundImage: '/api/scenes/itaewon_market.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'myeongdong_restaurant',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'myeongdong_restaurant',
       chaActivity: 'researching international hunter techniques',
       chaPosition: { x: 50, y: 40 },
       chaExpression: 'focused' as const,
@@ -974,7 +973,7 @@ export default function SoloLevelingSpatial() {
       name: 'Hunter Market',
       description: 'Bustling marketplace where hunters trade rare materials and equipment',
       backgroundImage: '/api/scenes/hunter_market.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'hunter_market',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_market',
       chaActivity: 'browsing rare equipment and chatting with vendors',
       chaPosition: { x: 35, y: 45 },
       chaExpression: 'focused' as const,
@@ -991,7 +990,7 @@ export default function SoloLevelingSpatial() {
       name: 'Elite Hunter Training Center',
       description: 'State-of-the-art combat training facility in Dongdaemun',
       backgroundImage: '/api/scenes/training_facility.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'hunter_association',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_association',
       chaActivity: 'practicing advanced sword techniques',
       chaPosition: { x: 50, y: 45 },
       chaExpression: 'focused' as const,
@@ -1008,7 +1007,7 @@ export default function SoloLevelingSpatial() {
       name: "Cha Hae-In's Apartment",
       description: 'Her private sanctuary, warm and inviting with personal touches',
       backgroundImage: '/api/scenes/apartment.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'chahaein_apartment',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'chahaein_apartment',
       chaActivity: timeOfDay === 'evening' ? 'relaxing on the couch with tea' : 'preparing for bed',
       chaPosition: { x: 40, y: 55 },
       chaExpression: 'loving' as const,
@@ -1025,7 +1024,7 @@ export default function SoloLevelingSpatial() {
       name: 'Hangang River Park',
       description: 'Peaceful riverside park perfect for evening walks',
       backgroundImage: '/api/scenes/hangang_park.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'hongdae_cafe',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'hongdae_cafe',
       chaActivity: 'taking an evening walk along the river',
       chaPosition: { x: 60, y: 70 },
       chaExpression: 'happy' as const,
@@ -1041,7 +1040,7 @@ export default function SoloLevelingSpatial() {
       name: 'N Seoul Tower',
       description: 'Iconic tower with romantic city views',
       backgroundImage: '/api/scenes/namsan_tower.jpg',
-      chaHaeInPresent: currentChaHaeInLocation === 'chahaein_apartment',
+      chaHaeInPresent: chaHaeInCurrentLocation === 'chahaein_apartment',
       chaActivity: 'enjoying the panoramic view of Seoul',
       chaPosition: { x: 45, y: 40 },
       chaExpression: 'happy' as const,
@@ -1113,7 +1112,7 @@ export default function SoloLevelingSpatial() {
 
   // Debug logging for character presence
   console.log('Current time:', timeOfDay);
-  console.log('Cha Hae-In location:', currentChaHaeInLocation);
+  console.log('Cha Hae-In location:', chaHaeInCurrentLocation);
   console.log('Player location:', playerLocation);
   console.log('Current scene:', gameState.currentScene);
   console.log('Should Cha be present?', currentLocationData?.chaHaeInPresent);
@@ -1468,7 +1467,7 @@ export default function SoloLevelingSpatial() {
     // Handle intimate spatial interactions at player apartment
     if (playerLocation === 'player_apartment') {
       // Bed interactions when Cha Hae-In is present
-      if (interactionPoint.id === 'bed' && currentChaHaeInLocation === 'player_apartment') {
+      if (interactionPoint.id === 'bed' && chaHaeInCurrentLocation === 'player_apartment') {
         setActiveActivity('make_love');
         setShowIntimateModal(true);
         return;
@@ -1924,18 +1923,23 @@ export default function SoloLevelingSpatial() {
       setEpisodeBeatIndex(0);
       setEpisodeChoices({});
       
-      // Execute first beat immediately
-      const firstBeat = episode.beats[0];
-      if (firstBeat) {
-        firstBeat.actions.forEach((action: any, actionIndex: number) => {
-          setTimeout(() => {
-            executeStoryAction(action);
-          }, actionIndex * 1000);
-        });
-      }
+      // Execute first beat
+      executeEpisodeBeat(episode, 0);
     } catch (error) {
       console.error('Error starting episode:', error);
     }
+  };
+
+  const executeEpisodeBeat = (episode: any, beatIndex: number) => {
+    const beat = episode.beats[beatIndex];
+    if (!beat) return;
+
+    // Execute all actions in the beat sequentially
+    beat.actions.forEach((action: any, actionIndex: number) => {
+      setTimeout(() => {
+        executeStoryAction(action);
+      }, actionIndex * 1000); // 1 second delay between actions
+    });
   };
 
   const executeStoryAction = (action: any) => {
@@ -1989,7 +1993,7 @@ export default function SoloLevelingSpatial() {
 
       case 'FORCE_CHA_LOCATION':
         // Override Cha Hae-In's location presence
-        setChaHaeInLocationOverride(action.location);
+        setChaHaeInCurrentLocation(action.location);
         break;
 
       case 'START_DIALOGUE_SCENE':
@@ -2034,7 +2038,7 @@ export default function SoloLevelingSpatial() {
 
       case 'REMOVE_CHA_LOCATION_OVERRIDE':
         // Return Cha Hae-In to normal scheduling
-        setChaHaeInLocationOverride(null);
+        setChaHaeInCurrentLocation(null);
         break;
 
       case 'COMPLETE_QUEST':
@@ -2183,15 +2187,7 @@ export default function SoloLevelingSpatial() {
     const nextBeatIndex = episodeBeatIndex + 1;
     if (nextBeatIndex < activeEpisode.beats.length) {
       setEpisodeBeatIndex(nextBeatIndex);
-      // Execute next beat immediately
-      const nextBeat = activeEpisode.beats[nextBeatIndex];
-      if (nextBeat) {
-        nextBeat.actions.forEach((action: any, actionIndex: number) => {
-          setTimeout(() => {
-            executeStoryAction(action);
-          }, actionIndex * 1000);
-        });
-      }
+      executeEpisodeBeat(activeEpisode, nextBeatIndex);
     } else {
       // Episode completed
       setActiveEpisode(null);
@@ -2370,38 +2366,6 @@ export default function SoloLevelingSpatial() {
     }
   }, [selectedRole, loadedProfileId]);
 
-  // Episode integration - start episode and return to spatial world
-  useEffect(() => {
-    if (currentEpisode && !activeEpisode) {
-      // Load and start the episode in the background
-      fetch(`/api/episodes/${currentEpisode}`)
-        .then(res => res.json())
-        .then(data => {
-          const episode = data.episode;
-          setActiveEpisode(episode);
-          setEpisodeBeatIndex(0);
-          
-          // Execute first beat immediately
-          const firstBeat = episode.beats[0];
-          if (firstBeat) {
-            firstBeat.actions.forEach((action: any, actionIndex: number) => {
-              setTimeout(() => {
-                executeStoryAction(action);
-              }, actionIndex * 1000);
-            });
-          }
-          
-          setCurrentEpisode(null); // Clear to return to spatial world
-          setShowEpisodeSelector(false);
-        })
-        .catch(err => {
-          console.error('Failed to load episode:', err);
-          setCurrentEpisode(null);
-          setShowEpisodeSelector(false);
-        });
-    }
-  }, [currentEpisode, activeEpisode]);
-
   // Role Selection Screen - Entry Point
   if (selectedRole === 'none') {
     return (
@@ -2434,6 +2398,22 @@ export default function SoloLevelingSpatial() {
           setShowEpisodeSelector(false);
         }}
         onBack={() => setShowEpisodeSelector(false)}
+      />
+    );
+  }
+
+  if (currentEpisode) {
+    return (
+      <EpisodePlayer
+        episodeId={currentEpisode}
+        onBack={() => {
+          setCurrentEpisode(null);
+          setShowEpisodeSelector(true);
+        }}
+        onComplete={(episodeId) => {
+          setCurrentEpisode(null);
+          setShowEpisodeSelector(false);
+        }}
       />
     );
   }
@@ -2692,7 +2672,7 @@ export default function SoloLevelingSpatial() {
           {/* Time Period Override */}
           <div className="mb-3">
             <div className="text-xs text-gray-300 mb-1">Time: {timeOfDay}</div>
-            <div className="text-xs text-purple-300 mb-2">Cha Location: {currentChaHaeInLocation || 'Unavailable'}</div>
+            <div className="text-xs text-purple-300 mb-2">Cha Location: {chaHaeInCurrentLocation || 'Unavailable'}</div>
             <div className="flex gap-1 text-xs">
               <button 
                 onClick={() => setTimeOfDay('morning')}
@@ -2814,7 +2794,7 @@ export default function SoloLevelingSpatial() {
 
 
         {/* Cha Hae-In Presence Indicator - Golden Breathing Node */}
-        {(currentChaHaeInLocation === playerLocation) && (
+        {(chaHaeInCurrentLocation === playerLocation) && (
           <motion.div
             className="absolute cursor-pointer z-30 group"
             style={{
@@ -4868,7 +4848,7 @@ export default function SoloLevelingSpatial() {
         onClose={() => setShowWorldMap(false)}
         onLocationSelect={handleLocationTravel}
         currentTime={timeOfDay}
-        chaHaeInLocation={currentChaHaeInLocation || ''}
+        chaHaeInLocation={chaHaeInCurrentLocation || ''}
         playerAffection={gameState.affection}
         storyProgress={gameState.storyProgress || gameState.level || 0}
         activeQuests={activeQuests}
