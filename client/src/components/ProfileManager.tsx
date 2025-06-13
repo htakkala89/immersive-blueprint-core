@@ -128,7 +128,7 @@ export default function ProfileManager({ isVisible, onClose, onLoadProfile, curr
               </Button>
               <div>
                 <CardTitle className="text-2xl">Profile Manager</CardTitle>
-                <p className="text-purple-200 text-sm">Save, load, and manage your game progress</p>
+                <p className="text-purple-200 text-sm">Save, load, and manage your world progress</p>
               </div>
             </div>
             <Button
