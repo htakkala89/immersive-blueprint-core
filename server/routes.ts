@@ -675,7 +675,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const content = fs.readFileSync(episodePath, 'utf-8');
-      const episode = JSON.parse(content);
+      const episodeData = JSON.parse(content);
+      
+      // Transform commands to beats format for frontend compatibility
+      const episode = {
+        ...episodeData,
+        beats: episodeData.commands ? episodeData.commands.map((command, index) => ({
+          beat_id: `${index + 1}.0`,
+          title: command.type || `Beat ${index + 1}`,
+          description: command.content || command.narrative_text || `Story beat ${index + 1}`,
+          trigger: { type: 'previous_beat_complete' },
+          actions: [command],
+          completion_condition: { type: 'player_accept' }
+        })) : [],
+        status: 'available',
+        currentBeatIndex: 0
+      };
       
       res.json({ episode });
     } catch (error) {
