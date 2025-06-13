@@ -90,6 +90,11 @@ interface HunterCommunicatorSystem15Props {
   chaHaeInState?: CharacterState;
   activeQuests?: any[];
   episodeAlerts?: SystemAlert[];
+  pendingPhotoDelivery?: {
+    type: 'intimate';
+    context: string;
+    imageUrl?: string;
+  };
 }
 
 export function HunterCommunicatorSystem15({
@@ -100,7 +105,8 @@ export function HunterCommunicatorSystem15({
   onActivityProposed,
   playerLocation,
   timeOfDay,
-  chaHaeInState
+  chaHaeInState,
+  pendingPhotoDelivery
 }: HunterCommunicatorSystem15Props): JSX.Element {
   const [activeTab, setActiveTab] = useState<'messages' | 'alerts'>('messages');
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -635,11 +641,27 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         animate={{ scale: 1 }}
         className="w-full max-w-4xl h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
         style={{
-          background: 'linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,41,59,0.75))',
-          backdropFilter: 'blur(40px) saturate(180%)',
-          border: '1px solid rgba(255,255,255,0.1)',
+          background: `
+            linear-gradient(135deg, 
+              rgba(255, 255, 255, 0.08) 0%,
+              rgba(255, 255, 255, 0.05) 25%,
+              rgba(255, 255, 255, 0.06) 50%,
+              rgba(255, 255, 255, 0.04) 75%,
+              rgba(255, 255, 255, 0.07) 100%
+            ),
+            linear-gradient(135deg, 
+              rgba(15, 23, 42, 0.15) 0%, 
+              rgba(30, 41, 59, 0.12) 25%,
+              rgba(15, 23, 42, 0.14) 50%,
+              rgba(30, 41, 59, 0.18) 75%,
+              rgba(15, 23, 42, 0.12) 100%
+            )
+          `,
+          backdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
+          WebkitBackdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
           borderRadius: '24px',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8)'
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}
       >
         {/* Noise texture overlay */}
