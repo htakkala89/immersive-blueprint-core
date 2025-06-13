@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 import { 
-  BookOpen, 
   Plus, 
+  Eye, 
+  Edit, 
+  Trash2, 
+  BookOpen, 
+  Users, 
   BarChart3, 
-  Settings, 
-  LogOut, 
-  Clock, 
-  Users,
-  Eye,
-  Edit3,
-  Trash2,
+  Calendar,
+  LogOut,
   X
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { NarrativeArchitectAI } from './NarrativeArchitectAI';
 
 interface Episode {
@@ -43,11 +42,15 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
       case 'published': return 'text-green-400 bg-green-400/20';
       case 'draft': return 'text-yellow-400 bg-yellow-400/20';
       case 'archived': return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-gray-400 bg-gray-400/20';
     }
   };
 
+  const totalEpisodes = episodes.length;
   const totalPlays = episodes.reduce((sum, ep) => sum + ep.plays, 0);
-  const avgCompletionRate = episodes.filter(ep => ep.plays > 0).reduce((sum, ep) => sum + ep.completionRate, 0) / episodes.filter(ep => ep.plays > 0).length || 0;
+  const avgCompletionRate = episodes.length > 0 
+    ? episodes.reduce((sum, ep) => sum + ep.completionRate, 0) / episodes.length 
+    : 0;
 
   const handleEditEpisode = (episode: Episode) => {
     setEditingEpisode(episode);
@@ -117,65 +120,54 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
   // Episode Details Modal
   if (viewingEpisode) {
     return (
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border border-white/20 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-          <div className="p-6 border-b border-white/10">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">{viewingEpisode.title}</h2>
-                <div className="flex items-center space-x-3">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(viewingEpisode.status)}`}>
-                    {viewingEpisode.status}
-                  </span>
-                  <span className="text-slate-400 text-sm">
-                    Created: {viewingEpisode.created.toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-3xl font-bold text-white">{viewingEpisode.title}</h1>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setViewingEpisode(null)}
-                className="text-white hover:bg-white/10"
+                className="text-slate-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </Button>
             </div>
-          </div>
-          
-          <div className="p-6 overflow-y-auto">
+            
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Description</h3>
                 <p className="text-slate-300">{viewingEpisode.description}</p>
               </div>
               
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-white/5 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-white">{viewingEpisode.plays}</div>
-                  <div className="text-sm text-slate-400">Total Plays</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white/5 rounded-lg p-4">
+                  <p className="text-slate-400 text-sm">Status</p>
+                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(viewingEpisode.status)}`}>
+                    {viewingEpisode.status}
+                  </span>
                 </div>
-                <div className="bg-white/5 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-white">{viewingEpisode.completionRate}%</div>
-                  <div className="text-sm text-slate-400">Completion Rate</div>
+                <div className="bg-white/5 rounded-lg p-4">
+                  <p className="text-slate-400 text-sm">Created</p>
+                  <p className="text-white font-medium">{viewingEpisode.created.toLocaleDateString()}</p>
                 </div>
-                <div className="bg-white/5 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-white">
-                    {Math.round((Date.now() - viewingEpisode.created.getTime()) / (1000 * 60 * 60 * 24))}d
-                  </div>
-                  <div className="text-sm text-slate-400">Days Old</div>
+                <div className="bg-white/5 rounded-lg p-4">
+                  <p className="text-slate-400 text-sm">Plays</p>
+                  <p className="text-white font-medium">{viewingEpisode.plays.toLocaleString()}</p>
+                </div>
+                <div className="bg-white/5 rounded-lg p-4">
+                  <p className="text-slate-400 text-sm">Completion</p>
+                  <p className="text-white font-medium">{viewingEpisode.completionRate}%</p>
                 </div>
               </div>
               
-              <div className="flex space-x-3">
+              <div className="flex space-x-4">
                 <Button
-                  onClick={() => {
-                    setViewingEpisode(null);
-                    handleEditEpisode(viewingEpisode);
-                  }}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  onClick={() => handleEditEpisode(viewingEpisode)}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
-                  <Edit3 className="w-4 h-4 mr-2" />
+                  <Edit className="w-4 h-4 mr-2" />
                   Edit Episode
                 </Button>
                 <Button
@@ -183,7 +175,7 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                   onClick={() => setViewingEpisode(null)}
                   className="border-white/20 text-white hover:bg-white/10"
                 >
-                  Close
+                  Back to Dashboard
                 </Button>
               </div>
             </div>
@@ -194,36 +186,32 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <div className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
-                <Settings className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">Creator Portal</h1>
-                <p className="text-sm text-slate-400">Episode Management Dashboard</p>
-              </div>
-            </div>
-            
-            <Button
-              onClick={onLogout}
-              variant="ghost"
-              className="text-white hover:bg-white/10"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Exit Portal
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between"
+        >
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+              Creator Portal
+            </h1>
+            <p className="text-slate-400 mt-2">Build immersive Solo Leveling episodes with AI</p>
           </div>
-        </div>
-      </div>
+          <Button
+            onClick={onLogout}
+            variant="ghost"
+            className="text-slate-400 hover:text-white"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Back to Game
+          </Button>
+        </motion.div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Analytics Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -233,7 +221,7 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Total Episodes</p>
-                <p className="text-2xl font-bold text-white">{episodes.length}</p>
+                <p className="text-2xl font-bold text-white">{totalEpisodes}</p>
               </div>
               <BookOpen className="w-8 h-8 text-purple-400" />
             </div>
@@ -299,7 +287,7 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                 Create New Episode
               </Button>
             </div>
-
+            
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="text-white/60">Loading episodes...</div>
@@ -328,63 +316,56 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                     className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors"
                   >
                     <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-white">{episode.title}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(episode.status)}`}>
-                          {episode.status}
-                        </span>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-lg font-semibold text-white">{episode.title}</h3>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(episode.status)}`}>
+                            {episode.status}
+                          </span>
+                        </div>
+                        <p className="text-slate-400 text-sm mb-4">{episode.description}</p>
+                        
+                        <div className="flex items-center space-x-6 text-xs text-slate-500">
+                          <span>Created: {episode.created.toLocaleDateString()}</span>
+                          <span>•</span>
+                          <span>Plays: {episode.plays}</span>
+                          <span>•</span>
+                          <span>Completion: {episode.completionRate}%</span>
+                        </div>
                       </div>
-                      <p className="text-slate-400 text-sm mb-4">{episode.description}</p>
                       
-                      <div className="flex items-center space-x-6 text-xs text-slate-500">
-                        <span className="flex items-center">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {episode.lastModified.toLocaleDateString()}
-                        </span>
-                        <span className="flex items-center">
-                          <Users className="w-3 h-3 mr-1" />
-                          {episode.plays} plays
-                        </span>
-                        <span className="flex items-center">
-                          <BarChart3 className="w-3 h-3 mr-1" />
-                          {episode.completionRate}% completion
-                        </span>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewEpisode(episode)}
+                          className="text-slate-400 hover:text-white"
+                          title="View Episode"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditEpisode(episode)}
+                          className="text-slate-400 hover:text-white"
+                          title="Edit Episode"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteEpisode(episode.id)}
+                          className="text-slate-400 hover:text-red-400"
+                          title="Delete Episode"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center space-x-2 ml-4">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:bg-white/10"
-                        onClick={() => handleEditEpisode(episode)}
-                        title="Edit Episode"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:bg-white/10"
-                        onClick={() => handleViewEpisode(episode)}
-                        title="View Episode Details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-red-400 hover:bg-red-400/10"
-                        onClick={() => handleDeleteEpisode(episode.id)}
-                        title="Delete Episode"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
               </div>
             )}
           </div>
@@ -401,24 +382,24 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
               <div className="space-y-3">
                 <Button
                   onClick={() => setShowEpisodeBuilder(true)}
-                  className="w-full justify-start bg-gradient-to-r from-purple-600/80 to-pink-600/80 hover:from-purple-600 hover:to-pink-600"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   New Episode
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full justify-start border-white/20 text-white hover:bg-white/10"
+                  className="w-full border-white/20 text-white hover:bg-white/10"
                 >
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  View Analytics
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Template Library
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full justify-start border-white/20 text-white hover:bg-white/10"
+                  className="w-full border-white/20 text-white hover:bg-white/10"
                 >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Analytics
                 </Button>
               </div>
             </motion.div>
@@ -427,39 +408,13 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6"
-            >
-              <h3 className="text-lg font-semibold text-white mb-2">AI Creator Tools</h3>
-              <p className="text-slate-300 text-sm mb-4">
-                Use natural language to create complex episodes with our Narrative Architect AI.
-              </p>
-              <Button
-                onClick={() => setShowEpisodeBuilder(true)}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                Launch AI Creator
-              </Button>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.7 }}
               className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
             >
               <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
-              <div className="space-y-3">
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                  <span className="text-slate-300">Episode published: "Echoes of the Red Gate"</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
-                  <span className="text-slate-300">Draft saved: "Starlit Confessions"</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full mr-3"></div>
-                  <span className="text-slate-300">Analytics updated</span>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center space-x-3 text-slate-400">
+                  <Calendar className="w-4 h-4" />
+                  <span>No recent activity</span>
                 </div>
               </div>
             </motion.div>
