@@ -180,6 +180,8 @@ export function DeepTFTRaidSystem({
   const [dragSource, setDragSource] = useState<'board' | 'bench' | null>(null);
   const [dragSourceIndex, setDragSourceIndex] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isShopExpanded, setIsShopExpanded] = useState(true);
+  const [draggedItem, setDraggedItem] = useState<Item | null>(null);
   
   // Visual Effects
   const [damageNumbers, setDamageNumbers] = useState<any[]>([]);
@@ -799,19 +801,21 @@ export function DeepTFTRaidSystem({
         </div>
 
         {/* Main Board Area */}
-        <div className="absolute inset-x-4 top-32 bottom-32 bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden">
+        <div className={`absolute inset-x-4 top-32 ${isShopExpanded ? 'bottom-80' : 'bottom-20'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
           {gamePhase === 'setup' && (
             /* Setup Phase - TFT Authentic Board Layout */
             <div className="absolute inset-4">
               {/* Full 8x7 TFT Board Grid */}
-              <div className="grid grid-cols-7 grid-rows-8 gap-1 h-full">
+              <div className="grid grid-cols-7 grid-rows-8 gap-2 h-full p-2">
                 {Array.from({ length: 56 }).map((_, index) => {
                   const col = index % 7;
                   const row = Math.floor(index / 7);
                   const isPlayerRow = row >= 4; // Bottom 4 rows are player area
                   const isEnemyRow = row < 4; // Top 4 rows are enemy area
                   const boardIndex = isPlayerRow ? (row - 4) * 7 + col : -1;
+                  const enemyIndex = isEnemyRow ? row * 7 + col : -1;
                   const unit = isPlayerRow && boardIndex >= 0 ? board[boardIndex] : null;
+                  const enemy = isEnemyRow && enemyIndex >= 0 ? enemyBoard[enemyIndex] : null;
                   
                   return (
                     <div
@@ -862,10 +866,25 @@ export function DeepTFTRaidSystem({
                         </div>
                       )}
                       
-                      {/* Enemy Area Indicator */}
-                      {isEnemyRow && (
+                      {/* Enemy Units Display */}
+                      {enemy && isEnemyRow && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-red-400">
+                          <div className="text-xs font-bold truncate w-full text-center px-1">
+                            {enemy.name.split(' ')[0]}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {Array.from({ length: enemy.stars }).map((_, i) => (
+                              <Star key={i} className="w-2 h-2 fill-red-400 text-red-400" />
+                            ))}
+                          </div>
+                          <div className="text-xs text-red-300">T{enemy.tier}</div>
+                        </div>
+                      )}
+                      
+                      {/* Empty Enemy Area Indicator */}
+                      {!enemy && isEnemyRow && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-red-400/50 text-xs font-bold">ENEMY</div>
+                          <div className="text-red-400/30 text-xs">ENEMY</div>
                         </div>
                       )}
                       
