@@ -228,6 +228,44 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
   const location = context?.location || 'hunter_association';
   const affectionLevel = context?.affectionLevel || 0;
   const timeOfDay = context?.timeOfDay || 'day';
+  const completedEpisodes = context?.completedEpisodes || [];
+  const sharedMemories = context?.sharedMemories || [];
+
+  // Episode-driven conversation priorities
+  // Check for episode-specific memory callbacks first
+  if (completedEpisodes.includes('EP_TEST_CAFE_DATE') && location === 'hongdae_cafe') {
+    return [
+      "Remember our last conversation here? I still think about what you said.",
+      "This place holds special memories for us now.",
+      "I'm glad we can share quiet moments like this together."
+    ];
+  }
+
+  // Episode availability hints based on progression
+  if (location === 'hongdae_cafe' && affectionLevel >= 0 && !completedEpisodes.includes('EP_TEST_CAFE_DATE')) {
+    return [
+      "I was hoping we could sit and talk properly sometime.",
+      "There's something peaceful about this place, don't you think?",
+      "Coffee dates like this... they matter more than you might realize."
+    ];
+  }
+
+  // Story progression hints based on relationship level
+  if (affectionLevel >= 20 && affectionLevel < 40) {
+    return [
+      "I've been thinking about how much we've grown closer lately.",
+      "There are things I want to share with you... when the time is right.",
+      "Do you ever wonder where this path we're on will lead us?"
+    ];
+  }
+
+  if (affectionLevel >= 40 && affectionLevel < 70) {
+    return [
+      "I trust you more than anyone else, Jin-Woo.",
+      "Sometimes I catch myself thinking about our future together.",
+      "You've become so important to me... more than I expected."
+    ];
+  }
   
   // Player Apartment - Intimate, romantic setting
   if (location === 'player_apartment') {
