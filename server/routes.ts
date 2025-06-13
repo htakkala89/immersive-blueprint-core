@@ -1344,7 +1344,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Missing profileId" });
       }
       
-      const episode = episodeEngine.getEpisode(episodeId);
+      const episode = await episodeEngine.getEpisode(episodeId);
       if (!episode) {
         return res.status(404).json({ error: "Episode not found" });
       }

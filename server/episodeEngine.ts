@@ -1,22 +1,29 @@
-import { EpisodeData, StoryBeat, EpisodeAction, episodes, Episode, InsertEpisode } from "@shared/schema";
-import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { EpisodeData, StoryBeat, EpisodeAction } from "@shared/schema";
 
 export class EpisodeEngine {
+  private episodes: Map<string, EpisodeData> = new Map();
+  
   constructor() {
-    this.initializeEpisodes();
+    // Only load Episode 1 if no episodes exist from creator portal
+    this.loadDefaultEpisodeIfNeeded();
   }
 
-  private async initializeEpisodes() {
-    // Check if Episode 1 exists in database, if not, create it
-    const existingEpisode = await db.select().from(episodes).where(eq(episodes.id, "EP01_Red_Echo"));
-    
-    if (existingEpisode.length === 0) {
-      await this.createDefaultEpisode();
+  private async loadDefaultEpisodeIfNeeded() {
+    // Check if episodes directory exists and has files
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const episodesDir = path.join(process.cwd(), 'server/episodes');
+      
+      if (!fs.existsSync(episodesDir) || fs.readdirSync(episodesDir).length === 0) {
+        this.createDefaultEpisode();
+      }
+    } catch (error) {
+      this.createDefaultEpisode();
     }
   }
 
-  private async createDefaultEpisode() {
+  private createDefaultEpisode() {
     // Load Episode 1: Echoes of the Red Gate using the JSON format
     const ep01: EpisodeData = {
       id: "EP01_Red_Echo",
@@ -162,53 +169,60 @@ export class EpisodeEngine {
       ]
     };
 
-    // Insert the episode into the database
-    await db.insert(episodes).values({
-      id: ep01.id,
-      title: ep01.title,
-      prerequisite: ep01.prerequisite,
-      beats: ep01.beats,
-      isActive: true
-    });
+    this.episodes.set("EP01_Red_Echo", ep01);
   }
 
-  // Core methods for episode management
+  // Core methods for episode management - use creator portal files only
   async getAvailableEpisodes(): Promise<EpisodeData[]> {
-    const dbEpisodes = await db.select().from(episodes).where(eq(episodes.isActive, true));
-    return dbEpisodes.map(ep => ({
-      id: ep.id,
-      title: ep.title,
-      prerequisite: ep.prerequisite,
-      beats: ep.beats
-    }));
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const episodesDir = path.join(process.cwd(), 'server/episodes');
+      
+      if (!fs.existsSync(episodesDir)) {
+        // Return default episode if no creator portal episodes exist
+        return Array.from(this.episodes.values());
+      }
+      
+      const files = fs.readdirSync(episodesDir).filter(file => file.endsWith('.json'));
+      const episodes = [];
+      
+      for (const file of files) {
+        try {
+          const filePath = path.join(episodesDir, file);
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const episode = JSON.parse(content);
+          episodes.push(episode);
+        } catch (error) {
+          console.warn(`Failed to parse episode file ${file}:`, error);
+        }
+      }
+      
+      // If no creator portal episodes, return default
+      return episodes.length > 0 ? episodes : Array.from(this.episodes.values());
+    } catch (error) {
+      return Array.from(this.episodes.values());
+    }
   }
 
   async getEpisode(episodeId: string): Promise<EpisodeData | undefined> {
-    const [episode] = await db.select().from(episodes).where(eq(episodes.id, episodeId));
-    if (!episode) return undefined;
-    
-    return {
-      id: episode.id,
-      title: episode.title,
-      prerequisite: episode.prerequisite,
-      beats: episode.beats
-    };
-  }
-
-  async createEpisode(episodeData: EpisodeData): Promise<void> {
-    await db.insert(episodes).values({
-      id: episodeData.id,
-      title: episodeData.title,
-      prerequisite: episodeData.prerequisite,
-      beats: episodeData.beats,
-      isActive: true
-    });
-  }
-
-  async deleteEpisode(episodeId: string): Promise<void> {
-    await db.update(episodes)
-      .set({ isActive: false })
-      .where(eq(episodes.id, episodeId));
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const episodePath = path.join(process.cwd(), 'server/episodes', `${episodeId}.json`);
+      
+      if (fs.existsSync(episodePath)) {
+        const content = fs.readFileSync(episodePath, 'utf-8');
+        return JSON.parse(content);
+      }
+      
+      // Fallback to default episodes
+      return this.episodes.get(episodeId);
+    } catch (error) {
+      return this.episodes.get(episodeId);
+    }
   }
 
   async executeEpisodeAction(episodeId: string, beatId: number, actionIndex: number): Promise<void> {
@@ -220,9 +234,6 @@ export class EpisodeEngine {
 
     const action = beat.actions[actionIndex];
     console.log(`🎬 Executing ${action.command}: ${JSON.stringify(action.params)}`);
-    
-    // For now, just log the action execution
-    // In a full implementation, this would integrate with the game systems
   }
 
   async triggerBeatCompletion(episodeId: string, beatId: number, eventData: any): Promise<boolean> {
@@ -232,11 +243,9 @@ export class EpisodeEngine {
     const beat = episode.beats.find((b: any) => b.beat_id === beatId);
     if (!beat) return false;
 
-    // Check if completion condition is met
     const condition = beat.completion_condition;
     console.log(`🎯 Checking completion for beat ${beatId}: ${condition.event}`);
     
-    // This would contain the actual completion logic
     return true;
   }
 }
