@@ -32,6 +32,7 @@ interface WorldMapSystem8Props {
   playerAffection: number;
   storyProgress: number;
   activeQuests?: string[];
+  onCommunicatorOpen?: () => void;
 }
 
 export function WorldMapSystem8({
@@ -42,7 +43,8 @@ export function WorldMapSystem8({
   chaHaeInLocation,
   playerAffection,
   storyProgress,
-  activeQuests = []
+  activeQuests = [],
+  onCommunicatorOpen
 }: WorldMapSystem8Props) {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [focusedZone, setFocusedZone] = useState<string | null>(null);
@@ -236,7 +238,7 @@ export function WorldMapSystem8({
             name: 'Elite Training Center',
             description: 'Advanced combat training with Cha Hae-In',
             position: { x: 0, y: 0 },
-            state: playerAffection >= 3 ? getLocationState('training_facility') : 'locked',
+            state: isLocationAccessible('training_facility') ? getLocationState('training_facility') : (chaHaeInLocation === 'training_facility' ? 'presence' : 'locked'),
             unlockCondition: 'Gain Cha Hae-In\'s trust through missions',
             atmosphere: 'Intense training environment'
           },
@@ -270,7 +272,7 @@ export function WorldMapSystem8({
             name: 'Cha Hae-In\'s Apartment',
             description: 'Her intimate private space',
             position: { x: 0, y: 0 },
-            state: playerAffection >= 7 ? getLocationState('chahaein_apartment') : 'locked',
+            state: isLocationAccessible('chahaein_apartment') ? getLocationState('chahaein_apartment') : (chaHaeInLocation === 'chahaein_apartment' ? 'presence' : 'locked'),
             unlockCondition: 'Develop deep intimacy with Cha Hae-In',
             atmosphere: 'Warm and inviting sanctuary'
           }
@@ -282,8 +284,8 @@ export function WorldMapSystem8({
   // Use responsive zones
   const zones = generateResponsiveZones();
 
-  function getLocationState(locationId: string): 'default' | 'presence' | 'quest' | 'gate' {
-    // Check if Cha Hae-In is present
+  function getLocationState(locationId: string): 'default' | 'presence' | 'quest' | 'gate' | 'locked' {
+    // Always check for Cha Hae-In's presence first, even if location is locked
     if (chaHaeInLocation === locationId) return 'presence';
     
     // Check for active quests
@@ -293,6 +295,22 @@ export function WorldMapSystem8({
     if (locationId === 'hunter_association' && Math.random() > 0.7) return 'gate';
     
     return 'default';
+  }
+
+  // Separate function to check if location is accessible (not locked)
+  function isLocationAccessible(locationId: string): boolean {
+    // Check affection requirements
+    const affectionRequirements: Record<string, number> = {
+      'namsan_tower': 5,
+      'training_facility': 3,
+      'chahaein_apartment': 7
+    };
+    
+    if (affectionRequirements[locationId] && playerAffection < affectionRequirements[locationId]) {
+      return false;
+    }
+    
+    return true;
   }
 
   const getLocationIcon = (state: string, gateRank?: string) => {
@@ -365,7 +383,17 @@ export function WorldMapSystem8({
   };
 
   const handleLocationSelect = (location: LocationNode) => {
-    if (location.state === 'locked') return;
+    // Check if this is a locked location where Cha Hae-In is present - open communicator
+    if (!isLocationAccessible(location.id) && chaHaeInLocation === location.id) {
+      if (onCommunicatorOpen) {
+        onCommunicatorOpen();
+        onClose(); // Close world map to show communicator
+      }
+      return;
+    }
+    
+    // Block access to other locked locations
+    if (!isLocationAccessible(location.id)) return;
     
     // If this is a quest location, navigate directly without confirmation for streamlined quest flow
     if (location.state === 'quest' && activeQuests.includes(location.id)) {
