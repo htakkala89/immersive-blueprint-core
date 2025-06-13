@@ -317,6 +317,60 @@ export class EpisodeEngine {
     console.log(`🎉 Episode complete! Rewards: ${JSON.stringify(params)}`);
   }
 
+  // Get natural dialogue guidance for episode progression
+  async getEpisodeGuidance(episodeId: string, currentBeat: number): Promise<string | null> {
+    const episode = await this.getEpisode(episodeId);
+    if (!episode) return null;
+
+    const nextBeat = episode.beats.find((b: any) => b.beat_id === currentBeat + 1);
+    if (!nextBeat) return null;
+
+    // Generate natural dialogue based on the next beat's completion condition
+    const condition = nextBeat.completion_condition;
+    
+    switch (condition.event) {
+      case 'player_visits_location':
+        return this.generateLocationGuidance(condition.params.location_id);
+      case 'activity_completed':
+        return this.generateActivityGuidance(condition.params.activity_id);
+      case 'player_chats_with_cha':
+        return this.generateChatGuidance(condition.params);
+      default:
+        return null;
+    }
+  }
+
+  private generateLocationGuidance(locationId: string): string {
+    const locationDialogue: Record<string, string> = {
+      'training_facility': "Let's head to the training facility. I want to work on our coordination for the upcoming mission.",
+      'hongdae_cafe': "How about we grab some coffee at that place in Hongdae? We can discuss the mission details there.",
+      'hunter_association': "We should check in at the Hunter Association. There might be updates on the situation.",
+      'hangang_park': "Want to take a walk by the river? The fresh air might help us think more clearly.",
+      'player_apartment': "Let's go back to your place. We can review the plans in private.",
+      'cha_apartment': "Come over to my apartment. I have some materials we should go over together."
+    };
+    
+    return locationDialogue[locationId] || `Let's meet at the ${locationId.replace('_', ' ')}.`;
+  }
+
+  private generateActivityGuidance(activityId: string): string {
+    const activityDialogue: Record<string, string> = {
+      'sparring_session': "I think it's time for some sparring practice. Meet me at the training facility when you're ready.",
+      'coffee_date': "How about we grab some coffee together? I know a nice quiet place we can talk.",
+      'equipment_maintenance': "We should maintain our equipment together. Proper gear maintenance is crucial for our safety.",
+      'raid_footage_review': "Let's review some raid footage. Analyzing our past missions will help us improve our teamwork."
+    };
+    
+    return activityDialogue[activityId] || `Let's do the ${activityId.replace('_', ' ')} activity together.`;
+  }
+
+  private generateChatGuidance(params: any): string {
+    if (params.topic) {
+      return `We need to talk about ${params.topic}. It's important for our next mission.`;
+    }
+    return "There's something important I need to discuss with you.";
+  }
+
   async triggerBeatCompletion(episodeId: string, beatId: number, eventData: any): Promise<boolean> {
     const episode = await this.getEpisode(episodeId);
     if (!episode) return false;
