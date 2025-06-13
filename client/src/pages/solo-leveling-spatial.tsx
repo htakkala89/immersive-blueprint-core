@@ -50,6 +50,8 @@ import { MysticalEye } from '@/components/MysticalEye';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
 import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
 import { NarrativeArchitectAI } from '@/components/NarrativeArchitectAI';
+import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
+import { CreatorPortalDashboard } from '@/components/CreatorPortalDashboard';
 import SommelierDialog from '@/components/SommelierDialog';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
@@ -279,6 +281,9 @@ export default function SoloLevelingSpatial() {
 
   // System 18.5: Narrative Architect AI state
   const [showNarrativeArchitect, setShowNarrativeArchitect] = useState(false);
+
+  // Role Selection System state
+  const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>('none');
 
   // Sommelier Dialog state
   const [showSommelierDialog, setShowSommelierDialog] = useState(false);
@@ -1813,6 +1818,25 @@ export default function SoloLevelingSpatial() {
     return () => clearInterval(interval);
   }, []);
 
+  // Role Selection System - Entry Point
+  if (selectedRole === 'none') {
+    return (
+      <RoleSelectionScreen 
+        onSelectRole={(role) => setSelectedRole(role)}
+      />
+    );
+  }
+
+  // Creator Portal Experience
+  if (selectedRole === 'creator') {
+    return (
+      <CreatorPortalDashboard 
+        onLogout={() => setSelectedRole('none')}
+      />
+    );
+  }
+
+  // Player Experience - Main Game Interface
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
       
