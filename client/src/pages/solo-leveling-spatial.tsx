@@ -54,6 +54,7 @@ import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes'
 import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSystem9';
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
+import { AutoWeatherSystem } from '@/components/DynamicWeatherSystem';
 
 interface CoreStats {
   strength: number;
