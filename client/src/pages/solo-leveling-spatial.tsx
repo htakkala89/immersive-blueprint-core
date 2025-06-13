@@ -2370,30 +2370,7 @@ export default function SoloLevelingSpatial() {
     }
   }, [selectedRole, loadedProfileId]);
 
-  // Role Selection Screen - Entry Point
-  if (selectedRole === 'none') {
-    return (
-      <RoleSelectionScreen 
-        onSelectRole={(role, profileId) => {
-          setSelectedRole(role);
-          if (profileId) {
-            setLoadedProfileId(profileId);
-          }
-        }}
-      />
-    );
-  }
-
-  // Creator Portal Experience
-  if (selectedRole === 'creator') {
-    return (
-      <CreatorPortalDashboard 
-        onLogout={() => setSelectedRole('none')}
-      />
-    );
-  }
-
-  // Episode integration - start episode and return to spatial world (must be before conditional returns)
+  // Episode integration - start episode and return to spatial world
   useEffect(() => {
     if (currentEpisode && !activeEpisode) {
       // Load and start the episode in the background
@@ -2424,6 +2401,29 @@ export default function SoloLevelingSpatial() {
         });
     }
   }, [currentEpisode, activeEpisode]);
+
+  // Role Selection Screen - Entry Point
+  if (selectedRole === 'none') {
+    return (
+      <RoleSelectionScreen 
+        onSelectRole={(role, profileId) => {
+          setSelectedRole(role);
+          if (profileId) {
+            setLoadedProfileId(profileId);
+          }
+        }}
+      />
+    );
+  }
+
+  // Creator Portal Experience
+  if (selectedRole === 'creator') {
+    return (
+      <CreatorPortalDashboard 
+        onLogout={() => setSelectedRole('none')}
+      />
+    );
+  }
 
   // System 18: Episode Selection and Player - Early Returns
   if (showEpisodeSelector) {
