@@ -383,7 +383,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'mission_board',
       label: 'Mission Board',
       icon: MapPin,
-      position: { x: 25, y: 35 },
+      position: { x: 10, y: 15 },
       thoughtPrompt: 'Check the board for new gate alerts.',
       outcome: 'Opens read-only UI panel listing high-rank gates around the world for lore and world-building.',
       gameLogic: 'lore_panel_display'
@@ -392,7 +392,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'receptionist',
       label: 'Receptionist',
       icon: Users,
-      position: { x: 65, y: 45 },
+      position: { x: 90, y: 50 },
       thoughtPrompt: 'Ask the receptionist for any rumors.',
       outcome: 'Brief dialogue with Guild employee NPC providing rotating gameplay hint or rumor.',
       gameLogic: 'npc_dialogue_hints'
@@ -402,7 +402,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'elevator_bank',
       label: 'Elevator Bank',
       icon: Building,
-      position: { x: 45, y: 70 },
+      position: { x: 50, y: 90 },
       thoughtPrompt: 'Take the elevator to upper floors.',
       outcome: 'Provides access to restricted Hunter Association floors with advanced facilities.',
       gameLogic: 'floor_navigation_system'
@@ -415,7 +415,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'sparring_ring',
       label: 'Sparring Ring',
       icon: Shield,
-      position: { x: 40, y: 35 },
+      position: { x: 50, y: 10 },
       thoughtPrompt: 'Challenge Hae-In to a light spar.',
       outcome: 'Acts as shortcut to initiate Sparring Session activity from Daily Life Hub if conditions are met.',
       gameLogic: 'system_4_sparring_shortcut'
@@ -424,7 +424,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'combat_analytics',
       label: 'Combat Analytics Monitor',
       icon: Eye,
-      position: { x: 70, y: 50 },
+      position: { x: 90, y: 50 },
       thoughtPrompt: 'Review our last raid.',
       outcome: 'Opens UI panel with stylized stats from last completed dungeon. Triggers Review Raid Footage buff.',
       gameLogic: 'raid_stats_ui_buff'
@@ -433,7 +433,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'equipment_rack',
       label: 'Equipment Rack',
       icon: Shield,
-      position: { x: 25, y: 65 },
+      position: { x: 10, y: 90 },
       thoughtPrompt: 'Check the training equipment.',
       outcome: 'Inspects available training gear and weapons for skill enhancement sessions.',
       gameLogic: 'equipment_inspection_training'
