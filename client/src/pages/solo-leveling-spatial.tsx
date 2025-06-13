@@ -500,7 +500,8 @@ export default function SoloLevelingSpatial() {
   const [showDevTools, setShowDevTools] = useState(false);
   
   // Episode system state
-  const [chaHaeInCurrentLocation, setChaHaeInCurrentLocation] = useState<string | null>(null);
+  const [chaHaeInLocationOverride, setChaHaeInLocationOverride] = useState<string | null>(null);
+  const [pendingFurnitureItem, setPendingFurnitureItem] = useState<any>(null);
 
   
   // Debug logging for dungeon raid state
@@ -595,7 +596,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  const currentChaHaeInLocation = chaHaeInCurrentLocation || getChaHaeInLocation();
+  const currentChaHaeInLocation = chaHaeInLocationOverride || getChaHaeInLocation();
 
   // Helper function for receptionist dialogue - rotating pre-scripted hints
   const getReceptionistDialogue = (): string => {
@@ -1993,7 +1994,7 @@ export default function SoloLevelingSpatial() {
 
       case 'FORCE_CHA_LOCATION':
         // Override Cha Hae-In's location presence
-        setChaHaeInCurrentLocation(action.location);
+        setChaHaeInLocationOverride(action.location);
         break;
 
       case 'START_DIALOGUE_SCENE':
@@ -2038,7 +2039,7 @@ export default function SoloLevelingSpatial() {
 
       case 'REMOVE_CHA_LOCATION_OVERRIDE':
         // Return Cha Hae-In to normal scheduling
-        setChaHaeInCurrentLocation(null);
+        setChaHaeInLocationOverride(null);
         break;
 
       case 'COMPLETE_QUEST':
