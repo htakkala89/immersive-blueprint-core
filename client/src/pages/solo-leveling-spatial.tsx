@@ -3945,21 +3945,23 @@ export default function SoloLevelingSpatial() {
               height: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
               maxHeight: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
               paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
-              backdropFilter: 'blur(20px) saturate(180%)',
+              backdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
+              WebkitBackdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
               background: `
                 linear-gradient(135deg, 
-                  rgba(30, 41, 59, 0.3) 0%, 
-                  rgba(51, 65, 85, 0.25) 25%,
-                  rgba(30, 41, 59, 0.28) 50%,
-                  rgba(15, 23, 42, 0.35) 75%,
-                  rgba(30, 41, 59, 0.25) 100%
+                  rgba(30, 41, 59, 0.15) 0%, 
+                  rgba(51, 65, 85, 0.12) 25%,
+                  rgba(30, 41, 59, 0.14) 50%,
+                  rgba(15, 23, 42, 0.18) 75%,
+                  rgba(30, 41, 59, 0.12) 100%
                 ),
-                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.04) 0%, transparent 50%)
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.03) 0%, transparent 50%)
               `,
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              borderBottom: 'none'
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderBottom: 'none',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -3972,9 +3974,11 @@ export default function SoloLevelingSpatial() {
               <motion.button
                 className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-colors z-[10000]"
                 style={{
-                  backdropFilter: 'blur(12px) saturate(150%)',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)'
+                  backdropFilter: 'blur(20px) saturate(180%) brightness(1.2)',
+                  WebkitBackdropFilter: 'blur(20px) saturate(180%) brightness(1.2)',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
                 }}
                 onClick={exitFocusMode}
                 whileHover={{ 
@@ -3993,8 +3997,16 @@ export default function SoloLevelingSpatial() {
               <motion.div
                 className="rounded-lg p-4 flex-1 mb-3 flex flex-col"
                 style={{
-                  backdropFilter: 'blur(16px) saturate(180%)',
+                  backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
+                  WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
                   background: `
+                    linear-gradient(135deg, 
+                      rgba(255, 255, 255, 0.08) 0%,
+                      rgba(255, 255, 255, 0.05) 25%,
+                      rgba(255, 255, 255, 0.06) 50%,
+                      rgba(255, 255, 255, 0.04) 75%,
+                      rgba(255, 255, 255, 0.07) 100%
+                    ),
                     linear-gradient(135deg, 
                       rgba(30, 41, 59, 0.65) 0%, 
                       rgba(51, 65, 85, 0.6) 25%,
@@ -4003,7 +4015,8 @@ export default function SoloLevelingSpatial() {
                       rgba(30, 41, 59, 0.65) 100%
                     )
                   `,
-                  border: '1px solid rgba(139, 92, 246, 0.3)'
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.1)'
                 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -4178,29 +4191,46 @@ export default function SoloLevelingSpatial() {
                         key={index}
                         className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
                         style={{
-                          backdropFilter: 'blur(12px) saturate(150%)',
+                          backdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
+                          WebkitBackdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
                           background: `
                             linear-gradient(135deg, 
-                              rgba(139, 92, 246, 0.15) 0%, 
-                              rgba(168, 85, 247, 0.12) 25%,
-                              rgba(139, 92, 246, 0.13) 50%,
-                              rgba(124, 58, 237, 0.15) 75%,
-                              rgba(139, 92, 246, 0.12) 100%
+                              rgba(255, 255, 255, 0.1) 0%,
+                              rgba(255, 255, 255, 0.08) 25%,
+                              rgba(255, 255, 255, 0.09) 50%,
+                              rgba(255, 255, 255, 0.07) 75%,
+                              rgba(255, 255, 255, 0.1) 100%
+                            ),
+                            linear-gradient(135deg, 
+                              rgba(139, 92, 246, 0.12) 0%, 
+                              rgba(168, 85, 247, 0.1) 25%,
+                              rgba(139, 92, 246, 0.11) 50%,
+                              rgba(124, 58, 237, 0.12) 75%,
+                              rgba(139, 92, 246, 0.1) 100%
                             )
                           `,
-                          border: '1px solid rgba(139, 92, 246, 0.25)'
+                          border: '1px solid rgba(255, 255, 255, 0.2)',
+                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                         }}
                         whileHover={{ 
                           scale: 1.05,
                           background: `
                             linear-gradient(135deg, 
-                              rgba(139, 92, 246, 0.4) 0%, 
-                              rgba(168, 85, 247, 0.35) 25%,
-                              rgba(139, 92, 246, 0.37) 50%,
-                              rgba(124, 58, 237, 0.4) 75%,
-                              rgba(139, 92, 246, 0.35) 100%
+                              rgba(255, 255, 255, 0.15) 0%,
+                              rgba(255, 255, 255, 0.12) 25%,
+                              rgba(255, 255, 255, 0.14) 50%,
+                              rgba(255, 255, 255, 0.11) 75%,
+                              rgba(255, 255, 255, 0.15) 100%
+                            ),
+                            linear-gradient(135deg, 
+                              rgba(139, 92, 246, 0.25) 0%, 
+                              rgba(168, 85, 247, 0.22) 25%,
+                              rgba(139, 92, 246, 0.24) 50%,
+                              rgba(124, 58, 237, 0.25) 75%,
+                              rgba(139, 92, 246, 0.22) 100%
                             )
-                          `
+                          `,
+                          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
                         }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handlePlayerResponse(prompt)}
