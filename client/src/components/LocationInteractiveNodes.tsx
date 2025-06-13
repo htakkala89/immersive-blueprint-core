@@ -448,7 +448,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'vanity_table',
       label: 'Vanity Table',
       icon: Eye,
-      position: { x: 20, y: 25 },
+      position: { x: 20, y: 65 },
       thoughtPrompt: 'Look at her personal items.',
       outcome: 'Observe Cha Hae-In\'s elegant makeup collection and personal accessories, gaining insight into her private life.',
       gameLogic: 'intimacy_insight_system_6'
@@ -457,7 +457,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bookshelf',
       label: 'Bookshelf',
       icon: Building,
-      position: { x: 80, y: 20 },
+      position: { x: 80, y: 60 },
       thoughtPrompt: 'Browse her book collection.',
       outcome: 'Discover her reading preferences - hunter manuals, poetry, and romantic novels that reveal her softer side.',
       gameLogic: 'character_depth_system_6'
@@ -466,7 +466,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bed',
       label: 'Bed',
       icon: Bed,
-      position: { x: 50, y: 50 },
+      position: { x: 50, y: 90 },
       thoughtPrompt: 'Notice the carefully made bed.',
       outcome: 'Admire her attention to detail and disciplined lifestyle. Unlocks deeper understanding of her character.',
       gameLogic: 'intimacy_progression_system_5'
@@ -475,7 +475,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'window_view',
       label: 'Window View',
       icon: Eye,
-      position: { x: 80, y: 75 },
+      position: { x: 80, y: 95 },
       thoughtPrompt: 'Look out her window.',
       outcome: 'Enjoy the view she wakes up to every morning - the Seoul skyline with hunter gates visible in distance.',
       gameLogic: 'atmospheric_immersion'
@@ -484,7 +484,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'tea_station',
       label: 'Tea Station',
       icon: Coffee,
-      position: { x: 20, y: 80 },
+      position: { x: 20, y: 95 },
       thoughtPrompt: 'Notice her tea collection.',
       outcome: 'Discover she enjoys traditional Korean teas. Option to prepare tea together for affection boost.',
       gameLogic: 'system_6_affection_activity'

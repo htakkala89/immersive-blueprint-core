@@ -3731,7 +3731,7 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="fixed bottom-4 left-4 right-4 rounded-2xl shadow-2xl z-[9999]"
+            className="fixed bottom-4 left-4 right-4 rounded-2xl shadow-2xl z-[9999] max-w-md mx-auto"
             style={{ 
               maxHeight: '60vh',
               backdropFilter: 'blur(120px) saturate(300%)',
@@ -3754,7 +3754,7 @@ export default function SoloLevelingSpatial() {
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            <div className="p-3 flex flex-col h-full">
+            <div className="p-4 flex flex-col h-full min-h-0">
               
               {/* Close Button - Enhanced Glassmorphism */}
               <motion.button
