@@ -2869,6 +2869,7 @@ export default function SoloLevelingSpatial() {
         {/* Enhanced Interactive Nodes System */}
         <LocationInteractiveNodes
           locationId={playerLocation}
+          activeQuests={gameState.activeQuests}
           playerStats={{
             affection: gameState.affection,
             gold: gameState.gold || 0,
@@ -2946,14 +2947,100 @@ export default function SoloLevelingSpatial() {
             }
             
             switch (nodeId) {
+              case 'quest_gate_entrance':
               case 'red_gate_entrance':
               case 'red_gate':
-                // Enter the Red Gate dungeon for quest completion
-                console.log('🚪 RED GATE ENTRANCE CASE MATCHED - Opening dungeon raid');
-                console.log('Current showDungeonRaid state:', showDungeonRaid);
+                // Enter the quest gate or Red Gate dungeon for quest completion
+                console.log('🚪 QUEST GATE ENTRANCE - Opening dungeon raid');
                 setShowDungeonRaid(true);
-                console.log('Dungeon raid state set to true');
-                console.log('🎯 Red Gate case executed successfully');
+                
+                // Complete quest objective if this is a quest interaction
+                if (activeQuestAtLocation && nodeId === 'quest_gate_entrance') {
+                  setGameState(prev => ({
+                    ...prev,
+                    activeQuests: prev.activeQuests?.map(quest => 
+                      quest.id === activeQuestAtLocation.id 
+                        ? { 
+                            ...quest, 
+                            progress: 100,
+                            objectives: quest.objectives.map(obj => ({ ...obj, completed: true }))
+                          }
+                        : quest
+                    ) || []
+                  }));
+                  console.log(`Quest completed: ${activeQuestAtLocation.title}`);
+                }
+                break;
+                
+              case 'quest_monster_spawn':
+                // Handle monster hunt quest objectives
+                console.log('🐺 QUEST MONSTER HUNT - Initiating combat');
+                setShowDungeonRaid(true);
+                
+                if (activeQuestAtLocation) {
+                  setGameState(prev => ({
+                    ...prev,
+                    activeQuests: prev.activeQuests?.map(quest => 
+                      quest.id === activeQuestAtLocation.id 
+                        ? { ...quest, progress: Math.min(100, (quest.progress || 0) + 50) }
+                        : quest
+                    ) || []
+                  }));
+                }
+                break;
+                
+              case 'quest_investigation_point':
+                // Handle investigation quest objectives
+                console.log('🔍 QUEST INVESTIGATION - Examining clues');
+                
+                if (activeQuestAtLocation) {
+                  setGameState(prev => ({
+                    ...prev,
+                    activeQuests: prev.activeQuests?.map(quest => 
+                      quest.id === activeQuestAtLocation.id 
+                        ? { ...quest, progress: Math.min(100, (quest.progress || 0) + 30) }
+                        : quest
+                    ) || []
+                  }));
+                  
+                  handleEnvironmentalInteraction({
+                    id: 'quest_investigation',
+                    action: 'You carefully examine the area and discover important clues related to your investigation. The evidence points to suspicious activity that confirms your suspicions.',
+                    name: 'Investigation Discovery',
+                    x: 30,
+                    y: 60
+                  });
+                }
+                break;
+                
+              case 'quest_delivery_target':
+                // Handle delivery quest objectives
+                console.log('📦 QUEST DELIVERY - Completing delivery');
+                
+                if (activeQuestAtLocation) {
+                  setGameState(prev => ({
+                    ...prev,
+                    activeQuests: prev.activeQuests?.map(quest => 
+                      quest.id === activeQuestAtLocation.id 
+                        ? { 
+                            ...quest, 
+                            progress: 100,
+                            objectives: quest.objectives.map(obj => ({ ...obj, completed: true }))
+                          }
+                        : quest
+                    ) || []
+                  }));
+                  
+                  handleEnvironmentalInteraction({
+                    id: 'quest_delivery',
+                    action: 'You successfully complete the delivery objective. The recipient confirms receipt and thanks you for your prompt service.',
+                    name: 'Delivery Complete',
+                    x: 80,
+                    y: 40
+                  });
+                  
+                  console.log(`Delivery quest completed: ${activeQuestAtLocation.title}`);
+                }
                 break;
               case 'jewelry_counter':
                 // Open Item Inspection View for jewelry

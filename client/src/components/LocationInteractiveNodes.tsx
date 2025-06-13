@@ -560,23 +560,120 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
   ]
 };
 
+interface LocationNodesPropsWithQuests extends LocationNodesProps {
+  activeQuests?: Array<{
+    id: string;
+    title: string;
+    targetLocation: string;
+    objectives: Array<{
+      id: string;
+      description: string;
+      completed: boolean;
+    }>;
+  }>;
+}
+
 export function LocationInteractiveNodes({ 
   locationId, 
   onNodeInteraction, 
   playerStats, 
-  environmentalContext 
-}: LocationNodesProps) {
+  environmentalContext,
+  activeQuests 
+}: LocationNodesPropsWithQuests) {
   const [selectedNode, setSelectedNode] = useState<InteractiveNode | null>(null);
   const [showThoughtPrompt, setShowThoughtPrompt] = useState(false);
   const [nearbyNodes, setNearbyNodes] = useState<string[]>([]);
 
   const baseNodes = LOCATION_NODES[locationId] || [];
   
+  // Generate quest-specific nodes for active quests at this location
+  const getQuestNodes = (): InteractiveNode[] => {
+    if (!activeQuests) return [];
+    
+    const questsAtLocation = activeQuests.filter(quest => 
+      quest.targetLocation === locationId && 
+      quest.objectives.some(obj => !obj.completed)
+    );
+    
+    return questsAtLocation.flatMap(quest => {
+      const questNodes: InteractiveNode[] = [];
+      
+      // Generate gate entrance for gate clearance quests
+      if (quest.title.toLowerCase().includes('gate') || 
+          quest.objectives.some(obj => obj.description.toLowerCase().includes('gate'))) {
+        questNodes.push({
+          id: 'quest_gate_entrance',
+          label: 'Gate Entrance',
+          icon: Shield,
+          position: { x: 50, y: 30 },
+          thoughtPrompt: 'Enter the dimensional gate to complete the quest',
+          outcome: 'Opens dungeon raid interface for quest completion',
+          gameLogic: 'quest_gate_completion',
+          requirements: []
+        });
+      }
+      
+      // Generate monster hunt nodes for hunting quests
+      if (quest.title.toLowerCase().includes('hunt') || 
+          quest.objectives.some(obj => obj.description.toLowerCase().includes('monster'))) {
+        questNodes.push({
+          id: 'quest_monster_spawn',
+          label: 'Monster Activity',
+          icon: Zap,
+          position: { x: 70, y: 70 },
+          thoughtPrompt: 'Investigate the monster sighting',
+          outcome: 'Initiates combat encounter for quest progression',
+          gameLogic: 'quest_monster_hunt',
+          requirements: []
+        });
+      }
+      
+      // Generate investigation nodes for mystery quests
+      if (quest.title.toLowerCase().includes('investigate') || 
+          quest.objectives.some(obj => obj.description.toLowerCase().includes('investigate'))) {
+        questNodes.push({
+          id: 'quest_investigation_point',
+          label: 'Investigation Point',
+          icon: Eye,
+          position: { x: 30, y: 60 },
+          thoughtPrompt: 'Examine the area for clues',
+          outcome: 'Reveals quest information and advances objectives',
+          gameLogic: 'quest_investigation',
+          requirements: []
+        });
+      }
+      
+      // Generate delivery nodes for courier quests
+      if (quest.title.toLowerCase().includes('deliver') || 
+          quest.objectives.some(obj => obj.description.toLowerCase().includes('deliver'))) {
+        questNodes.push({
+          id: 'quest_delivery_target',
+          label: 'Delivery Target',
+          icon: Users,
+          position: { x: 80, y: 40 },
+          thoughtPrompt: 'Complete the delivery objective',
+          outcome: 'Delivers quest item and completes objective',
+          gameLogic: 'quest_delivery_completion',
+          requirements: []
+        });
+      }
+      
+      return questNodes;
+    });
+  };
+  
   // System 3: Environmental State Management - Filter nodes based on context
   const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
-    if (!environmentalContext) return baseNodes;
+    // Combine base nodes with quest-generated nodes
+    const questNodes = getQuestNodes();
+    const allNodes = [...baseNodes, ...questNodes];
     
-    return baseNodes.filter(node => {
+    if (!environmentalContext) return allNodes;
+    
+    return allNodes.filter(node => {
+      // Quest nodes are always available if quest is active
+      if (node.id.startsWith('quest_')) return true;
+      
       // Weather-based availability
       if (node.environmentalStates?.weather && 
           !node.environmentalStates.weather.includes(environmentalContext.weather)) {
