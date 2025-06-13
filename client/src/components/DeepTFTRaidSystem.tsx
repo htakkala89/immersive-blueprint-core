@@ -175,6 +175,12 @@ export function DeepTFTRaidSystem({
   const [availableItems, setAvailableItems] = useState<Item[]>([]);
   const [activeTraits, setActiveTraits] = useState<Trait[]>([]);
   
+  // Drag and Drop State
+  const [draggedUnit, setDraggedUnit] = useState<Character | null>(null);
+  const [dragSource, setDragSource] = useState<'board' | 'bench' | null>(null);
+  const [dragSourceIndex, setDragSourceIndex] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  
   // Visual Effects
   const [damageNumbers, setDamageNumbers] = useState<any[]>([]);
   const [animations, setAnimations] = useState<any[]>([]);
@@ -614,6 +620,73 @@ export function DeepTFTRaidSystem({
     };
   }, [gamePhase, isAutoCombat, combatUnits]);
 
+  // Drag and Drop Handlers
+  const handleDragStart = (unit: Character, source: 'board' | 'bench', sourceIndex: number) => {
+    setDraggedUnit(unit);
+    setDragSource(source);
+    setDragSourceIndex(sourceIndex);
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedUnit(null);
+    setDragSource(null);
+    setDragSourceIndex(null);
+    setIsDragging(false);
+  };
+
+  const handleDrop = (targetIndex: number, targetType: 'board' | 'bench') => {
+    if (!draggedUnit || dragSource === null || dragSourceIndex === null) return;
+
+    const newBoard = [...board];
+    const newBench = [...bench];
+
+    // Remove unit from source
+    if (dragSource === 'board') {
+      newBoard[dragSourceIndex] = null;
+    } else {
+      newBench[dragSourceIndex] = null;
+    }
+
+    // Place unit at target
+    if (targetType === 'board') {
+      // Check if target board position is valid
+      if (newBoard.filter(u => u !== null).length < 7 || newBoard[targetIndex] !== null) {
+        if (newBoard[targetIndex] !== null) {
+          // Swap units if target is occupied
+          const swappedUnit = newBoard[targetIndex];
+          if (dragSource === 'board') {
+            newBoard[dragSourceIndex] = swappedUnit;
+          } else {
+            // Find empty bench slot for swapped unit
+            const emptyBenchSlot = newBench.findIndex(slot => slot === null);
+            if (emptyBenchSlot !== -1) {
+              newBench[emptyBenchSlot] = swappedUnit;
+            }
+          }
+        }
+        newBoard[targetIndex] = draggedUnit;
+      }
+    } else {
+      // Place on bench
+      if (newBench[targetIndex] !== null) {
+        // Swap units
+        const swappedUnit = newBench[targetIndex];
+        if (dragSource === 'board') {
+          newBoard[dragSourceIndex] = swappedUnit;
+        } else {
+          newBench[dragSourceIndex] = swappedUnit;
+        }
+      }
+      newBench[targetIndex] = draggedUnit;
+    }
+
+    setBoard(newBoard);
+    setBench(newBench);
+    calculateTraits();
+    handleDragEnd();
+  };
+
   const runCombatSimulation = () => {
     // Combat is now handled by useEffect above
     console.log('Combat simulation started with', combatUnits.length, 'units');
@@ -697,47 +770,38 @@ export function DeepTFTRaidSystem({
         {/* Main Board Area */}
         <div className="absolute inset-x-4 top-32 bottom-32 bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden">
           {gamePhase === 'setup' && (
-            /* Setup Phase - Hex Grid Board */
+            /* Setup Phase - Draggable Hex Grid Board */
             <div className="absolute inset-4 grid grid-cols-7 grid-rows-4 gap-1">
               {board.map((unit, index) => (
                 <div
                   key={index}
                   className={`relative aspect-square rounded-lg border-2 ${
                     unit ? 'border-blue-400 bg-blue-900/30' : 'border-slate-600 bg-slate-700/30'
-                  } hover:border-blue-300 transition-colors cursor-pointer`}
-                  onClick={() => {
-                    if (!unit && bench.some(b => b !== null)) {
-                      const availableUnit = bench.find(b => b !== null);
-                      if (availableUnit && board.filter(b => b !== null).length < 7) {
-                        const benchIndex = bench.findIndex(b => b?.id === availableUnit.id);
-                        const newBench = [...bench];
-                        const newBoard = [...board];
-                        
-                        newBench[benchIndex] = null;
-                        newBoard[index] = availableUnit;
-                        
-                        setBench(newBench);
-                        setBoard(newBoard);
-                        calculateTraits();
-                      }
-                    } else if (unit) {
-                      const benchSlot = bench.findIndex(b => b === null);
-                      if (benchSlot !== -1) {
-                        const newBench = [...bench];
-                        const newBoard = [...board];
-                        
-                        newBench[benchSlot] = unit;
-                        newBoard[index] = null;
-                        
-                        setBench(newBench);
-                        setBoard(newBoard);
-                        calculateTraits();
-                      }
-                    }
+                  } hover:border-blue-300 transition-colors ${
+                    isDragging ? 'border-yellow-400' : ''
+                  }`}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.add('border-yellow-400', 'bg-yellow-900/20');
+                  }}
+                  onDragLeave={(e) => {
+                    e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
+                    handleDrop(index, 'board');
                   }}
                 >
                   {unit && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                    <div
+                      draggable
+                      onDragStart={() => handleDragStart(unit, 'board', index)}
+                      onDragEnd={handleDragEnd}
+                      className={`absolute inset-0 flex flex-col items-center justify-center text-white cursor-move ${
+                        isDragging && draggedUnit?.id === unit.id ? 'opacity-50' : ''
+                      }`}
+                    >
                       <div className="text-xs font-bold truncate w-full text-center px-1">
                         {unit.name.split(' ')[0]}
                       </div>
@@ -925,7 +989,7 @@ export function DeepTFTRaidSystem({
             </div>
           </div>
 
-          {/* Bench */}
+          {/* Draggable Bench */}
           <div>
             <h4 className="text-white font-bold mb-2">Bench ({bench.filter(u => u !== null).length}/9)</h4>
             <div className="flex gap-2">
@@ -934,13 +998,31 @@ export function DeepTFTRaidSystem({
                   key={index}
                   className={`relative w-16 h-16 rounded border-2 ${
                     unit ? 'border-green-400 bg-green-900/30' : 'border-slate-600 bg-slate-700/30'
-                  } cursor-pointer hover:border-green-300 transition-colors`}
-                  onClick={() => {
-                    // Handle bench interactions
+                  } hover:border-green-300 transition-colors ${
+                    isDragging ? 'border-yellow-400' : ''
+                  }`}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.add('border-yellow-400', 'bg-yellow-900/20');
+                  }}
+                  onDragLeave={(e) => {
+                    e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
+                    handleDrop(index, 'bench');
                   }}
                 >
                   {unit && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                    <div
+                      draggable
+                      onDragStart={() => handleDragStart(unit, 'bench', index)}
+                      onDragEnd={handleDragEnd}
+                      className={`absolute inset-0 flex flex-col items-center justify-center text-white cursor-move ${
+                        isDragging && draggedUnit?.id === unit.id ? 'opacity-50' : ''
+                      }`}
+                    >
                       <div className="text-xs font-bold truncate w-full text-center px-1">
                         {unit.name.substring(0, 4)}
                       </div>
@@ -949,6 +1031,13 @@ export function DeepTFTRaidSystem({
                           <Star key={i} className="w-1.5 h-1.5 fill-yellow-400 text-yellow-400" />
                         ))}
                       </div>
+                    </div>
+                  )}
+                  
+                  {/* Drop Zone Indicator */}
+                  {!unit && isDragging && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-yellow-400 text-xs font-bold">DROP</div>
                     </div>
                   )}
                 </div>
