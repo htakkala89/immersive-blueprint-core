@@ -186,6 +186,12 @@ export function CoopSkillTrainingModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        onClick={(e) => {
+          // Only close if clicking the backdrop, not the modal content
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -197,6 +203,7 @@ export function CoopSkillTrainingModal({
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Tech overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/60 via-blue-900/70 to-indigo-900/60" />
@@ -251,10 +258,13 @@ export function CoopSkillTrainingModal({
                   </div>
                 </div>
 
-                <div className="text-center">
+                <div className="text-center relative z-50">
                   <Button
-                    onClick={() => setGamePhase('countdown')}
-                    className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white text-lg"
+                    onClick={() => {
+                      console.log('Begin Training clicked - starting countdown phase');
+                      setGamePhase('countdown');
+                    }}
+                    className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 relative z-50"
                   >
                     Begin Training
                   </Button>
