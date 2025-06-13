@@ -1,0 +1,121 @@
+{
+  "id": "EP01_Red_Echo",
+  "title": "Episode 1: Echoes of the Red Gate",
+  "prerequisite": {
+    "player_level": 25,
+    "relationship_level": 4
+  },
+  "beats": [
+    {
+      "beat_id": 1.0,
+      "title": "The Ominous Discovery",
+      "trigger": "initial",
+      "actions": [
+        {
+          "command": "DELIVER_MESSAGE",
+          "params": { "target_system": 15, "sender": "Hunter Association", "message_id": "EP01_Alert_Message" }
+        },
+        {
+          "command": "ACTIVATE_QUEST",
+          "params": { "quest_id": "EP01_Main_Quest", "title": "Investigate the A-Rank Gate Alert." }
+        }
+      ],
+      "completion_condition": {
+        "event": "player_accepts_episode",
+        "params": { "quest_id": "EP01_Main_Quest" }
+      }
+    },
+    {
+      "beat_id": 1.1,
+      "title": "A Partner's Fear",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "SET_CHA_MOOD",
+          "params": { "mood": "Anxious" }
+        },
+        {
+          "command": "FORCE_CHA_LOCATION",
+          "params": { "location_id": "Hunter Association HQ" }
+        },
+        {
+          "command": "START_DIALOGUE_SCENE",
+          "params": { "dialogue_id": "EP01_Anxious_Convo" }
+        }
+      ],
+      "completion_condition": {
+        "event": "dialogue_scene_complete",
+        "params": { "dialogue_id": "EP01_Anxious_Convo" }
+      }
+    },
+    {
+      "beat_id": 1.2,
+      "title": "The Dungeon Objective",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "SET_QUEST_OBJECTIVE",
+          "params": { "quest_id": "EP01_Main_Quest", "objective_text": "Enter the Red Echo Gate with Cha Hae-In." }
+        },
+        {
+          "command": "SPAWN_LOCATION",
+          "params": { "target_system": 8, "location_id": "dungeon_red_echo", "rank": "A-Rank" }
+        }
+      ],
+      "completion_condition": {
+        "event": "player_enters_dungeon",
+        "params": { "dungeon_id": "dungeon_red_echo" }
+      }
+    },
+    {
+      "beat_id": 1.3,
+      "title": "The Aftermath",
+      "trigger": "boss_defeated",
+      "actions": [
+        {
+          "command": "REMOVE_CHA_LOCATION_OVERRIDE",
+          "params": {}
+        },
+        {
+          "command": "SET_CHA_MOOD",
+          "params": { "mood": "Relieved" }
+        },
+        {
+          "command": "START_DIALOGUE_SCENE",
+          "params": { "dialogue_id": "EP01_Aftermath_Convo" }
+        }
+      ],
+      "completion_condition": {
+        "event": "dialogue_scene_complete",
+        "params": { "dialogue_id": "EP01_Aftermath_Convo" }
+      }
+    },
+    {
+      "beat_id": 1.4,
+      "title": "Episode Complete",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "COMPLETE_QUEST",
+          "params": { "quest_id": "EP01_Main_Quest" }
+        },
+        {
+          "command": "REWARD_PLAYER",
+          "params": { "rewards": ["Gold:50000000", "Item:Shadow_Elf_Dagger"] }
+        },
+        {
+          "command": "CREATE_MEMORY_STAR",
+          "params": { "target_system": 6, "star_id": "Red_Gate_Echo_Star", "description": "We faced your past together and won.", "rank": "S_Rank" }
+        },
+        {
+          "command": "UNLOCK_ACTIVITY",
+          "params": { "target_system": 4, "activity_id": "Intimate_Activity_Cuddle_All_Morning" }
+        }
+      ],
+      "completion_condition": {
+        "event": "end_episode",
+        "params": {}
+      }
+    }
+  ]
+}

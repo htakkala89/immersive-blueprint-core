@@ -198,11 +198,48 @@ export const Quest = z.object({
   status: z.enum(['received', 'accepted', 'in_progress', 'completed', 'failed', 'expired']),
   acceptedAt: z.string().optional(), // ISO date string
   completedAt: z.string().optional(), // ISO date string
-  receivedAt: z.string(), // ISO date string
-  estimatedDuration: z.number(), // hours
-  prerequisites: z.array(z.string()).optional(),
-  isUrgent: z.boolean().default(false),
-  guildSupport: z.boolean().default(false)
+});
+
+// Episode System Data Types
+export const EpisodeAction = z.object({
+  command: z.enum([
+    "DELIVER_MESSAGE",
+    "ACTIVATE_QUEST", 
+    "SET_CHA_MOOD",
+    "FORCE_CHA_LOCATION",
+    "START_DIALOGUE_SCENE",
+    "SET_QUEST_OBJECTIVE",
+    "SPAWN_LOCATION",
+    "REMOVE_CHA_LOCATION_OVERRIDE",
+    "COMPLETE_QUEST",
+    "REWARD_PLAYER",
+    "CREATE_MEMORY_STAR",
+    "UNLOCK_ACTIVITY"
+  ]),
+  params: z.record(z.any()),
+});
+
+export const StoryBeat = z.object({
+  beat_id: z.number(),
+  title: z.string(),
+  trigger: z.string(),
+  actions: z.array(EpisodeAction),
+  completion_condition: z.object({
+    event: z.string(),
+    params: z.record(z.any()),
+  }),
+});
+
+export const EpisodeData = z.object({
+  id: z.string(),
+  title: z.string(),
+  prerequisite: z.object({
+    player_level: z.number().optional(),
+    relationship_level: z.number().optional(),
+    completed_quests: z.array(z.string()).optional(),
+    flags: z.record(z.boolean()).optional(),
+  }),
+  beats: z.array(StoryBeat),
 });
 
 export const MarketItem = z.object({
@@ -249,3 +286,6 @@ export type MarketItem = z.infer<typeof MarketItem>;
 export type WealthTransaction = z.infer<typeof WealthTransaction>;
 export type InsertGameState = z.infer<typeof insertGameStateSchema>;
 export type GameState = typeof gameStates.$inferSelect;
+export type EpisodeAction = z.infer<typeof EpisodeAction>;
+export type StoryBeat = z.infer<typeof StoryBeat>;
+export type EpisodeData = z.infer<typeof EpisodeData>;
