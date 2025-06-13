@@ -10,7 +10,8 @@ import {
   Users,
   Eye,
   Edit3,
-  Trash2
+  Trash2,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NarrativeArchitectAI } from './NarrativeArchitectAI';
