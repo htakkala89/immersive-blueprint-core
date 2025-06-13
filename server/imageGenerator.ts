@@ -166,7 +166,14 @@ async function getGoogleAccessToken(): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Get project ID and access token using Google Auth library
+    // Check if we have Google API key available
+    const accessToken = await getGoogleAccessToken();
+    if (!accessToken) {
+      console.log('Google API key not available - cannot use Imagen');
+      return null;
+    }
+
+    // Get project ID from credentials
     const credentialsPath = join(process.cwd(), 'google-credentials-fixed.json');
     let projectId: string;
     
@@ -184,23 +191,15 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       return null;
     }
 
-    // Use Google Auth library for proper authentication
-    const accessToken = await getGoogleAccessToken();
-    if (!accessToken) {
-      console.log('Failed to get Google Cloud access token');
-      return null;
-    }
-
     const location = 'us-central1';
-    // Using latest Imagen 3.0 Fast model (closest to Imagen 4 capabilities)
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
+    // Using Imagen 3.0 Fast model with API key authentication
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict?key=${accessToken}`;
     
     console.log('🎨 Attempting Google Imagen generation...');
     
     const response = await fetch(vertexEndpoint, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
