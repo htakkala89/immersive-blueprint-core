@@ -801,51 +801,93 @@ export function DeepTFTRaidSystem({
         {/* Main Board Area */}
         <div className="absolute inset-x-4 top-32 bottom-32 bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden">
           {gamePhase === 'setup' && (
-            /* Setup Phase - Draggable Hex Grid Board */
-            <div className="absolute inset-4 grid grid-cols-7 grid-rows-4 gap-1">
-              {board.map((unit, index) => (
-                <div
-                  key={index}
-                  className={`relative aspect-square rounded-lg border-2 ${
-                    unit ? 'border-blue-400 bg-blue-900/30' : 'border-slate-600 bg-slate-700/30'
-                  } hover:border-blue-300 transition-colors ${
-                    isDragging ? 'border-yellow-400' : ''
-                  }`}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    e.currentTarget.classList.add('border-yellow-400', 'bg-yellow-900/20');
-                  }}
-                  onDragLeave={(e) => {
-                    e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
-                    handleDrop(index, 'board');
-                  }}
-                >
-                  {unit && (
+            /* Setup Phase - TFT Authentic Board Layout */
+            <div className="absolute inset-4">
+              {/* Full 8x7 TFT Board Grid */}
+              <div className="grid grid-cols-7 grid-rows-8 gap-1 h-full">
+                {Array.from({ length: 56 }).map((_, index) => {
+                  const col = index % 7;
+                  const row = Math.floor(index / 7);
+                  const isPlayerRow = row >= 4; // Bottom 4 rows are player area
+                  const isEnemyRow = row < 4; // Top 4 rows are enemy area
+                  const boardIndex = isPlayerRow ? (row - 4) * 7 + col : -1;
+                  const unit = isPlayerRow && boardIndex >= 0 ? board[boardIndex] : null;
+                  
+                  return (
                     <div
-                      draggable
-                      onDragStart={() => handleDragStart(unit, 'board', index)}
-                      onDragEnd={handleDragEnd}
-                      className={`absolute inset-0 flex flex-col items-center justify-center text-white cursor-move ${
-                        isDragging && draggedUnit?.id === unit.id ? 'opacity-50' : ''
+                      key={index}
+                      className={`relative aspect-square rounded-lg border-2 ${
+                        isEnemyRow 
+                          ? 'border-red-600/30 bg-red-900/10' // Enemy area - not interactable
+                          : unit 
+                            ? 'border-blue-400 bg-blue-900/30' 
+                            : 'border-slate-600 bg-slate-700/30'
+                      } ${
+                        isPlayerRow ? 'hover:border-blue-300 transition-colors' : ''
+                      } ${
+                        isDragging && isPlayerRow ? 'border-yellow-400' : ''
                       }`}
+                      onDragOver={isPlayerRow ? (e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add('border-yellow-400', 'bg-yellow-900/20');
+                      } : undefined}
+                      onDragLeave={isPlayerRow ? (e) => {
+                        e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
+                      } : undefined}
+                      onDrop={isPlayerRow ? (e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
+                        handleDrop(boardIndex, 'board');
+                      } : undefined}
                     >
-                      <div className="text-xs font-bold truncate w-full text-center px-1">
-                        {unit.name.split(' ')[0]}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: unit.stars }).map((_, i) => (
-                          <Star key={i} className="w-2 h-2 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                      <div className="text-xs text-gray-300">T{unit.tier}</div>
+                      {/* Player Area Units */}
+                      {unit && isPlayerRow && (
+                        <div
+                          draggable
+                          onDragStart={() => handleDragStart(unit, 'board', boardIndex)}
+                          onDragEnd={handleDragEnd}
+                          className={`absolute inset-0 flex flex-col items-center justify-center text-white cursor-move ${
+                            isDragging && draggedUnit?.id === unit.id ? 'opacity-50' : ''
+                          }`}
+                        >
+                          <div className="text-xs font-bold truncate w-full text-center px-1">
+                            {unit.name.split(' ')[0]}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {Array.from({ length: unit.stars }).map((_, i) => (
+                              <Star key={i} className="w-2 h-2 fill-yellow-400 text-yellow-400" />
+                            ))}
+                          </div>
+                          <div className="text-xs text-gray-300">T{unit.tier}</div>
+                        </div>
+                      )}
+                      
+                      {/* Enemy Area Indicator */}
+                      {isEnemyRow && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-red-400/50 text-xs font-bold">ENEMY</div>
+                        </div>
+                      )}
+                      
+                      {/* Row Labels */}
+                      {col === 0 && (
+                        <div className="absolute -left-6 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+                          {row + 1}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
+                  );
+                })}
+              </div>
+              
+              {/* Column Labels */}
+              <div className="absolute -top-6 left-0 right-0 grid grid-cols-7 gap-1">
+                {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map((letter, index) => (
+                  <div key={letter} className="text-center text-xs text-gray-400">
+                    {letter}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
