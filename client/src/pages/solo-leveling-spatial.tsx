@@ -4131,8 +4131,8 @@ export default function SoloLevelingSpatial() {
                       ref={conversationScrollRef}
                       className="space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
                       style={{ 
-                        maxHeight: '400px',
-                        height: '400px'
+                        maxHeight: '350px',
+                        height: '350px'
                       }}
                     >
                       {conversationHistory.map((entry, index) => (
@@ -5256,7 +5256,7 @@ export default function SoloLevelingSpatial() {
         playerLocation={gameState.currentScene}
         timeOfDay={timeOfDay}
         activeQuests={gameState.activeQuests || []}
-        chaHaeInAvatar={avatarImage}
+        chaHaeInAvatar={avatarImage || undefined}
       />
 
       {/* System 3: Quest Log - Accessed via Monarch's Aura */}
