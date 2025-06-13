@@ -2,6 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Responsive Touch Enhancements */
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+  
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+  
+  .touch-pinch-zoom {
+    touch-action: pinch-zoom;
+  }
+  
+  /* Mobile-optimized scrolling */
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Prevent text selection on interactive elements */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Better focus visibility for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-75;
+  }
+  
+  /* Mobile-friendly button sizing */
+  .btn-touch {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  @media (max-width: 640px) {
+    .btn-touch {
+      min-height: 48px;
+      min-width: 48px;
+    }
+  }
+}
+
 /* Custom Scrollbar for Character Command */
 .character-scrollbar::-webkit-scrollbar {
   width: 8px;

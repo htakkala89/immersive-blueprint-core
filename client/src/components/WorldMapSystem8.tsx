@@ -50,28 +50,31 @@ export function WorldMapSystem8({
   const [selectedLocation, setSelectedLocation] = useState<LocationNode | null>(null);
   const [locationImage, setLocationImage] = useState<string | null>(null);
 
-  // Responsive grid system for different screen sizes
+  // Enhanced responsive grid system with better mobile layout
   const getResponsiveLayout = () => {
     const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
     const screenHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
     
-    if (screenWidth < 640) { // Mobile
+    if (screenWidth < 640) { // Mobile Portrait
       return {
         grid: { cols: 1, rows: 5 },
-        zoneSize: { width: 85, height: 16 },
-        gap: 2
+        zoneSize: { width: 90, height: 15 },
+        gap: 3,
+        touchTarget: { min: 48, optimal: 56 }
       };
     } else if (screenWidth < 1024) { // Tablet
       return {
         grid: { cols: 2, rows: 3 },
-        zoneSize: { width: 45, height: 28 },
-        gap: 5
+        zoneSize: { width: 46, height: 30 },
+        gap: 4,
+        touchTarget: { min: 44, optimal: 52 }
       };
     } else { // Desktop
       return {
         grid: { cols: 2, rows: 3 },
-        zoneSize: { width: 40, height: 40 },
-        gap: 8
+        zoneSize: { width: 42, height: 38 },
+        gap: 6,
+        touchTarget: { min: 40, optimal: 48 }
       };
     }
   };
