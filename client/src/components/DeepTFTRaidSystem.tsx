@@ -818,10 +818,10 @@ export function DeepTFTRaidSystem({
                       key={index}
                       className={`relative aspect-square rounded-lg border-2 ${
                         isEnemyRow 
-                          ? 'border-red-600/30 bg-red-900/10' // Enemy area - not interactable
+                          ? 'border-red-600/50 bg-red-900/20' // Enemy area - more visible
                           : unit 
-                            ? 'border-blue-400 bg-blue-900/30' 
-                            : 'border-slate-600 bg-slate-700/30'
+                            ? 'border-blue-400 bg-blue-900/40' 
+                            : 'border-slate-500 bg-slate-800/50' // Player area more distinct
                       } ${
                         isPlayerRow ? 'hover:border-blue-300 transition-colors' : ''
                       } ${
