@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -1924,23 +1924,18 @@ export default function SoloLevelingSpatial() {
       setEpisodeBeatIndex(0);
       setEpisodeChoices({});
       
-      // Execute first beat
-      executeEpisodeBeat(episode, 0);
+      // Execute first beat immediately
+      const firstBeat = episode.beats[0];
+      if (firstBeat) {
+        firstBeat.actions.forEach((action: any, actionIndex: number) => {
+          setTimeout(() => {
+            executeStoryAction(action);
+          }, actionIndex * 1000);
+        });
+      }
     } catch (error) {
       console.error('Error starting episode:', error);
     }
-  };
-
-  const executeEpisodeBeat = (episode: any, beatIndex: number) => {
-    const beat = episode.beats[beatIndex];
-    if (!beat) return;
-
-    // Execute all actions in the beat sequentially
-    beat.actions.forEach((action: any, actionIndex: number) => {
-      setTimeout(() => {
-        executeStoryAction(action);
-      }, actionIndex * 1000); // 1 second delay between actions
-    });
   };
 
   const executeStoryAction = (action: any) => {
@@ -2413,7 +2408,17 @@ export default function SoloLevelingSpatial() {
           const episode = data.episode;
           setActiveEpisode(episode);
           setEpisodeBeatIndex(0);
-          executeEpisodeBeat(episode, 0);
+          
+          // Execute first beat immediately
+          const firstBeat = episode.beats[0];
+          if (firstBeat) {
+            firstBeat.actions.forEach((action: any, actionIndex: number) => {
+              setTimeout(() => {
+                executeStoryAction(action);
+              }, actionIndex * 1000);
+            });
+          }
+          
           setCurrentEpisode(null); // Clear to return to spatial world
           setShowEpisodeSelector(false);
         })
