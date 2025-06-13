@@ -282,8 +282,12 @@ export default function SoloLevelingSpatial() {
   // System 18.5: Narrative Architect AI state
   const [showNarrativeArchitect, setShowNarrativeArchitect] = useState(false);
 
-  // Role Selection System state
-  const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>('none');
+  // Role Selection System state - Default to player experience
+  const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>(() => {
+    // Check URL parameters for creator mode
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('mode') === 'creator' ? 'creator' : 'player';
+  });
 
   // Sommelier Dialog state
   const [showSommelierDialog, setShowSommelierDialog] = useState(false);
@@ -1818,25 +1822,22 @@ export default function SoloLevelingSpatial() {
     return () => clearInterval(interval);
   }, []);
 
-  // Role Selection System - Entry Point
-  if (selectedRole === 'none') {
-    return (
-      <RoleSelectionScreen 
-        onSelectRole={(role) => setSelectedRole(role)}
-      />
-    );
-  }
-
-  // Creator Portal Experience
+  // Creator Portal Experience (accessible via ?mode=creator URL parameter)
   if (selectedRole === 'creator') {
     return (
       <CreatorPortalDashboard 
-        onLogout={() => setSelectedRole('none')}
+        onLogout={() => {
+          setSelectedRole('player');
+          // Clear URL parameter
+          const url = new URL(window.location.href);
+          url.searchParams.delete('mode');
+          window.history.replaceState({}, '', url.toString());
+        }}
       />
     );
   }
 
-  // Player Experience - Main Game Interface
+  // Default Player Experience - Main Game Interface
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
       
