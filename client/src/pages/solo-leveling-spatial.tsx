@@ -3944,15 +3944,15 @@ export default function SoloLevelingSpatial() {
                         >
                           {entry.type === 'user' ? (
                             // User messages: Right-aligned, italic, no bubble, ethereal color
-                            <div className="max-w-[85%] text-right">
-                              <p className="text-slate-300/80 italic leading-relaxed text-sm">
+                            <div className="max-w-[75%] text-right">
+                              <p className="text-slate-300/80 italic leading-relaxed text-sm break-words hyphens-auto">
                                 {entry.text}
                               </p>
                             </div>
                           ) : (
                             // Cha Hae-In messages: Left-aligned, bright white, script-like
-                            <div className="max-w-[85%]">
-                              <p className="text-white leading-relaxed font-medium">
+                            <div className="max-w-[75%]">
+                              <p className="text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap">
                                 {entry.text}
                               </p>
                             </div>
