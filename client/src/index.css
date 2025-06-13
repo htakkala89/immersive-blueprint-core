@@ -26,13 +26,13 @@
 /* Chat container mobile fixes */
 @media (max-width: 768px) {
   .mobile-chat-container {
-    height: calc(70vh - max(20px, env(safe-area-inset-bottom))) !important;
-    max-height: calc(70vh - max(20px, env(safe-area-inset-bottom))) !important;
+    height: calc(50vh - max(20px, env(safe-area-inset-bottom))) !important;
+    max-height: calc(50vh - max(20px, env(safe-area-inset-bottom))) !important;
   }
   
   .mobile-conversation-area {
-    height: 150px !important;
-    max-height: 150px !important;
+    height: 120px !important;
+    max-height: 120px !important;
   }
 }
 

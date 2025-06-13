@@ -3765,8 +3765,8 @@ export default function SoloLevelingSpatial() {
           <motion.div
             className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-[9999] flex flex-col mobile-chat-container"
             style={{ 
-              height: 'calc(75vh - max(20px, env(safe-area-inset-bottom)))',
-              maxHeight: 'calc(75vh - max(20px, env(safe-area-inset-bottom)))',
+              height: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
+              maxHeight: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
               paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
               backdropFilter: 'blur(20px) saturate(180%)',
               background: `
