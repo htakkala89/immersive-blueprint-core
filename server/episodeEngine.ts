@@ -212,24 +212,15 @@ export class EpisodeEngine {
       const path = await import('path');
       
       const episodePath = path.join(process.cwd(), 'server/episodes', `${episodeId}.json`);
-      console.log(`🔍 Looking for episode at: ${episodePath}`);
       
       if (fs.existsSync(episodePath)) {
-        console.log(`✅ Found episode file: ${episodeId}`);
         const content = fs.readFileSync(episodePath, 'utf-8');
-        const parsed = JSON.parse(content);
-        console.log(`📚 Loaded episode with ${parsed.beats?.length || 0} beats`);
-        return parsed;
-      } else {
-        console.log(`❌ Episode file not found: ${episodeId}`);
+        return JSON.parse(content);
       }
       
       // Fallback to default episodes
-      const defaultEpisode = this.episodes.get(episodeId);
-      console.log(`🔄 Fallback to default episode: ${defaultEpisode ? 'found' : 'not found'}`);
-      return defaultEpisode;
+      return this.episodes.get(episodeId);
     } catch (error) {
-      console.error(`💥 Error loading episode ${episodeId}:`, error);
       return this.episodes.get(episodeId);
     }
   }
