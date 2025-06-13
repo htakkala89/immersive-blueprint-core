@@ -441,13 +441,13 @@ export function DeepTFTRaidSystem({
   };
 
   const generateEnemyTeam = (): Character[] => {
-    // Generate enemy team based on round
+    // Generate enemy team based on round using dungeon monsters
     const enemyStrength = Math.min(round + 2, 6);
     const enemies: Character[] = [];
     
     for (let i = 0; i < enemyStrength; i++) {
       const enemyTier = Math.min(Math.floor(round / 2) + 1, 5);
-      const availableEnemies = CHAMPION_DATA.filter(champ => champ.tier <= enemyTier);
+      const availableEnemies = ENEMY_DATA.filter(enemy => enemy.tier <= enemyTier);
       const randomEnemy = availableEnemies[Math.floor(Math.random() * availableEnemies.length)];
       
       const enemy = createCharacterFromData({
@@ -1227,6 +1227,229 @@ const CHAMPION_DATA = [
       range: 500,
       targeting: 'area',
       effect: { summonType: 'shadow_army', damage: 250 }
+    }],
+  },
+];
+
+// Enemy Monster Data - Dungeon creatures and rival hunters
+const ENEMY_DATA = [
+  // Tier 1 - Basic Dungeon Monsters
+  {
+    baseName: 'goblin_warrior',
+    name: 'Goblin Warrior',
+    tier: 1,
+    health: 450,
+    attack: 45,
+    defense: 25,
+    traits: ['Goblin', 'Beast'],
+    abilities: [{
+      id: 'club_smash',
+      name: 'Club Smash',
+      manaCost: 50,
+      cooldown: 4000,
+      currentCooldown: 0,
+      type: 'damage',
+      range: 100,
+      targeting: 'single',
+      effect: { damage: 60 }
+    }],
+  },
+  {
+    baseName: 'orc_grunt',
+    name: 'Orc Grunt',
+    tier: 1,
+    health: 500,
+    attack: 50,
+    defense: 30,
+    traits: ['Orc', 'Beast'],
+    abilities: [{
+      id: 'rage_strike',
+      name: 'Rage Strike',
+      manaCost: 60,
+      cooldown: 5000,
+      currentCooldown: 0,
+      type: 'damage',
+      range: 120,
+      targeting: 'single',
+      effect: { damage: 70 }
+    }],
+  },
+  {
+    baseName: 'skeleton_soldier',
+    name: 'Skeleton Soldier',
+    tier: 1,
+    health: 400,
+    attack: 55,
+    defense: 20,
+    traits: ['Undead', 'Skeleton'],
+    abilities: [],
+  },
+
+  // Tier 2 - Elite Monsters
+  {
+    baseName: 'hobgoblin_chief',
+    name: 'Hobgoblin Chief',
+    tier: 2,
+    health: 700,
+    attack: 75,
+    defense: 45,
+    traits: ['Goblin', 'Elite'],
+    abilities: [{
+      id: 'war_cry',
+      name: 'War Cry',
+      manaCost: 70,
+      cooldown: 6000,
+      currentCooldown: 0,
+      type: 'buff',
+      range: 200,
+      targeting: 'all',
+      effect: { damage: 0 }
+    }],
+  },
+  {
+    baseName: 'ice_bear',
+    name: 'Ice Bear',
+    tier: 2,
+    health: 800,
+    attack: 80,
+    defense: 60,
+    traits: ['Beast', 'Ice'],
+    abilities: [{
+      id: 'frost_claw',
+      name: 'Frost Claw',
+      manaCost: 80,
+      cooldown: 7000,
+      currentCooldown: 0,
+      type: 'damage',
+      range: 150,
+      targeting: 'single',
+      effect: { damage: 100 }
+    }],
+  },
+
+  // Tier 3 - High-Rank Monsters
+  {
+    baseName: 'demon_noble',
+    name: 'Demon Noble',
+    tier: 3,
+    health: 1200,
+    attack: 120,
+    defense: 70,
+    traits: ['Demon', 'Noble'],
+    abilities: [{
+      id: 'dark_magic',
+      name: 'Dark Magic',
+      manaCost: 90,
+      cooldown: 8000,
+      currentCooldown: 0,
+      type: 'aoe',
+      range: 250,
+      targeting: 'area',
+      effect: { damage: 130, aoeRadius: 150 }
+    }],
+  },
+  {
+    baseName: 'red_orc_general',
+    name: 'Red Orc General',
+    tier: 3,
+    health: 1300,
+    attack: 130,
+    defense: 80,
+    traits: ['Orc', 'General'],
+    abilities: [{
+      id: 'battle_roar',
+      name: 'Battle Roar',
+      manaCost: 100,
+      cooldown: 9000,
+      currentCooldown: 0,
+      type: 'aoe',
+      range: 300,
+      targeting: 'area',
+      effect: { damage: 140, aoeRadius: 200 }
+    }],
+  },
+
+  // Tier 4 - Boss-Level Threats
+  {
+    baseName: 'steel_fanged_lycan',
+    name: 'Steel-Fanged Lycan',
+    tier: 4,
+    health: 1600,
+    attack: 170,
+    defense: 90,
+    traits: ['Beast', 'Boss'],
+    abilities: [{
+      id: 'pack_hunt',
+      name: 'Pack Hunt',
+      manaCost: 120,
+      cooldown: 10000,
+      currentCooldown: 0,
+      type: 'damage',
+      range: 200,
+      targeting: 'single',
+      effect: { damage: 200 }
+    }],
+  },
+  {
+    baseName: 'arch_lich',
+    name: 'Arch Lich',
+    tier: 4,
+    health: 1500,
+    attack: 180,
+    defense: 75,
+    traits: ['Undead', 'Magic', 'Boss'],
+    abilities: [{
+      id: 'death_ray',
+      name: 'Death Ray',
+      manaCost: 140,
+      cooldown: 12000,
+      currentCooldown: 0,
+      type: 'aoe',
+      range: 400,
+      targeting: 'area',
+      effect: { damage: 190, aoeRadius: 250 }
+    }],
+  },
+
+  // Tier 5 - Raid Bosses
+  {
+    baseName: 'flame_dragon',
+    name: 'Ancient Flame Dragon',
+    tier: 5,
+    health: 2500,
+    attack: 250,
+    defense: 120,
+    traits: ['Dragon', 'Fire', 'Ancient'],
+    abilities: [{
+      id: 'inferno_breath',
+      name: 'Inferno Breath',
+      manaCost: 180,
+      cooldown: 15000,
+      currentCooldown: 0,
+      type: 'aoe',
+      range: 500,
+      targeting: 'area',
+      effect: { damage: 280, aoeRadius: 300 }
+    }],
+  },
+  {
+    baseName: 'demon_king',
+    name: 'Demon King Baran',
+    tier: 5,
+    health: 2800,
+    attack: 280,
+    defense: 150,
+    traits: ['Demon', 'Monarch', 'Boss'],
+    abilities: [{
+      id: 'monarch_strike',
+      name: 'Monarch Strike',
+      manaCost: 200,
+      cooldown: 18000,
+      currentCooldown: 0,
+      type: 'damage',
+      range: 350,
+      targeting: 'single',
+      effect: { damage: 350 }
     }],
   },
 ];
