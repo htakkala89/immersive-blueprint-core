@@ -1,7 +1,8 @@
 import OpenAI from "openai";
 import type { GameState } from "@shared/schema";
 import AdmZip from 'adm-zip';
-import { getGoogleAccessToken, getProjectId } from './googleAuth';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -17,6 +18,8 @@ const AVATAR_GENERATION_COOLDOWN = 2000; // 2 seconds between avatar generations
 // Image cache to reduce generation times
 const imageCache = new Map<string, { url: string; timestamp: number }>();
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
+
 
 // Track mature content images to prevent chat overlay generation
 let currentMatureImageActive = false;
@@ -143,16 +146,76 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   return null;
 }
 
+// Simple access token function
+async function getSimpleAccessToken(serviceAccount: any): Promise<string | null> {
+  try {
+    const scopes = ['https://www.googleapis.com/auth/cloud-platform'];
+    const now = Math.floor(Date.now() / 1000);
+    
+    const payload = {
+      iss: serviceAccount.client_email,
+      scope: scopes.join(' '),
+      aud: serviceAccount.token_uri,
+      exp: now + 3600,
+      iat: now
+    };
+
+    const jwt = await import('jsonwebtoken');
+    
+    // Format private key properly
+    let privateKey = serviceAccount.private_key;
+    if (privateKey.includes('\\n')) {
+      privateKey = privateKey.replace(/\\n/g, '\n');
+    }
+    
+    console.log('🔑 Creating JWT token for Google Cloud authentication');
+    const token = jwt.default.sign(payload, privateKey, { algorithm: 'RS256' });
+    
+    // Exchange JWT for access token
+    const response = await fetch(serviceAccount.token_uri, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: token
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Token exchange failed:', response.status, await response.text());
+      return null;
+    }
+
+    const tokenData = await response.json();
+    console.log('✅ Successfully obtained Google Cloud access token');
+    return tokenData.access_token;
+  } catch (error) {
+    console.error('Error getting access token:', error);
+    return null;
+  }
+}
+
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    const projectId = getProjectId();
+    // Read credentials directly from file with proper format
+    let serviceAccount;
+    try {
+      const credentialsPath = join(process.cwd(), 'google-credentials-fixed.json');
+      const credentialsData = readFileSync(credentialsPath, 'utf8');
+      serviceAccount = JSON.parse(credentialsData);
+    } catch (error) {
+      console.log('Could not read Google credentials file');
+      return null;
+    }
+
+    const projectId = serviceAccount.project_id;
     if (!projectId) {
       console.log('Google Cloud project ID not available');
       return null;
     }
 
-    // Get OAuth access token using service account
-    const accessToken = await getGoogleAccessToken();
+    // Use the simplified approach for getting access token
+    const accessToken = await getSimpleAccessToken(serviceAccount);
     if (!accessToken) {
       console.log('Failed to get Google Cloud access token');
       return null;
