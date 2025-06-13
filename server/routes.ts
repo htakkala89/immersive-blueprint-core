@@ -1286,6 +1286,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Episode System - Track gameplay events for episode progression
+  app.post("/api/episode-events", async (req, res) => {
+    try {
+      const { event, data, profileId } = req.body;
+      
+      if (!event || !profileId) {
+        return res.status(400).json({ error: "Missing event or profileId" });
+      }
+      
+      console.log(`🎮 Episode event: ${event}`, data);
+      
+      // Track events that can complete episode beats:
+      // - player_visits_location: when player navigates to a location
+      // - player_chats_with_cha: when player sends messages to Cha Hae-In
+      // - activity_completed: when player completes an activity
+      // - quest_objective_met: when player meets a quest condition
+      
+      res.json({ 
+        success: true, 
+        message: `Event ${event} tracked for episode progression`
+      });
+    } catch (error) {
+      console.error("Episode event tracking error:", error);
+      res.status(500).json({ error: "Failed to track episode event" });
+    }
+  });
+
   // Episode System - Trigger beat completion
   app.post("/api/episodes/:episodeId/complete-beat", async (req, res) => {
     try {

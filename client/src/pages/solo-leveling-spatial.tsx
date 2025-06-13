@@ -1496,6 +1496,17 @@ export default function SoloLevelingSpatial() {
     setShowReceptionistDialogue(null);
     setShowFloorSelect(false);
     
+    // Track episode event for location visit
+    fetch('/api/episode-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'player_visits_location',
+        data: { location_id: locationId },
+        profileId: selectedProfile?.id
+      })
+    }).catch(console.error);
+    
     // Generate scene for new location
     setTimeout(() => {
       generateSceneImage();
