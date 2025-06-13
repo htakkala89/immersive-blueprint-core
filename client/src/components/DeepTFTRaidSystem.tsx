@@ -423,21 +423,40 @@ export function DeepTFTRaidSystem({
     // Generate enemy team
     const enemyUnits = generateEnemyTeam();
     
-    // Position units for combat display
-    const combatPlayerUnits = playerUnits.map((unit, index) => ({
-      ...unit,
-      x: 100 + (index % 4) * 80,
-      y: 150 + Math.floor(index / 4) * 80,
-      facing: 'right' as const,
-      isPlayer: true
-    }));
+    // Position units for TFT-style top-down combat based on board positions
+    const combatPlayerUnits = board
+      .map((unit, boardIndex) => {
+        if (!unit) return null;
+        
+        // Convert board index to grid coordinates (7x4 grid)
+        const col = boardIndex % 7;
+        const row = Math.floor(boardIndex / 7);
+        
+        return {
+          ...unit,
+          x: 100 + (col * 60), // 60px spacing between units
+          y: 100 + (row * 60),
+          hexX: col,
+          hexY: row,
+          facing: 'right' as const,
+          isPlayer: true,
+          isAttacking: false,
+          targetId: undefined
+        };
+      })
+      .filter(unit => unit !== null);
 
     const combatEnemyUnits = enemyUnits.map((unit, index) => ({
       ...unit,
-      x: 500 + (index % 4) * 80,
-      y: 150 + Math.floor(index / 4) * 80,
+      // Position enemies on right side of battlefield
+      x: 500 + ((index % 3) * 60),
+      y: 100 + (Math.floor(index / 3) * 60),
+      hexX: 6 + (index % 2), // Right side of grid
+      hexY: Math.floor(index / 3),
       facing: 'left' as const,
-      isPlayer: false
+      isPlayer: false,
+      isAttacking: false,
+      targetId: undefined
     }));
 
     setCombatUnits([...combatPlayerUnits, ...combatEnemyUnits]);
@@ -504,74 +523,86 @@ export function DeepTFTRaidSystem({
         });
       }, 1000);
 
-      // Combat damage and animation simulation
+      // TFT-style distance-based combat simulation
       combatInterval = setInterval(() => {
         setCombatUnits(prevUnits => {
           return prevUnits.map(unit => {
-            if (unit.health <= 0) return { ...unit, isAttacking: false };
+            if (unit.health <= 0) return { ...unit, isAttacking: false, targetId: undefined };
             
             const isPlayerUnit = unit.isPlayer;
             const enemies = prevUnits.filter(u => u.isPlayer !== isPlayerUnit && u.health > 0);
             
             if (enemies.length > 0) {
-              // Find nearest enemy for targeting
+              // Find nearest enemy using grid distance (TFT-style)
               const nearestEnemy = enemies.reduce((closest, enemy) => {
-                const distToCurrent = Math.abs(unit.x - enemy.x) + Math.abs(unit.y - enemy.y);
-                const distToClosest = Math.abs(unit.x - closest.x) + Math.abs(unit.y - closest.y);
+                const distToCurrent = Math.sqrt(
+                  Math.pow(unit.hexX - enemy.hexX, 2) + Math.pow(unit.hexY - enemy.hexY, 2)
+                );
+                const distToClosest = Math.sqrt(
+                  Math.pow(unit.hexX - closest.hexX, 2) + Math.pow(unit.hexY - closest.hexY, 2)
+                );
                 return distToCurrent < distToClosest ? enemy : closest;
               });
               
-              // Move toward enemy and attack
-              const moveDirection = isPlayerUnit ? 1 : -1;
-              const shouldAttack = Math.random() > 0.3; // 70% attack chance per tick
+              const distance = Math.sqrt(
+                Math.pow(unit.hexX - nearestEnemy.hexX, 2) + Math.pow(unit.hexY - nearestEnemy.hexY, 2)
+              );
               
-              if (shouldAttack) {
-                // Calculate damage with unit stats and trait bonuses
-                const baseDamage = 20 + (unit.attack * 0.4);
-                const traitBonus = isPlayerUnit ? activeTraits.reduce((sum, trait) => 
-                  sum + (trait.activeLevel * 8), 0) : 0;
-                const randomVariance = Math.random() * 15 - 7.5;
-                const totalDamage = Math.max(8, baseDamage + traitBonus + randomVariance);
-                
-                // Apply damage to nearest enemy
-                const targetId = nearestEnemy.id;
-                
+              // Attack if in range (range based on unit type)
+              const attackRange = unit.range || 1.5; // Default melee range
+              const canAttack = distance <= attackRange;
+              
+              if (canAttack) {
+                // Attack current target
                 return {
                   ...unit,
                   isAttacking: true,
-                  x: unit.x + (moveDirection * 15), // Move forward when attacking
-                  attackCooldown: 0
+                  targetId: nearestEnemy.id,
+                  attackCooldown: Math.max(0, (unit.attackCooldown || 0) - 800)
                 };
               } else {
-                // Reset attack animation
+                // Move toward target (TFT-style movement)
+                const moveX = nearestEnemy.hexX > unit.hexX ? 0.2 : nearestEnemy.hexX < unit.hexX ? -0.2 : 0;
+                const moveY = nearestEnemy.hexY > unit.hexY ? 0.2 : nearestEnemy.hexY < unit.hexY ? -0.2 : 0;
+                
                 return {
                   ...unit,
                   isAttacking: false,
-                  x: unit.x - (moveDirection * 5) // Slight retreat
+                  targetId: nearestEnemy.id,
+                  x: unit.x + (moveX * 30),
+                  y: unit.y + (moveY * 30),
+                  hexX: unit.hexX + moveX,
+                  hexY: unit.hexY + moveY
                 };
               }
             }
             
-            return { ...unit, isAttacking: false };
+            return { ...unit, isAttacking: false, targetId: undefined };
           });
         });
 
-        // Apply damage to enemies based on attacking units
+        // Apply damage based on attacking units targeting specific enemies
         setCombatUnits(prevUnits => {
-          const attackingUnits = prevUnits.filter(u => u.isAttacking && u.health > 0);
-          
           return prevUnits.map(unit => {
             if (unit.health <= 0) return unit;
             
-            // Check if this unit is being attacked
-            const attackers = attackingUnits.filter(attacker => 
-              attacker.isPlayer !== unit.isPlayer
+            // Find all units attacking this specific unit
+            const attackers = prevUnits.filter(attacker => 
+              attacker.isAttacking && 
+              attacker.targetId === unit.id && 
+              attacker.health > 0 &&
+              (attacker.attackCooldown || 0) <= 0
             );
             
             if (attackers.length > 0) {
-              const attacker = attackers[0]; // First attacker
-              const baseDamage = 20 + (attacker.attack * 0.4);
-              const totalDamage = Math.max(8, baseDamage + Math.random() * 15);
+              // Calculate total damage from all attackers
+              const totalDamage = attackers.reduce((damage, attacker) => {
+                const baseDamage = 15 + (attacker.attack * 0.3);
+                const traitBonus = attacker.isPlayer ? activeTraits.reduce((sum, trait) => 
+                  sum + (trait.activeLevel * 5), 0) : 0;
+                const unitDamage = Math.max(5, baseDamage + traitBonus + (Math.random() * 10 - 5));
+                return damage + unitDamage;
+              }, 0);
               
               return {
                 ...unit,
@@ -582,7 +613,7 @@ export function DeepTFTRaidSystem({
             return unit;
           });
         });
-      }, 800); // Faster combat for better animations
+      }, 600); // Smooth 60fps-style updates
 
       // Check for battle end conditions every tick
       const victoryCheckInterval = setInterval(() => {
