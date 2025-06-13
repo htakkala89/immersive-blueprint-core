@@ -633,17 +633,10 @@ export function LocationInteractiveNodes({
       return positions[index % positions.length];
     };
     
-    const result = rawNodes.map((node, index) => {
-      const newPosition = getGridPosition(index, rawNodes.length);
-      console.log(`🎯 Node ${node.id} (${index}/${rawNodes.length}): ${node.position.x},${node.position.y} → ${newPosition.x},${newPosition.y}`);
-      return {
-        ...node,
-        position: newPosition
-      };
-    });
-    
-    console.log('📍 FINAL POSITIONS:', result.map(n => `${n.id}: (${n.position.x},${n.position.y})`));
-    return result;
+    return rawNodes.map((node, index) => ({
+      ...node,
+      position: getGridPosition(index, rawNodes.length)
+    }));
   };
 
   const rawNodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 

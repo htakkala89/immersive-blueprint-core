@@ -701,7 +701,7 @@ export default function SoloLevelingSpatial() {
       backgroundImage: '/api/scenes/hunter_association.jpg',
       chaHaeInPresent: chaHaeInCurrentLocation === 'hunter_association',
       chaActivity: 'reviewing mission reports at her desk',
-      chaPosition: { x: 75, y: 25 },
+      chaPosition: { x: 50, y: 50 },
       chaExpression: 'focused' as const,
       interactiveElements: [
         { id: 'cha_desk', name: 'Cha Hae-In at her desk', position: { x: 60, y: 45 }, action: 'Approach Cha Hae-In' },
