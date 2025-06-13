@@ -4837,6 +4837,10 @@ export default function SoloLevelingSpatial() {
         playerAffection={gameState.affection}
         storyProgress={gameState.storyProgress || gameState.level || 0}
         activeQuests={activeQuests}
+        onCommunicatorOpen={() => {
+          setShowWorldMap(false);
+          setShowCommunicator(true);
+        }}
       />
 
       {/* Economic System Interfaces */}

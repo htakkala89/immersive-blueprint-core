@@ -313,7 +313,10 @@ export function WorldMapSystem8({
     return true;
   }
 
-  const getLocationIcon = (state: string, gateRank?: string) => {
+  const getLocationIcon = (state: string, gateRank?: string, locationId?: string) => {
+    // Special case: Cha Hae-In is at a locked location - show presence aura with communication hint
+    const isLockedWithChaHaeIn = !isLocationAccessible(locationId || '') && chaHaeInLocation === locationId;
+    
     switch (state) {
       case 'presence':
         return (
@@ -321,9 +324,15 @@ export function WorldMapSystem8({
             className="absolute inset-0 rounded-full"
             animate={{ 
               boxShadow: [
-                '0 0 10px rgba(255, 215, 0, 0.6)',
-                '0 0 20px rgba(255, 215, 0, 0.8)',
-                '0 0 10px rgba(255, 215, 0, 0.6)'
+                isLockedWithChaHaeIn 
+                  ? '0 0 15px rgba(59, 130, 246, 0.8), 0 0 25px rgba(255, 215, 0, 0.6)'
+                  : '0 0 10px rgba(255, 215, 0, 0.6)',
+                isLockedWithChaHaeIn
+                  ? '0 0 25px rgba(59, 130, 246, 1), 0 0 35px rgba(255, 215, 0, 0.8)'
+                  : '0 0 20px rgba(255, 215, 0, 0.8)',
+                isLockedWithChaHaeIn
+                  ? '0 0 15px rgba(59, 130, 246, 0.8), 0 0 25px rgba(255, 215, 0, 0.6)'
+                  : '0 0 10px rgba(255, 215, 0, 0.6)'
               ]
             }}
             transition={{ duration: 2, repeat: Infinity }}
