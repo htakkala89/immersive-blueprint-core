@@ -1105,8 +1105,31 @@ export function DeepTFTRaidSystem({
           </div>
         </div>
 
+        {/* Items Panel - Left Side */}
+        <div className="absolute left-4 top-32 w-20 bottom-28 bg-gradient-to-b from-purple-800 to-purple-900 rounded-lg border border-purple-600 p-2">
+          <h4 className="text-white font-bold text-xs mb-2 text-center">Items</h4>
+          <div className="space-y-2">
+            {availableItems.slice(0, 8).map((item, index) => (
+              <div 
+                key={item.id}
+                className="relative bg-purple-700 rounded p-1 cursor-pointer hover:bg-purple-600 transition-colors"
+                draggable
+                onDragStart={() => setDraggedItem(item)}
+                title={`${item.name} - ${item.type}`}
+              >
+                <div className="text-white text-xs font-bold text-center">
+                  {item.name.substring(0, 3)}
+                </div>
+                <div className="text-purple-200 text-xs text-center">
+                  {item.type.substring(0, 4)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Main Board Area */}
-        <div className={`absolute left-8 right-8 top-32 ${isShopExpanded ? 'bottom-80' : 'bottom-28'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
+        <div className={`absolute left-28 right-8 top-32 ${isShopExpanded ? 'bottom-80' : 'bottom-28'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
           {gamePhase === 'setup' && (
             /* Setup Phase - TFT Authentic Board Layout */
             <div className="absolute inset-2">
@@ -1363,27 +1386,7 @@ export function DeepTFTRaidSystem({
                 </div>
               </div>
 
-              {/* Items Carousel */}
-              <div className="mb-4">
-                <h3 className="text-white font-bold mb-2">Items</h3>
-                <div className="flex gap-2">
-                  {availableItems.map((item, index) => (
-                    <div 
-                      key={item.id}
-                      className="relative bg-purple-700 rounded-lg p-2 min-w-[80px] cursor-pointer"
-                      draggable
-                      onDragStart={() => setDraggedItem(item)}
-                    >
-                      <div className="text-white text-xs font-bold text-center mb-1">
-                        {item.name}
-                      </div>
-                      <div className="text-purple-200 text-xs text-center">
-                        {item.type}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+
 
 
 
