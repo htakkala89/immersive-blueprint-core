@@ -108,6 +108,7 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
     return (
       <NarrativeArchitectAI
         isVisible={true}
+        editingEpisode={editingEpisode}
         onClose={() => {
           setShowEpisodeBuilder(false);
           setEditingEpisode(null);
