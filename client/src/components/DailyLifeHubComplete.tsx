@@ -184,8 +184,8 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       energyCost: 40,
       category: 'training',
       affectionReward: 3,
-      available: stats.level >= 5,
-      lockReason: stats.level < 5 ? 'Requires: Player Level 5+ for advanced tactics' : undefined,
+      available: true, // Always available for testing
+      lockReason: undefined,
       outcomes: ['High Gold & XP rewards', 'Team synergy bonuses', 'Character collection progress']
     },
     {
