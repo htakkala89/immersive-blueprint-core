@@ -14,6 +14,7 @@ import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/ge
 import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
 import { artisticPromptEngine } from "./artisticPromptEngine";
 import { qualityEnhancer } from "./qualityEnhancer";
+import { narrativeArchitect } from "./narrative-architect-api";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
@@ -1898,6 +1899,61 @@ Respond as Cha Hae-In would in this intimate moment:`;
       res.json({ providers });
     } catch (error) {
       res.status(500).json({ error: "Failed to get providers" });
+    }
+  });
+
+  // Narrative Architect AI - Episode Generation
+  app.post("/api/generate-episode", async (req, res) => {
+    try {
+      const { directorsBrief, playerLevel, affectionLevel } = req.body;
+      
+      if (!directorsBrief || directorsBrief.trim().length === 0) {
+        return res.status(400).json({ error: "Director's brief is required" });
+      }
+
+      console.log(`🎭 Generating episode from brief: ${directorsBrief.substring(0, 100)}...`);
+      
+      const episodeData = await narrativeArchitect.generateEpisode({
+        directorsBrief,
+        playerLevel,
+        affectionLevel
+      });
+
+      console.log(`✅ Episode generated: ${episodeData.title}`);
+      res.json({ episode: episodeData });
+      
+    } catch (error) {
+      console.error('Episode generation failed:', error);
+      if (error instanceof Error && error.message.includes('API key')) {
+        return res.status(503).json({ 
+          error: "AI service unavailable. Please provide ANTHROPIC_API_KEY to enable episode generation." 
+        });
+      }
+      res.status(500).json({ error: "Failed to generate episode" });
+    }
+  });
+
+  // Save generated episode
+  app.post("/api/save-episode", async (req, res) => {
+    try {
+      const { episodeData } = req.body;
+      
+      if (!episodeData || !episodeData.id) {
+        return res.status(400).json({ error: "Valid episode data is required" });
+      }
+
+      const filepath = await narrativeArchitect.saveEpisode(episodeData);
+      console.log(`💾 Episode saved: ${episodeData.title}`);
+      
+      res.json({ 
+        success: true, 
+        filepath,
+        message: "Episode saved successfully"
+      });
+      
+    } catch (error) {
+      console.error('Episode save failed:', error);
+      res.status(500).json({ error: "Failed to save episode" });
     }
   });
 

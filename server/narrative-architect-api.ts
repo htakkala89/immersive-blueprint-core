@@ -14,8 +14,8 @@ interface EpisodeGenerationRequest {
 }
 
 export class NarrativeArchitectAPI {
-  private systemAPIManual: string;
-  private exampleTemplate: string;
+  private systemAPIManual: string = '';
+  private exampleTemplate: string = '';
 
   constructor() {
     this.initializeTemplates();
@@ -147,7 +147,9 @@ CRITICAL REQUIREMENTS:
         ]
       });
 
-      const responseText = response.content[0].text;
+      const responseText = response.content[0]?.type === 'text' 
+        ? response.content[0].text 
+        : JSON.stringify(response.content[0]);
       
       // Parse and validate the JSON response
       try {
@@ -160,7 +162,7 @@ CRITICAL REQUIREMENTS:
 
     } catch (error) {
       console.error('Episode generation failed:', error);
-      throw new Error(`Failed to generate episode: ${error.message}`);
+      throw new Error(`Failed to generate episode: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -218,7 +220,7 @@ Generate a complete episode JSON that brings the creator's vision to life. Use t
       return filepath;
     } catch (error) {
       console.error('Failed to save episode:', error);
-      throw new Error(`Failed to save episode: ${error.message}`);
+      throw new Error(`Failed to save episode: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }

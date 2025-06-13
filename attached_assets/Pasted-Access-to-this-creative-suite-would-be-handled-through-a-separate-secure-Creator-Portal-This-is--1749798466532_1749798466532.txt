@@ -1,0 +1,30 @@
+Access to this creative suite would be handled through a separate, secure "Creator Portal." This is not part of the standard player experience.
+
+Here is the step-by-step flow for how a creator would access and use the Narrative Architect AI:
+
+1. Accessing the Creator Portal
+
+A creator would not open the app and see the game like a normal player. They would access a special mode.
+
+Login Screen: A unique URL or a special "Developer Mode" toggle on the main app's loading screen would take them to a dedicated login page.
+Authentication: They would enter their creator credentials (username and password). This ensures that only authorized individuals can access the content creation tools.
+2. The Creator Dashboard
+
+Upon logging in, they are not dropped into the Spatial View. They are presented with a clean, functional dashboard. This dashboard would show:
+
+A list of all episodes they have already created (e.g., "Episode 1: Echoes of the Red Gate," "Episode 2: The White Tiger Guild").
+Basic analytics for their published episodes (e.g., player count, completion rate).
+A prominent, large button labeled [+ Create New Episode].
+3. Launching the Narrative Architect
+
+This is the direct answer to your question.
+
+The creator clicks the [+ Create New Episode] button.
+This action is what launches the dedicated "Episode Builder" interface that we designed in the Canvas.
+4. The Episode Builder Interface
+
+Once launched, the creator is presented with the two-paned view you and I designed together:
+
+Left Pane: The "Director's Briefing," where they will type their story idea in natural language.
+Right Pane: The "Episode Blueprint," which is initially empty, waiting for the AI to generate the structured JSON.
+This entire flow creates a clear separation between the player experience and the creator experience. It provides a professional, secure environment for creators to build their stories using the powerful AI tools we've designed, starting with the simple act of describing the story they want to tell.
