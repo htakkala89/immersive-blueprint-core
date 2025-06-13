@@ -45,163 +45,62 @@ export function NarrativeArchitectAI({ isVisible, onClose }: NarrativeArchitectA
     setIsGenerating(true);
     
     try {
-      // Construct the meta-prompt for AI generation
-      const metaPrompt = `
-        You are the Narrative Architect AI for a Solo Leveling romance game. Generate a complete episode JSON based on the creator's vision.
+      const response = await fetch('/api/generate-episode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          directorsBrief,
+          playerLevel: 10,
+          affectionLevel: 50
+        }),
+      });
 
-        CREATOR'S VISION:
-        ${directorsBrief}
-
-        SYSTEM API MANUAL:
-        Available Commands:
-        - DELIVER_MESSAGE(target_system, sender, message_content) - Send messages via communicator
-        - ACTIVATE_QUEST(quest_id, quest_title, quest_description) - Create new quest
-        - SET_CHA_MOOD(mood) - Set Cha Hae-In's emotional state (happy, anxious, focused_professional, romantic, excited, worried, confident)
-        - FORCE_CHA_LOCATION(location_id, reason) - Move Cha Hae-In to specific location
-        - START_DIALOGUE_SCENE(dialogue_id, scene_context) - Begin dialogue sequence
-        - SET_QUEST_OBJECTIVE(quest_id, objective_text) - Add quest objective
-        - LOAD_DUNGEON_ENVIRONMENT(dungeon_id, difficulty) - Load raid environment
-        - START_BOSS_BATTLE(boss_id, environment) - Initiate boss fight
-        - REWARD_PLAYER(rewards: {gold, experience, items, affection}) - Give rewards
-        - CREATE_MEMORY_STAR(star_id, description, rank) - Create memory star (C, B, A, S, SS)
-        - UNLOCK_ACTIVITY(activity_id, permanent) - Unlock new activities
-        - SET_LOCATION(location_id, time_of_day, weather) - Change scene location
-        - SHOW_NOTIFICATION(title, message, notification_type) - Display UI notification
-
-        Completion Conditions:
-        - player_accept - Player accepts quest
-        - dialogue_complete - Dialogue scene finished
-        - boss_defeated - Specific boss defeated
-        - location_visited - Player visits location
-        - item_obtained - Player gets specific item
-        - activity_completed - Activity finished
-        - end_episode - Episode complete
-
-        EXAMPLE TEMPLATE:
-        {
-          "id": "EP01_Red_Echo",
-          "title": "Echoes of the Red Gate",
-          "description": "A mysterious A-Rank gate appears with strange energy readings.",
-          "prerequisite": {
-            "player_level": 25,
-            "affection_level": 50
-          },
-          "beats": [
-            {
-              "beat_id": "1.0",
-              "title": "Emergency Alert",
-              "description": "The Hunter Association sends urgent alert",
-              "trigger": { "type": "immediate" },
-              "actions": [
-                {
-                  "type": "DELIVER_MESSAGE",
-                  "target_system": "communicator",
-                  "sender": "Hunter Association",
-                  "message_content": "URGENT: Investigate A-Rank gate anomaly immediately."
-                }
-              ],
-              "completion_condition": {
-                "type": "player_accept",
-                "target": "EP01_Red_Echo"
-              }
-            }
-          ]
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 503) {
+          alert('AI service requires ANTHROPIC_API_KEY to generate episodes. Please provide the API key to enable episode generation.');
+          setIsGenerating(false);
+          return;
         }
+        throw new Error(errorData.error || 'Failed to generate episode');
+      }
 
-        Generate a complete episode JSON following this structure, with 3-5 story beats that tell a compelling narrative based on the creator's vision.
-      `;
-
-      // For now, generate a sample response since we don't have AI API
-      setTimeout(() => {
-        const sampleEpisode = {
-          "id": `EP_${Date.now()}`,
-          "title": "Generated Episode",
-          "description": directorsBrief.substring(0, 100) + "...",
-          "prerequisite": {
-            "player_level": 10,
-            "affection_level": 30
-          },
-          "beats": [
-            {
-              "beat_id": "1.0", 
-              "title": "Episode Beginning",
-              "description": "The story begins based on your vision",
-              "trigger": { "type": "immediate" },
-              "actions": [
-                {
-                  "type": "DELIVER_MESSAGE",
-                  "target_system": "communicator", 
-                  "sender": "Cha Hae-In",
-                  "message_content": "I have an idea for something special we could do together..."
-                },
-                {
-                  "type": "SET_CHA_MOOD",
-                  "mood": "excited"
-                }
-              ],
-              "completion_condition": {
-                "type": "player_accept",
-                "target": `EP_${Date.now()}`
-              }
-            },
-            {
-              "beat_id": "2.0",
-              "title": "Story Development", 
-              "description": "The main story unfolds",
-              "trigger": { "type": "previous_beat_complete" },
-              "actions": [
-                {
-                  "type": "START_DIALOGUE_SCENE",
-                  "dialogue_id": "custom_scene_01"
-                }
-              ],
-              "completion_condition": {
-                "type": "dialogue_complete",
-                "target": "custom_scene_01"
-              }
-            },
-            {
-              "beat_id": "3.0",
-              "title": "Episode Conclusion",
-              "description": "The story reaches its satisfying conclusion", 
-              "trigger": { "type": "previous_beat_complete" },
-              "actions": [
-                {
-                  "type": "REWARD_PLAYER",
-                  "rewards": {
-                    "affection": 10,
-                    "experience": 100
-                  }
-                },
-                {
-                  "type": "CREATE_MEMORY_STAR",
-                  "star_id": `memory_${Date.now()}`,
-                  "description": "A special moment created together",
-                  "rank": "A"
-                }
-              ],
-              "completion_condition": {
-                "type": "end_episode"
-              }
-            }
-          ]
-        };
-
-        setGeneratedBlueprint(JSON.stringify(sampleEpisode, null, 2));
-        setIsGenerating(false);
-      }, 2000);
+      const data = await response.json();
+      setGeneratedBlueprint(JSON.stringify(data.episode, null, 2));
+      setIsGenerating(false);
 
     } catch (error) {
       console.error('Episode generation failed:', error);
+      alert('Failed to generate episode. Please try again.');
       setIsGenerating(false);
     }
   };
 
-  const saveEpisode = () => {
+  const saveEpisode = async () => {
     if (!generatedBlueprint) return;
     
     try {
       const episode = JSON.parse(generatedBlueprint);
+      
+      const response = await fetch('/api/save-episode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          episodeData: episode
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save episode');
+      }
+
+      const data = await response.json();
+      
       const newEpisode = {
         id: episode.id,
         title: episode.title,
@@ -211,11 +110,11 @@ export function NarrativeArchitectAI({ isVisible, onClose }: NarrativeArchitectA
       };
       
       setSavedEpisodes(prev => [...prev, newEpisode]);
+      alert(`Episode saved successfully! ${data.message}`);
       
-      // Show success notification
-      alert('Episode saved successfully!');
     } catch (error) {
-      alert('Error: Invalid JSON format');
+      console.error('Save failed:', error);
+      alert('Failed to save episode. Please check your JSON format.');
     }
   };
 
