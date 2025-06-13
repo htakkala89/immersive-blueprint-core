@@ -733,66 +733,74 @@ export function DeepTFTRaidSystem({
   const handleDrop = (targetIndex: number, targetLocation: 'board' | 'bench') => {
     if (!draggedUnit || !dragSource || dragSourceIndex === null) return;
     
-    // Remove from source
-    if (dragSource === 'board') {
-      setBoard(prev => {
-        const newBoard = [...prev];
-        newBoard[dragSourceIndex] = null;
-        return newBoard;
-      });
-    } else {
-      setBench(prev => {
-        const newBench = [...prev];
-        newBench[dragSourceIndex] = null;
-        return newBench;
-      });
-    }
-    
-    // Add to target
-    if (targetLocation === 'board') {
-      // Check team size limit
+    // Check team size limit for board placement (only if coming from bench to board)
+    if (targetLocation === 'board' && dragSource === 'bench') {
       const currentTeamSize = board.filter(unit => unit !== null).length;
       if (currentTeamSize >= maxTeamSize) return;
-      
+    }
+    
+    // Handle the move/swap in a single operation to avoid state conflicts
+    if (targetLocation === 'board') {
       setBoard(prev => {
         const newBoard = [...prev];
         const existingUnit = newBoard[targetIndex];
         
-        // If target slot has unit, swap to source location
-        if (existingUnit) {
-          if (dragSource === 'board') {
-            newBoard[dragSourceIndex] = existingUnit;
-          } else {
-            setBench(prevBench => {
-              const newBench = [...prevBench];
-              newBench[dragSourceIndex] = existingUnit;
-              return newBench;
-            });
-          }
+        // Place the dragged unit at target position
+        newBoard[targetIndex] = draggedUnit;
+        
+        // Handle source cleanup and swapping
+        if (dragSource === 'board') {
+          // If swapping units on board
+          newBoard[dragSourceIndex] = existingUnit;
+        } else {
+          // If moving from bench to board, clear bench slot and handle existing unit
+          setBench(prevBench => {
+            const newBench = [...prevBench];
+            newBench[dragSourceIndex] = null;
+            
+            // If there was a unit at target, move it to bench
+            if (existingUnit) {
+              const emptyBenchSlot = newBench.findIndex(slot => slot === null);
+              if (emptyBenchSlot !== -1) {
+                newBench[emptyBenchSlot] = existingUnit;
+              }
+            }
+            return newBench;
+          });
         }
         
-        newBoard[targetIndex] = draggedUnit;
         return newBoard;
       });
     } else {
+      // Moving to bench
       setBench(prev => {
         const newBench = [...prev];
         const existingUnit = newBench[targetIndex];
         
-        // If target slot has unit, swap to source location
-        if (existingUnit) {
-          if (dragSource === 'board') {
-            setBoard(prevBoard => {
-              const newBoard = [...prevBoard];
-              newBoard[dragSourceIndex] = existingUnit;
-              return newBoard;
-            });
-          } else {
-            newBench[dragSourceIndex] = existingUnit;
-          }
+        // Place the dragged unit at target position
+        newBench[targetIndex] = draggedUnit;
+        
+        // Handle source cleanup and swapping
+        if (dragSource === 'bench') {
+          // If swapping units on bench
+          newBench[dragSourceIndex] = existingUnit;
+        } else {
+          // If moving from board to bench, clear board slot and handle existing unit
+          setBoard(prevBoard => {
+            const newBoard = [...prevBoard];
+            newBoard[dragSourceIndex] = null;
+            
+            // If there was a unit at target, move it to board
+            if (existingUnit) {
+              const emptyBoardSlot = newBoard.findIndex(slot => slot === null);
+              if (emptyBoardSlot !== -1) {
+                newBoard[emptyBoardSlot] = existingUnit;
+              }
+            }
+            return newBoard;
+          });
         }
         
-        newBench[targetIndex] = draggedUnit;
         return newBench;
       });
     }
