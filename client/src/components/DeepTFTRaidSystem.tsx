@@ -166,6 +166,7 @@ export function DeepTFTRaidSystem({
   const [enemyBoard, setEnemyBoard] = useState<(Character | null)[]>(Array(28).fill(null));
   const [combatTimer, setCombatTimer] = useState(30);
   const [isAutoCombat, setIsAutoCombat] = useState(false);
+  const [combatUnits, setCombatUnits] = useState<Character[]>([]);
   
   // Character Pool Tracking (shared resource)
   const [characterPool, setCharacterPool] = useState<{[key: string]: number}>({});
@@ -407,25 +408,51 @@ export function DeepTFTRaidSystem({
 
   // Combat system with positioning
   const startCombat = () => {
+    const playerUnits = board.filter(unit => unit !== null);
+    if (playerUnits.length === 0) {
+      alert('Place at least one unit on the board!');
+      return;
+    }
+
+    // Generate enemy team
+    const enemyUnits = generateEnemyTeam();
+    
+    // Position units for combat display
+    const combatPlayerUnits = playerUnits.map((unit, index) => ({
+      ...unit,
+      x: 100 + (index % 4) * 80,
+      y: 150 + Math.floor(index / 4) * 80,
+      facing: 'right' as const,
+      isPlayer: true
+    }));
+
+    const combatEnemyUnits = enemyUnits.map((unit, index) => ({
+      ...unit,
+      x: 500 + (index % 4) * 80,
+      y: 150 + Math.floor(index / 4) * 80,
+      facing: 'left' as const,
+      isPlayer: false
+    }));
+
+    setCombatUnits([...combatPlayerUnits, ...combatEnemyUnits]);
     setGamePhase('combat');
-    generateEnemyTeam();
-    calculateTraits();
-    runCombatSimulation();
+    setCombatTimer(30);
+    setIsAutoCombat(true);
   };
 
-  const generateEnemyTeam = () => {
+  const generateEnemyTeam = (): Character[] => {
     // Generate enemy team based on round
-    const enemyStrength = Math.min(round + 2, 8);
+    const enemyStrength = Math.min(round + 2, 6);
     const enemies: Character[] = [];
     
-    for (let i = 0; i < Math.min(enemyStrength, 8); i++) {
+    for (let i = 0; i < enemyStrength; i++) {
       const enemyTier = Math.min(Math.floor(round / 2) + 1, 5);
       const availableEnemies = CHAMPION_DATA.filter(champ => champ.tier <= enemyTier);
       const randomEnemy = availableEnemies[Math.floor(Math.random() * availableEnemies.length)];
       
       const enemy = createCharacterFromData({
         ...randomEnemy,
-        id: `enemy_${i}`,
+        id: `enemy_${i}_${Date.now()}`,
         isPlayer: false
       });
       
@@ -440,6 +467,7 @@ export function DeepTFTRaidSystem({
     });
     
     setEnemyBoard(newEnemyBoard);
+    return enemies;
   };
 
   const runCombatSimulation = () => {
@@ -538,63 +566,149 @@ export function DeepTFTRaidSystem({
 
         {/* Main Board Area */}
         <div className="absolute inset-x-4 top-32 bottom-32 bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden">
-          {/* Hex Grid Board */}
-          <div className="absolute inset-4 grid grid-cols-7 grid-rows-4 gap-1">
-            {board.map((unit, index) => (
-              <div
-                key={index}
-                className={`relative aspect-square rounded-lg border-2 ${
-                  unit ? 'border-blue-400 bg-blue-900/30' : 'border-slate-600 bg-slate-700/30'
-                } hover:border-blue-300 transition-colors cursor-pointer`}
-                onClick={() => {
-                  if (!unit && bench.some(b => b !== null)) {
-                    // Find first available unit on bench and move to board
-                    const availableUnit = bench.find(b => b !== null);
-                    if (availableUnit && board.filter(b => b !== null).length < 7) { // Allow up to 7 units on field
-                      const benchIndex = bench.findIndex(b => b?.id === availableUnit.id);
-                      const newBench = [...bench];
-                      const newBoard = [...board];
-                      
-                      newBench[benchIndex] = null;
-                      newBoard[index] = availableUnit;
-                      
-                      setBench(newBench);
-                      setBoard(newBoard);
-                      calculateTraits();
+          {gamePhase === 'setup' && (
+            /* Setup Phase - Hex Grid Board */
+            <div className="absolute inset-4 grid grid-cols-7 grid-rows-4 gap-1">
+              {board.map((unit, index) => (
+                <div
+                  key={index}
+                  className={`relative aspect-square rounded-lg border-2 ${
+                    unit ? 'border-blue-400 bg-blue-900/30' : 'border-slate-600 bg-slate-700/30'
+                  } hover:border-blue-300 transition-colors cursor-pointer`}
+                  onClick={() => {
+                    if (!unit && bench.some(b => b !== null)) {
+                      const availableUnit = bench.find(b => b !== null);
+                      if (availableUnit && board.filter(b => b !== null).length < 7) {
+                        const benchIndex = bench.findIndex(b => b?.id === availableUnit.id);
+                        const newBench = [...bench];
+                        const newBoard = [...board];
+                        
+                        newBench[benchIndex] = null;
+                        newBoard[index] = availableUnit;
+                        
+                        setBench(newBench);
+                        setBoard(newBoard);
+                        calculateTraits();
+                      }
+                    } else if (unit) {
+                      const benchSlot = bench.findIndex(b => b === null);
+                      if (benchSlot !== -1) {
+                        const newBench = [...bench];
+                        const newBoard = [...board];
+                        
+                        newBench[benchSlot] = unit;
+                        newBoard[index] = null;
+                        
+                        setBench(newBench);
+                        setBoard(newBoard);
+                        calculateTraits();
+                      }
                     }
-                  } else if (unit) {
-                    // Move unit back to bench
-                    const benchSlot = bench.findIndex(b => b === null);
-                    if (benchSlot !== -1) {
-                      const newBench = [...bench];
-                      const newBoard = [...board];
-                      
-                      newBench[benchSlot] = unit;
-                      newBoard[index] = null;
-                      
-                      setBench(newBench);
-                      setBoard(newBoard);
-                      calculateTraits();
-                    }
-                  }
-                }}
-              >
-                {unit && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                    <div className="text-xs font-bold truncate w-full text-center px-1">
-                      {unit.name.split(' ')[0]}
+                  }}
+                >
+                  {unit && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                      <div className="text-xs font-bold truncate w-full text-center px-1">
+                        {unit.name.split(' ')[0]}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: unit.stars }).map((_, i) => (
+                          <Star key={i} className="w-2 h-2 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                      <div className="text-xs text-gray-300">T{unit.tier}</div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: unit.stars }).map((_, i) => (
-                        <Star key={i} className="w-2 h-2 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                    <div className="text-xs text-gray-300">T{unit.tier}</div>
-                  </div>
-                )}
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {gamePhase === 'combat' && (
+            /* Combat Phase - Animated Battle Arena */
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-purple-900/20 to-red-900/20">
+              {/* Combat Timer */}
+              <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
+                <div className="bg-black/60 px-4 py-2 rounded-lg">
+                  <div className="text-white font-bold text-lg">Combat: {combatTimer}s</div>
+                </div>
               </div>
-            ))}
-          </div>
+
+              {/* Player Units (Left Side) */}
+              <div className="absolute left-4 top-16 bottom-4 w-80">
+                <div className="text-blue-300 font-bold mb-2">Your Shadow Army</div>
+                {combatUnits.filter(u => u.isPlayer).map((unit, index) => (
+                  <div
+                    key={unit.id}
+                    className="relative mb-3 p-2 bg-blue-900/40 rounded-lg border border-blue-400"
+                    style={{
+                      transform: `translateX(${unit.x - 100}px) translateY(${unit.y - 150}px)`,
+                      transition: 'all 0.5s ease'
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
+                        {unit.name.charAt(0)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-white text-sm font-bold">{unit.name.split(' ')[0]}</div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${(unit.health / unit.maxHealth) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-300">
+                        {Math.ceil(unit.health)}/{unit.maxHealth}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Enemy Units (Right Side) */}
+              <div className="absolute right-4 top-16 bottom-4 w-80">
+                <div className="text-red-300 font-bold mb-2">Enemy Forces</div>
+                {combatUnits.filter(u => !u.isPlayer).map((unit, index) => (
+                  <div
+                    key={unit.id}
+                    className="relative mb-3 p-2 bg-red-900/40 rounded-lg border border-red-400"
+                    style={{
+                      transform: `translateX(${unit.x - 500}px) translateY(${unit.y - 150}px)`,
+                      transition: 'all 0.5s ease'
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white text-xs font-bold">
+                        {unit.name.charAt(0)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-white text-sm font-bold">{unit.name.split(' ')[0]}</div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${(unit.health / unit.maxHealth) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-300">
+                        {Math.ceil(unit.health)}/{unit.maxHealth}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Combat Effects Area */}
+              <div className="absolute inset-x-4 top-1/2 transform -translate-y-1/2 h-32 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white mb-2">⚔️ BATTLE IN PROGRESS ⚔️</div>
+                  <div className="text-sm text-gray-300">Shadow abilities activating...</div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Bottom Panel */}
