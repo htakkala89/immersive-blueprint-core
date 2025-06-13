@@ -116,10 +116,10 @@ interface RaidProps {
   affectionLevel: number;
 }
 
-// TFT Shop Odds by Level
+// TFT Shop Odds by Level (Modified to show legendary shadows earlier)
 const SHOP_ODDS = {
-  1: [100, 0, 0, 0, 0],    // Level 1: 100% tier 1
-  2: [100, 0, 0, 0, 0],    // Level 2: 100% tier 1  
+  1: [60, 25, 10, 4, 1],   // Level 1: 60% tier 1, 25% tier 2, 10% tier 3, 4% tier 4, 1% tier 5
+  2: [70, 20, 8, 2, 0],    // Level 2: 70% tier 1, 20% tier 2, 8% tier 3, 2% tier 4
   3: [75, 25, 0, 0, 0],    // Level 3: 75% tier 1, 25% tier 2
   4: [55, 30, 15, 0, 0],   // Level 4: 55% tier 1, 30% tier 2, 15% tier 3
   5: [45, 33, 20, 2, 0],   // Level 5: 45% tier 1, 33% tier 2, 20% tier 3, 2% tier 4
