@@ -549,7 +549,7 @@ export function WorldMapSystem8({
                     {/* Enhanced Location Orb */}
                     <div className="relative">
                       <motion.div
-                        className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full relative border-2 min-w-[40px] min-h-[40px] ${
+                        className={`w-9 h-9 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full relative border-2 min-w-[36px] min-h-[36px] mobile-location-node ${
                           location.state === 'locked' 
                             ? 'bg-gray-600 border-gray-500' :
                           location.state === 'presence' 
