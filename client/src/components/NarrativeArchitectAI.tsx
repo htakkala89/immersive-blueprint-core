@@ -316,7 +316,14 @@ export function NarrativeArchitectAI({ isVisible, onClose, editingEpisode }: Nar
                 )}
               </div>
               
-              {generatedBlueprint ? (
+              {isLoadingEpisode ? (
+                <div className="h-[calc(100vh-320px)] bg-gray-900 rounded-lg border border-gray-600 flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="animate-spin w-8 h-8 border-2 border-gray-500 border-t-transparent rounded-full mx-auto mb-4" />
+                    <p>Loading episode content...</p>
+                  </div>
+                </div>
+              ) : generatedBlueprint ? (
                 <textarea
                   value={generatedBlueprint}
                   onChange={(e) => setGeneratedBlueprint(e.target.value)}
