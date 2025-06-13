@@ -619,6 +619,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // System 18: Episode Management - Get Available Episodes
+  app.get('/api/episodes', async (req, res) => {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const episodesDir = path.join(process.cwd(), 'server/episodes');
+      
+      if (!fs.existsSync(episodesDir)) {
+        return res.json({ episodes: [] });
+      }
+      
+      const files = fs.readdirSync(episodesDir).filter(file => file.endsWith('.json'));
+      const episodes = [];
+      
+      for (const file of files) {
+        try {
+          const filePath = path.join(episodesDir, file);
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const episode = JSON.parse(content);
+          episodes.push({
+            id: episode.id,
+            title: episode.title,
+            description: episode.description,
+            prerequisite: episode.prerequisite,
+            status: episode.status || 'available'
+          });
+        } catch (error) {
+          console.warn(`Failed to parse episode file ${file}:`, error);
+        }
+      }
+      
+      res.json({ episodes });
+    } catch (error) {
+      console.error('Error fetching episodes:', error);
+      res.status(500).json({ error: 'Failed to fetch episodes' });
+    }
+  });
+
+  // System 18: Episode Management - Get Specific Episode
+  app.get('/api/episodes/:episodeId', async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const episodePath = path.join(process.cwd(), 'server/episodes', `${episodeId}.json`);
+      
+      if (!fs.existsSync(episodePath)) {
+        return res.status(404).json({ error: 'Episode not found' });
+      }
+      
+      const content = fs.readFileSync(episodePath, 'utf-8');
+      const episode = JSON.parse(content);
+      
+      res.json({ episode });
+    } catch (error) {
+      console.error('Error fetching episode:', error);
+      res.status(500).json({ error: 'Failed to fetch episode' });
+    }
+  });
+
   // Get or create game state
   app.get("/api/game-state/:sessionId", async (req, res) => {
     try {

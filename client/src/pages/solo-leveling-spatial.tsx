@@ -282,6 +282,10 @@ export default function SoloLevelingSpatial() {
   // System 18.5: Narrative Architect AI state
   const [showNarrativeArchitect, setShowNarrativeArchitect] = useState(false);
 
+  // System 18: Episode Playback System state
+  const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
+  const [currentEpisode, setCurrentEpisode] = useState<string | null>(null);
+
   // Role Selection System - Start with selection screen
   const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>('none');
 
