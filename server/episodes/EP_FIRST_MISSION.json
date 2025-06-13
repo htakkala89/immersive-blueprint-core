@@ -1,0 +1,211 @@
+{
+  "id": "EP_FIRST_MISSION",
+  "title": "First Mission Together",
+  "description": "Your first official mission partnered with Cha Hae-In. A C-Rank dungeon has appeared near Seoul, and you've been assigned as her support partner.",
+  "prerequisite": {
+    "player_level": 3,
+    "affection_level": 5,
+    "completed_episodes": []
+  },
+  "beats": [
+    {
+      "beat_id": "mission_briefing",
+      "title": "Mission Assignment",
+      "actions": [
+        {
+          "type": "DELIVER_MESSAGE",
+          "title": "Mission Orders",
+          "message": "Hunter Association: You've been assigned to support S-Rank Hunter Cha Hae-In on a C-Rank dungeon clear. Report to the Hunter Association immediately."
+        },
+        {
+          "type": "ACTIVATE_QUEST",
+          "quest_id": "EP_FIRST_MISSION",
+          "title": "First Partner Mission", 
+          "description": "Support Cha Hae-In in clearing a C-Rank dungeon",
+          "objectives": ["Meet Cha Hae-In at Hunter Association", "Review mission briefing", "Travel to dungeon site"]
+        },
+        {
+          "type": "SET_CHA_MOOD",
+          "mood": "Professional"
+        },
+        {
+          "type": "FORCE_CHA_LOCATION",
+          "location": "hunter_association"
+        }
+      ],
+      "completion_condition": "location_reached(hunter_association)"
+    },
+    {
+      "beat_id": "meeting_cha",
+      "title": "Professional Introduction",
+      "actions": [
+        {
+          "type": "START_DIALOGUE_SCENE",
+          "dialogue_file": "EP_FIRST_MISSION_MEETING",
+          "opening_line": "Cha Hae-In stands at the mission board, studying documents. She looks up as you approach, her expression serious but welcoming.",
+          "choices": [
+            {
+              "text": "Introduce yourself professionally",
+              "effects": { "add_affection": 2, "set_flag": "professional_intro" }
+            },
+            {
+              "text": "Ask about the mission details",
+              "effects": { "add_affection": 1, "set_flag": "mission_focused" }
+            },
+            {
+              "text": "Compliment her reputation",
+              "effects": { "add_affection": 3, "set_flag": "respectful_approach" }
+            }
+          ]
+        }
+      ],
+      "completion_condition": "dialogue_scene_complete"
+    },
+    {
+      "beat_id": "dungeon_preparation",
+      "title": "Equipment Check",
+      "actions": [
+        {
+          "type": "START_DIALOGUE_SCENE",
+          "dialogue_file": "EP_FIRST_MISSION_PREP",
+          "opening_line": "Cha Hae-In examines your equipment with a critical eye. 'For a C-Rank dungeon, your gear should be sufficient, but let me give you some advice.'",
+          "choices": [
+            {
+              "text": "Ask for equipment recommendations",
+              "effects": { "add_affection": 2, "unlock_shop": "hunter_gear" }
+            },
+            {
+              "text": "Show confidence in your abilities",
+              "effects": { "add_affection": 1, "set_flag": "confident_hunter" }
+            },
+            {
+              "text": "Request combat training tips",
+              "effects": { "add_affection": 3, "unlock_activity": "combat_training" }
+            }
+          ]
+        },
+        {
+          "type": "SET_LOCATION_TIME",
+          "location": "hunter_association",
+          "time": "afternoon"
+        }
+      ],
+      "completion_condition": "choice_selected"
+    },
+    {
+      "beat_id": "dungeon_entry",
+      "title": "Into the Dungeon",
+      "actions": [
+        {
+          "type": "LOAD_DUNGEON_ENVIRONMENT",
+          "dungeon_id": "forest_ruins_c_rank",
+          "environment_type": "ancient_forest",
+          "danger_level": "moderate"
+        },
+        {
+          "type": "START_DIALOGUE_SCENE",
+          "dialogue_file": "EP_FIRST_MISSION_ENTRY",
+          "opening_line": "The dungeon portal shimmers before you. Cha Hae-In draws her sword, its blade gleaming. 'Stay close and follow my lead. This is your chance to prove yourself.'",
+          "choices": [
+            {
+              "text": "Express determination to succeed",
+              "effects": { "add_affection": 2, "boost_combat_stats": 10 }
+            },
+            {
+              "text": "Ask about dungeon tactics",
+              "effects": { "add_affection": 1, "gain_tactical_knowledge": true }
+            },
+            {
+              "text": "Offer to take point position",
+              "effects": { "add_affection": 3, "set_flag": "brave_partner" }
+            }
+          ]
+        }
+      ],
+      "completion_condition": "player_enters_dungeon"
+    },
+    {
+      "beat_id": "boss_battle",
+      "title": "Forest Guardian",
+      "actions": [
+        {
+          "type": "START_BOSS_BATTLE",
+          "boss_id": "ancient_treant",
+          "boss_name": "Ancient Forest Guardian",
+          "partner_support": true,
+          "special_mechanics": ["coordinated_attacks", "combo_system"]
+        },
+        {
+          "type": "START_DIALOGUE_SCENE",
+          "dialogue_file": "EP_FIRST_MISSION_BATTLE",
+          "opening_line": "The massive treant emerges from the forest depths. Cha Hae-In positions herself beside you. 'Let's show our coordination. Watch for my signals!'",
+          "choices": [
+            {
+              "text": "Coordinate a synchronized attack",
+              "effects": { "add_affection": 4, "battle_advantage": "high" }
+            },
+            {
+              "text": "Focus on supporting her attacks",
+              "effects": { "add_affection": 3, "battle_advantage": "medium" }
+            },
+            {
+              "text": "Take aggressive offensive stance",
+              "effects": { "add_affection": 2, "battle_advantage": "low" }
+            }
+          ]
+        }
+      ],
+      "completion_condition": "boss_defeated"
+    },
+    {
+      "beat_id": "mission_success",
+      "title": "Mission Complete",
+      "actions": [
+        {
+          "type": "RELATIONSHIP_PROGRESSION",
+          "milestone": "first_mission_complete",
+          "affection_bonus": 5,
+          "relationship_memory": "Successfully completed first mission together as partners"
+        },
+        {
+          "type": "REWARD_ITEMS",
+          "items": [
+            { "id": "mission_certificate", "name": "Partnership Certificate", "rarity": "rare" },
+            { "id": "combat_experience", "name": "Combat Experience", "amount": 500 },
+            { "id": "hunter_points", "name": "Hunter Association Points", "amount": 100 }
+          ]
+        },
+        {
+          "type": "START_DIALOGUE_SCENE",
+          "dialogue_file": "EP_FIRST_MISSION_COMPLETE",
+          "opening_line": "As you exit the dungeon, Cha Hae-In sheathes her sword with satisfaction. 'Well done. You showed real potential in there. I look forward to working with you again.'",
+          "choices": [
+            {
+              "text": "Thank her for the opportunity",
+              "effects": { "add_affection": 3, "set_flag": "grateful_partner" }
+            },
+            {
+              "text": "Suggest celebrating the success",
+              "effects": { "add_affection": 4, "unlock_activity": "victory_dinner" }
+            },
+            {
+              "text": "Ask for feedback on performance",
+              "effects": { "add_affection": 2, "gain_training_tips": true }
+            }
+          ]
+        },
+        {
+          "type": "UNLOCK_ACTIVITIES",
+          "activities": ["partner_missions", "hunter_association_quests"]
+        },
+        {
+          "type": "SET_QUEST_OBJECTIVE",
+          "quest_id": "EP_FIRST_MISSION",
+          "objective": "Report mission success to Hunter Association",
+          "status": "completed"
+        }
+      ],
+      "completion_condition": "quest_accepted"
+    }
+  ]
+}
