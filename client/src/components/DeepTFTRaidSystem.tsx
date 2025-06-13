@@ -848,6 +848,11 @@ export function DeepTFTRaidSystem({
     setIsAutoCombat(true);
   };
 
+  // Initialize shop on component mount
+  useEffect(() => {
+    generateShop();
+  }, []);
+
   // Combat simulation
   useEffect(() => {
     if (gamePhase !== 'combat' || !isAutoCombat) return;
@@ -1048,62 +1053,7 @@ export function DeepTFTRaidSystem({
           </div>
         )}
 
-        {/* Permanent Bench Area */}
-        <div className="absolute bottom-4 left-4 right-4 h-20 bg-gradient-to-r from-slate-800 to-slate-700 rounded-lg border border-slate-600 p-2">
-          <div className="flex items-center justify-between mb-1">
-            <h4 className="text-white font-bold text-sm">Bench ({bench.filter(u => u !== null).length}/9)</h4>
-          </div>
-          <div className="flex gap-1 justify-center">
-            {bench.map((unit, index) => (
-              <div
-                key={index}
-                className={`relative w-12 h-12 rounded border-2 ${
-                  unit ? 'border-green-400 bg-green-900/30' : 'border-slate-600 bg-slate-700/30'
-                } hover:border-green-300 transition-colors ${
-                  isDragging ? 'border-yellow-400' : ''
-                }`}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  e.currentTarget.classList.add('border-yellow-400', 'bg-yellow-900/20');
-                }}
-                onDragLeave={(e) => {
-                  e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
-                  handleDrop(index, 'bench');
-                }}
-              >
-                {unit && (
-                  <div
-                    draggable
-                    onDragStart={() => handleDragStart(unit, 'bench', index)}
-                    onDragEnd={handleDragEnd}
-                    className={`absolute inset-0 flex flex-col items-center justify-center text-white cursor-move ${
-                      isDragging && draggedUnit?.id === unit.id ? 'opacity-50' : ''
-                    }`}
-                  >
-                    <div className="text-xs font-bold truncate w-full text-center px-1">
-                      {unit.name.substring(0, 3)}
-                    </div>
-                    <div className="flex">
-                      {Array.from({ length: unit.stars }).map((_, i) => (
-                        <Star key={i} className="w-1 h-1 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {!unit && isDragging && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-yellow-400 text-xs font-bold">+</div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+
 
         {/* Items Panel - Left Side */}
         <div className="absolute left-4 top-32 w-20 bottom-28 bg-gradient-to-b from-purple-800 to-purple-900 rounded-lg border border-purple-600 p-2">
@@ -1129,7 +1079,7 @@ export function DeepTFTRaidSystem({
         </div>
 
         {/* Main Board Area */}
-        <div className={`absolute left-28 right-8 top-32 ${isShopExpanded ? 'bottom-80' : 'bottom-28'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
+        <div className={`absolute left-28 right-8 top-32 ${isShopExpanded ? 'bottom-96' : 'bottom-44'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
           {gamePhase === 'setup' && (
             /* Setup Phase - TFT Authentic Board Layout */
             <div className="absolute inset-2">
@@ -1296,6 +1246,38 @@ export function DeepTFTRaidSystem({
               </div>
             </div>
           )}
+        </div>
+
+        {/* Permanent Bench Area - Above Shop */}
+        <div className="absolute bottom-20 left-28 right-8 h-16 bg-gradient-to-b from-slate-600 to-slate-700 rounded-lg border border-slate-500 p-2">
+          <h4 className="text-white font-bold text-xs mb-1">Bench (0/9)</h4>
+          <div className="flex gap-1">
+            {bench.map((unit, index) => (
+              <div
+                key={index}
+                className="w-12 h-10 bg-slate-800 rounded border border-slate-600 flex items-center justify-center text-xs relative"
+                onDrop={(e) => {
+                  e.preventDefault();
+                  handleDrop(index, 'bench');
+                }}
+                onDragOver={(e) => e.preventDefault()}
+              >
+                {unit ? (
+                  <div
+                    className="cursor-grab text-white font-bold text-center"
+                    draggable
+                    onDragStart={() => handleDragStart(unit, 'bench', index)}
+                    onDragEnd={handleDragEnd}
+                    title={unit.name}
+                  >
+                    {unit.name.substring(0, 2)}
+                  </div>
+                ) : (
+                  <div className="text-slate-500">+</div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Collapsible Bottom Panel */}
