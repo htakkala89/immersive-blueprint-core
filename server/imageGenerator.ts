@@ -531,9 +531,12 @@ export async function generateLocationSceneImage(location: string, timeOfDay: st
     // Fallback to OpenAI if Google Imagen fails
     if (openai) {
       try {
+        // Create content-compliant prompt for OpenAI
+        const safePrompt = createSafeLocationPrompt(location, timeOfDay, weather);
+        
         const response = await openai.images.generate({
           model: "dall-e-3",
-          prompt: locationPrompt,
+          prompt: safePrompt,
           n: 1,
           size: "1024x1024",
           quality: "standard",
@@ -634,9 +637,15 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
           `${fallbackPrompt}. Korean male protagonist with short BLACK hair, dark eyes, NOT blonde, accurate Solo Leveling character design` : 
           fallbackPrompt;
           
+        // Clean prompt for OpenAI content policy compliance
+        const cleanPrompt = enhancedPrompt
+          .replace(/NSFW|explicit|nude|naked|sexual|intimate|erotic|mature|adult/gi, '')
+          .replace(/\b(breast|chest|body|anatomy)\b/gi, 'figure')
+          .trim();
+          
         const response = await openai.images.generate({
           model: "dall-e-3",
-          prompt: enhancedPrompt,
+          prompt: cleanPrompt.length > 0 ? cleanPrompt : "anime style architectural scene",
           n: 1,
           size: "1024x1024",
           quality: "standard",
@@ -652,8 +661,8 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
           console.log('✅ OpenAI generated fallback image successfully');
           return imageUrl;
         }
-      } catch (openaiError) {
-        console.log('⚠️ OpenAI generation failed:', (openaiError as Error)?.message || 'Unknown error');
+      } catch (openaiError: any) {
+        console.log('⚠️ OpenAI location generation failed:', openaiError.response?.data || openaiError.message || 'Unknown error');
       }
     }
 
