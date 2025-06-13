@@ -14,9 +14,13 @@ import {
   X,
   Filter,
   Eye,
-  Sword
+  Sword,
+  Users,
+  Target,
+  Crown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TFTStyleRaidSystem } from './TFTStyleRaidSystem';
 
 interface PlayerStats {
   gold: number;
@@ -171,6 +175,29 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       affectionReward: 1,
       available: true,
       outcomes: ['Mutual Respect', 'Small Affection Gain']
+    },
+    {
+      id: 'tft_style_raid',
+      title: 'Strategic Dungeon Raid',
+      description: 'Command your team in an advanced tactical raid with auto-battler mechanics and synergy bonuses.',
+      icon: <Users className="w-5 h-5" />,
+      energyCost: 40,
+      category: 'training',
+      affectionReward: 3,
+      available: stats.level >= 5,
+      lockReason: stats.level < 5 ? 'Requires: Player Level 5+ for advanced tactics' : undefined,
+      outcomes: ['High Gold & XP rewards', 'Team synergy bonuses', 'Character collection progress']
+    },
+    {
+      id: 'shadow_army_management',
+      title: 'Shadow Army Training',
+      description: 'Organize and upgrade your shadow soldiers with TFT-style progression mechanics.',
+      icon: <Crown className="w-5 h-5" />,
+      energyCost: 30,
+      category: 'training',
+      available: stats.level >= 10,
+      lockReason: stats.level < 10 ? 'Requires: Shadow Extraction ability unlocked' : undefined,
+      outcomes: ['Shadow soldier upgrades', 'Army composition optimization']
     },
     {
       id: 'review_raid_footage',
@@ -449,6 +476,7 @@ export function DailyLifeHubComplete({
 }: DailyLifeHubCompleteProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [hoveredActivity, setHoveredActivity] = useState<string | null>(null);
+  const [showTFTRaid, setShowTFTRaid] = useState(false);
   
   const availableActivities = getAvailableActivities(playerStats, timeOfDay);
   const greetingMessage = getGreetingMessage(timeOfDay, playerStats.affectionLevel);
@@ -468,6 +496,12 @@ export function DailyLifeHubComplete({
     console.log('🎯 Activity clicked:', activity.id, activity.title);
     console.log('📊 Activity available:', activity.available);
     console.log('⚡ Player energy:', playerStats.energy, 'Required:', activity.energyCost);
+    
+    // Handle TFT raid system
+    if (activity.id === 'tft_style_raid') {
+      setShowTFTRaid(true);
+      return;
+    }
     
     if (!activity.available) {
       console.log('❌ Activity not available');
@@ -665,6 +699,32 @@ export function DailyLifeHubComplete({
           </div>
         </motion.div>
       </motion.div>
+
+      {/* TFT-Style Raid System */}
+      <TFTStyleRaidSystem
+        isVisible={showTFTRaid}
+        onClose={() => setShowTFTRaid(false)}
+        onRaidComplete={(success, loot) => {
+          console.log('TFT Raid completed:', { success, loot });
+          setShowTFTRaid(false);
+          // Handle raid completion rewards here
+          if (success) {
+            onActivitySelect({
+              id: 'tft_style_raid',
+              title: 'Strategic Dungeon Raid',
+              description: 'Tactical raid completed successfully',
+              icon: <Users className="w-5 h-5" />,
+              energyCost: 40,
+              category: 'training',
+              affectionReward: 3,
+              available: true,
+              outcomes: ['High Gold & XP rewards', 'Team synergy bonuses']
+            });
+          }
+        }}
+        playerLevel={playerStats.level}
+        affectionLevel={playerStats.affectionLevel}
+      />
     </AnimatePresence>
   );
 }
