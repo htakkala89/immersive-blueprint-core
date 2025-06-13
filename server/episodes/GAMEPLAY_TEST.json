@@ -1,0 +1,191 @@
+{
+  "id": "GAMEPLAY_TEST",
+  "title": "Training Partners",
+  "description": "A story episode that demonstrates complete gameplay integration - requiring location visits, conversations, and activity completion",
+  "prerequisite": {
+    "player_level": 1,
+    "relationship_level": 1
+  },
+  "beats": [
+    {
+      "beat_id": 1,
+      "title": "Morning Assignment",
+      "trigger": "initial",
+      "actions": [
+        {
+          "command": "DELIVER_MESSAGE",
+          "params": { 
+            "target_system": 15, 
+            "sender": "Hunter Association", 
+            "message": "Jin-Woo, report to the Hunter Association immediately. There's a training assignment that requires your attention. Cha Hae-In will brief you on the details." 
+          }
+        },
+        {
+          "command": "SET_QUEST_OBJECTIVE",
+          "params": { 
+            "objective": "Visit the Hunter Association",
+            "description": "Go to the Hunter Association to receive your training assignment from Cha Hae-In."
+          }
+        }
+      ],
+      "completion_condition": {
+        "event": "player_visits_location",
+        "params": { "location_id": "hunter_association" }
+      }
+    },
+    {
+      "beat_id": 2,
+      "title": "The Briefing",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "SET_CHA_LOCATION",
+          "params": { "location_id": "hunter_association" }
+        },
+        {
+          "command": "SET_CHA_MOOD",
+          "params": { "mood": "professional" }
+        },
+        {
+          "command": "UPDATE_QUEST_OBJECTIVE",
+          "params": { 
+            "objective": "Speak with Cha Hae-In",
+            "description": "Talk to Cha Hae-In to learn about your training assignment."
+          }
+        }
+      ],
+      "completion_condition": {
+        "event": "player_chats_with_cha",
+        "params": {}
+      }
+    },
+    {
+      "beat_id": 3,
+      "title": "Training Preparation",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "DELIVER_MESSAGE",
+          "params": { 
+            "target_system": 15, 
+            "sender": "Cha Hae-In", 
+            "message": "Meet me at the Training Facility. We need to prepare for tomorrow's joint mission. I've reserved the elite training room for us." 
+          }
+        },
+        {
+          "command": "UPDATE_QUEST_OBJECTIVE",
+          "params": { 
+            "objective": "Go to Training Facility",
+            "description": "Travel to the Training Facility to meet Cha Hae-In for joint training."
+          }
+        }
+      ],
+      "completion_condition": {
+        "event": "player_visits_location",
+        "params": { "location_id": "training_facility" }
+      }
+    },
+    {
+      "beat_id": 4,
+      "title": "Training Session",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "SET_CHA_LOCATION",
+          "params": { "location_id": "training_facility" }
+        },
+        {
+          "command": "SET_CHA_MOOD",
+          "params": { "mood": "focused" }
+        },
+        {
+          "command": "UPDATE_QUEST_OBJECTIVE",
+          "params": { 
+            "objective": "Complete Training Activity",
+            "description": "Participate in a training activity with Cha Hae-In to improve your coordination for the upcoming mission."
+          }
+        },
+        {
+          "command": "UNLOCK_ACTIVITY",
+          "params": { "activity_id": "sparring_session" }
+        }
+      ],
+      "completion_condition": {
+        "event": "activity_completed",
+        "params": { "activity_id": "sparring_session" }
+      }
+    },
+    {
+      "beat_id": 5,
+      "title": "After Training",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "DELIVER_MESSAGE",
+          "params": { 
+            "target_system": 15, 
+            "sender": "Cha Hae-In", 
+            "message": "Good work today. Let's grab coffee to discuss the mission details. I know a nice place in Hongdae." 
+          }
+        },
+        {
+          "command": "UPDATE_QUEST_OBJECTIVE",
+          "params": { 
+            "objective": "Meet Cha Hae-In for Coffee",
+            "description": "Go to Hongdae Cafe to discuss mission details over coffee with Cha Hae-In."
+          }
+        }
+      ],
+      "completion_condition": {
+        "event": "player_visits_location",
+        "params": { "location_id": "hongdae_cafe" }
+      }
+    },
+    {
+      "beat_id": 6,
+      "title": "Mission Planning",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "SET_CHA_LOCATION",
+          "params": { "location_id": "hongdae_cafe" }
+        },
+        {
+          "command": "SET_CHA_MOOD",
+          "params": { "mood": "relaxed" }
+        },
+        {
+          "command": "UPDATE_QUEST_OBJECTIVE",
+          "params": { 
+            "objective": "Enjoy Coffee and Plan Mission",
+            "description": "Share coffee with Cha Hae-In while discussing tomorrow's mission strategy."
+          }
+        }
+      ],
+      "completion_condition": {
+        "event": "activity_completed",
+        "params": { "activity_id": "coffee_date" }
+      }
+    },
+    {
+      "beat_id": 7,
+      "title": "Episode Complete",
+      "trigger": "previous_beat_complete",
+      "actions": [
+        {
+          "command": "COMPLETE_EPISODE",
+          "params": { 
+            "experienceGained": 500,
+            "affectionBonus": 10,
+            "goldReward": 50000,
+            "completionMessage": "Training Partners episode completed! Your coordination with Cha Hae-In has improved significantly."
+          }
+        }
+      ],
+      "completion_condition": {
+        "event": "episode_complete",
+        "params": {}
+      }
+    }
+  ]
+}
