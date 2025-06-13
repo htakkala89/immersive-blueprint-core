@@ -830,7 +830,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/profiles/:profileId/save', async (req, res) => {
     try {
       const { profileId } = req.params;
-      const { gameState } = req.body;
+      const { gameData, gameState } = req.body;
+      const dataToUpdate = gameState || gameData;
       const { db } = await import('./db');
       const { playerProfiles, gameStates } = await import('@shared/schema');
       const { eq } = await import('drizzle-orm');
@@ -850,37 +851,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await db
           .update(gameStates)
           .set({
-            narration: gameState.narration,
-            health: gameState.health,
-            maxHealth: gameState.maxHealth,
-            mana: gameState.mana,
-            maxMana: gameState.maxMana,
-            level: gameState.level,
-            experience: gameState.experience,
-            statPoints: gameState.statPoints,
-            skillPoints: gameState.skillPoints,
-            gold: gameState.gold,
-            affectionLevel: gameState.affectionLevel,
-            energy: gameState.energy,
-            maxEnergy: gameState.maxEnergy,
-            relationshipStatus: gameState.relationshipStatus,
-            intimacyLevel: gameState.intimacyLevel,
-            sharedMemories: gameState.sharedMemories,
-            livingTogether: gameState.livingTogether,
-            daysTogether: gameState.daysTogether,
-            apartmentTier: gameState.apartmentTier,
-            currentScene: gameState.currentScene,
-            choices: gameState.choices,
-            sceneData: gameState.sceneData,
-            storyPath: gameState.storyPath,
-            choiceHistory: gameState.choiceHistory,
-            storyFlags: gameState.storyFlags,
-            inventory: gameState.inventory,
-            stats: gameState.stats,
-            skills: gameState.skills,
-            scheduledActivities: gameState.scheduledActivities,
-            activeQuests: gameState.activeQuests,
-            completedQuests: gameState.completedQuests
+            narration: dataToUpdate.narration || "Your adventure continues...",
+            health: dataToUpdate.health || 100,
+            maxHealth: dataToUpdate.maxHealth || 100,
+            mana: dataToUpdate.mana || 50,
+            maxMana: dataToUpdate.maxMana || 50,
+            level: dataToUpdate.level || 1,
+            experience: dataToUpdate.experience || 0,
+            statPoints: dataToUpdate.statPoints || 0,
+            skillPoints: dataToUpdate.skillPoints || 0,
+            gold: dataToUpdate.gold || 100,
+            affectionLevel: dataToUpdate.affectionLevel || 0,
+            energy: dataToUpdate.energy || 100,
+            maxEnergy: dataToUpdate.maxEnergy || 100,
+            relationshipStatus: dataToUpdate.relationshipStatus || "dating",
+            intimacyLevel: dataToUpdate.intimacyLevel || 1,
+            sharedMemories: dataToUpdate.sharedMemories || 0,
+            livingTogether: dataToUpdate.livingTogether || 0,
+            daysTogether: dataToUpdate.daysTogether || 1,
+            apartmentTier: dataToUpdate.apartmentTier || 1,
+            currentScene: dataToUpdate.currentScene || "entrance",
+            choices: dataToUpdate.choices || [],
+            sceneData: dataToUpdate.sceneData || null,
+            storyPath: dataToUpdate.storyPath || "entrance",
+            choiceHistory: dataToUpdate.choiceHistory || [],
+            storyFlags: dataToUpdate.storyFlags || {},
+            inventory: dataToUpdate.inventory || [],
+            stats: dataToUpdate.stats || {},
+            skills: dataToUpdate.skills || [],
+            scheduledActivities: dataToUpdate.scheduledActivities || [],
+            activeQuests: dataToUpdate.activeQuests || [],
+            completedQuests: dataToUpdate.completedQuests || []
           })
           .where(eq(gameStates.id, profile[0].gameStateId));
       }
@@ -916,22 +917,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Profile not found' });
       }
       
-      // Delete episode progress
+      // Delete episode progress first
       await db
         .delete(episodeProgress)
         .where(eq(episodeProgress.profileId, parseInt(profileId)));
       
-      // Delete game state
+      // Delete profile (this will automatically set gameStateId foreign key to null)
+      await db
+        .delete(playerProfiles)
+        .where(eq(playerProfiles.id, parseInt(profileId)));
+      
+      // Delete game state last
       if (profile[0].gameStateId) {
         await db
           .delete(gameStates)
           .where(eq(gameStates.id, profile[0].gameStateId));
       }
-      
-      // Delete profile
-      await db
-        .delete(playerProfiles)
-        .where(eq(playerProfiles.id, parseInt(profileId)));
       
       res.json({ success: true });
     } catch (error) {
