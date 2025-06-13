@@ -188,10 +188,10 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
 
     console.log('🎨 Attempting Vertex AI Imagen generation...');
     
-    const enhancedPrompt = prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. High quality digital art, Korean webtoon aesthetic, romantic cinematic lighting";
+    const enhancedPrompt = prompt + ". Solo Leveling manhwa art style by DUBU (Redice Studio), vibrant neon lighting (purple, blue, gold accents), sharp clean lineart, detailed character designs, Korean webtoon aesthetic, cinematic composition, high contrast shadows, professional digital art, hunter association technology, futuristic Seoul cityscape elements";
     
     const location = 'us-central1';
-    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-001:predict`;
+    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
     
     const response = await fetch(endpoint, {
       method: 'POST',
