@@ -307,26 +307,56 @@ export function PlayerProgressionSystem16({
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
         }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-amber-500 flex items-center justify-center">
-              <Crown className="w-6 h-6 text-white" />
-            </div>
+        {/* Enhanced Header with Power Level Display */}
+        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 relative overflow-hidden">
+          {/* Background Glow Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 via-transparent to-amber-900/20" />
+          
+          <div className="flex items-center gap-6 relative z-10">
+            {/* Animated Power Core */}
+            <motion.div 
+              className="relative"
+              animate={{ 
+                boxShadow: [
+                  '0 0 20px rgba(147, 51, 234, 0.5)',
+                  '0 0 30px rgba(245, 158, 11, 0.6)',
+                  '0 0 20px rgba(147, 51, 234, 0.5)'
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 flex items-center justify-center relative">
+                <Crown className="w-8 h-8 text-white" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-amber-500 opacity-20 animate-ping" />
+              </div>
+            </motion.div>
+            
             <div>
-              <h2 className="text-2xl font-bold text-white">Character Command</h2>
-              <p className="text-slate-400">Player Progression & Skills</p>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-amber-300 bg-clip-text text-transparent">
+                Monarch's Command
+              </h2>
+              <p className="text-slate-400 text-lg">Character Progression System</p>
             </div>
           </div>
-          
-          <Button
-            onClick={onClose}
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-red-600/30"
-          >
-            <X className="w-5 h-5" />
-          </Button>
+
+          {/* Power Level Indicator */}
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="text-right">
+              <div className="text-sm text-slate-400">Total Power Level</div>
+              <div className="text-2xl font-bold text-amber-400">
+                {Object.values(playerData.stats).reduce((sum, stat) => sum + stat, 0) * playerData.level}
+              </div>
+            </div>
+            
+            <Button
+              onClick={onClose}
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-red-600/30 transition-all duration-200"
+            >
+              <X className="w-6 h-6" />
+            </Button>
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -358,66 +388,134 @@ export function PlayerProgressionSystem16({
           {activeTab === 'stats' && (
             <div className="h-full overflow-y-auto character-scrollbar p-6">
               <div className="max-w-4xl mx-auto space-y-6">
-                {/* Player Info */}
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-                  <h3 className="text-xl font-bold text-white mb-4">Hunter Profile</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-300">Name:</span>
-                      <span className="text-white font-medium">{playerData.name}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-300">Rank:</span>
-                      <span className="text-amber-400 font-medium">{playerData.hunterRank}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-300">Level:</span>
-                      <span className="text-purple-400 font-bold text-lg">{playerData.level}</span>
-                    </div>
+                {/* Enhanced Hunter Profile Card */}
+                <motion.div 
+                  className="relative rounded-xl p-6 border overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(148, 163, 184, 0.3)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  {/* Animated Background Pattern */}
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-500/20 to-amber-500/20" />
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-purple-500/20 rounded-full animate-pulse" />
                   </div>
                   
-                  {/* Experience Bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm text-slate-300 mb-1">
-                      <span>Experience</span>
-                      <span>{playerData.experience}/{playerData.maxExperience}</span>
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-300 to-amber-300 bg-clip-text text-transparent mb-6">
+                      Hunter Profile
+                    </h3>
+                    
+                    {/* Profile Stats Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                      <motion.div 
+                        className="text-center p-4 rounded-lg bg-slate-800/50 border border-slate-700/50"
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        <div className="text-sm text-slate-400 mb-1">Hunter Name</div>
+                        <div className="text-xl font-bold text-white">{playerData.name}</div>
+                      </motion.div>
+                      
+                      <motion.div 
+                        className="text-center p-4 rounded-lg bg-slate-800/50 border border-slate-700/50"
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        <div className="text-sm text-slate-400 mb-1">Hunter Rank</div>
+                        <div className="text-xl font-bold text-amber-400">{playerData.hunterRank}</div>
+                      </motion.div>
+                      
+                      <motion.div 
+                        className="text-center p-4 rounded-lg bg-slate-800/50 border border-slate-700/50"
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        <div className="text-sm text-slate-400 mb-1">Level</div>
+                        <div className="text-2xl font-bold text-purple-400">{playerData.level}</div>
+                      </motion.div>
                     </div>
-                    <div className="w-full bg-slate-700 rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-purple-500 to-amber-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(playerData.experience / playerData.maxExperience) * 100}%` }}
-                      />
-                    </div>
-                  </div>
+                    
+                    {/* Enhanced Progress Bars */}
+                    <div className="space-y-4">
+                      {/* Experience Bar with Glow Effect */}
+                      <div>
+                        <div className="flex justify-between text-sm text-slate-300 mb-2">
+                          <span className="font-medium">Experience Progress</span>
+                          <span className="text-purple-300">{playerData.experience}/{playerData.maxExperience}</span>
+                        </div>
+                        <div className="relative">
+                          <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+                            <motion.div 
+                              className="bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 h-3 rounded-full relative"
+                              style={{ width: `${(playerData.experience / playerData.maxExperience) * 100}%` }}
+                              initial={{ width: 0 }}
+                              animate={{ width: `${(playerData.experience / playerData.maxExperience) * 100}%` }}
+                              transition={{ duration: 1, delay: 0.5 }}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                            </motion.div>
+                          </div>
+                          <div className="absolute inset-0 rounded-full shadow-inner" />
+                        </div>
+                      </div>
 
-                  {/* Health and Mana */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex justify-between text-sm text-red-300 mb-1">
-                        <span>Health</span>
-                        <span>{playerData.health}/{playerData.maxHealth}</span>
-                      </div>
-                      <div className="w-full bg-slate-700 rounded-full h-2">
-                        <div 
-                          className="bg-red-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(playerData.health / playerData.maxHealth) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm text-blue-300 mb-1">
-                        <span>Mana</span>
-                        <span>{playerData.mana}/{playerData.maxMana}</span>
-                      </div>
-                      <div className="w-full bg-slate-700 rounded-full h-2">
-                        <div 
-                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(playerData.mana / playerData.maxMana) * 100}%` }}
-                        />
+                      {/* Health and Mana with Enhanced Styling */}
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <div className="flex justify-between text-sm text-red-300 mb-2">
+                            <span className="font-medium flex items-center gap-1">
+                              <Heart className="w-4 h-4" />
+                              Health
+                            </span>
+                            <span>{playerData.health}/{playerData.maxHealth}</span>
+                          </div>
+                          <div className="relative">
+                            <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+                              <motion.div 
+                                className="bg-gradient-to-r from-red-600 to-red-400 h-3 rounded-full relative"
+                                style={{ width: `${(playerData.health / playerData.maxHealth) * 100}%` }}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(playerData.health / playerData.maxHealth) * 100}%` }}
+                                transition={{ duration: 1, delay: 0.7 }}
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                              </motion.div>
+                            </div>
+                            <div className="absolute inset-0 rounded-full shadow-inner" />
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <div className="flex justify-between text-sm text-blue-300 mb-2">
+                            <span className="font-medium flex items-center gap-1">
+                              <Zap className="w-4 h-4" />
+                              Mana
+                            </span>
+                            <span>{playerData.mana}/{playerData.maxMana}</span>
+                          </div>
+                          <div className="relative">
+                            <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+                              <motion.div 
+                                className="bg-gradient-to-r from-blue-600 to-blue-400 h-3 rounded-full relative"
+                                style={{ width: `${(playerData.mana / playerData.maxMana) * 100}%` }}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(playerData.mana / playerData.maxMana) * 100}%` }}
+                                transition={{ duration: 1, delay: 0.9 }}
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                              </motion.div>
+                            </div>
+                            <div className="absolute inset-0 rounded-full shadow-inner" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Points Available */}
                 {(playerData.unspentStatPoints > 0 || playerData.unspentSkillPoints > 0) && (
@@ -438,64 +536,157 @@ export function PlayerProgressionSystem16({
                   </motion.div>
                 )}
 
-                {/* Core Stats */}
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50">
-                  <div className="p-6 pb-4">
-                    <h3 className="text-xl font-bold text-white">Core Stats</h3>
-                  </div>
-                  <div className="px-6 pb-6 max-h-96 overflow-y-auto character-scrollbar">
-                    <div className="space-y-3">
-                    {Object.entries(playerData.stats).map(([statKey, value]) => {
-                      const IconComponent = getStatIcon(statKey as keyof CoreStats);
-                      const colorClass = getStatColor(statKey as keyof CoreStats);
-                      
-                      return (
-                        <div key={statKey} className="flex items-center justify-between p-2 bg-slate-700/30 rounded-lg border border-slate-600/30">
-                          <div className="flex items-center gap-3">
-                            <IconComponent className={`w-5 h-5 ${colorClass}`} />
-                            <div>
-                              <span className="text-white font-medium capitalize">{statKey}</span>
-                              <div className="text-xs text-slate-400">
-                                {statKey === 'strength' && 'Physical damage & carrying capacity'}
-                                {statKey === 'agility' && 'Attack speed & critical chance'}
-                                {statKey === 'vitality' && 'Health & defense'}
-                                {statKey === 'intelligence' && 'Mana & magical damage'}
-                                {statKey === 'sense' && 'Detection & weak point identification'}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-3">
-                            <motion.span 
-                              className="text-2xl font-bold text-white"
-                              key={`${statKey}-${value}`}
-                              initial={{ scale: 1.2, color: '#fbbf24' }}
-                              animate={{ scale: 1, color: '#ffffff' }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              {value}
-                            </motion.span>
-                            {playerData.unspentStatPoints > 0 && (
-                              <motion.div
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <Button
-                                  onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
-                                  size="sm"
-                                  className="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 w-8 h-8 p-0 shadow-lg border border-purple-400/30"
-                                >
-                                  <Plus className="w-4 h-4" />
-                                </Button>
-                              </motion.div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
+                {/* Enhanced Core Stats Interface */}
+                <motion.div 
+                  className="relative rounded-xl border overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(148, 163, 184, 0.3)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {/* Header with Available Points */}
+                  <div className="p-6 pb-4 border-b border-slate-700/50">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-300 to-amber-300 bg-clip-text text-transparent">
+                        Core Attributes
+                      </h3>
+                      {playerData.unspentStatPoints > 0 && (
+                        <motion.div 
+                          className="flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-purple-600/20 to-amber-600/20 border border-amber-400/30"
+                          animate={{ 
+                            boxShadow: [
+                              '0 0 0 rgba(245, 158, 11, 0)',
+                              '0 0 10px rgba(245, 158, 11, 0.3)',
+                              '0 0 0 rgba(245, 158, 11, 0)'
+                            ]
+                          }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          <Star className="w-4 h-4 text-amber-400" />
+                          <span className="text-amber-300 font-bold text-sm">
+                            {playerData.unspentStatPoints} Points Available
+                          </span>
+                        </motion.div>
+                      )}
                     </div>
                   </div>
-                </div>
+                  
+                  {/* Stats Grid */}
+                  <div className="p-6">
+                    <div className="grid gap-4">
+                      {Object.entries(playerData.stats).map(([statKey, value], index) => {
+                        const IconComponent = getStatIcon(statKey as keyof CoreStats);
+                        const colorClass = getStatColor(statKey as keyof CoreStats);
+                        
+                        return (
+                          <motion.div 
+                            key={statKey}
+                            className="relative group"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.6 + index * 0.1 }}
+                          >
+                            <div 
+                              className="flex items-center justify-between p-4 rounded-xl border transition-all duration-300 group-hover:shadow-lg"
+                              style={{
+                                background: 'linear-gradient(135deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.6) 100%)',
+                                border: '1px solid rgba(148, 163, 184, 0.2)'
+                              }}
+                            >
+                              <div className="flex items-center gap-4">
+                                {/* Stat Icon with Glow Effect */}
+                                <motion.div 
+                                  className="relative"
+                                  whileHover={{ scale: 1.1 }}
+                                >
+                                  <div 
+                                    className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 ${colorClass.replace('text-', 'border-')} bg-gradient-to-br from-slate-700/50 to-slate-800/50`}
+                                    style={{
+                                      boxShadow: `0 0 20px ${colorClass.includes('red') ? 'rgba(239, 68, 68, 0.3)' :
+                                                              colorClass.includes('green') ? 'rgba(34, 197, 94, 0.3)' :
+                                                              colorClass.includes('blue') ? 'rgba(59, 130, 246, 0.3)' :
+                                                              colorClass.includes('purple') ? 'rgba(147, 51, 234, 0.3)' :
+                                                              'rgba(245, 158, 11, 0.3)'}`
+                                    }}
+                                  >
+                                    <IconComponent className={`w-6 h-6 ${colorClass}`} />
+                                  </div>
+                                </motion.div>
+                                
+                                {/* Stat Info */}
+                                <div>
+                                  <h4 className="text-lg font-bold text-white capitalize mb-1">{statKey}</h4>
+                                  <p className="text-xs text-slate-400 max-w-xs">
+                                    {statKey === 'strength' && 'Increases physical damage and carrying capacity'}
+                                    {statKey === 'agility' && 'Improves attack speed and critical hit chance'}
+                                    {statKey === 'vitality' && 'Boosts health points and defensive capabilities'}
+                                    {statKey === 'intelligence' && 'Enhances mana pool and magical damage'}
+                                    {statKey === 'sense' && 'Sharpens detection abilities and weak point identification'}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {/* Stat Value and Controls */}
+                              <div className="flex items-center gap-4">
+                                {/* Visual Stat Representation */}
+                                <div className="flex flex-col items-center">
+                                  <motion.div 
+                                    className="text-3xl font-bold text-white mb-1"
+                                    key={`${statKey}-${value}`}
+                                    initial={{ scale: 1.3, color: '#fbbf24' }}
+                                    animate={{ scale: 1, color: '#ffffff' }}
+                                    transition={{ duration: 0.5, type: "spring" }}
+                                  >
+                                    {value}
+                                  </motion.div>
+                                  
+                                  {/* Stat Level Bars */}
+                                  <div className="flex gap-1">
+                                    {[...Array(Math.min(10, value))].map((_, i) => (
+                                      <motion.div
+                                        key={i}
+                                        className={`w-1 h-3 rounded-full ${colorClass.replace('text-', 'bg-')}`}
+                                        initial={{ height: 0 }}
+                                        animate={{ height: 12 }}
+                                        transition={{ delay: 0.8 + i * 0.05 }}
+                                      />
+                                    ))}
+                                    {value > 10 && (
+                                      <div className="text-xs text-slate-400 ml-1">+{value - 10}</div>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                {/* Allocation Button */}
+                                {playerData.unspentStatPoints > 0 && (
+                                  <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                  >
+                                    <Button
+                                      onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
+                                      className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 border border-purple-400/30 shadow-lg transition-all duration-200"
+                                      style={{
+                                        boxShadow: '0 4px 15px rgba(147, 51, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                                      }}
+                                    >
+                                      <Plus className="w-5 h-5 text-white" />
+                                    </Button>
+                                  </motion.div>
+                                )}
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </div>
           )}

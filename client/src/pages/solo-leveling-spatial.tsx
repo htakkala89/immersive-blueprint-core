@@ -4185,110 +4185,68 @@ export default function SoloLevelingSpatial() {
               
               {/* Fixed Input Controls Section */}
               <div className="flex-shrink-0 space-y-2 pt-3 border-t border-white/10" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
-                {/* Enhanced Character Command Interface */}
-                <motion.div
-                  className="space-y-2"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  {/* Quick Action Commands */}
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {[
-                      { icon: '💬', label: 'Chat', action: () => setPlayerInput('Let\'s talk'), color: 'rgba(139, 92, 246, 0.15)' },
-                      { icon: '🤝', label: 'Interact', action: () => setPlayerInput('Come here'), color: 'rgba(59, 130, 246, 0.15)' },
-                      { icon: '💕', label: 'Affection', action: () => setPlayerInput('You look beautiful today'), color: 'rgba(236, 72, 153, 0.15)' },
-                      { icon: '⚔️', label: 'Training', action: () => setPlayerInput('Want to spar?'), color: 'rgba(239, 68, 68, 0.15)' },
-                      { icon: '🎯', label: 'Mission', action: () => setPlayerInput('Ready for the next quest?'), color: 'rgba(16, 185, 129, 0.15)' }
-                    ].map((command, index) => (
+                {/* Thought Prompts */}
+                {thoughtPrompts.length > 0 && (
+                  <motion.div
+                    className="flex gap-2 overflow-x-auto pb-1"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    {thoughtPrompts.map((prompt, index) => (
                       <motion.button
                         key={index}
-                        className="flex items-center gap-1 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-all"
+                        className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
                         style={{
                           backdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
                           WebkitBackdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
                           background: `
                             linear-gradient(135deg, 
                               rgba(255, 255, 255, 0.1) 0%,
-                              rgba(255, 255, 255, 0.08) 50%,
+                              rgba(255, 255, 255, 0.08) 25%,
+                              rgba(255, 255, 255, 0.09) 50%,
+                              rgba(255, 255, 255, 0.07) 75%,
                               rgba(255, 255, 255, 0.1) 100%
                             ),
-                            ${command.color}
+                            linear-gradient(135deg, 
+                              rgba(139, 92, 246, 0.12) 0%, 
+                              rgba(168, 85, 247, 0.1) 25%,
+                              rgba(139, 92, 246, 0.11) 50%,
+                              rgba(124, 58, 237, 0.12) 75%,
+                              rgba(139, 92, 246, 0.1) 100%
+                            )
                           `,
                           border: '1px solid rgba(255, 255, 255, 0.2)',
                           boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                         }}
                         whileHover={{ 
                           scale: 1.05,
+                          background: `
+                            linear-gradient(135deg, 
+                              rgba(255, 255, 255, 0.15) 0%,
+                              rgba(255, 255, 255, 0.12) 25%,
+                              rgba(255, 255, 255, 0.14) 50%,
+                              rgba(255, 255, 255, 0.11) 75%,
+                              rgba(255, 255, 255, 0.15) 100%
+                            ),
+                            linear-gradient(135deg, 
+                              rgba(139, 92, 246, 0.25) 0%, 
+                              rgba(168, 85, 247, 0.22) 25%,
+                              rgba(139, 92, 246, 0.24) 50%,
+                              rgba(124, 58, 237, 0.25) 75%,
+                              rgba(139, 92, 246, 0.22) 100%
+                            )
+                          `,
                           boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
                         }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={command.action}
+                        onClick={() => handlePlayerResponse(prompt)}
                       >
-                        <span className="text-base">{command.icon}</span>
-                        <span>{command.label}</span>
+                        {prompt}
                       </motion.button>
                     ))}
-                  </div>
-                  
-                  {/* Dynamic Thought Prompts */}
-                  {thoughtPrompts.length > 0 && (
-                    <div className="flex gap-2 overflow-x-auto pb-1">
-                      {thoughtPrompts.map((prompt, index) => (
-                        <motion.button
-                          key={index}
-                          className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
-                          style={{
-                            backdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
-                            WebkitBackdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
-                            background: `
-                              linear-gradient(135deg, 
-                                rgba(255, 255, 255, 0.1) 0%,
-                                rgba(255, 255, 255, 0.08) 25%,
-                                rgba(255, 255, 255, 0.09) 50%,
-                                rgba(255, 255, 255, 0.07) 75%,
-                                rgba(255, 255, 255, 0.1) 100%
-                              ),
-                              linear-gradient(135deg, 
-                                rgba(139, 92, 246, 0.12) 0%, 
-                                rgba(168, 85, 247, 0.1) 25%,
-                                rgba(139, 92, 246, 0.11) 50%,
-                                rgba(124, 58, 237, 0.12) 75%,
-                                rgba(139, 92, 246, 0.1) 100%
-                              )
-                            `,
-                            border: '1px solid rgba(255, 255, 255, 0.2)',
-                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                          }}
-                          whileHover={{ 
-                            scale: 1.05,
-                            background: `
-                              linear-gradient(135deg, 
-                                rgba(255, 255, 255, 0.15) 0%,
-                                rgba(255, 255, 255, 0.12) 25%,
-                                rgba(255, 255, 255, 0.14) 50%,
-                                rgba(255, 255, 255, 0.11) 75%,
-                                rgba(255, 255, 255, 0.15) 100%
-                              ),
-                              linear-gradient(135deg, 
-                                rgba(139, 92, 246, 0.25) 0%, 
-                                rgba(168, 85, 247, 0.22) 25%,
-                                rgba(139, 92, 246, 0.24) 50%,
-                                rgba(124, 58, 237, 0.25) 75%,
-                                rgba(139, 92, 246, 0.22) 100%
-                              )
-                            `,
-                            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
-                          }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handlePlayerResponse(prompt)}
-                        >
-                          {prompt}
-                        </motion.button>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
+                  </motion.div>
+                )}
                 
                 {/* Player Input */}
                 <motion.div
