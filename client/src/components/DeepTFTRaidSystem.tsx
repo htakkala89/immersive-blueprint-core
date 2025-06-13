@@ -548,15 +548,15 @@ export function DeepTFTRaidSystem({
                 } hover:border-blue-300 transition-colors cursor-pointer`}
                 onClick={() => {
                   if (!unit && bench.some(b => b !== null)) {
-                    // Find first unit on bench and move to board
-                    const firstBenchUnit = bench.find(b => b !== null);
-                    if (firstBenchUnit && board.filter(b => b !== null).length < maxTeamSize) {
-                      const benchIndex = bench.findIndex(b => b?.id === firstBenchUnit.id);
+                    // Find first available unit on bench and move to board
+                    const availableUnit = bench.find(b => b !== null);
+                    if (availableUnit && board.filter(b => b !== null).length < 7) { // Allow up to 7 units on field
+                      const benchIndex = bench.findIndex(b => b?.id === availableUnit.id);
                       const newBench = [...bench];
                       const newBoard = [...board];
                       
                       newBench[benchIndex] = null;
-                      newBoard[index] = firstBenchUnit;
+                      newBoard[index] = availableUnit;
                       
                       setBench(newBench);
                       setBoard(newBoard);
