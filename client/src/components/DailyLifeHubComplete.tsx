@@ -20,7 +20,7 @@ import {
   Crown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TFTStyleRaidSystem } from './TFTStyleRaidSystem';
+import { DeepTFTRaidSystem } from './DeepTFTRaidSystem';
 
 interface PlayerStats {
   gold: number;
@@ -709,7 +709,7 @@ export function DailyLifeHubComplete({
 
       {/* TFT-Style Raid System */}
       {showTFTRaid && (
-        <TFTStyleRaidSystem
+        <DeepTFTRaidSystem
           isVisible={showTFTRaid}
           onClose={() => {
             console.log('Closing TFT Raid modal');
