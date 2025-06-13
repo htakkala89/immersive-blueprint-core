@@ -332,7 +332,15 @@ export default function SoloLevelingSpatial() {
   const handleChaHaeInInteraction = async () => {
     console.log('Starting Cha Hae-In interaction...');
     
-    // Check for available episodes at current location first
+    // Prioritize intimate interactions in private locations
+    if (playerLocation === 'chahaein_apartment' || playerLocation === 'player_apartment') {
+      console.log('Private location detected - opening intimate interaction system');
+      setActiveActivity('general_intimacy');
+      setShowIntimateModal(true);
+      return;
+    }
+    
+    // Check for available episodes at current location for non-intimate locations
     const locationEpisodes = getLocationEpisodes();
     if (locationEpisodes.length > 0) {
       const episode = locationEpisodes[0];
