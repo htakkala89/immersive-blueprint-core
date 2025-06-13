@@ -284,6 +284,9 @@ export default function SoloLevelingSpatial() {
   // System 18: Episode Playback System state
   const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
   const [currentEpisode, setCurrentEpisode] = useState<string | null>(null);
+  const [episodeInProgress, setEpisodeInProgress] = useState(false);
+  const [availableEpisodes, setAvailableEpisodes] = useState<any[]>([]);
+  const [episodeNotifications, setEpisodeNotifications] = useState<any[]>([]);
 
   // Profile Management System state
   const [showProfileManager, setShowProfileManager] = useState(false);
@@ -676,6 +679,74 @@ export default function SoloLevelingSpatial() {
       name: wine.name,
       x: 60,
       y: 50
+    });
+  };
+
+  // Episode System Integration Functions
+  const checkAvailableEpisodes = async () => {
+    try {
+      const response = await fetch('/api/episodes');
+      const data = await response.json();
+      
+      // Filter episodes based on current game state
+      const validEpisodes = data.episodes?.filter((episode: any) => {
+        const prereqs = episode.prerequisite;
+        if (!prereqs) return true;
+        
+        return (
+          (gameState.level || 1) >= (prereqs.player_level || 1) &&
+          (gameState.affection || 0) >= (prereqs.affection_level || 0)
+        );
+      }) || [];
+      
+      setAvailableEpisodes(validEpisodes);
+      
+      // Check for new episode notifications
+      const newNotifications = validEpisodes
+        .filter((episode: any) => !episodeNotifications.find(n => n.episodeId === episode.id))
+        .map((episode: any) => ({
+          id: `episode_${episode.id}_${Date.now()}`,
+          episodeId: episode.id,
+          type: 'episode_available',
+          title: 'New Story Episode Available',
+          content: `"${episode.title}" is now available to play`,
+          timestamp: new Date(),
+          location: gameState.currentScene
+        }));
+      
+      if (newNotifications.length > 0) {
+        setEpisodeNotifications(prev => [...prev, ...newNotifications]);
+        setNotifications(prev => [...prev, ...newNotifications]);
+      }
+    } catch (error) {
+      console.error('Failed to check available episodes:', error);
+    }
+  };
+
+  const triggerEpisode = (episodeId: string) => {
+    setCurrentEpisode(episodeId);
+    setEpisodeInProgress(true);
+    
+    // Close other modals and focus on episode
+    setShowDailyLifeHub(false);
+    setShowCommunicator(false);
+    setMonarchAuraVisible(false);
+  };
+
+  const handleEpisodeComplete = (episodeId: string) => {
+    setEpisodeInProgress(false);
+    setCurrentEpisode(null);
+    
+    // Check for new episodes that might have been unlocked
+    setTimeout(() => {
+      checkAvailableEpisodes();
+    }, 1000);
+  };
+
+  const getLocationEpisodes = () => {
+    return availableEpisodes.filter(episode => {
+      // Episodes that can be triggered from current location
+      return episode.startLocation === gameState.currentScene || !episode.startLocation;
     });
   };
 
@@ -1364,6 +1435,23 @@ export default function SoloLevelingSpatial() {
   };
 
   const handleEnvironmentalInteraction = async (interactionPoint: any) => {
+    // Check for episode triggers at current location
+    const locationEpisodes = getLocationEpisodes();
+    if (locationEpisodes.length > 0 && interactionPoint.id === 'cha_hae_in') {
+      // If there's an available episode and player interacts with Cha Hae-In, offer to start episode
+      const episode = locationEpisodes[0];
+      setNotifications(prev => [...prev, {
+        id: `episode_trigger_${Date.now()}`,
+        type: 'episode_available',
+        title: 'Story Episode Available',
+        content: `"${episode.title}" - Would you like to begin this story?`,
+        timestamp: new Date(),
+        action: () => triggerEpisode(episode.id)
+      }]);
+      setShowCommunicator(true);
+      return;
+    }
+
     // Handle System 7 Commerce Store interactions
     if (playerLocation === 'luxury_department_store') {
       if (interactionPoint.id === 'jewelry_cases' || 
@@ -1805,6 +1893,13 @@ export default function SoloLevelingSpatial() {
       console.log(`Quest ${questId} abandoned`);
     }
   };
+
+  // Episode system monitoring - check for available episodes when game state changes
+  useEffect(() => {
+    if (selectedRole === 'player' && loadedProfileId) {
+      checkAvailableEpisodes();
+    }
+  }, [gameState.level, gameState.affection, playerLocation, selectedRole, loadedProfileId]);
 
   // Simulate asynchronous notifications
   useEffect(() => {
