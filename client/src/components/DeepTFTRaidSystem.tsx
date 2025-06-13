@@ -501,9 +501,6 @@ export function DeepTFTRaidSystem({
   const [activeTraits, setActiveTraits] = useState<Trait[]>([]);
   
   // Drag and Drop State
-  const [draggedUnit, setDraggedUnit] = useState<Character | null>(null);
-  const [dragSource, setDragSource] = useState<'board' | 'bench' | null>(null);
-  const [dragSourceIndex, setDragSourceIndex] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isShopExpanded, setIsShopExpanded] = useState(true);
   const [draggedItem, setDraggedItem] = useState<Item | null>(null);
@@ -726,98 +723,104 @@ export function DeepTFTRaidSystem({
     return Math.min(Math.floor(currentGold / 10), 5);
   };
 
-  // Drag and drop handlers
-  const handleDragStart = (unit: Character, source: 'board' | 'bench', index: number) => {
-    console.log('handleDragStart:', { unit: unit.name, source, index });
-    setDraggedUnit(unit);
-    setDragSource(source);
-    setDragSourceIndex(index);
+  // Simplified drag and drop system
+  const handleDragStart = (e: React.DragEvent, unit: Character, source: 'board' | 'bench', index: number) => {
+    e.dataTransfer.setData('unit', JSON.stringify(unit));
+    e.dataTransfer.setData('source', source);
+    e.dataTransfer.setData('sourceIndex', index.toString());
     setIsDragging(true);
   };
 
   const handleDragEnd = () => {
     setIsDragging(false);
-    setDraggedUnit(null);
-    setDragSource(null);
-    setDragSourceIndex(null);
   };
 
-  const handleDrop = (targetIndex: number, targetLocation: 'board' | 'bench') => {
-    console.log('handleDrop called:', { targetIndex, targetLocation, draggedUnit: draggedUnit?.name, dragSource, dragSourceIndex });
-    if (!draggedUnit || !dragSource || dragSourceIndex === null) {
-      console.log('Drop cancelled - missing drag state');
-      return;
-    }
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleBoardDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
     
-    // Check team size limit for board placement (only if coming from bench to board)
-    if (targetLocation === 'board' && dragSource === 'bench') {
-      const currentTeamSize = board.filter(unit => unit !== null).length;
+    const unitData = e.dataTransfer.getData('unit');
+    const source = e.dataTransfer.getData('source') as 'board' | 'bench';
+    const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'));
+    
+    if (!unitData) return;
+    
+    const unit = JSON.parse(unitData) as Character;
+    
+    // Check team size limit for bench to board moves
+    if (source === 'bench') {
+      const currentTeamSize = board.filter(u => u !== null).length;
       if (currentTeamSize >= maxTeamSize) return;
     }
     
-    // Handle the move/swap in a single operation to avoid state conflicts
-    if (targetLocation === 'board') {
-      setBoard(prev => {
-        const newBoard = [...prev];
-        const existingUnit = newBoard[targetIndex];
-        
-        // Place the dragged unit at target position
-        newBoard[targetIndex] = draggedUnit;
-        
-        // Handle source cleanup and swapping
-        if (dragSource === 'board') {
-          // If swapping units on board
-          newBoard[dragSourceIndex] = existingUnit;
-        } else {
-          // If moving from bench to board, clear bench slot and handle existing unit
-          setBench(prevBench => {
-            const newBench = [...prevBench];
-            newBench[dragSourceIndex] = null;
-            
-            // If there was a unit at target, move it to bench
-            if (existingUnit) {
-              const emptyBenchSlot = newBench.findIndex(slot => slot === null);
-              if (emptyBenchSlot !== -1) {
-                newBench[emptyBenchSlot] = existingUnit;
-              }
-            }
-            return newBench;
-          });
-        }
-        
-        return newBoard;
-      });
-    } else {
-      // Moving to bench
+    // Update board
+    setBoard(prev => {
+      const newBoard = [...prev];
+      const existingUnit = newBoard[targetIndex];
+      newBoard[targetIndex] = unit;
+      
+      // Clear source if from board
+      if (source === 'board') {
+        newBoard[sourceIndex] = existingUnit;
+      }
+      
+      return newBoard;
+    });
+    
+    // Update bench if source was bench
+    if (source === 'bench') {
       setBench(prev => {
         const newBench = [...prev];
-        const existingUnit = newBench[targetIndex];
+        newBench[sourceIndex] = null;
         
-        // Place the dragged unit at target position
-        newBench[targetIndex] = draggedUnit;
-        
-        // Handle source cleanup and swapping
-        if (dragSource === 'bench') {
-          // If swapping units on bench
-          newBench[dragSourceIndex] = existingUnit;
-        } else {
-          // If moving from board to bench, clear board slot and handle existing unit
-          setBoard(prevBoard => {
-            const newBoard = [...prevBoard];
-            newBoard[dragSourceIndex] = null;
-            
-            // If there was a unit at target, move it to board
-            if (existingUnit) {
-              const emptyBoardSlot = newBoard.findIndex(slot => slot === null);
-              if (emptyBoardSlot !== -1) {
-                newBoard[emptyBoardSlot] = existingUnit;
-              }
-            }
-            return newBoard;
-          });
+        // If there was a unit at target position, move it to bench
+        const targetUnit = prev.filter(u => u !== null).find((_, i) => i === targetIndex);
+        if (targetUnit) {
+          const emptySlot = newBench.findIndex(slot => slot === null);
+          if (emptySlot !== -1) {
+            newBench[emptySlot] = targetUnit;
+          }
         }
         
         return newBench;
+      });
+    }
+  };
+
+  const handleBenchDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    
+    const unitData = e.dataTransfer.getData('unit');
+    const source = e.dataTransfer.getData('source') as 'board' | 'bench';
+    const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'));
+    
+    if (!unitData) return;
+    
+    const unit = JSON.parse(unitData) as Character;
+    
+    // Update bench
+    setBench(prev => {
+      const newBench = [...prev];
+      const existingUnit = newBench[targetIndex];
+      newBench[targetIndex] = unit;
+      
+      // Clear source if from bench
+      if (source === 'bench') {
+        newBench[sourceIndex] = existingUnit;
+      }
+      
+      return newBench;
+    });
+    
+    // Update board if source was board
+    if (source === 'board') {
+      setBoard(prev => {
+        const newBoard = [...prev];
+        newBoard[sourceIndex] = null;
+        return newBoard;
       });
     }
   };
@@ -1141,28 +1144,16 @@ export function DeepTFTRaidSystem({
                       } ${
                         isDragging && isPlayerRow ? 'border-yellow-400' : ''
                       }`}
-                      onDragOver={isPlayerRow ? (e) => {
-                        e.preventDefault();
-                        e.currentTarget.classList.add('border-yellow-400', 'bg-yellow-900/20');
-                      } : undefined}
-                      onDragLeave={isPlayerRow ? (e) => {
-                        e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
-                      } : undefined}
-                      onDrop={isPlayerRow ? (e) => {
-                        e.preventDefault();
-                        e.currentTarget.classList.remove('border-yellow-400', 'bg-yellow-900/20');
-                        handleDrop(boardIndex, 'board');
-                      } : undefined}
+                      onDragOver={isPlayerRow ? handleDragOver : undefined}
+                      onDrop={isPlayerRow ? (e) => handleBoardDrop(e, boardIndex) : undefined}
                     >
                       {/* Player Area Units */}
                       {unit && isPlayerRow && (
                         <div
                           draggable
-                          onDragStart={() => handleDragStart(unit, 'board', boardIndex)}
+                          onDragStart={(e) => handleDragStart(e, unit, 'board', boardIndex)}
                           onDragEnd={handleDragEnd}
-                          className={`absolute inset-0 flex flex-col items-center justify-center text-white cursor-move ${
-                            isDragging && draggedUnit?.id === unit.id ? 'opacity-50' : ''
-                          }`}
+                          className="absolute inset-0 flex flex-col items-center justify-center text-white cursor-move"
                         >
                           <div className="text-xs font-bold truncate w-full text-center px-1">
                             {unit.name.split(' ')[0]}
@@ -1308,17 +1299,14 @@ export function DeepTFTRaidSystem({
               <div
                 key={index}
                 className="w-12 h-10 bg-slate-800 rounded border border-slate-600 flex items-center justify-center text-xs relative"
-                onDrop={(e) => {
-                  e.preventDefault();
-                  handleDrop(index, 'bench');
-                }}
-                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleBenchDrop(e, index)}
+                onDragOver={handleDragOver}
               >
                 {unit ? (
                   <div
                     className="cursor-grab text-white font-bold text-center"
                     draggable
-                    onDragStart={() => handleDragStart(unit, 'bench', index)}
+                    onDragStart={(e) => handleDragStart(e, unit, 'bench', index)}
                     onDragEnd={handleDragEnd}
                     title={unit.name}
                   >
