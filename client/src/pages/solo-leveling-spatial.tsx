@@ -3819,11 +3819,11 @@ export default function SoloLevelingSpatial() {
                   backdropFilter: 'blur(16px) saturate(180%)',
                   background: `
                     linear-gradient(135deg, 
-                      rgba(30, 41, 59, 0.4) 0%, 
-                      rgba(51, 65, 85, 0.35) 25%,
-                      rgba(30, 41, 59, 0.38) 50%,
-                      rgba(15, 23, 42, 0.42) 75%,
-                      rgba(30, 41, 59, 0.4) 100%
+                      rgba(30, 41, 59, 0.65) 0%, 
+                      rgba(51, 65, 85, 0.6) 25%,
+                      rgba(30, 41, 59, 0.63) 50%,
+                      rgba(15, 23, 42, 0.67) 75%,
+                      rgba(30, 41, 59, 0.65) 100%
                     )
                   `,
                   border: '1px solid rgba(139, 92, 246, 0.3)'
@@ -4049,11 +4049,11 @@ export default function SoloLevelingSpatial() {
                       backdropFilter: 'blur(16px) saturate(180%)',
                       background: `
                         linear-gradient(135deg, 
-                          rgba(30, 41, 59, 0.4) 0%, 
-                          rgba(51, 65, 85, 0.35) 25%,
-                          rgba(30, 41, 59, 0.38) 50%,
-                          rgba(15, 23, 42, 0.42) 75%,
-                          rgba(30, 41, 59, 0.4) 100%
+                          rgba(30, 41, 59, 0.65) 0%, 
+                          rgba(51, 65, 85, 0.6) 25%,
+                          rgba(30, 41, 59, 0.63) 50%,
+                          rgba(15, 23, 42, 0.67) 75%,
+                          rgba(30, 41, 59, 0.65) 100%
                         )
                       `,
                       border: '1px solid rgba(139, 92, 246, 0.3)'
@@ -4067,9 +4067,9 @@ export default function SoloLevelingSpatial() {
                       backdropFilter: 'blur(16px) saturate(180%)',
                       background: `
                         linear-gradient(135deg, 
-                          rgba(139, 92, 246, 0.5) 0%, 
-                          rgba(236, 72, 153, 0.45) 50%,
-                          rgba(139, 92, 246, 0.5) 100%
+                          rgba(139, 92, 246, 0.7) 0%, 
+                          rgba(236, 72, 153, 0.65) 50%,
+                          rgba(139, 92, 246, 0.7) 100%
                         )
                       `,
                       border: '1px solid rgba(139, 92, 246, 0.4)'
