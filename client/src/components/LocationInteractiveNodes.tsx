@@ -761,41 +761,23 @@ export function LocationInteractiveNodes({
       return true; // Always available for testing
     }
 
-    // Convert 0-5 affection scale to 0-100 for consistent logic
-    const scaledAffection = playerStats.affection * 20;
-
-    // Hide intimate nodes based on affection levels
-    const intimateNodes = ['bedroom_door', 'master_suite_door', 'bed', 'shower', 'luxury_bathroom', 'wine_cellar_access'];
-    if (intimateNodes.includes(node.id)) {
-      if (scaledAffection < 40) return false; // Need Level 2+ affection
-    }
-
-    // Hide luxury nodes for low affection
-    const luxuryNodes = ['wine_cellar', 'infinity_pool', 'private_elevator', 'panoramic_balcony'];
-    if (luxuryNodes.includes(node.id)) {
-      if (scaledAffection < 60) return false; // Need Level 3+ affection
-    }
-    
-    // For apartment nodes, show only the appropriate tier
+    // For apartment nodes, show all nodes up to and including current tier
     if (locationId === 'player_apartment' && node.requirements) {
       const currentTier = playerStats.apartmentTier;
       
-      // Tier 1 nodes - only show if exactly tier 1
-      if (node.requirements.includes('apartment_tier_1') && currentTier === 1) return true;
+      // Show all nodes for current tier and below
+      if (node.requirements.includes('apartment_tier_1') && currentTier >= 1) return true;
+      if (node.requirements.includes('apartment_tier_2') && currentTier >= 2) return true;
+      if (node.requirements.includes('apartment_tier_3') && currentTier >= 3) return true;
       
-      // Tier 2 nodes - only show if exactly tier 2
-      if (node.requirements.includes('apartment_tier_2') && currentTier === 2) return true;
-      
-      // Tier 3 nodes - only show if exactly tier 3
-      if (node.requirements.includes('apartment_tier_3') && currentTier === 3) return true;
-      
-      // Hide apartment nodes that don't match current tier
+      // Hide apartment nodes that require higher tier
       if (node.requirements.some(req => req.includes('apartment_tier'))) return false;
     }
     
     if (!node.requirements) return true;
 
     return node.requirements.every(req => {
+      if (req === 'apartment_tier_1') return playerStats.apartmentTier >= 1;
       if (req === 'apartment_tier_2') return playerStats.apartmentTier >= 2;
       if (req === 'apartment_tier_3') return playerStats.apartmentTier >= 3;
       if (req === 'furniture_movie_setup') return (playerStats as any).hasPlushSofa && (playerStats as any).hasEntertainmentSystem;

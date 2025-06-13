@@ -188,7 +188,7 @@ export default function SoloLevelingSpatial() {
     intimacyLevel: 1,
     energy: 80,
     maxEnergy: 100,
-    apartmentTier: 2,
+    apartmentTier: 3,
     storyFlags: {
       redGateUnlocked: true,
       dungeonAccessGranted: true,
