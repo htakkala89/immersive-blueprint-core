@@ -2393,20 +2393,7 @@ export default function SoloLevelingSpatial() {
     );
   }
 
-  // System 18: Episode Selection and Player - Early Returns
-  if (showEpisodeSelector) {
-    return (
-      <EpisodeSelector
-        onSelectEpisode={(episode) => {
-          setCurrentEpisode(episode.id);
-          setShowEpisodeSelector(false);
-        }}
-        onBack={() => setShowEpisodeSelector(false)}
-      />
-    );
-  }
-
-  // Episode integration - start episode and return to spatial world
+  // Episode integration - start episode and return to spatial world (must be before conditional returns)
   useEffect(() => {
     if (currentEpisode && !activeEpisode) {
       // Load and start the episode in the background
@@ -2437,6 +2424,19 @@ export default function SoloLevelingSpatial() {
         });
     }
   }, [currentEpisode, activeEpisode]);
+
+  // System 18: Episode Selection and Player - Early Returns
+  if (showEpisodeSelector) {
+    return (
+      <EpisodeSelector
+        onSelectEpisode={(episode) => {
+          setCurrentEpisode(episode.id);
+          setShowEpisodeSelector(false);
+        }}
+        onBack={() => setShowEpisodeSelector(false)}
+      />
+    );
+  }
 
   // Player Experience - Main Game Interface
   return (
