@@ -3702,22 +3702,35 @@ export default function SoloLevelingSpatial() {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4 cursor-pointer"
-            onClick={() => {
-              setShowCommunicator(true);
-              setNotifications(prev => prev.filter(n => n.id !== notification.id));
-            }}
+            className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4"
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-start gap-3">
               <div className={`w-3 h-3 rounded-full mt-1 ${
                 notification.type === 'quest' ? 'bg-yellow-400' : 'bg-pink-400'
               }`} />
-              <div className="flex-1">
+              <div 
+                className="flex-1 cursor-pointer"
+                onClick={() => {
+                  setShowCommunicator(true);
+                  setNotifications(prev => prev.filter(n => n.id !== notification.id));
+                }}
+              >
                 <h4 className="text-white font-medium text-sm">{notification.title}</h4>
                 <p className="text-white/70 text-xs mt-1">{notification.content}</p>
               </div>
-              <MessageCircle className="w-4 h-4 text-white/60" />
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 text-white/60" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setNotifications(prev => prev.filter(n => n.id !== notification.id));
+                  }}
+                  className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center group"
+                >
+                  <X className="w-3 h-3 text-white/60 group-hover:text-white/80" />
+                </button>
+              </div>
             </div>
           </motion.div>
         ))}
