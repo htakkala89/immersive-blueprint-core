@@ -1,5 +1,7 @@
 // Google Cloud authentication utility
 import jwt from 'jsonwebtoken';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 interface ServiceAccountKey {
   type: string;
@@ -32,23 +34,32 @@ function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string 
 // Get OAuth access token from Google
 export async function getGoogleAccessToken(): Promise<string | null> {
   try {
-    if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
-      console.log('Google service account key not available');
-      return null;
-    }
-
-    const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-    if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
-      console.log('Google service account key is undefined or empty');
-      return null;
-    }
-
     let serviceAccount: ServiceAccountKey;
+    
+    // Try to read from file first
     try {
-      serviceAccount = JSON.parse(serviceAccountString);
-    } catch (parseError) {
-      console.log('Invalid Google service account JSON format');
-      return null;
+      const credentialsPath = join(process.cwd(), 'google-credentials.json');
+      const credentialsData = readFileSync(credentialsPath, 'utf8');
+      serviceAccount = JSON.parse(credentialsData);
+    } catch (fileError) {
+      // Fallback to environment variable
+      if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+        console.log('Google service account key not available');
+        return null;
+      }
+
+      const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+      if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
+        console.log('Google service account key is undefined or empty');
+        return null;
+      }
+
+      try {
+        serviceAccount = JSON.parse(serviceAccountString);
+      } catch (parseError) {
+        console.log('Invalid Google service account JSON format');
+        return null;
+      }
     }
     const scopes = ['https://www.googleapis.com/auth/cloud-platform'];
     
@@ -82,24 +93,33 @@ export async function getGoogleAccessToken(): Promise<string | null> {
 
 export function getProjectId(): string | null {
   try {
-    if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
-      return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
-    }
-    
-    const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-    if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
-      console.log('Google service account key is undefined or empty in getProjectId');
-      return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
-    }
-    
-    let serviceAccount: ServiceAccountKey;
+    // Try to read from file first
     try {
-      serviceAccount = JSON.parse(serviceAccountString);
-    } catch (parseError) {
-      console.log('Invalid Google service account JSON format in getProjectId');
-      return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
+      const credentialsPath = join(process.cwd(), 'google-credentials.json');
+      const credentialsData = readFileSync(credentialsPath, 'utf8');
+      const serviceAccount = JSON.parse(credentialsData);
+      return serviceAccount.project_id;
+    } catch (fileError) {
+      // Fallback to environment variable
+      if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+        return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
+      }
+      
+      const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+      if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
+        console.log('Google service account key is undefined or empty in getProjectId');
+        return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
+      }
+      
+      let serviceAccount: ServiceAccountKey;
+      try {
+        serviceAccount = JSON.parse(serviceAccountString);
+      } catch (parseError) {
+        console.log('Invalid Google service account JSON format in getProjectId');
+        return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
+      }
+      return serviceAccount.project_id;
     }
-    return serviceAccount.project_id;
   } catch (error) {
     console.error('Error getting project ID:', error);
     return process.env.GOOGLE_CLOUD_PROJECT_ID || null;
