@@ -475,7 +475,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'window_view',
       label: 'Window View',
       icon: Eye,
-      position: { x: 80, y: 85 },
+      position: { x: 80, y: 95 },
       thoughtPrompt: 'Look out her window.',
       outcome: 'Enjoy the view she wakes up to every morning - the Seoul skyline with hunter gates visible in distance.',
       gameLogic: 'atmospheric_immersion'
@@ -484,7 +484,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'tea_station',
       label: 'Tea Station',
       icon: Coffee,
-      position: { x: 20, y: 85 },
+      position: { x: 20, y: 95 },
       thoughtPrompt: 'Notice her tea collection.',
       outcome: 'Discover she enjoys traditional Korean teas. Option to prepare tea together for affection boost.',
       gameLogic: 'system_6_affection_activity'
