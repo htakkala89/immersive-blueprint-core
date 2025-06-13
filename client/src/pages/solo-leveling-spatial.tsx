@@ -2403,21 +2403,27 @@ export default function SoloLevelingSpatial() {
     );
   }
 
-  if (currentEpisode) {
-    return (
-      <EpisodePlayer
-        episodeId={currentEpisode}
-        onBack={() => {
-          setCurrentEpisode(null);
-          setShowEpisodeSelector(true);
-        }}
-        onComplete={(episodeId) => {
+  // Episode integration - start episode and return to spatial world
+  useEffect(() => {
+    if (currentEpisode && !activeEpisode) {
+      // Load and start the episode in the background
+      fetch(`/api/episodes/${currentEpisode}`)
+        .then(res => res.json())
+        .then(data => {
+          const episode = data.episode;
+          setActiveEpisode(episode);
+          setEpisodeBeatIndex(0);
+          executeEpisodeBeat(episode, 0);
+          setCurrentEpisode(null); // Clear to return to spatial world
+          setShowEpisodeSelector(false);
+        })
+        .catch(err => {
+          console.error('Failed to load episode:', err);
           setCurrentEpisode(null);
           setShowEpisodeSelector(false);
-        }}
-      />
-    );
-  }
+        });
+    }
+  }, [currentEpisode, activeEpisode]);
 
   // Player Experience - Main Game Interface
   return (
