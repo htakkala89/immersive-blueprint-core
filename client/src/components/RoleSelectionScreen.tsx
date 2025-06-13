@@ -26,8 +26,8 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          profileName: `New Game ${new Date().toLocaleDateString()}`,
-          description: 'Fresh start in Solo Leveling',
+          profileName: `Hunter Life ${new Date().toLocaleDateString()}`,
+          description: 'Beginning your journey as an S-Rank Hunter',
           gameData: {
             level: 1,
             health: 100,
@@ -146,9 +146,9 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-lg font-bold text-white">Start New Game</h3>
+                  <h3 className="text-lg font-bold text-white">Join World</h3>
                   <p className="text-xs text-slate-200 opacity-90">
-                    Begin fresh adventure with default starting stats
+                    Enter your life as a new S-Rank Hunter
                   </p>
                 </div>
               </div>
