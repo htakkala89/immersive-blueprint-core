@@ -81,8 +81,8 @@ export function WorldMapSystem8({
       id: 'gangnam',
       name: 'Gangnam District',
       description: 'Luxury shopping and business center',
-      position: { x: 60, y: 45 },
-      size: { width: 25, height: 20 },
+      position: { x: 55, y: 40 },
+      size: { width: 35, height: 30 },
       locations: applyAntiOverlapPositions([
         {
           id: 'luxury_department_store',
@@ -115,8 +115,8 @@ export function WorldMapSystem8({
       id: 'hongdae',
       name: 'Hongdae District',
       description: 'Youth culture and entertainment hub',
-      position: { x: 25, y: 30 },
-      size: { width: 22, height: 18 },
+      position: { x: 15, y: 25 },
+      size: { width: 32, height: 28 },
       locations: applyAntiOverlapPositions([
         {
           id: 'hongdae_cafe',
@@ -140,8 +140,8 @@ export function WorldMapSystem8({
       id: 'jung_district',
       name: 'Jung District',
       description: 'Historic center and dining',
-      position: { x: 45, y: 60 },
-      size: { width: 20, height: 15 },
+      position: { x: 40, y: 65 },
+      size: { width: 30, height: 25 },
       locations: applyAntiOverlapPositions([
         {
           id: 'myeongdong_restaurant',
@@ -166,8 +166,8 @@ export function WorldMapSystem8({
       id: 'yeongdeungpo',
       name: 'Yeongdeungpo District',
       description: 'Hunter Association headquarters',
-      position: { x: 20, y: 55 },
-      size: { width: 18, height: 16 },
+      position: { x: 15, y: 55 },
+      size: { width: 28, height: 26 },
       locations: applyAntiOverlapPositions([
         {
           id: 'hunter_association',
@@ -200,8 +200,8 @@ export function WorldMapSystem8({
       id: 'personal',
       name: 'Personal Spaces',
       description: 'Private and intimate locations',
-      position: { x: 70, y: 25 },
-      size: { width: 25, height: 20 },
+      position: { x: 65, y: 20 },
+      size: { width: 30, height: 30 },
       locations: applyAntiOverlapPositions([
         {
           id: 'player_apartment',
