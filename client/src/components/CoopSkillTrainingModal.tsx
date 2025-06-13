@@ -417,18 +417,30 @@ export function CoopSkillTrainingModal({
                   </div>
                 </div>
 
-                <div className="flex space-x-4 justify-center">
+                <div className="flex space-x-4 justify-center relative z-50">
                   <Button
-                    onClick={handleRestart}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Train Again clicked');
+                      handleRestart();
+                    }}
                     variant="outline"
-                    className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10"
+                    className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 relative z-50"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     <RefreshCw className="w-5 h-5 mr-2" />
                     Train Again
                   </Button>
                   <Button
-                    onClick={handleComplete}
-                    className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Complete Training clicked - calling handleComplete');
+                      handleComplete();
+                    }}
+                    className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white relative z-50 cursor-pointer"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     <Award className="w-5 h-5 mr-2" />
                     Complete Training
