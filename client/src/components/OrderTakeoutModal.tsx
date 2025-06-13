@@ -351,10 +351,16 @@ export function OrderTakeoutModal({
                   </div>
                 </div>
 
-                <div className="text-center">
+                <div className="text-center relative z-50">
                   <Button
-                    onClick={handleComplete}
-                    className="px-8 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Enjoy the Evening button clicked');
+                      handleComplete();
+                    }}
+                    className="px-8 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white relative z-50 cursor-pointer"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     Enjoy the Evening
                   </Button>
