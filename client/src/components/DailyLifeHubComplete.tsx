@@ -484,9 +484,17 @@ export function DailyLifeHubComplete({
   // Debug activities list
   useEffect(() => {
     console.log('🎮 Available activities:', availableActivities.map(a => ({ id: a.id, title: a.title, available: a.available })));
-    const coffeeActivity = availableActivities.find(a => a.id === 'grab_coffee');
-    console.log('☕ Coffee activity details:', coffeeActivity ? { id: coffeeActivity.id, title: coffeeActivity.title, available: coffeeActivity.available } : 'not found');
-  }, [availableActivities]);
+    const tftActivity = availableActivities.find(a => a.id === 'tft_style_raid');
+    console.log('⚔️ TFT Raid activity details:', tftActivity ? { 
+      id: tftActivity.id, 
+      title: tftActivity.title, 
+      available: tftActivity.available,
+      lockReason: tftActivity.lockReason,
+      playerLevel: playerStats.level,
+      requiredLevel: 5
+    } : 'not found');
+    console.log('📊 Player stats:', { level: playerStats.level, energy: playerStats.energy, affection: playerStats.affectionLevel });
+  }, [availableActivities, playerStats]);
 
   const filteredActivities = selectedCategory === 'all' 
     ? availableActivities 
@@ -501,10 +509,11 @@ export function DailyLifeHubComplete({
     if (activity.id === 'tft_style_raid') {
       console.log('🎯 TFT Raid clicked - setting showTFTRaid to true');
       console.log('Current showTFTRaid state:', showTFTRaid);
+      console.log('Activity available check:', activity.available);
+      console.log('Energy check:', playerStats.energy, '>=', activity.energyCost, '?', playerStats.energy >= activity.energyCost);
       setShowTFTRaid(true);
       console.log('TFT Raid modal should now be visible');
-      // Notify parent but don't close Daily Life Hub yet
-      onActivitySelect(activity);
+      // Don't call onActivitySelect to prevent parent from closing this modal
       return;
     }
     

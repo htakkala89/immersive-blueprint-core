@@ -184,6 +184,9 @@ export function DeepTFTRaidSystem({
 
   // Initialize character pool
   useEffect(() => {
+    if (!isVisible) return;
+    
+    console.log('🏗️ Initializing Deep TFT System...');
     const pool: {[key: string]: number} = {};
     // Initialize all character pools
     CHAMPION_DATA.forEach(champ => {
@@ -191,7 +194,8 @@ export function DeepTFTRaidSystem({
     });
     setCharacterPool(pool);
     generateShop();
-  }, []);
+    console.log('✅ Deep TFT System initialized');
+  }, [isVisible]);
 
   // Calculate interest (1 gold per 10 gold saved, max 5)
   const calculateInterest = (currentGold: number) => {
@@ -458,8 +462,10 @@ export function DeepTFTRaidSystem({
 
   if (!isVisible) return null;
 
+  console.log('🎮 Deep TFT Modal is rendering with isVisible:', isVisible);
+
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center">
       <div className="w-full h-full max-w-7xl max-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
         {/* Header */}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
