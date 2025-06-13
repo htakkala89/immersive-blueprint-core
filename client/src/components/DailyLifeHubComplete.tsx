@@ -202,25 +202,25 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
     {
       id: 'review_raid_footage',
       title: 'Review Raid Footage',
-      description: 'Analyze footage from your last dungeon raid together to improve teamwork.',
+      description: 'Analyze your recent raid performance together at the Hunter Association HQ.',
       icon: <Eye className="w-5 h-5" />,
       energyCost: 15,
       category: 'training',
       available: stats.level >= 5,
       lockReason: stats.level < 5 ? 'After first successful Raid' : undefined,
-      outcomes: ['Gameplay Buff (+5% Synergy gain on next raid)']
+      outcomes: ['+5% Synergy bonus on next raid', 'Professional development']
     },
     {
       id: 'clear_low_rank_gate',
       title: 'Clear a Low-Rank Gate',
-      description: 'A "casual" hunt. Take down a C-Rank or D-Rank gate together for quick cash and practice.',
+      description: 'Take on a casual D-Rank or C-Rank gate together for practice and income.',
       icon: <Sword className="w-5 h-5" />,
       energyCost: 35,
       category: 'training',
       affectionReward: 2,
       available: stats.level >= 10,
       lockReason: stats.level < 10 ? 'Requires: Player Level 10+' : undefined,
-      outcomes: ['Gold Gain', 'Medium Affection Gain']
+      outcomes: ['Gold & XP rewards', 'Medium Affection gain']
     },
     {
       id: 'coop_skill_training',
@@ -232,66 +232,6 @@ const getAvailableActivities = (stats: PlayerStats, timeOfDay: string): Activity
       available: stats.affectionLevel >= 30,
       lockReason: stats.affectionLevel < 30 ? 'Synergy System Unlocked' : undefined,
       outcomes: ['Increases Synergy Gauge fill rate']
-    },
-    {
-      id: 'review_raid_footage',
-      title: 'Review Raid Footage',
-      description: 'Analyze your recent raid performance together at the Hunter Association HQ.',
-      icon: <Eye className="w-5 h-5" />,
-      energyCost: 15,
-      category: 'training',
-      available: true, // Temporarily enabled for testing
-      lockReason: undefined,
-      outcomes: ['+5% Synergy bonus on next raid', 'Professional development']
-    },
-    {
-      id: 'clear_low_rank_gate',
-      title: 'Clear a Low-Rank Gate',
-      description: 'Take on a casual D-Rank or C-Rank gate together for practice and income.',
-      icon: <Sword className="w-5 h-5" />,
-      energyCost: 20,
-      category: 'training',
-      available: true, // Temporarily enabled for testing
-      lockReason: undefined,
-      outcomes: ['Gold & XP rewards', 'Medium Affection gain']
-    },
-
-    // Activity 11: Visit N Seoul Tower
-    {
-      id: 'n_seoul_tower',
-      title: 'Visit N Seoul Tower',
-      description: 'A romantic milestone date at Seoul\'s most iconic landmark.',
-      icon: <MapPin className="w-5 h-5" />,
-      energyCost: 30,
-      category: 'special',
-      available: stats.affectionLevel >= 80,
-      lockReason: stats.affectionLevel < 80 ? 'Requires: Affection Level 8+' : undefined,
-      outcomes: ['S-Rank Memory Star', 'Ultimate romantic milestone']
-    },
-
-    // Activity 12: Co-op Skill Training (Updated)
-    {
-      id: 'coop_skill_training_advanced',
-      title: 'Advanced Co-op Training',
-      description: 'Intensive synergy training with rhythm-based coordination challenges.',
-      icon: <Zap className="w-5 h-5" />,
-      energyCost: 25,
-      category: 'training',
-      available: stats.affectionLevel >= 30,
-      lockReason: stats.affectionLevel < 30 ? 'Synergy System Unlocked' : undefined,
-      outcomes: ['Permanent synergy buff', 'Combat coordination']
-    },
-    {
-      id: 'tft_style_raid',
-      title: 'Strategic Dungeon Raid',
-      description: 'Command your shadow army in a tactical auto-battler raid with team positioning and synergy bonuses.',
-      icon: <Users className="w-5 h-5" />,
-      energyCost: 40,
-      category: 'training',
-      affectionReward: 3,
-      available: stats.level >= 5,
-      lockReason: stats.level < 5 ? 'Requires: Player Level 5+' : undefined,
-      outcomes: ['High Gold & XP rewards', 'Team synergy bonuses', 'Shadow army upgrades']
     },
 
     // Category 3: Home Life
