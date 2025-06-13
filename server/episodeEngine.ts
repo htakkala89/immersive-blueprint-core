@@ -400,6 +400,40 @@ export class EpisodeEngine {
     await this.saveEpisodeProgress(Number(profileId));
   }
 
+  // Episode Focus System - Ensures only one episode drives narrative
+  async setFocusedEpisode(profileId: number, episodeId: string | null): Promise<void> {
+    try {
+      const { db } = await import('./db');
+      const { playerProfiles } = await import('../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      await db.update(playerProfiles)
+        .set({ 
+          focusedEpisode: episodeId,
+          currentEpisode: episodeId // Keep currentEpisode in sync for backwards compatibility
+        })
+        .where(eq(playerProfiles.id, profileId));
+      
+      console.log(`🎯 Focused episode set to: ${episodeId || 'none'}`);
+    } catch (error) {
+      console.error('Failed to set focused episode:', error);
+    }
+  }
+
+  async getFocusedEpisode(profileId: number): Promise<string | null> {
+    try {
+      const { db } = await import('./db');
+      const { playerProfiles } = await import('../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const [profile] = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
+      return profile?.focusedEpisode || null;
+    } catch (error) {
+      console.error('Failed to get focused episode:', error);
+      return null;
+    }
+  }
+
   // Episode Progression Persistence
   async saveEpisodeProgress(profileId: number): Promise<void> {
     try {
@@ -411,11 +445,11 @@ export class EpisodeEngine {
       const [profile] = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
       if (!profile) return;
       
-      // If there's a current episode, save progress
-      if (profile.currentEpisode) {
+      // Only save progress for the focused episode
+      if (profile.focusedEpisode) {
         await db.insert(episodeProgress).values({
           profileId: profileId,
-          episodeId: profile.currentEpisode,
+          episodeId: profile.focusedEpisode,
           currentBeat: profile.currentEpisodeBeat || 0,
           isCompleted: false,
           playerChoices: profile.episodeProgress || {},
@@ -429,7 +463,7 @@ export class EpisodeEngine {
           }
         });
         
-        console.log(`💾 Saved episode progress: ${profile.currentEpisode} beat ${profile.currentEpisodeBeat}`);
+        console.log(`💾 Saved episode progress: ${profile.focusedEpisode} beat ${profile.currentEpisodeBeat}`);
       }
     } catch (error) {
       console.error('Failed to save episode progress:', error);
@@ -464,6 +498,13 @@ export class EpisodeEngine {
   }
 
   private async checkEpisodeProgression(episodeId: string, event: string, data: any, profileId: string): Promise<void> {
+    // Only process events for the focused episode to prevent narrative confusion
+    const focusedEpisode = await this.getFocusedEpisode(Number(profileId));
+    if (focusedEpisode !== episodeId) {
+      console.log(`🎯 Skipping episode ${episodeId} - not focused (focused: ${focusedEpisode})`);
+      return;
+    }
+
     const episode = await this.getEpisode(episodeId);
     if (!episode) return;
 

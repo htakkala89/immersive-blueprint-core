@@ -1329,6 +1329,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Episode System - Set focused episode
+  app.post("/api/episodes/:episodeId/focus/:profileId", async (req, res) => {
+    try {
+      const { episodeId, profileId } = req.params;
+      
+      await episodeEngine.setFocusedEpisode(Number(profileId), episodeId);
+      
+      res.json({
+        success: true,
+        focusedEpisode: episodeId,
+        message: `Episode ${episodeId} is now focused`
+      });
+    } catch (error) {
+      console.error("Failed to set focused episode:", error);
+      res.status(500).json({ error: "Failed to set focused episode" });
+    }
+  });
+
+  // Episode System - Clear focused episode
+  app.delete("/api/episodes/focus/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      
+      await episodeEngine.setFocusedEpisode(Number(profileId), null);
+      
+      res.json({
+        success: true,
+        focusedEpisode: null,
+        message: "No episode is focused"
+      });
+    } catch (error) {
+      console.error("Failed to clear focused episode:", error);
+      res.status(500).json({ error: "Failed to clear focused episode" });
+    }
+  });
+
+  // Episode System - Get focused episode
+  app.get("/api/episodes/focus/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      
+      const focusedEpisode = await episodeEngine.getFocusedEpisode(Number(profileId));
+      
+      res.json({
+        focusedEpisode,
+        message: focusedEpisode ? `Episode ${focusedEpisode} is focused` : "No episode is focused"
+      });
+    } catch (error) {
+      console.error("Failed to get focused episode:", error);
+      res.status(500).json({ error: "Failed to get focused episode" });
+    }
+  });
+
   // Episode System - Load episode progress
   app.get("/api/episodes/:episodeId/progress/:profileId", async (req, res) => {
     try {
@@ -1371,6 +1424,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!episode) {
         return res.status(404).json({ error: "Episode not found" });
       }
+
+      // Set this episode as focused to prevent narrative confusion
+      await episodeEngine.setFocusedEpisode(Number(profileId), episodeId);
 
       // Load existing progress if available
       const progress = await episodeEngine.loadEpisodeProgress(Number(profileId), episodeId);
