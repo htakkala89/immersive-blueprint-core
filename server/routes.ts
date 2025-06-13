@@ -15,6 +15,7 @@ import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
 import { artisticPromptEngine } from "./artisticPromptEngine";
 import { qualityEnhancer } from "./qualityEnhancer";
 import { narrativeArchitect } from "./narrative-architect-api";
+import { episodeEngine } from "./episodeEngine";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
@@ -1292,6 +1293,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Google Imagen API error:", error.message);
       res.status(500).json({ error: "Image generation failed" });
+    }
+  });
+
+  // Episode System - Get available episodes
+  app.get("/api/episodes", (req, res) => {
+    try {
+      const episodes = episodeEngine.getAvailableEpisodes();
+      res.json({ episodes });
+    } catch (error) {
+      console.error("Failed to get episodes:", error);
+      res.status(500).json({ error: "Failed to retrieve episodes" });
+    }
+  });
+
+  // Episode System - Get specific episode details
+  app.get("/api/episodes/:episodeId", (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const episode = episodeEngine.getEpisode(episodeId);
+      
+      if (!episode) {
+        return res.status(404).json({ error: "Episode not found" });
+      }
+      
+      res.json({ episode });
+    } catch (error) {
+      console.error("Failed to get episode:", error);
+      res.status(500).json({ error: "Failed to retrieve episode" });
+    }
+  });
+
+  // Episode System - Execute episode action
+  app.post("/api/episodes/:episodeId/execute", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const { beatId, actionIndex } = req.body;
+      
+      if (beatId === undefined || actionIndex === undefined) {
+        return res.status(400).json({ error: "Missing beatId or actionIndex" });
+      }
+      
+      await episodeEngine.executeEpisodeAction(episodeId, beatId, actionIndex);
+      
+      res.json({ success: true, message: "Episode action executed" });
+    } catch (error) {
+      console.error("Failed to execute episode action:", error);
+      res.status(500).json({ error: "Failed to execute episode action" });
+    }
+  });
+
+  // Episode System - Trigger beat completion
+  app.post("/api/episodes/:episodeId/complete-beat", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const { beatId, eventData } = req.body;
+      
+      if (beatId === undefined) {
+        return res.status(400).json({ error: "Missing beatId" });
+      }
+      
+      const completed = await episodeEngine.triggerBeatCompletion(episodeId, beatId, eventData);
+      
+      res.json({ completed, message: completed ? "Beat completed" : "Beat completion conditions not met" });
+    } catch (error) {
+      console.error("Failed to complete beat:", error);
+      res.status(500).json({ error: "Failed to complete beat" });
     }
   });
 
