@@ -112,13 +112,9 @@ class GoogleImagenProvider implements ImageProvider {
   name = 'Google Imagen';
 
   async isAvailable(): Promise<boolean> {
-    const hasKey = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-    const projectId = this.getProjectId();
-    const hasProject = projectId !== null;
-    
-    console.log(`Google Imagen availability check: hasKey=${hasKey}, projectId=${projectId}, hasProject=${hasProject}`);
-    
-    return hasKey && hasProject;
+    const hasApiKey = !!process.env.GOOGLE_API_KEY;
+    console.log(`Google Imagen availability check: hasApiKey=${hasApiKey}`);
+    return hasApiKey;
   }
 
   private getProjectId(): string | null {
@@ -146,59 +142,54 @@ class GoogleImagenProvider implements ImageProvider {
   }
 
   async generate(prompt: string): Promise<ImageGenerationResult> {
-    const projectId = this.getProjectId();
-    const accessToken = await this.getAccessToken();
+    const apiKey = process.env.GOOGLE_API_KEY;
 
-    if (!projectId || !accessToken) {
+    if (!apiKey) {
       return {
         success: false,
-        error: 'Google Imagen credentials not available',
+        error: 'Google API key not available',
         provider: this.name
       };
     }
 
     try {
-      // Focus exclusively on NovelAI V4.5 Full optimization
+      // Using Google Generative AI API for image generation
       const enhancedPrompt = `${prompt}. Solo Leveling manhwa art style, romantic cinematic lighting, beautiful detailed faces, expressive eyes, tender emotional connection, elegant composition, high quality digital art, Korean webtoon aesthetic, intimate atmosphere, artistic excellence`;
       
       const response = await fetch(
-        `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`,
+        `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`,
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            instances: [{
-              prompt: enhancedPrompt
-            }],
-            parameters: {
-              sampleCount: 1,
-              aspectRatio: "1:1",
-              safetyFilterLevel: "block_only_high"
-            }
+            prompt: enhancedPrompt,
+            safetySettings: [
+              {
+                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                threshold: "BLOCK_ONLY_HIGH"
+              }
+            ]
           })
         }
       );
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Google Imagen response structure:', JSON.stringify(data, null, 2));
+        console.log('Google Generative AI response structure:', JSON.stringify(data, null, 2));
         
-        // Try multiple possible response formats
-        let imageUrl = data.predictions?.[0]?.bytesBase64Encoded ||
-                      data.predictions?.[0]?.image?.bytesBase64Encoded ||
-                      data.predictions?.[0]?.generatedImage?.bytesBase64Encoded;
+        // Google Generative AI response format
+        const imageData = data.generatedImages?.[0]?.bytesBase64Encoded;
         
-        if (imageUrl) {
+        if (imageData) {
           return {
             success: true,
-            imageUrl: `data:image/png;base64,${imageUrl}`,
+            imageUrl: `data:image/png;base64,${imageData}`,
             provider: this.name
           };
         } else {
-          console.log('No image found in Google Imagen response');
+          console.log('No image found in Google Generative AI response');
         }
       }
 

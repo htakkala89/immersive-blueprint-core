@@ -166,51 +166,30 @@ async function getGoogleAccessToken(): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Check if we have Google API key available
-    const accessToken = await getGoogleAccessToken();
-    if (!accessToken) {
+    // Use Google API key directly
+    const apiKey = process.env.GOOGLE_API_KEY;
+    if (!apiKey) {
       console.log('Google API key not available - cannot use Imagen');
       return null;
     }
 
-    // Get project ID from credentials
-    const credentialsPath = join(process.cwd(), 'google-credentials-fixed.json');
-    let projectId: string;
+    console.log('🎨 Attempting Google Generative AI image generation...');
     
-    try {
-      const credentialsData = readFileSync(credentialsPath, 'utf8');
-      const serviceAccount = JSON.parse(credentialsData);
-      projectId = serviceAccount.project_id;
-    } catch (error) {
-      console.log('Could not read Google credentials file');
-      return null;
-    }
-
-    if (!projectId) {
-      console.log('Google Cloud project ID not available');
-      return null;
-    }
-
-    const location = 'us-central1';
-    // Using Imagen 3.0 Fast model with API key authentication
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict?key=${accessToken}`;
+    const enhancedPrompt = prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. High quality digital art, Korean webtoon aesthetic, romantic cinematic lighting";
     
-    console.log('🎨 Attempting Google Imagen generation...');
-    
-    const response = await fetch(vertexEndpoint, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        instances: [{
-          prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, character design errors"
-        }],
-        parameters: {
-          sampleCount: 1,
-          aspectRatio: "1:1",
-          safetyFilterLevel: "block_only_high"
-        }
+        prompt: enhancedPrompt,
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_ONLY_HIGH"
+          }
+        ]
       })
     });
 
