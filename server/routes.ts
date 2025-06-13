@@ -1551,8 +1551,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `${msg.senderName}: ${msg.content}`
         ).join('\n');
 
-        // Check for episode guidance - inject natural story progression
-        const episodeGuidance = await episodeEngine.getEpisodeGuidance('GAMEPLAY_TEST', 2);
+        // Get focused episode guidance to prevent narrative confusion
+        const profileId = gameState?.profileId || context?.profileId || 1;
+        const focusedEpisode = await episodeEngine.getFocusedEpisode(profileId);
+        const episodeGuidance = focusedEpisode ? await episodeEngine.getEpisodeGuidance(focusedEpisode, 2) : null;
         
         const fullPrompt = `${personalityPrompt}
 
@@ -1571,11 +1573,11 @@ Jin-Woo just sent: "${message}"
 
 ${isUrgent ? 'This message seems urgent - respond accordingly.' : ''}
 ${proposedActivity ? `Jin-Woo proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
-${episodeGuidance ? `STORY GUIDANCE: After a few exchanges, naturally suggest: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
+${focusedEpisode && episodeGuidance ? `STORY GUIDANCE: After a few exchanges, naturally suggest: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
 
 IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses. Keep your response conversational and authentic to Cha Hae-In's character - professional but warm, strong but caring. Vary your responses based on the conversation history.
 
-${episodeGuidance ? 'After responding to the current message naturally, guide the conversation toward the story progression mentioned above.' : ''}
+${focusedEpisode && episodeGuidance ? 'After responding to the current message naturally, guide the conversation toward the story progression mentioned above.' : ''}
 
 Respond naturally as if you're texting Jin-Woo back:`;
 

@@ -109,6 +109,7 @@ This is a comprehensive romantic RPG based on the Solo Leveling manhwa, featurin
 
 ## Changelog
 
+- June 13, 2025. Episode Focus System Chat Integration - Fixed narrative confusion by ensuring only the focused episode influences AI responses
 - June 13, 2025. Initial setup
 
 ## User Preferences
