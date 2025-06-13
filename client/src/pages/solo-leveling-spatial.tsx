@@ -3794,7 +3794,7 @@ export default function SoloLevelingSpatial() {
         <AnimatePresence>
           {narrativeLensActive && (
             <motion.div
-              className="absolute top-6 right-6"
+              className="absolute top-6 left-6"
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
