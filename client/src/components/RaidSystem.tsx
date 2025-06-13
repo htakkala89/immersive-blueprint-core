@@ -599,6 +599,40 @@ export function RaidSystem({ isVisible, onClose, onVictory, playerLevel, affecti
 
             {/* Battle Log & Status */}
             <div className="space-y-4">
+              {/* Healing Items Panel */}
+              <div className="bg-gray-800 rounded-lg p-4 mb-4">
+                <h3 className="text-lg font-bold text-green-400 mb-3 flex items-center">
+                  <Package className="w-5 h-5 mr-2" />
+                  Healing Items
+                </h3>
+                <div className="space-y-2">
+                  {raidState.healingItems.map(item => (
+                    <div key={item.id} className="flex items-center justify-between bg-gray-700 rounded p-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xl">{item.icon}</span>
+                        <div>
+                          <div className="text-sm font-medium text-white">{item.name}</div>
+                          <div className="text-xs text-gray-400">{item.description}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-gray-400">x{item.count}</span>
+                        <Button
+                          onClick={() => useHealingItem(item.id)}
+                          disabled={item.count <= 0 || 
+                            (item.target === 'player' && raidState.playerHealth >= raidState.playerMaxHealth) ||
+                            (item.target === 'cha' && raidState.chaHaeInHealth >= raidState.chaHaeInMaxHealth)}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs"
+                        >
+                          Use
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="bg-gray-800 rounded-lg p-4">
                 <h3 className="text-lg font-bold text-purple-400 mb-3">Battle Status</h3>
                 <div className="space-y-2 text-sm">
