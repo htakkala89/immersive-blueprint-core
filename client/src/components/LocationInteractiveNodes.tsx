@@ -383,7 +383,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'mission_board',
       label: 'Mission Board',
       icon: MapPin,
-      position: { x: 15, y: 95 },
+      position: { x: 15, y: 125 },
       thoughtPrompt: 'Check the board for new gate alerts.',
       outcome: 'Opens read-only UI panel listing high-rank gates around the world for lore and world-building.',
       gameLogic: 'lore_panel_display'
