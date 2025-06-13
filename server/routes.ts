@@ -1926,7 +1926,7 @@ Respond as Cha Hae-In would in this intimate moment:`;
       console.error('Episode generation failed:', error);
       if (error instanceof Error && error.message.includes('API key')) {
         return res.status(503).json({ 
-          error: "AI service unavailable. Please provide ANTHROPIC_API_KEY to enable episode generation." 
+          error: "AI service unavailable. Please provide GOOGLE_API_KEY to enable episode generation." 
         });
       }
       res.status(500).json({ error: "Failed to generate episode" });

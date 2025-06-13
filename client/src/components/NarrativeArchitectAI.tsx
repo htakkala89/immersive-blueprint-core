@@ -60,7 +60,7 @@ export function NarrativeArchitectAI({ isVisible, onClose }: NarrativeArchitectA
       if (!response.ok) {
         const errorData = await response.json();
         if (response.status === 503) {
-          alert('AI service requires ANTHROPIC_API_KEY to generate episodes. Please provide the API key to enable episode generation.');
+          alert('AI service requires GOOGLE_API_KEY to generate episodes. Please provide the Google API key to enable episode generation.');
           setIsGenerating(false);
           return;
         }

@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,10 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// the newest Anthropic model is "claude-sonnet-4-20250514" which was released May 14, 2025. Use this by default unless user has already selected claude-3-7-sonnet-20250219
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '');
 
 interface EpisodeGenerationRequest {
   directorsBrief: string;
@@ -123,17 +120,16 @@ Completion Condition Types:
   }
 
   async generateEpisode(request: EpisodeGenerationRequest): Promise<any> {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new Error('Anthropic API key not configured. Please provide ANTHROPIC_API_KEY.');
+    if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
+      throw new Error('Google API key not configured. Please provide GEMINI_API_KEY.');
     }
 
     const metaPrompt = this.constructMetaPrompt(request);
 
     try {
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        system: `You are the Narrative Architect AI for a Solo Leveling romance game. You transform natural language story visions into structured episode JSON. 
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      
+      const systemInstruction = `You are the Narrative Architect AI for a Solo Leveling romance game. You transform natural language story visions into structured episode JSON. 
 
 CRITICAL REQUIREMENTS:
 1. Output ONLY valid JSON - no explanations, no markdown, no comments
@@ -142,18 +138,13 @@ CRITICAL REQUIREMENTS:
 4. Use only commands from the provided API manual
 5. Ensure episode ID is unique using format: EP_${Date.now()}
 6. Make completion conditions logical and achievable
-7. Balance romance, action, and character development based on the creator's vision`,
-        messages: [
-          {
-            role: 'user',
-            content: metaPrompt
-          }
-        ]
-      });
+7. Balance romance, action, and character development based on the creator's vision`;
 
-      const responseText = response.content[0]?.type === 'text' 
-        ? response.content[0].text 
-        : JSON.stringify(response.content[0]);
+      const fullPrompt = `${systemInstruction}\n\n${metaPrompt}`;
+      
+      const result = await model.generateContent(fullPrompt);
+      const response = await result.response;
+      const responseText = response.text();
       
       // Parse and validate the JSON response
       try {
