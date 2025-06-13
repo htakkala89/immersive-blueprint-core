@@ -174,9 +174,9 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
                   <Database className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-lg font-bold text-white">Continue Game</h3>
+                  <h3 className="text-lg font-bold text-white">Continue World</h3>
                   <p className="text-xs text-slate-200 opacity-90">
-                    Load saved progress and manage profiles
+                    Return to your ongoing Hunter life
                   </p>
                 </div>
               </div>
