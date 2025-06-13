@@ -4125,16 +4125,11 @@ export default function SoloLevelingSpatial() {
                     </div>
                   </motion.div>
                   
-                  <div className="flex-1">
+                  <div className="flex-1 flex flex-col min-h-0">
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
-                      style={{ 
-                        minHeight: '120px',
-                        maxHeight: 'calc(100% - 60px)',
-                        flex: 1
-                      }}
+                      className="flex-1 space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
@@ -4184,8 +4179,8 @@ export default function SoloLevelingSpatial() {
                 </div>
               </motion.div>
               
-              {/* Bottom Section - Always Visible */}
-              <div className="space-y-2" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
+              {/* Fixed Input Controls Section */}
+              <div className="flex-shrink-0 space-y-2 pt-3 border-t border-white/10" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
                 {/* Thought Prompts */}
                 {thoughtPrompts.length > 0 && (
                   <motion.div
