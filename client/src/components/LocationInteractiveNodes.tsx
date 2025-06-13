@@ -646,10 +646,17 @@ export function LocationInteractiveNodes({
       return mobileOptimizedPositions[index % mobileOptimizedPositions.length];
     };
     
-    return rawNodes.map((node, index) => ({
-      ...node,
-      position: getResponsiveGridPosition(index, rawNodes.length)
-    }));
+    return rawNodes.map((node, index) => {
+      // Preserve manual positions for bottom-positioned nodes (y >= 90)
+      if (node.position.y >= 90) {
+        return node; // Keep original position
+      }
+      // Use responsive grid for other nodes
+      return {
+        ...node,
+        position: getResponsiveGridPosition(index, rawNodes.length)
+      };
+    });
   };
 
   const rawNodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
