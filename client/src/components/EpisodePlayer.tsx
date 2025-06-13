@@ -237,13 +237,13 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
     }
   };
 
-  // Auto-process commands when they change with natural timing
+  // Only auto-process initial command, then wait for explicit player actions
   useEffect(() => {
-    if (currentCommand && pendingChoices.length === 0 && !isProcessing) {
-      // Add natural delay for reading time
+    if (currentCommandIndex === 0 && currentCommand && pendingChoices.length === 0 && !isProcessing) {
+      // Only auto-process the first beat to set up the episode
       const timer = setTimeout(() => {
         processCommand(currentCommand);
-      }, 1500); // 1.5 second delay for reading
+      }, 1500);
       
       return () => clearTimeout(timer);
     }
@@ -385,15 +385,58 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
               </motion.div>
             )}
 
-            {/* Continue Button */}
-            {pendingChoices.length === 0 && !isProcessing && currentCommand && (
+            {/* Gameplay Instructions - Show after initial beat */}
+            {currentCommandIndex > 0 && pendingChoices.length === 0 && !isProcessing && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center pt-6"
+              >
+                <Card className="bg-blue-600/20 backdrop-blur-md border-blue-500/30">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-center mb-4">
+                      <MapPin className="w-6 h-6 text-blue-300 mr-2" />
+                      <h3 className="text-xl font-semibold text-white">Quest Objective</h3>
+                    </div>
+                    <p className="text-blue-200 mb-4">
+                      To continue this episode, complete the following action in the game world:
+                    </p>
+                    <div className="bg-white/10 rounded-lg p-4 mb-4">
+                      <p className="text-white font-medium">
+                        Visit the Hunter Association and speak with Cha Hae-In
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center space-x-4 text-sm text-blue-300">
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        <span>Use spatial navigation</span>
+                      </div>
+                      <div className="flex items-center">
+                        <MessageCircle className="w-4 h-4 mr-1" />
+                        <span>Chat with Cha Hae-In</span>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={onBack}
+                      variant="outline"
+                      className="mt-4 border-blue-400 text-blue-200 hover:bg-blue-600/30"
+                    >
+                      Return to Game World
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Continue Button - Only show for initial setup */}
+            {pendingChoices.length === 0 && !isProcessing && currentCommandIndex === 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-center pt-6"
               >
                 <Button 
-                  onClick={advanceStory}
+                  onClick={() => processCommand(currentCommand)}
                   disabled={isProcessing}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg"
                 >
