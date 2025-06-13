@@ -680,7 +680,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Transform commands to beats format for frontend compatibility
       const episode = {
         ...episodeData,
-        beats: episodeData.commands ? episodeData.commands.map((command, index) => ({
+        beats: episodeData.commands ? episodeData.commands.map((command: any, index: number) => ({
           beat_id: `${index + 1}.0`,
           title: command.type || `Beat ${index + 1}`,
           description: command.content || command.narrative_text || `Story beat ${index + 1}`,
