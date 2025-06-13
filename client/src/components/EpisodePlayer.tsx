@@ -57,39 +57,57 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
   const processCommand = (command: any) => {
     setIsProcessing(true);
     
+    const autoAdvanceAfter = (delay: number) => {
+      setTimeout(() => {
+        setIsProcessing(false);
+        setTimeout(() => {
+          advanceStory();
+        }, 500);
+      }, delay);
+    };
+    
     switch (command.command) {
       case 'DELIVER_MESSAGE':
         const sender = command.params?.sender || 'System';
         const messageId = command.params?.message_id || 'Unknown';
         setNarrative(prev => [...prev, `📨 Message from ${sender}: ${messageId}`]);
-        break;
+        autoAdvanceAfter(2500); // Auto-advance after 2.5 seconds
+        return;
         
       case 'ACTIVATE_QUEST':
         const questTitle = command.params?.title || 'New Quest';
         setNarrative(prev => [...prev, `⚔️ Quest Activated: ${questTitle}`]);
-        break;
+        autoAdvanceAfter(3000); // Longer for quest activation
+        return;
         
       case 'SET_CHA_MOOD':
         const mood = command.params?.mood || 'neutral';
         setNarrative(prev => [...prev, `💭 Cha Hae-In's mood: ${mood}`]);
         setGameState(prev => ({ ...prev, characterMood: mood }));
-        break;
+        autoAdvanceAfter(2000); // Quick mood change
+        return;
         
       case 'FORCE_CHA_LOCATION':
         const location = command.params?.location_id || 'Unknown Location';
         setNarrative(prev => [...prev, `📍 Cha Hae-In moves to: ${location}`]);
         setGameState(prev => ({ ...prev, currentLocation: location }));
-        break;
+        autoAdvanceAfter(2500); // Location change with transition time
+        return;
         
       case 'START_DIALOGUE_SCENE':
         const dialogueId = command.params?.dialogue_id || 'Unknown Dialogue';
         setNarrative(prev => [...prev, `💬 Starting dialogue: ${dialogueId}`]);
-        break;
+        autoAdvanceAfter(3500); // Longer for dialogue setup
+        return;
         
       case 'COMPLETE_EPISODE':
         const reward = command.params?.reward || 0;
         setNarrative(prev => [...prev, `🎉 Episode Complete! Reward: ${reward}`]);
-        break;
+        setTimeout(() => {
+          setIsProcessing(false);
+          onComplete?.(episodeId);
+        }, 4000); // Final episode completion
+        return;
         
       // Legacy support for old command format
       case 'system_message':
@@ -205,12 +223,17 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
     }
   };
 
-  // Auto-process commands when they change
+  // Auto-process commands when they change with natural timing
   useEffect(() => {
     if (currentCommand && pendingChoices.length === 0 && !isProcessing) {
-      processCommand(currentCommand);
+      // Add natural delay for reading time
+      const timer = setTimeout(() => {
+        processCommand(currentCommand);
+      }, 1500); // 1.5 second delay for reading
+      
+      return () => clearTimeout(timer);
     }
-  }, [currentCommandIndex]);
+  }, [currentCommandIndex, currentCommand, pendingChoices, isProcessing]);
 
   if (isLoading) {
     return (
@@ -251,7 +274,7 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
           </div>
           <div className="flex items-center justify-center space-x-4 text-sm text-purple-200">
             <Badge variant="outline" className="border-purple-400 text-purple-200">
-              Command {currentCommandIndex + 1} of {allActions.length}
+              Beat {currentCommandIndex + 1} of {allActions.length}
             </Badge>
             <Badge variant="outline" className="border-green-400 text-green-200">
               {gameState.currentLocation}
@@ -259,6 +282,19 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
             <Badge variant="outline" className="border-blue-400 text-blue-200">
               Affection: {gameState.playerStats.affection}
             </Badge>
+            {isProcessing && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setIsProcessing(false);
+                  setTimeout(() => advanceStory(), 100);
+                }}
+                className="text-purple-300 hover:text-white border border-purple-500 hover:bg-purple-600/20"
+              >
+                Skip
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -281,6 +317,24 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
                 </Card>
               </motion.div>
             ))}
+
+            {/* Processing Indicator */}
+            {isProcessing && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center"
+              >
+                <Card className="bg-purple-600/20 backdrop-blur-md border-purple-500/30">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="w-6 h-6 border-2 border-purple-300 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-purple-200 font-medium">Story progressing...</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
 
             {/* Pending Choices */}
             {pendingChoices.length > 0 && (
