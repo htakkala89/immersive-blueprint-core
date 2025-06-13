@@ -1248,6 +1248,26 @@ export function DeepTFTRaidSystem({
           )}
         </div>
 
+        {/* Combat Control Area */}
+        <div className="absolute top-20 right-8 bg-black/80 rounded-lg p-3 border border-slate-600">
+          {gamePhase === 'setup' && (
+            <Button 
+              onClick={startCombat} 
+              className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2"
+              disabled={board.filter(u => u !== null).length === 0}
+            >
+              <Sword className="w-4 h-4 mr-2" />
+              Start Combat
+            </Button>
+          )}
+          {gamePhase === 'combat' && (
+            <div className="text-white text-center">
+              <div className="font-bold">Combat: {combatTimer}s</div>
+              <div className="text-sm text-gray-400">Auto-battling...</div>
+            </div>
+          )}
+        </div>
+
         {/* Permanent Bench Area - Above Shop */}
         <div className="absolute bottom-20 left-28 right-8 h-16 bg-gradient-to-b from-slate-600 to-slate-700 rounded-lg border border-slate-500 p-2">
           <h4 className="text-white font-bold text-xs mb-1">Bench (0/9)</h4>
@@ -1372,20 +1392,7 @@ export function DeepTFTRaidSystem({
 
 
 
-              {/* Game Controls */}
-              <div className="flex justify-center">
-                {gamePhase === 'setup' && (
-                  <Button onClick={startCombat} className="px-8 py-2">
-                    Start Combat
-                  </Button>
-                )}
-                {gamePhase === 'combat' && (
-                  <div className="text-white text-center">
-                    <div className="font-bold">Combat in Progress</div>
-                    <div className="text-sm text-gray-400">Auto-battling...</div>
-                  </div>
-                )}
-              </div>
+
             </>
           )}
         </div>
