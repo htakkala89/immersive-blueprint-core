@@ -1561,9 +1561,17 @@ async function registerRoutes(app: Express): Promise<Server> {
       } = req.body;
       const playerId = gameState.playerId || 'default_player';
       
-      // Handle communicator mode with conversation continuity
-      if (communicatorMode && conversationHistory) {
-        console.log('📱 Hunter\'s Communicator mode - maintaining conversation continuity');
+      // Auto-detect if communicator mode should be used based on availability constraints
+      const shouldUseCommunicator = communicatorMode || 
+        (context?.isRestricted === true) || 
+        (characterState?.status === 'busy') ||
+        (characterState?.status === 'unavailable') ||
+        (context?.timeOfDay === 'night' && (gameState.affectionLevel || 0) < 50) ||
+        (context?.levelRestricted === true);
+
+      // Handle communicator mode with full affection tracking
+      if (shouldUseCommunicator) {
+        console.log('📱 Hunter\'s Communicator mode - texting conversation with full affection tracking');
         
         const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
         
@@ -1579,8 +1587,8 @@ async function registerRoutes(app: Express): Promise<Server> {
 
         // Build conversation context for continuity
         const conversationContext = {
-          affectionLevel: Math.floor((characterState?.affectionLevel || 25) / 20),
-          currentScene: characterState?.location || 'hunter_association',
+          affectionLevel: Math.floor((gameState.affectionLevel || gameState.affection || 25) / 20),
+          currentScene: characterState?.location || context?.location || 'hunter_association',
           timeOfDay: (context?.timeOfDay || 'afternoon') as 'morning' | 'afternoon' | 'evening' | 'night',
           recentActivity: characterState?.activity,
           mood: 'focused' as 'focused' | 'romantic' | 'playful' | 'confident' | 'vulnerable' | 'disappointed' | 'hurt' | 'defensive',
@@ -1590,50 +1598,123 @@ async function registerRoutes(app: Express): Promise<Server> {
         const personalityPrompt = getPersonalityPrompt(conversationContext);
         
         // Build conversation history for context
-        const historyContext = conversationHistory.slice(-6).map((msg: any) => 
+        const historyContext = conversationHistory ? conversationHistory.slice(-6).map((msg: any) => 
           `${msg.senderName}: ${msg.content}`
-        ).join('\n');
+        ).join('\n') : '';
 
-        // Get contextual episode guidance with intelligent multi-episode blending
+        // Get contextual episode guidance
         const profileId = gameState?.profileId || context?.profileId || 1;
         const location = characterState?.location || context?.location || 'hunter_association';
         const timeOfDay = context?.timeOfDay || 'afternoon';
         const episodeGuidance = await episodeEngine.getContextualEpisodeGuidance(profileId, location, timeOfDay);
         
+        // Create reason for texting based on restriction type
+        let restrictionReason = '';
+        if (context?.timeOfDay === 'night') {
+          restrictionReason = 'It\'s quite late, so I\'m texting instead of calling.';
+        } else if (characterState?.status === 'busy') {
+          restrictionReason = 'I\'m in the middle of something but wanted to respond quickly.';
+        } else if (context?.levelRestricted) {
+          restrictionReason = 'I\'m at the Association handling some sensitive matters, so texting is better right now.';
+        }
+        
         const fullPrompt = `${personalityPrompt}
 
 HUNTER'S COMMUNICATOR CONVERSATION:
-You are continuing an ongoing conversation with Jin-Woo through the Hunter's Communicator messaging system.
+You are texting Jin-Woo through the Hunter's Communicator messaging system.
 
 Current Status: ${characterState?.status || 'available'}
 Current Activity: ${characterState?.activity || 'reviewing reports at the Association'}
-Location: ${characterState?.location || 'hunter_association'}
+Location: ${characterState?.location || context?.location || 'hunter_association'}
 Time: ${context?.timeOfDay || 'afternoon'}
+${restrictionReason ? `Context: ${restrictionReason}` : ''}
 
-Recent conversation history:
-${historyContext}
+${historyContext ? `Recent conversation history:\n${historyContext}\n` : ''}
 
 Jin-Woo just sent: "${message}"
 
 ${isUrgent ? 'This message seems urgent - respond accordingly.' : ''}
 ${proposedActivity ? `Jin-Woo proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
-${episodeGuidance ? `STORY GUIDANCE: After a few exchanges, naturally suggest: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
+${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide toward: "${episodeGuidance}"` : ''}
 
-IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses. Keep your response conversational and authentic to Cha Hae-In's character - professional but warm, strong but caring. Vary your responses based on the conversation history.
+IMPORTANT: Respond as if you're texting. Keep it conversational and natural to Cha Hae-In's character. Show the same warmth and personality as in-person, but with the brevity and style of texting. Use her typical speech patterns and emotional reactions.
 
-${episodeGuidance ? 'After responding to the current message naturally, guide the conversation toward the story progression mentioned above.' : ''}
-
-Respond naturally as if you're texting Jin-Woo back:`;
+Respond as a text message:`;
 
         const result = await model.generateContent(fullPrompt);
         const rawResponse = result.response.text();
-        const sanitizedResponse = rawResponse.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
-        const updatedGameState = { ...gameState };
+        const response = rawResponse.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+
+        // Apply same affection tracking system as regular dialogue
+        let showAffectionHeart = false;
+        let affectionBonus = 0;
+        
+        // Heart trigger detection (same as regular chat)
+        const heartTriggers = [
+          /heart.*(?:pound|hammer|beat|skip|flutter)|pulse.*(?:quick|race)/i,
+          /\*blush.*deeply|\*trembl|shiver|breath.*catch|\*gasp/i,
+          /feelings?.*(?:you|jin-woo)|love.*(?:you|jin-woo)|care.*deeply/i,
+          /special.*(?:you|moment)|never.*forget|always.*remember|treasure/i,
+          /trust.*completely|vulnerable|safe.*(?:with|around).*you/i,
+          /together.*always|future.*(?:us|together)|always.*(?:you|jin-woo)/i,
+          /close.*(?:you|jin-woo)|touch|embrace|hold.*(?:me|close)/i
+        ];
+        
+        if (heartTriggers.some(trigger => trigger.test(response))) {
+          showAffectionHeart = true;
+          affectionBonus = 3;
+          console.log(`💕 Affection Heart triggered via Communicator!`);
+        }
+        
+        // Calculate affection gain
+        const currentAffection = gameState.affectionLevel || gameState.affection || 25;
+        const newAffectionLevel = Math.min(100, currentAffection + 1 + affectionBonus);
+        
+        const finalGameState = {
+          ...gameState,
+          affection: newAffectionLevel,
+          affectionLevel: newAffectionLevel
+        };
+
+        // Persist to database
+        if (gameState.profileId || context?.profileId) {
+          try {
+            const { db } = await import('./db');
+            const { gameStates, playerProfiles } = await import('@shared/schema');
+            const { eq } = await import('drizzle-orm');
+            
+            const profileId = gameState.profileId || context?.profileId;
+            const profileData = await db
+              .select()
+              .from(playerProfiles)
+              .where(eq(playerProfiles.id, profileId))
+              .limit(1);
+
+            if (profileData.length > 0 && profileData[0].gameStateId) {
+              await db
+                .update(gameStates)
+                .set({ affectionLevel: newAffectionLevel })
+                .where(eq(gameStates.id, profileData[0].gameStateId));
+                
+              console.log(`💕 Communicator affection updated: ${currentAffection} → ${newAffectionLevel} (+${1 + affectionBonus})`);
+            }
+          } catch (error) {
+            console.error('Failed to persist communicator affection:', error);
+          }
+        }
 
         return res.json({
-          response: sanitizedResponse,
-          gameState: updatedGameState,
-          expression: 'focused'
+          response,
+          gameState: finalGameState,
+          expression: 'focused',
+          showAffectionHeart,
+          communicatorMode: true,
+          thoughtPrompts: [
+            "I wish we could talk in person",
+            "What are you up to?", 
+            "Hope to see you soon",
+            "Missing you"
+          ]
         });
       }
       
