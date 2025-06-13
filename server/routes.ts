@@ -1551,10 +1551,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `${msg.senderName}: ${msg.content}`
         ).join('\n');
 
-        // Get focused episode guidance to prevent narrative confusion
+        // Get contextual episode guidance with intelligent multi-episode blending
         const profileId = gameState?.profileId || context?.profileId || 1;
-        const focusedEpisode = await episodeEngine.getFocusedEpisode(profileId);
-        const episodeGuidance = focusedEpisode ? await episodeEngine.getEpisodeGuidance(focusedEpisode, 2) : null;
+        const location = characterState?.location || context?.location || 'hunter_association';
+        const timeOfDay = context?.timeOfDay || 'afternoon';
+        const episodeGuidance = await episodeEngine.getContextualEpisodeGuidance(profileId, location, timeOfDay);
         
         const fullPrompt = `${personalityPrompt}
 
@@ -1573,7 +1574,7 @@ Jin-Woo just sent: "${message}"
 
 ${isUrgent ? 'This message seems urgent - respond accordingly.' : ''}
 ${proposedActivity ? `Jin-Woo proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
-${focusedEpisode && episodeGuidance ? `STORY GUIDANCE: After a few exchanges, naturally suggest: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
+${episodeGuidance ? `STORY GUIDANCE: After a few exchanges, naturally suggest: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
 
 IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses. Keep your response conversational and authentic to Cha Hae-In's character - professional but warm, strong but caring. Vary your responses based on the conversation history.
 

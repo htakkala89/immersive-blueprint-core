@@ -400,19 +400,133 @@ export class EpisodeEngine {
     await this.saveEpisodeProgress(Number(profileId));
   }
 
-  // Episode Focus System - Ensures only one episode drives narrative
+  // Hybrid Multi-Episode System - Allows multiple active episodes with intelligent priority weighting
+  async setActiveEpisodes(profileId: number, episodes: Array<{episodeId: string; priority: 'primary' | 'secondary' | 'background'; weight?: number}>): Promise<void> {
+    try {
+      const { db } = await import('./db');
+      const { playerProfiles } = await import('../shared/schema');
+      const { eq } = await import('drizzle-orm');
+
+      // Auto-assign weights based on priority if not provided
+      const episodesWithWeights = episodes.map(ep => ({
+        ...ep,
+        weight: ep.weight || this.calculatePriorityWeight(ep.priority)
+      }));
+
+      await db.update(playerProfiles)
+        .set({ 
+          activeEpisodes: episodesWithWeights,
+          focusedEpisode: episodesWithWeights.find(ep => ep.priority === 'primary')?.episodeId || null
+        })
+        .where(eq(playerProfiles.id, profileId));
+      
+      console.log(`🎯 Active episodes set for profile ${profileId}:`, episodesWithWeights);
+    } catch (error) {
+      console.error('Failed to set active episodes:', error);
+    }
+  }
+
+  private calculatePriorityWeight(priority: 'primary' | 'secondary' | 'background'): number {
+    switch (priority) {
+      case 'primary': return 0.6;     // 60% influence
+      case 'secondary': return 0.3;   // 30% influence
+      case 'background': return 0.1;  // 10% influence
+      default: return 0.1;
+    }
+  }
+
+  async getActiveEpisodes(profileId: number): Promise<Array<{episodeId: string; priority: 'primary' | 'secondary' | 'background'; weight: number}>> {
+    try {
+      const { db } = await import('./db');
+      const { playerProfiles } = await import('../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const [profile] = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
+      return (profile?.activeEpisodes as any) || [];
+    } catch (error) {
+      console.error('Failed to get active episodes:', error);
+      return [];
+    }
+  }
+
+  // Enhanced guidance system for multi-episode context
+  async getContextualEpisodeGuidance(profileId: number, location: string, timeOfDay: string): Promise<string | null> {
+    try {
+      const activeEpisodes = await this.getActiveEpisodes(profileId);
+      if (activeEpisodes.length === 0) return null;
+
+      let combinedGuidance = '';
+      let totalWeight = 0;
+
+      // Process episodes by priority order
+      const sortedEpisodes = activeEpisodes.sort((a, b) => b.weight - a.weight);
+
+      for (const activeEp of sortedEpisodes) {
+        const episode = await this.getEpisode(activeEp.episodeId);
+        if (!episode) continue;
+
+        const episodeGuidance = await this.getEpisodeGuidance(activeEp.episodeId, 2);
+        if (!episodeGuidance) continue;
+
+        // Apply contextual filtering based on location and time
+        const contextRelevance = this.calculateContextRelevance(episode, location, timeOfDay);
+        const adjustedWeight = activeEp.weight * contextRelevance;
+
+        if (adjustedWeight > 0.1) { // Only include if significantly relevant
+          if (activeEp.priority === 'primary') {
+            combinedGuidance = episodeGuidance; // Primary takes precedence
+            break;
+          } else {
+            // Blend secondary and background guidance
+            combinedGuidance += episodeGuidance + ' ';
+            totalWeight += adjustedWeight;
+          }
+        }
+      }
+
+      return combinedGuidance.trim() || null;
+    } catch (error) {
+      console.error('Failed to get contextual episode guidance:', error);
+      return null;
+    }
+  }
+
+  private calculateContextRelevance(episode: any, location: string, timeOfDay: string): number {
+    let relevance = 1.0;
+
+    // Location-based relevance
+    if (episode.id.includes('CAFE') && location === 'hongdae_cafe') relevance *= 1.5;
+    if (episode.id.includes('TRAINING') && location === 'gangnam_tower') relevance *= 1.5;
+    if (episode.id.includes('WINTER') && timeOfDay === 'evening') relevance *= 1.2;
+    
+    // Time-based relevance
+    if (episode.id.includes('ROMANTIC') && (timeOfDay === 'evening' || timeOfDay === 'night')) relevance *= 1.3;
+    if (episode.id.includes('PROFESSIONAL') && (timeOfDay === 'morning' || timeOfDay === 'afternoon')) relevance *= 1.2;
+
+    return Math.min(relevance, 2.0); // Cap at 2x relevance
+  }
+
+  // Legacy single-episode focus system (backwards compatibility)
   async setFocusedEpisode(profileId: number, episodeId: string | null): Promise<void> {
     try {
       const { db } = await import('./db');
       const { playerProfiles } = await import('../shared/schema');
       const { eq } = await import('drizzle-orm');
       
-      await db.update(playerProfiles)
-        .set({ 
-          focusedEpisode: episodeId,
-          currentEpisode: episodeId // Keep currentEpisode in sync for backwards compatibility
-        })
-        .where(eq(playerProfiles.id, profileId));
+      // If setting a focused episode, convert to primary active episode
+      if (episodeId) {
+        await this.setActiveEpisodes(profileId, [
+          { episodeId, priority: 'primary', weight: 0.6 }
+        ]);
+      } else {
+        // Clear all active episodes
+        await db.update(playerProfiles)
+          .set({ 
+            focusedEpisode: null,
+            activeEpisodes: []
+          })
+          .where(eq(playerProfiles.id, profileId));
+      }
       
       console.log(`🎯 Focused episode set to: ${episodeId || 'none'}`);
     } catch (error) {
