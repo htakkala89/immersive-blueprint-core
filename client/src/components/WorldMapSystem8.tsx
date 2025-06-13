@@ -550,7 +550,7 @@ export function WorldMapSystem8({
                     {/* Enhanced Location Orb */}
                     <div className="relative">
                       <motion.div
-                        className={`w-8 h-8 rounded-full relative border-2 ${
+                        className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full relative border-2 min-w-[40px] min-h-[40px] ${
                           location.state === 'locked' 
                             ? 'bg-gray-600 border-gray-500' :
                           location.state === 'presence' 
@@ -584,7 +584,7 @@ export function WorldMapSystem8({
                         
                         {location.state === 'locked' && (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <Lock className="w-4 h-4 text-white/70" />
+                            <Lock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/70" />
                           </div>
                         )}
                       </motion.div>
