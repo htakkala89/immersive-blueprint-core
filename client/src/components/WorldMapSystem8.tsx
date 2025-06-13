@@ -58,8 +58,8 @@ export function WorldMapSystem8({
     if (screenWidth < 640) { // Mobile Portrait
       return {
         grid: { cols: 2, rows: 3 },
-        zoneSize: { width: 48, height: 32 },
-        gap: 2,
+        zoneSize: { width: 49, height: 30 },
+        gap: 1,
         touchTarget: { min: 48, optimal: 56 },
         isMobile: true
       };
@@ -254,8 +254,8 @@ export function WorldMapSystem8({
         id: 'personal',
         name: 'Personal Spaces',
         description: 'Private and intimate locations',
-        position: { x: 25, y: 70 },
-        size: { width: 50, height: 25 },
+        position: { x: 25, y: 65 },
+        size: { width: 50, height: 30 },
         locations: applyAntiOverlapPositions([
           {
             id: 'player_apartment',

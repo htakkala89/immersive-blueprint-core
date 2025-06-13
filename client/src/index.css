@@ -50,6 +50,29 @@
       min-height: 48px;
       min-width: 48px;
     }
+    
+    /* Mobile zone optimizations */
+    .mobile-zone {
+      padding: 8px 4px !important;
+    }
+    
+    .mobile-zone-title {
+      font-size: 12px !important;
+      line-height: 1.2 !important;
+      margin-bottom: 2px !important;
+    }
+    
+    .mobile-zone-desc {
+      display: none !important;
+    }
+    
+    /* Mobile location nodes */
+    .mobile-location-node {
+      width: 36px !important;
+      height: 36px !important;
+      min-width: 36px !important;
+      min-height: 36px !important;
+    }
   }
 }
 
