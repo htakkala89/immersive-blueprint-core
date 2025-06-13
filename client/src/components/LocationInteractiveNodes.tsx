@@ -383,7 +383,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'mission_board',
       label: 'Mission Board',
       icon: MapPin,
-      position: { x: 10, y: 15 },
+      position: { x: 40, y: 40 },
       thoughtPrompt: 'Check the board for new gate alerts.',
       outcome: 'Opens read-only UI panel listing high-rank gates around the world for lore and world-building.',
       gameLogic: 'lore_panel_display'
@@ -392,7 +392,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'receptionist',
       label: 'Receptionist',
       icon: Users,
-      position: { x: 90, y: 50 },
+      position: { x: 50, y: 45 },
       thoughtPrompt: 'Ask the receptionist for any rumors.',
       outcome: 'Brief dialogue with Guild employee NPC providing rotating gameplay hint or rumor.',
       gameLogic: 'npc_dialogue_hints'
@@ -402,7 +402,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'elevator_bank',
       label: 'Elevator Bank',
       icon: Building,
-      position: { x: 50, y: 90 },
+      position: { x: 45, y: 55 },
       thoughtPrompt: 'Take the elevator to upper floors.',
       outcome: 'Provides access to restricted Hunter Association floors with advanced facilities.',
       gameLogic: 'floor_navigation_system'
