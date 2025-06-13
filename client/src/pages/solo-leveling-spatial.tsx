@@ -288,6 +288,7 @@ export default function SoloLevelingSpatial() {
   const [episodeInProgress, setEpisodeInProgress] = useState(false);
   const [availableEpisodes, setAvailableEpisodes] = useState<any[]>([]);
   const [episodeNotifications, setEpisodeNotifications] = useState<any[]>([]);
+  const [episodeHints, setEpisodeHints] = useState<any[]>([]);
 
   // Profile Management System state
   const [showProfileManager, setShowProfileManager] = useState(false);
@@ -846,6 +847,40 @@ export default function SoloLevelingSpatial() {
       // Episodes that can be triggered from current location
       return episode.startLocation === gameState.currentScene || !episode.startLocation;
     });
+  };
+
+  // Episode-Driven UI Hints System
+  const getEpisodeHints = () => {
+    const currentLocation = gameState.currentScene;
+    const hints = [];
+
+    // Check if we're at training facility and "Training Partners" episode is active
+    if (currentLocation === 'training_facility') {
+      hints.push({
+        id: 'sparring_hint',
+        type: 'story_progression',
+        title: 'Episode Objective',
+        message: 'Complete the sparring session with Cha Hae-In',
+        action: 'Click on the Sparring Ring to begin training',
+        interactionPoint: 'training_dummy',
+        priority: 'high'
+      });
+    }
+
+    // Check if we're at hongdae cafe and next objective is coffee
+    if (currentLocation === 'hongdae_cafe') {
+      hints.push({
+        id: 'coffee_hint',
+        type: 'story_progression',
+        title: 'Episode Objective',
+        message: 'Discuss mission details over coffee with Cha Hae-In',
+        action: 'Start a coffee activity to continue the story',
+        interactionPoint: 'menu_board',
+        priority: 'high'
+      });
+    }
+
+    return hints;
   };
 
   // Perspective-based scaling system per design specifications
@@ -2801,6 +2836,35 @@ export default function SoloLevelingSpatial() {
             </div>
           </motion.div>
         )}
+
+        {/* Episode-Driven Contextual Hints */}
+        {getEpisodeHints().map((hint) => (
+          <motion.div
+            key={hint.id}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute top-32 left-4 right-4 z-40"
+          >
+            <div
+              className="bg-purple-500/20 backdrop-blur-xl border border-purple-400/50 rounded-2xl p-4"
+              style={{ 
+                boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
+                background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(147, 51, 234, 0.1))'
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-purple-400 rounded-full flex items-center justify-center animate-pulse">
+                  <BookOpen className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-purple-200 font-semibold text-sm">{hint.title}</h3>
+                  <p className="text-purple-300/90 text-xs mt-1">{hint.message}</p>
+                  <p className="text-purple-400/70 text-xs mt-2 italic">{hint.action}</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
 
         {/* Enhanced Interactive Nodes System */}
         <LocationInteractiveNodes
