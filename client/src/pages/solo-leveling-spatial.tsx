@@ -392,16 +392,87 @@ export default function SoloLevelingSpatial() {
       setShowLivingPortrait(true);
       setChaHaeInExpression('recognition');
       
-      // Step 4: Generate context-aware dialogue
-      const contextualDialogue = "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?";
-      setCurrentDialogue(contextualDialogue);
+      // Step 4: Generate location-aware dialogue
+      const getLocationSpecificDialogue = () => {
+        const affectionLevel = gameState.affection || 0;
+        
+        switch (playerLocation) {
+          case 'chahaein_apartment':
+            if (affectionLevel >= 70) {
+              return {
+                dialogue: "Jin-Woo... I'm so glad you came over. I was just making some tea. Would you like to stay for a while?",
+                prompts: [
+                  "I'd love to stay with you.",
+                  "Tea sounds perfect.",
+                  "How are you feeling tonight?"
+                ]
+              };
+            } else if (affectionLevel >= 40) {
+              return {
+                dialogue: "Oh, Jin-Woo! I wasn't expecting you. Please, come in. Make yourself comfortable.",
+                prompts: [
+                  "Thanks for inviting me in.",
+                  "Your place is beautiful.",
+                  "I hope I'm not intruding."
+                ]
+              };
+            } else {
+              return {
+                dialogue: "Jin-Woo? What brings you to my apartment? Is everything alright?",
+                prompts: [
+                  "I wanted to check on you.",
+                  "Sorry if this is sudden.",
+                  "We need to talk about something."
+                ]
+              };
+            }
+            
+          case 'hunter_association':
+            return {
+              dialogue: "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?",
+              prompts: [
+                "Just wanted to see you.",
+                "Anything interesting in the report?", 
+                "Ready for a break? I can handle the rest."
+              ]
+            };
+            
+          case 'player_apartment':
+            if (affectionLevel >= 80) {
+              return {
+                dialogue: "Your place feels like home now, Jin-Woo. I love spending time here with you.",
+                prompts: [
+                  "I love having you here.",
+                  "This is our place now.",
+                  "Want to relax together?"
+                ]
+              };
+            } else {
+              return {
+                dialogue: "Your apartment has such a nice atmosphere, Jin-Woo. Thank you for having me over.",
+                prompts: [
+                  "I'm glad you like it.",
+                  "Would you like something to drink?",
+                  "Make yourself at home."
+                ]
+              };
+            }
+            
+          default:
+            return {
+              dialogue: "Jin-Woo, what brings you here? Is there something you need?",
+              prompts: [
+                "Just wanted to see you.",
+                "How are things going?",
+                "Do you have a moment to talk?"
+              ]
+            };
+        }
+      };
       
-      // Step 5: Set thought prompts
-      setThoughtPrompts([
-        "Just wanted to see you.",
-        "Anything interesting in the report?", 
-        "Ready for a break? I can handle the rest."
-      ]);
+      const locationDialogue = getLocationSpecificDialogue();
+      setCurrentDialogue(locationDialogue.dialogue);
+      setThoughtPrompts(locationDialogue.prompts);
       
       setDialogueActive(true);
       console.log('Dialogue activated');
