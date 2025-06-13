@@ -491,19 +491,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to test both models and return results
   app.get("/api/test-models", async (req, res) => {
     try {
-      const results = { novelai: null, imagen: null, errors: [] };
+      const results: { novelai: any, imagen: any, errors: string[] } = { novelai: null, imagen: null, errors: [] };
       
-      // Test NovelAI V4
+      // Test NovelAI V4 using generic image generation
       try {
         console.log('Testing NovelAI V4 Curated Preview...');
-        const novelaiResult = await imageGenerationService.generateNovelAI({
-          activityId: 'bedroom_intimacy',
-          relationshipStatus: 'deeply_connected', 
-          intimacyLevel: 8
-        });
+        const novelaiResult = await imageGenerationService.generateImage(
+          "A cozy bedroom scene with intimate lighting, soft warm colors",
+          "NovelAI"
+        );
         results.novelai = novelaiResult;
       } catch (error) {
-        results.errors.push(`NovelAI V4 failed: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        (results.errors as string[]).push(`NovelAI V4 failed: ${errorMessage}`);
       }
       
       // Test Google Imagen 4.0
@@ -512,12 +512,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const imagenResult = await generateLocationSceneImage('chahaein_apartment', 'evening');
         results.imagen = imagenResult;
       } catch (error) {
-        results.errors.push(`Google Imagen 4.0 failed: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        (results.errors as string[]).push(`Google Imagen 4.0 failed: ${errorMessage}`);
       }
       
       res.json(results);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ error: errorMessage });
     }
   });
 
