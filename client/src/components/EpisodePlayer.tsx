@@ -49,12 +49,49 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
   });
 
   const episode = episodeData?.episode;
-  const currentCommand = episode?.commands?.[currentCommandIndex];
+  
+  // Extract all actions from beats for command processing
+  const allActions = episode?.beats?.flatMap((beat: any) => beat.actions || []) || [];
+  const currentCommand = allActions[currentCommandIndex];
 
   const processCommand = (command: any) => {
     setIsProcessing(true);
     
-    switch (command.type) {
+    switch (command.command) {
+      case 'DELIVER_MESSAGE':
+        const sender = command.params?.sender || 'System';
+        const messageId = command.params?.message_id || 'Unknown';
+        setNarrative(prev => [...prev, `📨 Message from ${sender}: ${messageId}`]);
+        break;
+        
+      case 'ACTIVATE_QUEST':
+        const questTitle = command.params?.title || 'New Quest';
+        setNarrative(prev => [...prev, `⚔️ Quest Activated: ${questTitle}`]);
+        break;
+        
+      case 'SET_CHA_MOOD':
+        const mood = command.params?.mood || 'neutral';
+        setNarrative(prev => [...prev, `💭 Cha Hae-In's mood: ${mood}`]);
+        setGameState(prev => ({ ...prev, characterMood: mood }));
+        break;
+        
+      case 'FORCE_CHA_LOCATION':
+        const location = command.params?.location_id || 'Unknown Location';
+        setNarrative(prev => [...prev, `📍 Cha Hae-In moves to: ${location}`]);
+        setGameState(prev => ({ ...prev, currentLocation: location }));
+        break;
+        
+      case 'START_DIALOGUE_SCENE':
+        const dialogueId = command.params?.dialogue_id || 'Unknown Dialogue';
+        setNarrative(prev => [...prev, `💬 Starting dialogue: ${dialogueId}`]);
+        break;
+        
+      case 'COMPLETE_EPISODE':
+        const reward = command.params?.reward || 0;
+        setNarrative(prev => [...prev, `🎉 Episode Complete! Reward: ${reward}`]);
+        break;
+        
+      // Legacy support for old command format
       case 'system_message':
         setNarrative(prev => [...prev, `🎮 ${command.content}`]);
         break;
@@ -75,10 +112,6 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
       case 'add_quest':
         setNarrative(prev => [...prev, `⚔️ New Quest: ${command.quest.title}`]);
         setNarrative(prev => [...prev, command.quest.description]);
-        break;
-        
-      case 'show_shop':
-        setNarrative(prev => [...prev, `🏪 Welcome to ${command.shop_data.name}`]);
         break;
         
       case 'choice_node':
@@ -165,7 +198,7 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
   };
 
   const advanceStory = () => {
-    if (currentCommandIndex < (episode?.commands?.length || 0) - 1) {
+    if (currentCommandIndex < allActions.length - 1) {
       setCurrentCommandIndex(prev => prev + 1);
     } else {
       onComplete?.(episodeId);
@@ -218,7 +251,7 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
           </div>
           <div className="flex items-center justify-center space-x-4 text-sm text-purple-200">
             <Badge variant="outline" className="border-purple-400 text-purple-200">
-              Command {currentCommandIndex + 1} of {episode.commands?.length || 0}
+              Command {currentCommandIndex + 1} of {allActions.length}
             </Badge>
             <Badge variant="outline" className="border-green-400 text-green-200">
               {gameState.currentLocation}
