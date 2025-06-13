@@ -48,6 +48,8 @@ export const playerProfiles = pgTable("player_profiles", {
   currentEpisode: text("current_episode"),
   currentEpisodeBeat: integer("current_episode_beat").default(0),
   episodeProgress: jsonb("episode_progress").notNull().default({}).$type<Record<string, any>>(),
+  availableEpisodes: jsonb("available_episodes").notNull().default([]).$type<string[]>(),
+  focusedEpisode: text("focused_episode"), // Only this episode drives AI narrative
   createdAt: timestamp("created_at").defaultNow().notNull(),
   lastPlayed: timestamp("last_played").defaultNow().notNull(),
   isActive: boolean("is_active").default(false).notNull(),
