@@ -579,8 +579,8 @@ export function PlayerProgressionSystem16({
                   {/* Stats Grid */}
                   <div className="p-6">
                     <div className="grid gap-4">
-                      {Object.entries(playerData.stats || {}).length > 0 ? (
-                        Object.entries(playerData.stats).map(([statKey, value], index) => {
+                      {Object.entries(playerData.stats || {}).length > 0 ? 
+                        Object.entries(playerData.stats || {}).map(([statKey, value], index) => {
                           const IconComponent = getStatIcon(statKey as keyof CoreStats);
                           const colorClass = getStatColor(statKey as keyof CoreStats);
                           
@@ -679,9 +679,9 @@ export function PlayerProgressionSystem16({
                             </motion.div>
                           );
                         })
-                      ) : (
+                      : (
                         <div className="text-center py-8">
-                          <div className="text-slate-400">Loading stats...</div>
+                          <div className="text-slate-400">No stats available</div>
                         </div>
                       )}
                     </div>
