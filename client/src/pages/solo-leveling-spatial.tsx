@@ -4143,7 +4143,7 @@ export default function SoloLevelingSpatial() {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4"
+            className="fixed top-4 left-1/2 transform -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 left-4 translate-x-0 z-[9999] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4"
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-start gap-3">
