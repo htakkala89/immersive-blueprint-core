@@ -91,6 +91,7 @@ interface HunterCommunicatorSystem15Props {
   chaHaeInState?: CharacterState;
   activeQuests?: any[];
   episodeAlerts?: SystemAlert[];
+  chaHaeInAvatar?: string;
   pendingPhotoDelivery?: {
     type: 'intimate';
     context: string;
@@ -107,6 +108,7 @@ export function HunterCommunicatorSystem15({
   playerLocation,
   timeOfDay,
   chaHaeInState,
+  chaHaeInAvatar,
   pendingPhotoDelivery
 }: HunterCommunicatorSystem15Props): JSX.Element {
   const [activeTab, setActiveTab] = useState<'messages' | 'alerts'>('messages');
@@ -421,7 +423,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       id: 'cha_hae_in',
       participantId: 'cha_hae_in',
       participantName: 'Cha Hae-In',
-      participantAvatar: '👩‍⚔️',
+      participantAvatar: chaHaeInAvatar || '', // Use actual avatar image
       unreadCount: 1,
       lastMessage: {
         id: 'msg_1',
@@ -946,7 +948,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                       >
                         <div className="flex items-center gap-3">
                           <div 
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
+                            className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden"
                             style={{
                               background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                               backdropFilter: 'blur(10px)',
@@ -954,7 +956,18 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
                             }}
                           >
-                            {conversation.participantAvatar}
+                            {conversation.participantAvatar ? (
+                              <img 
+                                src={conversation.participantAvatar} 
+                                alt={conversation.participantName}
+                                className="w-full h-full object-cover"
+                                style={{
+                                  filter: 'brightness(1.1) contrast(1.05)'
+                                }}
+                              />
+                            ) : (
+                              <User className="w-6 h-6 text-slate-400" />
+                            )}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
@@ -1041,7 +1054,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                     >
                       <div className="flex items-center gap-4">
                         <div 
-                          className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+                          className="w-14 h-14 rounded-full flex items-center justify-center overflow-hidden"
                           style={{
                             background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                             backdropFilter: 'blur(10px)',
@@ -1049,7 +1062,18 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
                           }}
                         >
-                          {selectedConversationData.participantAvatar}
+                          {selectedConversationData.participantAvatar ? (
+                            <img 
+                              src={selectedConversationData.participantAvatar} 
+                              alt={selectedConversationData.participantName}
+                              className="w-full h-full object-cover"
+                              style={{
+                                filter: 'brightness(1.1) contrast(1.05)'
+                              }}
+                            />
+                          ) : (
+                            <User className="w-8 h-8 text-slate-400" />
+                          )}
                         </div>
                         <div>
                           <h4 
