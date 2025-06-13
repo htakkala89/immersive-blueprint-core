@@ -6,7 +6,7 @@ import {
   Heart, Crown, Zap, Coins, User, Sword, Star, 
   Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
   MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
-  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target, BookOpen
+  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target, BookOpen, Wand2
 } from 'lucide-react';
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
@@ -49,6 +49,7 @@ import { SparkleEffect } from '@/components/SparkleEffect';
 import { MysticalEye } from '@/components/MysticalEye';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
 import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
+import { NarrativeArchitectAI } from '@/components/NarrativeArchitectAI';
 import SommelierDialog from '@/components/SommelierDialog';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
@@ -275,6 +276,9 @@ export default function SoloLevelingSpatial() {
 
   // System 18: Episodic Story Engine state
   const [showStoryEngine, setShowStoryEngine] = useState(false);
+
+  // System 18.5: Narrative Architect AI state
+  const [showNarrativeArchitect, setShowNarrativeArchitect] = useState(false);
 
   // Sommelier Dialog state
   const [showSommelierDialog, setShowSommelierDialog] = useState(false);
@@ -3694,6 +3698,7 @@ export default function SoloLevelingSpatial() {
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Story Engine', color: 'text-orange-300', onClick: () => { setShowStoryEngine(true); setMonarchAuraVisible(false); } },
+            { icon: Wand2, label: 'AI Creator', color: 'text-purple-300', onClick: () => { setShowNarrativeArchitect(true); setMonarchAuraVisible(false); } },
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
             { icon: Brain, label: 'Story Progress', color: 'text-violet-300', onClick: () => { setShowNarrativeProgression(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
@@ -4178,6 +4183,23 @@ export default function SoloLevelingSpatial() {
             ...updates
           }));
         }}
+      />
+
+      {/* System 18: Episodic Story Engine */}
+      <EpisodicStoryEngine
+        isVisible={showStoryEngine}
+        onClose={() => setShowStoryEngine(false)}
+        playerStats={{
+          level: gameState.level || 1,
+          affectionLevel: (gameState.affection || 0) * 10,
+          gold: gameState.gold || 0
+        }}
+      />
+
+      {/* System 18.5: Narrative Architect AI Creator Tool */}
+      <NarrativeArchitectAI
+        isVisible={showNarrativeArchitect}
+        onClose={() => setShowNarrativeArchitect(false)}
       />
 
 

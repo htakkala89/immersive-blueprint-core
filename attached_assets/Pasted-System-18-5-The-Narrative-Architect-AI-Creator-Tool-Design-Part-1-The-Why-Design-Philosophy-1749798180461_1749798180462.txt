@@ -1,0 +1,74 @@
+System 18.5: The Narrative Architect AI - Creator Tool Design
+
+Part 1: The "Why" - Design Philosophy
+
+The purpose of this system is to drastically lower the barrier to entry for content creation. A creator should not need to be a programmer to tell a powerful, multi-stage story. They should be a storyteller. The Narrative Architect AI acts as an expert "developer assistant." The creator provides the high-level vision in natural language, and the AI translates that vision into the precise, structured code the game engine needs to execute it. This allows creators to focus on what matters: the characters, the plot, and the emotional journey.
+
+Part 2: The Creator's User Experience
+
+The creator will interact with a new, dedicated "Episode Builder" interface.
+
+The Interface: A clean, two-paned view.
+
+Left Pane: The "Director's Briefing" (Input)
+
+This is a simple, powerful text prompt area. It will have a clear title: "Describe the story you want to create."
+
+Right Pane: The "Episode Blueprint" (Output)
+
+This is where the structured, editable JSON data for the episode will appear after the AI has generated it.
+
+The Workflow:
+
+The creator writes a high-level summary of their desired episode into the "Director's Briefing" text box.
+
+They click a prominent button labeled [Generate Episode Blueprint].
+
+The Narrative Architect AI processes the request. A loading indicator appears.
+
+After a few moments, the full, structured JSON for the entire episode, complete with story beats, actions, and conditions, populates the "Episode Blueprint" pane on the right.
+
+The creator can now review, edit, and refine any field in the generated JSON to perfectly match their vision before saving it.
+
+Part 3: The "How" - The Backend Logic & The "Meta-Prompt"
+
+This is the engine room. When the creator clicks "Generate," we send a single, large, and highly-structured prompt to our most powerful LLM. This "Meta-Prompt" is constructed from three key parts:
+
+1. The Creator's Vision (The User Input):
+
+This is the natural language text the creator wrote in the "Director's Briefing."
+
+Example: "I want to create a short, romantic episode where the player and Cha Hae-In go on their first real date to the N Seoul Tower. It should end with a heartfelt conversation and a first kiss. The player should have to buy a 'Padlock' item beforehand as part of the quest."
+
+2. The System "API Manual" (Our Instructions to the AI):
+
+This is a pre-written block of text that we always include. It teaches the LLM the "rules" of our game engine. It defines every available command from System 18 and its parameters.
+
+Example Snippet:
+
+// Game Engine Command Reference
+// To send a message: DELIVER_MESSAGE(target_system, sender, message_content)
+// To reward the player: REWARD_PLAYER('Gold:AMOUNT', 'Item:ITEM_ID')
+// To start a dialogue scene: START_DIALOGUE_SCENE('dialogue_file_id')
+// To set an objective: SET_QUEST_OBJECTIVE(quest_id, 'objective_text')
+// ...and so on for every single command we've designed.
+
+3. The Example Template (The "Few-Shot" Prompt):
+
+To ensure the AI produces perfectly formatted JSON every time, we include one complete, high-quality example episode file in the prompt. We provide it with our "Echoes of the Red Gate" episode JSON.
+
+The instruction: "Based on the user's story request, and using the provided command reference and JSON structure from the example below, generate a new episode blueprint."
+
+The Result: A Complete Creation Loop
+
+By combining these three elements, the AI has everything it needs to act as an expert system builder.
+
+It reads the creator's story idea.
+
+It consults the "API Manual" to see what tools it has at its disposal.
+
+It looks at the example file to understand the correct output format.
+
+It then logically "writes" the full episode JSON, breaking the creator's simple story idea down into the specific, sequenced commands needed to make it happen in our game world.
+
+This system empowers creators to build rich, complex narratives at the speed of thought, turning a high-level idea into a playable, editable blueprint in seconds. It's the key to unlocking a universe of content for your players.
