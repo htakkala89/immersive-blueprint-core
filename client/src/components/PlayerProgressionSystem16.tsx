@@ -579,111 +579,111 @@ export function PlayerProgressionSystem16({
                   {/* Stats Grid */}
                   <div className="p-6">
                     <div className="grid gap-4">
-                      {Object.entries(playerData.stats || {}).map(([statKey, value], index) => {
-                        const IconComponent = getStatIcon(statKey as keyof CoreStats);
-                        const colorClass = getStatColor(statKey as keyof CoreStats);
-                        
-                        return (
-                          <motion.div 
-                            key={statKey}
-                            className="relative group"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.6 + index * 0.1 }}
-                          >
-                            <div 
-                              className="flex items-center justify-between p-4 rounded-xl border transition-all duration-300 group-hover:shadow-lg"
-                              style={{
-                                background: 'linear-gradient(135deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.6) 100%)',
-                                border: '1px solid rgba(148, 163, 184, 0.2)'
-                              }}
+                      {Object.entries(playerData.stats || {}).length > 0 ? (
+                        Object.entries(playerData.stats).map(([statKey, value], index) => {
+                          const IconComponent = getStatIcon(statKey as keyof CoreStats);
+                          const colorClass = getStatColor(statKey as keyof CoreStats);
+                          
+                          return (
+                            <motion.div 
+                              key={statKey}
+                              className="relative group"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.6 + index * 0.1 }}
                             >
-                              <div className="flex items-center gap-4">
-                                {/* Stat Icon with Glow Effect */}
-                                <motion.div 
-                                  className="relative"
-                                  whileHover={{ scale: 1.1 }}
-                                >
-                                  <div 
-                                    className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 ${colorClass.replace('text-', 'border-')} bg-gradient-to-br from-slate-700/50 to-slate-800/50`}
-                                    style={{
-                                      boxShadow: `0 0 20px ${colorClass.includes('red') ? 'rgba(239, 68, 68, 0.3)' :
-                                                              colorClass.includes('green') ? 'rgba(34, 197, 94, 0.3)' :
-                                                              colorClass.includes('blue') ? 'rgba(59, 130, 246, 0.3)' :
-                                                              colorClass.includes('purple') ? 'rgba(147, 51, 234, 0.3)' :
-                                                              'rgba(245, 158, 11, 0.3)'}`
-                                    }}
-                                  >
-                                    <IconComponent className={`w-6 h-6 ${colorClass}`} />
-                                  </div>
-                                </motion.div>
-                                
-                                {/* Stat Info */}
-                                <div>
-                                  <h4 className="text-lg font-bold text-white capitalize mb-1">{statKey}</h4>
-                                  <p className="text-xs text-slate-400 max-w-xs">
-                                    {statKey === 'strength' && 'Increases physical damage and carrying capacity'}
-                                    {statKey === 'agility' && 'Improves attack speed and critical hit chance'}
-                                    {statKey === 'vitality' && 'Boosts health points and defensive capabilities'}
-                                    {statKey === 'intelligence' && 'Enhances mana pool and magical damage'}
-                                    {statKey === 'sense' && 'Sharpens detection abilities and weak point identification'}
-                                  </p>
-                                </div>
-                              </div>
-                              
-                              {/* Stat Value and Controls */}
-                              <div className="flex items-center gap-4">
-                                {/* Visual Stat Representation */}
-                                <div className="flex flex-col items-center">
+                              <div 
+                                className="flex items-center justify-between p-4 rounded-xl border transition-all duration-300 group-hover:shadow-lg"
+                                style={{
+                                  background: 'linear-gradient(135deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.6) 100%)',
+                                  border: '1px solid rgba(148, 163, 184, 0.2)'
+                                }}
+                              >
+                                <div className="flex items-center gap-4">
                                   <motion.div 
-                                    className="text-3xl font-bold text-white mb-1"
-                                    key={`${statKey}-${value}`}
-                                    initial={{ scale: 1.3, color: '#fbbf24' }}
-                                    animate={{ scale: 1, color: '#ffffff' }}
-                                    transition={{ duration: 0.5, type: "spring" }}
+                                    className="relative"
+                                    whileHover={{ scale: 1.1 }}
                                   >
-                                    {value}
-                                  </motion.div>
-                                  
-                                  {/* Stat Level Bars */}
-                                  <div className="flex gap-1">
-                                    {[...Array(Math.min(10, value))].map((_, i) => (
-                                      <motion.div
-                                        key={i}
-                                        className={`w-1 h-3 rounded-full ${colorClass.replace('text-', 'bg-')}`}
-                                        initial={{ height: 0 }}
-                                        animate={{ height: 12 }}
-                                        transition={{ delay: 0.8 + i * 0.05 }}
-                                      />
-                                    ))}
-                                    {value > 10 && (
-                                      <div className="text-xs text-slate-400 ml-1">+{value - 10}</div>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                {/* Allocation Button */}
-                                {playerData.unspentStatPoints > 0 && (
-                                  <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                  >
-                                    <Button
-                                      onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
-                                      className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 border border-purple-400/30 shadow-lg transition-all duration-200"
+                                    <div 
+                                      className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 ${colorClass.replace('text-', 'border-')} bg-gradient-to-br from-slate-700/50 to-slate-800/50`}
                                       style={{
-                                        boxShadow: '0 4px 15px rgba(147, 51, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                                        boxShadow: `0 0 20px ${colorClass.includes('red') ? 'rgba(239, 68, 68, 0.3)' :
+                                                                colorClass.includes('green') ? 'rgba(34, 197, 94, 0.3)' :
+                                                                colorClass.includes('blue') ? 'rgba(59, 130, 246, 0.3)' :
+                                                                colorClass.includes('purple') ? 'rgba(147, 51, 234, 0.3)' :
+                                                                'rgba(245, 158, 11, 0.3)'}`
                                       }}
                                     >
-                                      <Plus className="w-5 h-5 text-white" />
-                                    </Button>
+                                      <IconComponent className={`w-6 h-6 ${colorClass}`} />
+                                    </div>
                                   </motion.div>
-                                )}
+                                  
+                                  <div>
+                                    <h4 className="text-lg font-bold text-white capitalize mb-1">{statKey}</h4>
+                                    <p className="text-xs text-slate-400 max-w-xs">
+                                      {statKey === 'strength' && 'Increases physical damage and carrying capacity'}
+                                      {statKey === 'agility' && 'Improves attack speed and critical hit chance'}
+                                      {statKey === 'vitality' && 'Boosts health points and defensive capabilities'}
+                                      {statKey === 'intelligence' && 'Enhances mana pool and magical damage'}
+                                      {statKey === 'sense' && 'Sharpens detection abilities and weak point identification'}
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-4">
+                                  <div className="flex flex-col items-center">
+                                    <motion.div 
+                                      className="text-3xl font-bold text-white mb-1"
+                                      key={`${statKey}-${value}`}
+                                      initial={{ scale: 1.3, color: '#fbbf24' }}
+                                      animate={{ scale: 1, color: '#ffffff' }}
+                                      transition={{ duration: 0.5, type: "spring" }}
+                                    >
+                                      {value}
+                                    </motion.div>
+                                    
+                                    <div className="flex gap-1">
+                                      {[...Array(Math.min(10, value))].map((_, i) => (
+                                        <motion.div
+                                          key={i}
+                                          className={`w-1 h-3 rounded-full ${colorClass.replace('text-', 'bg-')}`}
+                                          initial={{ height: 0 }}
+                                          animate={{ height: 12 }}
+                                          transition={{ delay: 0.8 + i * 0.05 }}
+                                        />
+                                      ))}
+                                      {value > 10 && (
+                                        <div className="text-xs text-slate-400 ml-1">+{value - 10}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  {playerData.unspentStatPoints > 0 && (
+                                    <motion.div
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                    >
+                                      <Button
+                                        onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
+                                        className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 border border-purple-400/30 shadow-lg transition-all duration-200"
+                                        style={{
+                                          boxShadow: '0 4px 15px rgba(147, 51, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                                        }}
+                                      >
+                                        <Plus className="w-5 h-5 text-white" />
+                                      </Button>
+                                    </motion.div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
+                            </motion.div>
+                          );
+                        })
+                      ) : (
+                        <div className="text-center py-8">
+                          <div className="text-slate-400">Loading stats...</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
