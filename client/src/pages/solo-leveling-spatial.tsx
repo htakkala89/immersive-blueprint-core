@@ -1393,7 +1393,7 @@ export default function SoloLevelingSpatial() {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
       const lastMessage = conversationHistory[conversationHistory.length - 1];
       
-      if (lastMessage.type === 'ai') {
+      if (lastMessage.type === 'cha_hae_in') {
         // For Cha Hae-In's responses, scroll to top so users see the beginning
         conversationScrollRef.current.scrollTop = 0;
       } else {
@@ -3739,10 +3739,9 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="fixed inset-4 rounded-2xl shadow-2xl z-[9999] flex flex-col"
+            className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-[9999] flex flex-col"
             style={{ 
-              maxHeight: '70vh',
-              top: '15vh',
+              maxHeight: '75vh',
               backdropFilter: 'blur(120px) saturate(300%)',
               background: `
                 linear-gradient(135deg, 
@@ -3756,14 +3755,15 @@ export default function SoloLevelingSpatial() {
                 radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)
               `,
-              border: '1px solid rgba(139, 92, 246, 0.3)'
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              borderBottom: 'none'
             }}
-            initial={{ y: 100, opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 100, opacity: 0, scale: 0.95 }}
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            <div className="flex flex-col h-full min-h-0 p-4">
+            <div className="flex flex-col h-full min-h-0 p-4 pb-safe">
               
               {/* Close Button - Enhanced Glassmorphism */}
               <motion.button
