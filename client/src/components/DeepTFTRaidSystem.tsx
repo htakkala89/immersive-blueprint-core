@@ -1106,12 +1106,12 @@ export function DeepTFTRaidSystem({
         </div>
 
         {/* Main Board Area */}
-        <div className={`absolute inset-x-4 top-32 ${isShopExpanded ? 'bottom-80' : 'bottom-28'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
+        <div className={`absolute left-8 right-8 top-32 ${isShopExpanded ? 'bottom-80' : 'bottom-28'} bg-gradient-to-b from-slate-700 to-slate-800 rounded-lg border border-slate-600 overflow-hidden transition-all duration-300`}>
           {gamePhase === 'setup' && (
             /* Setup Phase - TFT Authentic Board Layout */
-            <div className="absolute inset-4">
-              {/* Full 8x7 TFT Board Grid */}
-              <div className="grid grid-cols-7 grid-rows-8 gap-1 h-full p-4">
+            <div className="absolute inset-2">
+              {/* Compact 8x7 TFT Board Grid */}
+              <div className="grid grid-cols-7 grid-rows-8 gap-0.5 h-full max-h-[400px] mx-auto" style={{ aspectRatio: '7/8' }}>
                 {Array.from({ length: 56 }).map((_, index) => {
                   const col = index % 7;
                   const row = Math.floor(index / 7);
@@ -1125,7 +1125,7 @@ export function DeepTFTRaidSystem({
                   return (
                     <div
                       key={index}
-                      className={`relative aspect-square rounded-lg border-2 ${
+                      className={`relative w-full h-12 rounded border ${
                         isEnemyRow 
                           ? 'border-red-600/50 bg-red-900/20' // Enemy area - more visible
                           : unit 
