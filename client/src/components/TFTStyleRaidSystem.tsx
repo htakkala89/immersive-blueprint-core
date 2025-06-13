@@ -544,7 +544,7 @@ export function TFTStyleRaidSystem({
         </div>
 
         {/* Synergies Panel */}
-        <div className="absolute top-20 left-4 bg-black/50 backdrop-blur-sm rounded-lg p-3 max-w-xs">
+        <div className="absolute top-20 left-4 bg-black/50 backdrop-blur-sm rounded-lg p-3 max-w-xs z-50">
           <h3 className="text-white font-bold mb-2">Active Synergies</h3>
           {synergies.map(synergy => (
             <div key={synergy.trait} className="mb-2">

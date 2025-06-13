@@ -705,12 +705,7 @@ export function DailyLifeHubComplete({
         </motion.div>
       </motion.div>
 
-      {/* Debug TFT Raid State */}
-      {showTFTRaid && (
-        <div className="fixed top-4 right-4 bg-red-500 text-white p-2 rounded z-[10000]">
-          TFT Raid State: {showTFTRaid ? 'TRUE' : 'FALSE'}
-        </div>
-      )}
+
 
       {/* TFT-Style Raid System */}
       {showTFTRaid && (
