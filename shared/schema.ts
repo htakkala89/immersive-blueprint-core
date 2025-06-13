@@ -53,11 +53,22 @@ export const playerProfiles = pgTable("player_profiles", {
   isActive: boolean("is_active").default(false).notNull(),
 });
 
+// Episodes Storage
+export const episodes = pgTable("episodes", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  prerequisite: jsonb("prerequisite").notNull().$type<{ player_level: number; relationship_level: number }>(),
+  beats: jsonb("beats").notNull().$type<StoryBeat[]>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+});
+
 // Episode Progress Tracking
 export const episodeProgress = pgTable("episode_progress", {
   id: serial("id").primaryKey(),
   profileId: integer("profile_id").references(() => playerProfiles.id).notNull(),
-  episodeId: text("episode_id").notNull(),
+  episodeId: text("episode_id").references(() => episodes.id).notNull(),
   currentBeat: integer("current_beat").default(0).notNull(),
   isCompleted: boolean("is_completed").default(false).notNull(),
   playerChoices: jsonb("player_choices").notNull().default({}).$type<Record<string, any>>(),
@@ -75,21 +86,32 @@ export const playerProfilesRelations = relations(playerProfiles, ({ one, many })
   episodeProgress: many(episodeProgress)
 }));
 
+export const episodesRelations = relations(episodes, ({ many }) => ({
+  progress: many(episodeProgress)
+}));
+
 export const episodeProgressRelations = relations(episodeProgress, ({ one }) => ({
   profile: one(playerProfiles, {
     fields: [episodeProgress.profileId],
     references: [playerProfiles.id]
+  }),
+  episode: one(episodes, {
+    fields: [episodeProgress.episodeId],
+    references: [episodes.id]
   })
 }));
 
 // Schema types for TypeScript
 export type PlayerProfile = typeof playerProfiles.$inferSelect;
 export type InsertPlayerProfile = typeof playerProfiles.$inferInsert;
+export type Episode = typeof episodes.$inferSelect;
+export type InsertEpisode = typeof episodes.$inferInsert;
 export type EpisodeProgress = typeof episodeProgress.$inferSelect;
 export type InsertEpisodeProgress = typeof episodeProgress.$inferInsert;
 
 // Zod schemas for validation
 export const insertPlayerProfileSchema = createInsertSchema(playerProfiles).omit({ id: true, createdAt: true, lastPlayed: true });
+export const insertEpisodeSchema = createInsertSchema(episodes).omit({ createdAt: true, updatedAt: true });
 export const insertEpisodeProgressSchema = createInsertSchema(episodeProgress).omit({ id: true, startedAt: true, lastPlayedAt: true });
 
 export const Choice = z.object({

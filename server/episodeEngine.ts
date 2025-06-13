@@ -1,13 +1,22 @@
-import { EpisodeData, StoryBeat, EpisodeAction } from "@shared/schema";
+import { EpisodeData, StoryBeat, EpisodeAction, episodes, Episode, InsertEpisode } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export class EpisodeEngine {
-  private episodes: Map<string, EpisodeData> = new Map();
-  
   constructor() {
-    this.loadEpisodes();
+    this.initializeEpisodes();
   }
 
-  private loadEpisodes() {
+  private async initializeEpisodes() {
+    // Check if Episode 1 exists in database, if not, create it
+    const existingEpisode = await db.select().from(episodes).where(eq(episodes.id, "EP01_Red_Echo"));
+    
+    if (existingEpisode.length === 0) {
+      await this.createDefaultEpisode();
+    }
+  }
+
+  private async createDefaultEpisode() {
     // Load Episode 1: Echoes of the Red Gate using the JSON format
     const ep01: EpisodeData = {
       id: "EP01_Red_Echo",
@@ -153,23 +162,60 @@ export class EpisodeEngine {
       ]
     };
 
-    this.episodes.set("EP01_Red_Echo", ep01);
+    // Insert the episode into the database
+    await db.insert(episodes).values({
+      id: ep01.id,
+      title: ep01.title,
+      prerequisite: ep01.prerequisite,
+      beats: ep01.beats,
+      isActive: true
+    });
   }
 
   // Core methods for episode management
-  getAvailableEpisodes(): EpisodeData[] {
-    return Array.from(this.episodes.values());
+  async getAvailableEpisodes(): Promise<EpisodeData[]> {
+    const dbEpisodes = await db.select().from(episodes).where(eq(episodes.isActive, true));
+    return dbEpisodes.map(ep => ({
+      id: ep.id,
+      title: ep.title,
+      prerequisite: ep.prerequisite,
+      beats: ep.beats
+    }));
   }
 
-  getEpisode(episodeId: string): EpisodeData | undefined {
-    return this.episodes.get(episodeId);
+  async getEpisode(episodeId: string): Promise<EpisodeData | undefined> {
+    const [episode] = await db.select().from(episodes).where(eq(episodes.id, episodeId));
+    if (!episode) return undefined;
+    
+    return {
+      id: episode.id,
+      title: episode.title,
+      prerequisite: episode.prerequisite,
+      beats: episode.beats
+    };
+  }
+
+  async createEpisode(episodeData: EpisodeData): Promise<void> {
+    await db.insert(episodes).values({
+      id: episodeData.id,
+      title: episodeData.title,
+      prerequisite: episodeData.prerequisite,
+      beats: episodeData.beats,
+      isActive: true
+    });
+  }
+
+  async deleteEpisode(episodeId: string): Promise<void> {
+    await db.update(episodes)
+      .set({ isActive: false })
+      .where(eq(episodes.id, episodeId));
   }
 
   async executeEpisodeAction(episodeId: string, beatId: number, actionIndex: number): Promise<void> {
-    const episode = this.episodes.get(episodeId);
+    const episode = await this.getEpisode(episodeId);
     if (!episode) return;
 
-    const beat = episode.beats.find(b => b.beat_id === beatId);
+    const beat = episode.beats.find((b: any) => b.beat_id === beatId);
     if (!beat || !beat.actions[actionIndex]) return;
 
     const action = beat.actions[actionIndex];
@@ -180,10 +226,10 @@ export class EpisodeEngine {
   }
 
   async triggerBeatCompletion(episodeId: string, beatId: number, eventData: any): Promise<boolean> {
-    const episode = this.episodes.get(episodeId);
+    const episode = await this.getEpisode(episodeId);
     if (!episode) return false;
 
-    const beat = episode.beats.find(b => b.beat_id === beatId);
+    const beat = episode.beats.find((b: any) => b.beat_id === beatId);
     if (!beat) return false;
 
     // Check if completion condition is met
