@@ -6,7 +6,7 @@ import {
   Heart, Crown, Zap, Coins, User, Sword, Star, 
   Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
   MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
-  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target
+  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target, BookOpen
 } from 'lucide-react';
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
@@ -48,6 +48,7 @@ import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
 import { SparkleEffect } from '@/components/SparkleEffect';
 import { MysticalEye } from '@/components/MysticalEye';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
+import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
 import SommelierDialog from '@/components/SommelierDialog';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
@@ -271,6 +272,9 @@ export default function SoloLevelingSpatial() {
 
   // System 3: Quest Log state
   const [showQuestLog, setShowQuestLog] = useState(false);
+
+  // System 18: Episodic Story Engine state
+  const [showStoryEngine, setShowStoryEngine] = useState(false);
 
   // Sommelier Dialog state
   const [showSommelierDialog, setShowSommelierDialog] = useState(false);
@@ -3689,6 +3693,7 @@ export default function SoloLevelingSpatial() {
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
+            { icon: BookOpen, label: 'Story Engine', color: 'text-orange-300', onClick: () => { setShowStoryEngine(true); setMonarchAuraVisible(false); } },
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
             { icon: Brain, label: 'Story Progress', color: 'text-violet-300', onClick: () => { setShowNarrativeProgression(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
