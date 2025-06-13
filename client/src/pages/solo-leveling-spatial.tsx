@@ -345,8 +345,7 @@ export default function SoloLevelingSpatial() {
         timestamp: new Date(),
         action: () => triggerEpisode(episode.id)
       }]);
-      setShowCommunicator(true);
-      return; // Exit early to show episode option
+      // Continue to dialogue interface instead of opening communicator
     }
     
     // Step 1: Focus Animation (300ms)
@@ -1547,8 +1546,7 @@ export default function SoloLevelingSpatial() {
         timestamp: new Date(),
         action: () => triggerEpisode(episode.id)
       }]);
-      setShowCommunicator(true);
-      return;
+      // Continue to dialogue interface instead of opening communicator
     }
 
     // Handle System 7 Commerce Store interactions
