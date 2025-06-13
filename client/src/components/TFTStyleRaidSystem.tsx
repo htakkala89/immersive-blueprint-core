@@ -8,6 +8,7 @@ interface Character {
   id: string;
   name: string;
   level: number;
+  stars: number; // 1, 2, or 3 stars (TFT upgrade system)
   health: number;
   maxHealth: number;
   mana: number;
@@ -21,12 +22,14 @@ interface Character {
   isPlayer: boolean;
   traits: string[];
   abilities: Ability[];
-  cost: number; // For purchasing/upgrading
+  cost: number; // Gold cost to buy
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   statusEffects: StatusEffect[];
   targetId?: string;
   isAttacking: boolean;
   attackCooldown: number;
+  items: Item[]; // Equipment system
+  hexPosition?: { q: number, r: number }; // Hex grid positioning
 }
 
 interface Ability {
@@ -49,6 +52,27 @@ interface StatusEffect {
   type: 'poison' | 'stun' | 'shield' | 'rage' | 'heal_over_time';
   duration: number;
   value: number;
+}
+
+interface Item {
+  id: string;
+  name: string;
+  type: 'weapon' | 'armor' | 'accessory' | 'consumable';
+  stats: {
+    attack?: number;
+    defense?: number;
+    health?: number;
+    mana?: number;
+    critChance?: number;
+    dodgeChance?: number;
+  };
+  passive?: string; // Special effect description
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+}
+
+interface ShopSlot {
+  character: Character | null;
+  locked: boolean;
 }
 
 interface Synergy {
@@ -85,12 +109,16 @@ export function TFTStyleRaidSystem({
   const [gold, setGold] = useState(10);
   const [experience, setExperience] = useState(0);
   const [playerLevel_internal, setPlayerLevel_internal] = useState(1);
+  const [interest, setInterest] = useState(0); // TFT interest system
+  const [rerollCost, setRerollCost] = useState(2); // Cost to refresh shop
   
   // Character management
   const [playerTeam, setPlayerTeam] = useState<Character[]>([]);
   const [enemyTeam, setEnemyTeam] = useState<Character[]>([]);
   const [bench, setBench] = useState<Character[]>([]);
-  const [shop, setShop] = useState<Character[]>([]);
+  const [shop, setShop] = useState<ShopSlot[]>([]);
+  const [shopLevel, setShopLevel] = useState(1); // Affects shop tier odds
+  const [characterPool, setCharacterPool] = useState<{[key: string]: number}>({}); // Limited pool system
   
   // Combat state
   const [combatTimer, setCombatTimer] = useState(30);
@@ -782,7 +810,17 @@ export function TFTStyleRaidSystem({
               <div className="text-center">
                 <h2 className="text-4xl font-bold text-green-400 mb-4">Victory!</h2>
                 <p className="text-white text-lg mb-4">Round {round} Complete</p>
-                <p className="text-yellow-400">+{5 + round} Gold, +2 Experience</p>
+                <p className="text-yellow-400 mb-6">+{5 + round} Gold, +2 Experience</p>
+                <Button 
+                  onClick={() => {
+                    setRound(prev => prev + 1);
+                    setGamePhase('setup');
+                    generateEnemies();
+                  }} 
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg"
+                >
+                  Next Round
+                </Button>
               </div>
             </motion.div>
           )}
