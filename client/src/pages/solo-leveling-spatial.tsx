@@ -3724,8 +3724,7 @@ export default function SoloLevelingSpatial() {
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
-            { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
-            { icon: Brain, label: 'Story Progress', color: 'text-violet-300', onClick: () => { setShowNarrativeProgression(true); setMonarchAuraVisible(false); } }
+            { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } }
           ].map((item, index) => (
             <button
               key={item.label}
