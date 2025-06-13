@@ -193,7 +193,12 @@ export function DeepTFTRaidSystem({
       pool[champ.baseName] = CHARACTER_POOLS[champ.tier as keyof typeof CHARACTER_POOLS];
     });
     setCharacterPool(pool);
-    generateShop();
+    
+    // Generate initial shop immediately
+    setTimeout(() => {
+      generateShop();
+    }, 100);
+    
     console.log('✅ Deep TFT System initialized');
   }, [isVisible]);
 
@@ -232,7 +237,7 @@ export function DeepTFTRaidSystem({
 
   const generateShop = () => {
     const newShop: ShopSlot[] = [];
-    const odds = SHOP_ODDS[level as keyof typeof SHOP_ODDS] || SHOP_ODDS[9];
+    const odds = SHOP_ODDS[level as keyof typeof SHOP_ODDS] || SHOP_ODDS[1];
     
     for (let i = 0; i < 5; i++) {
       if (lockedSlots[i] && shop[i]?.character) {
@@ -256,7 +261,7 @@ export function DeepTFTRaidSystem({
       
       // Get available champions of that tier
       const availableChamps = CHAMPION_DATA.filter(champ => 
-        champ.tier === selectedTier && characterPool[champ.baseName] > 0
+        champ.tier === selectedTier && (characterPool[champ.baseName] || 10) > 0
       );
       
       if (availableChamps.length > 0) {
@@ -264,14 +269,27 @@ export function DeepTFTRaidSystem({
         const character = createCharacterFromData(randomChamp);
         newShop.push({
           character,
-          locked: lockedSlots[i],
+          locked: lockedSlots[i] || false,
           cost: randomChamp.tier
         });
       } else {
-        newShop.push({ character: null, locked: false, cost: 0 });
+        // Fallback to tier 1 champions
+        const tier1Champs = CHAMPION_DATA.filter(champ => champ.tier === 1);
+        if (tier1Champs.length > 0) {
+          const randomChamp = tier1Champs[Math.floor(Math.random() * tier1Champs.length)];
+          const character = createCharacterFromData(randomChamp);
+          newShop.push({
+            character,
+            locked: lockedSlots[i] || false,
+            cost: 1
+          });
+        } else {
+          newShop.push({ character: null, locked: false, cost: 0 });
+        }
       }
     }
     
+    console.log('Generated shop with', newShop.filter(s => s.character).length, 'units');
     setShop(newShop);
   };
 
