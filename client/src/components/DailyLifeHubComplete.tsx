@@ -736,11 +736,11 @@ export function DailyLifeHubComplete({
             console.log('Closing TFT Raid modal');
             setShowTFTRaid(false);
           }}
-          onRaidComplete={(success, loot) => {
-            console.log('TFT Raid completed:', { success, loot });
+          onRaidComplete={(result) => {
+            console.log('TFT Raid completed:', result);
             setShowTFTRaid(false);
             // Handle raid completion rewards here
-            if (success) {
+            if (result?.success) {
               onActivitySelect({
                 id: 'tft_style_raid',
                 title: 'Strategic Dungeon Raid',

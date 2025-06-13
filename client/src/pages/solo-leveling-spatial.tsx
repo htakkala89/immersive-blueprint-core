@@ -3794,20 +3794,8 @@ export default function SoloLevelingSpatial() {
             return;
           }
 
-          // Handle TFT-style raid activity specifically
-          if (activity.id === 'tft_style_raid') {
-            console.log('⚔️ TFT raid activity selected - launching strategic dungeon raid system');
-            // The TFT raid system is already integrated in DailyLifeHubComplete component
-            // Just need to consume the energy and provide rewards
-            setGameState(prev => ({
-              ...prev,
-              energy: Math.max(0, (prev.energy || 80) - activity.energyCost),
-              experience: (prev.experience || 0) + 500,
-              gold: (prev.gold || 0) + 300,
-              affection: Math.min(100, prev.affection + (activity.affectionReward || 0))
-            }));
-            return;
-          }
+          // TFT-style raid is handled directly by DailyLifeHubComplete component
+          // No need to intercept here - let it pass through to the modal system
 
           // Handle shadow army management activity
           if (activity.id === 'shadow_army_management') {
