@@ -10,8 +10,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface EpisodePlayerProps {
   episodeId: string;
-  onBack: () => void;
+  onBack?: () => void;
   onComplete?: (episodeId: string) => void;
+  gameState?: any;
+  onGameStateUpdate?: (gameState: any) => void;
 }
 
 interface GameState {

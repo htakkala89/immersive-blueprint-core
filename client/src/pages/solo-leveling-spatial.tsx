@@ -266,10 +266,11 @@ export default function SoloLevelingSpatial() {
   const [showCommunicator, setShowCommunicator] = useState(false);
   const [notifications, setNotifications] = useState<Array<{
     id: string;
-    type: 'message' | 'quest';
+    type: 'message' | 'quest' | 'episode_available';
     title: string;
     content: string;
     timestamp: Date;
+    action?: () => void;
   }>>([]);
 
   // System 16: Player Progression state
@@ -702,21 +703,30 @@ export default function SoloLevelingSpatial() {
       setAvailableEpisodes(validEpisodes);
       
       // Check for new episode notifications
-      const newNotifications = validEpisodes
+      const newEpisodeNotifications = validEpisodes
         .filter((episode: any) => !episodeNotifications.find(n => n.episodeId === episode.id))
         .map((episode: any) => ({
           id: `episode_${episode.id}_${Date.now()}`,
           episodeId: episode.id,
-          type: 'episode_available',
+          type: 'episode_available' as const,
           title: 'New Story Episode Available',
           content: `"${episode.title}" is now available to play`,
           timestamp: new Date(),
           location: gameState.currentScene
         }));
+
+      const newUINotifications = newEpisodeNotifications.map((notification: any) => ({
+        id: notification.id,
+        type: 'episode_available' as const,
+        title: notification.title,
+        content: notification.content,
+        timestamp: notification.timestamp,
+        action: () => triggerEpisode(notification.episodeId)
+      }));
       
-      if (newNotifications.length > 0) {
-        setEpisodeNotifications(prev => [...prev, ...newNotifications]);
-        setNotifications(prev => [...prev, ...newNotifications]);
+      if (newEpisodeNotifications.length > 0) {
+        setEpisodeNotifications(prev => [...prev, ...newEpisodeNotifications]);
+        setNotifications(prev => [...prev, ...newUINotifications]);
       }
     } catch (error) {
       console.error('Failed to check available episodes:', error);
@@ -4054,7 +4064,11 @@ export default function SoloLevelingSpatial() {
               <div 
                 className="flex-1 cursor-pointer"
                 onClick={() => {
-                  setShowCommunicator(true);
+                  if (notification.action) {
+                    notification.action();
+                  } else {
+                    setShowCommunicator(true);
+                  }
                   setNotifications(prev => prev.filter(n => n.id !== notification.id));
                 }}
               >
@@ -4509,6 +4523,16 @@ export default function SoloLevelingSpatial() {
           gold: gameState.gold || 0
         }}
       />
+
+      {/* Episode Player - Integrated into Main Game */}
+      {episodeInProgress && currentEpisode && (
+        <EpisodePlayer
+          episodeId={currentEpisode}
+          onComplete={handleEpisodeComplete}
+          gameState={gameState}
+          onGameStateUpdate={setGameState}
+        />
+      )}
 
 
 
