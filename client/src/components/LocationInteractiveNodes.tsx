@@ -798,10 +798,14 @@ export function LocationInteractiveNodes({
   };
 
   const handleThoughtPromptClick = () => {
+    console.log('🎯 Act on Thought clicked!', { selectedNode });
+    
     if (selectedNode) {
+      console.log('🎯 Processing node interaction:', selectedNode.id, selectedNode.gameLogic);
+      
       // Special handling for movie night activity
       if (selectedNode.gameLogic === 'movie_night_activity') {
-        // Trigger movie night modal directly
+        console.log('🎯 Movie night activity detected');
         onNodeInteraction('movie_night_setup', 'Watch a movie together', 'Opening movie night activity');
         setShowThoughtPrompt(false);
         setSelectedNode(null);
@@ -810,9 +814,14 @@ export function LocationInteractiveNodes({
       
       // Use memory-enhanced prompts and outcomes
       const memoryState = getNodeMemoryState(selectedNode);
+      console.log('🎯 Memory state:', memoryState);
+      console.log('🎯 Calling onNodeInteraction with:', selectedNode.id, memoryState.thoughtPrompt, memoryState.outcome);
+      
       onNodeInteraction(selectedNode.id, memoryState.thoughtPrompt, memoryState.outcome);
       setShowThoughtPrompt(false);
       setSelectedNode(null);
+    } else {
+      console.log('🚨 No selectedNode found!');
     }
   };
 
