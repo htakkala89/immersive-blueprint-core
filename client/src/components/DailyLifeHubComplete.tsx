@@ -499,7 +499,12 @@ export function DailyLifeHubComplete({
     
     // Handle TFT raid system
     if (activity.id === 'tft_style_raid') {
+      console.log('🎯 TFT Raid clicked - setting showTFTRaid to true');
+      console.log('Current showTFTRaid state:', showTFTRaid);
       setShowTFTRaid(true);
+      console.log('TFT Raid modal should now be visible');
+      // Notify parent but don't close Daily Life Hub yet
+      onActivitySelect(activity);
       return;
     }
     
@@ -700,31 +705,43 @@ export function DailyLifeHubComplete({
         </motion.div>
       </motion.div>
 
+      {/* Debug TFT Raid State */}
+      {showTFTRaid && (
+        <div className="fixed top-4 right-4 bg-red-500 text-white p-2 rounded z-[10000]">
+          TFT Raid State: {showTFTRaid ? 'TRUE' : 'FALSE'}
+        </div>
+      )}
+
       {/* TFT-Style Raid System */}
-      <TFTStyleRaidSystem
-        isVisible={showTFTRaid}
-        onClose={() => setShowTFTRaid(false)}
-        onRaidComplete={(success, loot) => {
-          console.log('TFT Raid completed:', { success, loot });
-          setShowTFTRaid(false);
-          // Handle raid completion rewards here
-          if (success) {
-            onActivitySelect({
-              id: 'tft_style_raid',
-              title: 'Strategic Dungeon Raid',
-              description: 'Tactical raid completed successfully',
-              icon: <Users className="w-5 h-5" />,
-              energyCost: 40,
-              category: 'training',
-              affectionReward: 3,
-              available: true,
-              outcomes: ['High Gold & XP rewards', 'Team synergy bonuses']
-            });
-          }
-        }}
-        playerLevel={playerStats.level}
-        affectionLevel={playerStats.affectionLevel}
-      />
+      {showTFTRaid && (
+        <TFTStyleRaidSystem
+          isVisible={showTFTRaid}
+          onClose={() => {
+            console.log('Closing TFT Raid modal');
+            setShowTFTRaid(false);
+          }}
+          onRaidComplete={(success, loot) => {
+            console.log('TFT Raid completed:', { success, loot });
+            setShowTFTRaid(false);
+            // Handle raid completion rewards here
+            if (success) {
+              onActivitySelect({
+                id: 'tft_style_raid',
+                title: 'Strategic Dungeon Raid',
+                description: 'Tactical raid completed successfully',
+                icon: <Users className="w-5 h-5" />,
+                energyCost: 40,
+                category: 'training',
+                affectionReward: 3,
+                available: true,
+                outcomes: ['High Gold & XP rewards', 'Team synergy bonuses']
+              });
+            }
+          }}
+          playerLevel={playerStats.level}
+          affectionLevel={playerStats.affectionLevel}
+        />
+      )}
     </AnimatePresence>
   );
 }

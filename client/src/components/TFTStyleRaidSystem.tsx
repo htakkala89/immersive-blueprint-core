@@ -522,7 +522,7 @@ export function TFTStyleRaidSystem({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] flex items-center justify-center">
       <div className="w-full h-full bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">
         
         {/* Header */}
