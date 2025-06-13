@@ -50,6 +50,31 @@ export function WorldMapSystem8({
   const [selectedLocation, setSelectedLocation] = useState<LocationNode | null>(null);
   const [locationImage, setLocationImage] = useState<string | null>(null);
 
+  // Anti-overlap positioning system for world map nodes
+  const applyAntiOverlapPositions = (locations: LocationNode[]): LocationNode[] => {
+    if (locations.length <= 1) return locations;
+    
+    const SAFE_POSITIONS = [
+      { x: 5, y: 5 },     // Top-left
+      { x: 95, y: 5 },    // Top-right  
+      { x: 5, y: 95 },    // Bottom-left
+      { x: 95, y: 95 },   // Bottom-right
+      { x: 50, y: 5 },    // Top-center
+      { x: 50, y: 95 },   // Bottom-center
+      { x: 5, y: 50 },    // Left-center
+      { x: 95, y: 50 },   // Right-center
+      { x: 25, y: 25 },   // Inner positions
+      { x: 75, y: 25 },
+      { x: 25, y: 75 },
+      { x: 75, y: 75 }
+    ];
+    
+    return locations.map((location, index) => ({
+      ...location,
+      position: SAFE_POSITIONS[index % SAFE_POSITIONS.length]
+    }));
+  };
+
   // Define Seoul zones with their locations
   const zones: ZonePanel[] = [
     {
@@ -58,12 +83,12 @@ export function WorldMapSystem8({
       description: 'Luxury shopping and business center',
       position: { x: 60, y: 45 },
       size: { width: 25, height: 20 },
-      locations: [
+      locations: applyAntiOverlapPositions([
         {
           id: 'luxury_department_store',
           name: 'Luxury Department Store',
           description: 'High-end fashion and premium gifts',
-          position: { x: 4, y: 3 },
+          position: { x: 0, y: 0 }, // Will be overridden by anti-overlap system
           state: getLocationState('luxury_department_store'),
           atmosphere: 'Bustling with sophisticated shoppers'
         },
@@ -71,7 +96,7 @@ export function WorldMapSystem8({
           id: 'gangnam_furnishings',
           name: 'Gangnam Furnishings',
           description: 'Premium home decoration specialists',
-          position: { x: 4, y: 16 },
+          position: { x: 0, y: 0 }, // Will be overridden by anti-overlap system
           state: getLocationState('gangnam_furnishings'),
           atmosphere: 'Elegant showroom atmosphere'
         },
@@ -79,12 +104,12 @@ export function WorldMapSystem8({
           id: 'luxury_realtor',
           name: 'Luxury Realtor',
           description: 'Exclusive property investments',
-          position: { x: 20, y: 10 },
+          position: { x: 0, y: 0 }, // Will be overridden by anti-overlap system
           state: storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked',
           unlockCondition: 'Reach level 3 relationship',
           atmosphere: 'Professional and exclusive'
         }
-      ]
+      ])
     },
     {
       id: 'hongdae',
@@ -92,12 +117,12 @@ export function WorldMapSystem8({
       description: 'Youth culture and entertainment hub',
       position: { x: 25, y: 30 },
       size: { width: 22, height: 18 },
-      locations: [
+      locations: applyAntiOverlapPositions([
         {
           id: 'hongdae_cafe',
           name: 'Cozy Hongdae Cafe',
           description: 'Perfect spot for intimate conversations',
-          position: { x: 4, y: 4 },
+          position: { x: 0, y: 0 },
           state: getLocationState('hongdae_cafe'),
           atmosphere: 'Warm and romantic ambiance'
         },
@@ -105,11 +130,11 @@ export function WorldMapSystem8({
           id: 'hangang_park',
           name: 'Hangang River Park',
           description: 'Scenic riverside walks and picnics',
-          position: { x: 16, y: 13 },
+          position: { x: 0, y: 0 },
           state: getLocationState('hangang_park'),
           atmosphere: 'Peaceful evening breeze'
         }
-      ]
+      ])
     },
     {
       id: 'jung_district',
@@ -117,12 +142,12 @@ export function WorldMapSystem8({
       description: 'Historic center and dining',
       position: { x: 45, y: 60 },
       size: { width: 20, height: 15 },
-      locations: [
+      locations: applyAntiOverlapPositions([
         {
           id: 'myeongdong_restaurant',
           name: 'Myeongdong Restaurant',
           description: 'Traditional Korean fine dining',
-          position: { x: 4, y: 4 },
+          position: { x: 0, y: 0 },
           state: getLocationState('myeongdong_restaurant'),
           atmosphere: 'Elegant traditional setting'
         },
@@ -130,12 +155,12 @@ export function WorldMapSystem8({
           id: 'namsan_tower',
           name: 'N Seoul Tower',
           description: 'Romantic city views and love locks',
-          position: { x: 16, y: 11 },
+          position: { x: 0, y: 0 },
           state: playerAffection >= 5 ? getLocationState('namsan_tower') : 'locked',
           unlockCondition: 'Build deeper affection with Cha Hae-In',
           atmosphere: 'Breathtaking panoramic views'
         }
-      ]
+      ])
     },
     {
       id: 'yeongdeungpo',
@@ -143,12 +168,12 @@ export function WorldMapSystem8({
       description: 'Hunter Association headquarters',
       position: { x: 20, y: 55 },
       size: { width: 18, height: 16 },
-      locations: [
+      locations: applyAntiOverlapPositions([
         {
           id: 'hunter_association',
           name: 'Hunter Association HQ',
           description: 'Official hunter business and meetings',
-          position: { x: 3, y: 3 },
+          position: { x: 0, y: 0 },
           state: getLocationState('hunter_association'),
           atmosphere: 'Professional and bustling with activity'
         },
@@ -156,7 +181,7 @@ export function WorldMapSystem8({
           id: 'training_facility',
           name: 'Elite Training Center',
           description: 'Advanced combat training with Cha Hae-In',
-          position: { x: 15, y: 3 },
+          position: { x: 0, y: 0 },
           state: playerAffection >= 3 ? getLocationState('training_facility') : 'locked',
           unlockCondition: 'Gain Cha Hae-In\'s trust through missions',
           atmosphere: 'Intense training environment'
@@ -165,11 +190,11 @@ export function WorldMapSystem8({
           id: 'hunter_market',
           name: 'Hunter Market',
           description: 'Trading hub for monster materials and equipment',
-          position: { x: 9, y: 12 },
+          position: { x: 0, y: 0 },
           state: getLocationState('hunter_market'),
           atmosphere: 'Bustling marketplace with rare treasures'
         }
-      ]
+      ])
     },
     {
       id: 'personal',
@@ -177,12 +202,12 @@ export function WorldMapSystem8({
       description: 'Private and intimate locations',
       position: { x: 70, y: 25 },
       size: { width: 25, height: 20 },
-      locations: [
+      locations: applyAntiOverlapPositions([
         {
           id: 'player_apartment',
           name: 'Your Apartment',
           description: 'Your private sanctuary',
-          position: { x: 4, y: 4 },
+          position: { x: 0, y: 0 },
           state: getLocationState('player_apartment'),
           atmosphere: 'Comfortable and personal'
         },
@@ -190,12 +215,12 @@ export function WorldMapSystem8({
           id: 'chahaein_apartment',
           name: 'Cha Hae-In\'s Apartment',
           description: 'Her intimate private space',
-          position: { x: 20, y: 14 },
+          position: { x: 0, y: 0 },
           state: playerAffection >= 7 ? getLocationState('chahaein_apartment') : 'locked',
           unlockCondition: 'Develop deep intimacy with Cha Hae-In',
           atmosphere: 'Warm and inviting sanctuary'
         }
-      ]
+      ])
     }
   ];
 
