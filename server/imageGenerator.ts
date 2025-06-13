@@ -147,11 +147,16 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   return null;
 }
 
-// Direct Google Cloud token request using metadata server approach
+// Google Cloud authentication using service account with direct API key approach
 async function getGoogleAccessToken(): Promise<string | null> {
   try {
-    // For now, use a simplified approach that works with the available infrastructure
-    console.log('Google Cloud authentication not available - using fallback');
+    // Use Google API key directly for Vertex AI if available
+    if (process.env.GOOGLE_API_KEY) {
+      console.log('Using Google API key for authentication');
+      return process.env.GOOGLE_API_KEY;
+    }
+    
+    console.log('Google API key not available');
     return null;
   } catch (error) {
     console.error('Error getting Google access token:', error);
@@ -187,8 +192,8 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     }
 
     const location = 'us-central1';
-    // Using latest Imagen 3.0 model (closest to Imagen 4 capabilities)
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-001:predict`;
+    // Using latest Imagen 3.0 Fast model (closest to Imagen 4 capabilities)
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
     
     console.log('🎨 Attempting Google Imagen generation...');
     
@@ -531,8 +536,8 @@ export async function generateLocationSceneImage(location: string, timeOfDay: st
     // Fallback to OpenAI if Google Imagen fails
     if (openai) {
       try {
-        // Create content-compliant prompt for OpenAI
-        const safePrompt = createSafeLocationPrompt(location, timeOfDay, weather);
+        // Use the standard location prompt for OpenAI
+        const safePrompt = locationPrompt;
         
         const response = await openai.images.generate({
           model: "dall-e-3",
@@ -671,6 +676,33 @@ export async function generateSceneImage(gameState: GameState): Promise<string |
     console.error('Error generating image:', error);
     return null;
   }
+}
+
+function createSafeLocationPrompt(location: string, timeOfDay: string, weather?: string): string {
+  const baseStyle = "anime architectural scene, detailed Korean building, manhwa art style, atmospheric lighting, high quality background";
+  
+  const timeModifiers = {
+    morning: "soft morning light, golden hour, peaceful atmosphere",
+    afternoon: "bright daylight, clear visibility, active environment", 
+    evening: "warm evening glow, sunset lighting, cozy ambiance",
+    night: "cool night lighting, urban illumination, serene mood"
+  };
+
+  const weatherModifier = weather === "cloudy" ? "overcast sky, diffused lighting" : 
+                         weather === "rainy" ? "light rain, wet surfaces, atmospheric" : 
+                         "clear weather, natural lighting";
+
+  const locationDescriptions = {
+    hunter_association: "modern Korean office building lobby, glass facade, professional interior",
+    chahaein_apartment: "contemporary Korean apartment, city view, elegant furnishing",
+    hongdae_cafe: "cozy Korean cafe interior, warm lighting, coffee shop atmosphere",
+    myeongdong_restaurant: "traditional Korean restaurant, wooden interior, dining atmosphere"
+  };
+
+  const locationDesc = locationDescriptions[location as keyof typeof locationDescriptions] || "Korean architectural scene";
+  const timeDesc = timeModifiers[timeOfDay as keyof typeof timeModifiers] || "natural lighting";
+
+  return `${baseStyle}, ${locationDesc}, ${timeDesc}, ${weatherModifier}`;
 }
 
 function createLocationPrompt(location: string, timeOfDay: string, weather?: string): string {
