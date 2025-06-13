@@ -282,8 +282,8 @@ export default function SoloLevelingSpatial() {
   // System 18.5: Narrative Architect AI state
   const [showNarrativeArchitect, setShowNarrativeArchitect] = useState(false);
 
-  // Role Selection System state - Default to player experience
-  const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>(() => {
+  // Development access to Creator Portal via URL parameter
+  const [selectedRole, setSelectedRole] = useState<'player' | 'creator'>(() => {
     // Check URL parameters for creator mode
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('mode') === 'creator' ? 'creator' : 'player';
