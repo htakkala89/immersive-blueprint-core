@@ -1297,11 +1297,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`🎮 Episode event: ${event}`, data);
       
-      // Track events that can complete episode beats:
-      // - player_visits_location: when player navigates to a location
-      // - player_chats_with_cha: when player sends messages to Cha Hae-In
-      // - activity_completed: when player completes an activity
-      // - quest_objective_met: when player meets a quest condition
+      // Track the event with the episode engine for automatic progression
+      await episodeEngine.trackGameplayEvent(event, data, profileId);
       
       res.json({ 
         success: true, 

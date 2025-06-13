@@ -318,6 +318,108 @@ export class EpisodeEngine {
     
     return true;
   }
+
+  // Episode Event Tracking System - Integrates episodes with actual gameplay
+  async trackGameplayEvent(event: string, data: any, profileId: string): Promise<void> {
+    console.log(`🎮 Tracking episode event: ${event}`, data);
+    
+    // Get all available episodes
+    const episodes = await this.getAvailableEpisodes();
+    
+    // Check each episode for progression opportunities
+    for (const episode of episodes) {
+      await this.checkEpisodeProgression(episode.id, event, data, profileId);
+    }
+  }
+
+  private async checkEpisodeProgression(episodeId: string, event: string, data: any, profileId: string): Promise<void> {
+    const episode = await this.getEpisode(episodeId);
+    if (!episode) return;
+
+    // Find the next incomplete beat
+    const nextBeat = episode.beats.find((beat: any) => !beat.completed);
+    if (!nextBeat) return;
+
+    let shouldProgress = false;
+    const condition = nextBeat.completion_condition;
+
+    if (!condition) return;
+
+    // Check if this event satisfies the beat's progression condition
+    switch (condition.event) {
+      case 'player_visits_location':
+        if (event === 'player_visits_location' && 
+            condition.location === data.location_id) {
+          shouldProgress = true;
+          console.log(`🎯 Episode ${episodeId} beat ${nextBeat.beat_id} progressed: location visit to ${data.location_id}`);
+        }
+        break;
+
+      case 'player_chats_with_cha':
+        if (event === 'player_chats_with_cha') {
+          shouldProgress = true;
+          console.log(`🎯 Episode ${episodeId} beat ${nextBeat.beat_id} progressed: conversation with Cha Hae-In`);
+        }
+        break;
+
+      case 'activity_completed':
+        if (event === 'activity_completed' && 
+            condition.activity === data.activity_id) {
+          shouldProgress = true;
+          console.log(`🎯 Episode ${episodeId} beat ${nextBeat.beat_id} progressed: activity ${data.activity_id} completed`);
+        }
+        break;
+
+      case 'quest_objective_met':
+        if (event === 'quest_objective_met' && 
+            condition.quest_id === data.quest_id) {
+          shouldProgress = true;
+          console.log(`🎯 Episode ${episodeId} beat ${nextBeat.beat_id} progressed: quest ${data.quest_id} completed`);
+        }
+        break;
+
+      case 'dialogue_complete':
+        if (event === 'player_chats_with_cha') {
+          shouldProgress = true;
+          console.log(`🎯 Episode ${episodeId} beat ${nextBeat.beat_id} progressed: dialogue completed`);
+        }
+        break;
+    }
+
+    if (shouldProgress) {
+      await this.progressEpisodeBeat(episodeId, nextBeat.beat_id);
+    }
+  }
+
+  private async progressEpisodeBeat(episodeId: string, beatId: number): Promise<void> {
+    const episode = await this.getEpisode(episodeId);
+    if (!episode) return;
+
+    const beatIndex = episode.beats.findIndex((b: any) => b.beat_id === beatId);
+    if (beatIndex === -1) return;
+
+    // Mark beat as completed
+    episode.beats[beatIndex].completed = true;
+
+    // Execute all actions in this beat
+    for (let i = 0; i < episode.beats[beatIndex].actions.length; i++) {
+      await this.executeEpisodeAction(episodeId, beatId, i);
+    }
+
+    console.log(`🎬 Episode ${episodeId} beat ${beatId} automatically progressed through gameplay`);
+
+    // Check if episode is complete
+    const allBeatsComplete = episode.beats.every((b: any) => b.completed);
+    if (allBeatsComplete) {
+      console.log(`🏆 Episode ${episodeId} completed through gameplay progression!`);
+      // Award completion rewards
+      await this.completeEpisode({ 
+        episodeId, 
+        experienceGained: 1000, 
+        affectionBonus: 15 
+      });
+    }
+  }
 }
 
 export const episodeEngine = new EpisodeEngine();

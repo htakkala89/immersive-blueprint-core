@@ -1315,6 +1315,21 @@ export default function SoloLevelingSpatial() {
       const data = await response.json();
       setCurrentDialogue(data.response);
       
+      // Track episode event for player chatting with Cha Hae-In
+      fetch('/api/episode-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'player_chats_with_cha',
+          data: { 
+            message: message,
+            location: playerLocation,
+            response: data.response 
+          },
+          profileId: loadedProfileId
+        })
+      }).catch(console.error);
+      
       // Add Cha Hae-In's response to conversation history
       setConversationHistory(prev => [...prev, {
         type: 'cha_hae_in',
@@ -1503,7 +1518,7 @@ export default function SoloLevelingSpatial() {
       body: JSON.stringify({
         event: 'player_visits_location',
         data: { location_id: locationId },
-        profileId: selectedProfile?.id
+        profileId: loadedProfileId
       })
     }).catch(console.error);
     
