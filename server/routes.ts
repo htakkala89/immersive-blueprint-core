@@ -2578,6 +2578,8 @@ Respond as Cha Hae-In would in this intimate moment:`;
   return server;
 }
 
+export { registerRoutes };
+
 function analyzeIntimacyLevel(response: string): number {
   const intimacyIndicators = {
     1: ['talk', 'conversation', 'smile', 'laugh'],
