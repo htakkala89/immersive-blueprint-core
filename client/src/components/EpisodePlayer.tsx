@@ -27,6 +27,8 @@ interface GameState {
 
 export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState: externalGameState, onGameStateUpdate }: EpisodePlayerProps) {
   const [currentCommandIndex, setCurrentCommandIndex] = useState(0);
+  const [currentBeat, setCurrentBeat] = useState(0);
+  const [savedProgress, setSavedProgress] = useState<any>(null);
   const [gameState, setGameState] = useState<GameState>({
     currentLocation: 'default',
     timeOfDay: 'day',
@@ -38,6 +40,19 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
   const [isProcessing, setIsProcessing] = useState(false);
   const [narrative, setNarrative] = useState<string[]>([]);
   const [pendingChoices, setPendingChoices] = useState<any[]>([]);
+
+  // Load episode progress on component mount
+  const { data: progressData } = useQuery({
+    queryKey: ['/api/episodes', episodeId, 'progress'],
+    queryFn: async () => {
+      // Get current profile ID from localStorage or game state
+      const profileId = localStorage.getItem('currentProfileId') || '10';
+      const response = await fetch(`/api/episodes/${episodeId}/progress/${profileId}`);
+      if (!response.ok) throw new Error('Failed to fetch progress');
+      return response.json();
+    },
+    enabled: !!episodeId
+  });
 
   const { data: episodeData, isLoading, error } = useQuery({
     queryKey: ['/api/episodes', episodeId],
@@ -63,6 +78,24 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
   });
 
   const episode = episodeData?.episode;
+  
+  // Apply saved progress when data loads
+  useEffect(() => {
+    if (progressData && progressData.hasProgress) {
+      setCurrentBeat(progressData.currentBeat);
+      setSavedProgress(progressData);
+      
+      // Calculate command index based on current beat
+      const actionsBeforeCurrentBeat = episode?.beats
+        ?.filter((beat: any) => beat.beat_id < progressData.currentBeat)
+        ?.flatMap((beat: any) => beat.actions || [])?.length || 0;
+      
+      setCurrentCommandIndex(actionsBeforeCurrentBeat);
+      setNarrative([`📖 Continuing from Beat ${progressData.currentBeat}...`]);
+      
+      console.log(`📖 Loaded episode progress: Beat ${progressData.currentBeat}`);
+    }
+  }, [progressData, episode]);
   
   // Extract all actions from beats for command processing
   const allActions = episode?.beats?.flatMap((beat: any) => beat.actions || []) || [];

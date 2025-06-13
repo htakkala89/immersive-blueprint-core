@@ -1329,6 +1329,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Episode System - Load episode progress
+  app.get("/api/episodes/:episodeId/progress/:profileId", async (req, res) => {
+    try {
+      const { episodeId, profileId } = req.params;
+      
+      const progress = await episodeEngine.loadEpisodeProgress(Number(profileId), episodeId);
+      
+      if (progress) {
+        res.json({
+          hasProgress: true,
+          currentBeat: progress.currentBeat,
+          playerChoices: progress.playerChoices,
+          message: `Continue from beat ${progress.currentBeat}`
+        });
+      } else {
+        res.json({
+          hasProgress: false,
+          currentBeat: 0,
+          playerChoices: {},
+          message: "Starting from beginning"
+        });
+      }
+    } catch (error) {
+      console.error("Failed to load episode progress:", error);
+      res.status(500).json({ error: "Failed to load episode progress" });
+    }
+  });
+
   // Episode System - Trigger episode start (creates communicator message)
   app.post("/api/episodes/:episodeId/trigger", async (req, res) => {
     try {
@@ -1343,6 +1371,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!episode) {
         return res.status(404).json({ error: "Episode not found" });
       }
+
+      // Load existing progress if available
+      const progress = await episodeEngine.loadEpisodeProgress(Number(profileId), episodeId);
+      const startBeat = progress ? progress.currentBeat : 0;
 
       // Create the episode alert message for the Hunter Communicator
       const episodeAlert = {

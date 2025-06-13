@@ -395,6 +395,72 @@ export class EpisodeEngine {
     for (const episode of episodes) {
       await this.checkEpisodeProgression(episode.id, event, data, profileId);
     }
+    
+    // Save episode progress after tracking event
+    await this.saveEpisodeProgress(Number(profileId));
+  }
+
+  // Episode Progression Persistence
+  async saveEpisodeProgress(profileId: number): Promise<void> {
+    try {
+      const { db } = await import('./db');
+      const { playerProfiles, episodeProgress } = await import('../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      // Get current profile
+      const [profile] = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
+      if (!profile) return;
+      
+      // If there's a current episode, save progress
+      if (profile.currentEpisode) {
+        await db.insert(episodeProgress).values({
+          profileId: profileId,
+          episodeId: profile.currentEpisode,
+          currentBeat: profile.currentEpisodeBeat || 0,
+          isCompleted: false,
+          playerChoices: profile.episodeProgress || {},
+          lastPlayedAt: new Date()
+        }).onConflictDoUpdate({
+          target: [episodeProgress.profileId, episodeProgress.episodeId],
+          set: {
+            currentBeat: profile.currentEpisodeBeat || 0,
+            playerChoices: profile.episodeProgress || {},
+            lastPlayedAt: new Date()
+          }
+        });
+        
+        console.log(`💾 Saved episode progress: ${profile.currentEpisode} beat ${profile.currentEpisodeBeat}`);
+      }
+    } catch (error) {
+      console.error('Failed to save episode progress:', error);
+    }
+  }
+
+  async loadEpisodeProgress(profileId: number, episodeId: string): Promise<{ currentBeat: number; playerChoices: any } | null> {
+    try {
+      const { db } = await import('./db');
+      const { episodeProgress } = await import('../shared/schema');
+      const { eq, and } = await import('drizzle-orm');
+      
+      const [progress] = await db.select().from(episodeProgress)
+        .where(and(
+          eq(episodeProgress.profileId, profileId),
+          eq(episodeProgress.episodeId, episodeId)
+        ));
+      
+      if (progress) {
+        console.log(`📖 Loaded episode progress: ${episodeId} beat ${progress.currentBeat}`);
+        return {
+          currentBeat: progress.currentBeat,
+          playerChoices: progress.playerChoices as any
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Failed to load episode progress:', error);
+      return null;
+    }
   }
 
   private async checkEpisodeProgression(episodeId: string, event: string, data: any, profileId: string): Promise<void> {
