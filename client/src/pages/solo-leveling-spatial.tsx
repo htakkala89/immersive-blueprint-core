@@ -1838,6 +1838,35 @@ export default function SoloLevelingSpatial() {
     );
   }
 
+  // System 18: Episode Selection and Player - Early Returns
+  if (showEpisodeSelector) {
+    return (
+      <EpisodeSelector
+        onSelectEpisode={(episode) => {
+          setCurrentEpisode(episode.id);
+          setShowEpisodeSelector(false);
+        }}
+        onBack={() => setShowEpisodeSelector(false)}
+      />
+    );
+  }
+
+  if (currentEpisode) {
+    return (
+      <EpisodePlayer
+        episodeId={currentEpisode}
+        onBack={() => {
+          setCurrentEpisode(null);
+          setShowEpisodeSelector(true);
+        }}
+        onComplete={(episodeId) => {
+          setCurrentEpisode(null);
+          setShowEpisodeSelector(false);
+        }}
+      />
+    );
+  }
+
   // Player Experience - Main Game Interface
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
@@ -4220,31 +4249,7 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      {/* System 18: Episode Selection and Player */}
-      {showEpisodeSelector && (
-        <EpisodeSelector
-          onSelectEpisode={(episode) => {
-            setCurrentEpisode(episode.id);
-            setShowEpisodeSelector(false);
-          }}
-          onBack={() => setShowEpisodeSelector(false)}
-        />
-      )}
 
-      {currentEpisode && (
-        <EpisodePlayer
-          episodeId={currentEpisode}
-          onBack={() => {
-            setCurrentEpisode(null);
-            setShowEpisodeSelector(true);
-          }}
-          onComplete={(episodeId) => {
-            setCurrentEpisode(null);
-            setShowEpisodeSelector(false);
-            // TODO: Mark episode as completed in player progress
-          }}
-        />
-      )}
 
 
 
