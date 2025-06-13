@@ -1685,7 +1685,117 @@ export function DungeonRaidSystem11({
             </motion.div>
           )}
 
-          {/* Inventory Overlay */}
+          {/* Combat Inventory Modal - Enhanced Design */}
+          <AnimatePresence>
+            {showCombatInventory && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm z-[110] flex items-center justify-center"
+                onClick={() => setShowCombatInventory(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 border border-purple-500/30 rounded-2xl p-6 w-96 shadow-2xl backdrop-blur-xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-white text-xl font-bold flex items-center gap-2">
+                      <Package className="w-5 h-5 text-purple-400" />
+                      Combat Items
+                    </h3>
+                    <Button
+                      onClick={() => setShowCombatInventory(false)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-white hover:bg-white/10 rounded-full"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
+                    {playerInventory.filter(item => item.quantity > 0).map(item => {
+                      const cooldownMs = itemCooldowns[item.id] || 0;
+                      const isOnCooldown = cooldownMs > 0;
+                      
+                      return (
+                        <div key={item.id} className="relative">
+                          <div className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                            isOnCooldown 
+                              ? 'bg-slate-800/30 border-slate-600/20 opacity-50' 
+                              : 'bg-slate-800/70 border-slate-600/40 hover:border-purple-400/50'
+                          }`}>
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">{item.icon}</span>
+                              <div>
+                                <div className="text-white font-medium">{item.name}</div>
+                                <div className="text-slate-400 text-sm">
+                                  {item.healAmount && `Heals ${item.healAmount} HP`}
+                                  {item.manaAmount && `Restores ${item.manaAmount} MP`}
+                                  {item.isRevivalItem && 'Instant Revival (75% HP)'}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-slate-300 font-medium">x{item.quantity}</span>
+                              <Button
+                                onClick={() => useCombatItem(item.id)}
+                                disabled={isOnCooldown || item.quantity === 0}
+                                size="sm"
+                                className={`relative ${
+                                  item.isRevivalItem 
+                                    ? 'bg-purple-600 hover:bg-purple-700' 
+                                    : 'bg-green-600 hover:bg-green-700'
+                                } disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px]`}
+                              >
+                                {isOnCooldown ? (
+                                  <span className="text-xs">{Math.ceil(cooldownMs / 1000)}s</span>
+                                ) : (
+                                  'Use'
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          {/* Cooldown overlay */}
+                          {isOnCooldown && (
+                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-700 rounded-b-xl overflow-hidden">
+                              <motion.div
+                                className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                                initial={{ width: "100%" }}
+                                animate={{ width: "0%" }}
+                                transition={{ duration: cooldownMs / 1000, ease: "linear" }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    
+                    {playerInventory.filter(item => item.quantity > 0).length === 0 && (
+                      <div className="text-center py-8">
+                        <Package className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                        <p className="text-slate-400">No consumable items available</p>
+                        <p className="text-slate-500 text-sm mt-1">Defeat enemies to find healing items</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="mt-6 pt-4 border-t border-slate-600/30">
+                    <p className="text-slate-400 text-xs text-center">
+                      Items have cooldowns to prevent spam usage
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Legacy Inventory Overlay (for compatibility) */}
           {showInventory && (
             <motion.div
               initial={{ opacity: 0, x: -50 }}
