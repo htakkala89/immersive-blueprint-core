@@ -42,23 +42,19 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
   const { data: episodeData, isLoading, error } = useQuery({
     queryKey: ['/api/episodes', episodeId],
     queryFn: async () => {
-      try {
-        const response = await fetch(`/api/episodes/${episodeId}`);
-        if (!response.ok) throw new Error('Failed to fetch episode');
-        const data = await response.json();
-        
-        // Validate episode data structure
-        if (!data.episode || !data.episode.id || !data.episode.beats) {
-          throw new Error('Invalid episode data structure');
-        }
-        
-        return data;
-      } catch (error) {
-        console.error('Episode loading error:', error);
-        throw error;
+      const response = await fetch(`/api/episodes/${episodeId}`);
+      if (!response.ok) throw new Error('Failed to fetch episode');
+      const data = await response.json();
+      
+      // Validate episode data structure
+      if (!data.episode || !data.episode.id || !data.episode.beats) {
+        throw new Error('Invalid episode data structure');
       }
+      
+      return data;
     },
-    retry: 1
+    retry: 1,
+    enabled: !!episodeId
   });
 
   const episode = episodeData?.episode;
