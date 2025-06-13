@@ -403,7 +403,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
           id: 'msg_1',
           senderId: 'cha_hae_in',
           senderName: 'Cha Hae-In',
-          content: 'Just thinking of you. Be safe in there.',
+          content: 'I saw the weather forecast... looks like rain tonight. Makes me think of that time we got caught in the downpour after the Busan raid. 😊',
           timestamp: new Date(Date.now() - 30 * 60 * 1000),
           read: false
         }

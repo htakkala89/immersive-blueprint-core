@@ -54,7 +54,7 @@ import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes'
 import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSystem9';
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
-import { AutoWeatherSystem } from '@/components/DynamicWeatherSystem';
+import { AutoWeatherSystem, DynamicWeatherSystem } from '@/components/DynamicWeatherSystem';
 
 interface CoreStats {
   strength: number;
@@ -1704,6 +1704,18 @@ export default function SoloLevelingSpatial() {
     return () => clearInterval(interval);
   }, [timeOfDay]);
 
+  // Dynamic weather cycling system
+  useEffect(() => {
+    const weatherTypes: Array<'clear' | 'rain' | 'snow' | 'cloudy'> = ['clear', 'cloudy', 'rain', 'clear', 'snow', 'clear'];
+    const interval = setInterval(() => {
+      const currentIndex = weatherTypes.indexOf(weather);
+      const nextIndex = (currentIndex + 1) % weatherTypes.length;
+      setWeather(weatherTypes[nextIndex]);
+    }, 240000); // Change every 4 minutes
+
+    return () => clearInterval(interval);
+  }, [weather]);
+
   // System 15: Notification handlers
   const handleQuestAccept = (questData: any) => {
     console.log('Quest accepted from System 15:', questData);
@@ -1895,6 +1907,13 @@ export default function SoloLevelingSpatial() {
         <div className="absolute inset-0 rounded-full border border-purple-400/20 animate-pulse" />
         <div className="absolute inset-1 rounded-full border border-purple-300/10 animate-pulse" style={{ animationDelay: '0.5s' }} />
       </motion.button>
+      
+      {/* Dynamic Weather System */}
+      <DynamicWeatherSystem 
+        weather={weather} 
+        intensity="moderate"
+        windSpeed={Math.random() * 2 - 1}
+      />
       
       {/* Spatial View - The Living Diorama */}
       <motion.div
