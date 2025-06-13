@@ -75,48 +75,14 @@ export function WorldMapSystem8({
     }));
   };
 
-  // Define Seoul zones with their locations
+  // Define Seoul zones with clean 2x3 grid layout
   const zones: ZonePanel[] = [
-    {
-      id: 'gangnam',
-      name: 'Gangnam District',
-      description: 'Luxury shopping and business center',
-      position: { x: 55, y: 40 },
-      size: { width: 35, height: 30 },
-      locations: applyAntiOverlapPositions([
-        {
-          id: 'luxury_department_store',
-          name: 'Luxury Department Store',
-          description: 'High-end fashion and premium gifts',
-          position: { x: 0, y: 0 }, // Will be overridden by anti-overlap system
-          state: getLocationState('luxury_department_store'),
-          atmosphere: 'Bustling with sophisticated shoppers'
-        },
-        {
-          id: 'gangnam_furnishings',
-          name: 'Gangnam Furnishings',
-          description: 'Premium home decoration specialists',
-          position: { x: 0, y: 0 }, // Will be overridden by anti-overlap system
-          state: getLocationState('gangnam_furnishings'),
-          atmosphere: 'Elegant showroom atmosphere'
-        },
-        {
-          id: 'luxury_realtor',
-          name: 'Luxury Realtor',
-          description: 'Exclusive property investments',
-          position: { x: 0, y: 0 }, // Will be overridden by anti-overlap system
-          state: storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked',
-          unlockCondition: 'Reach level 3 relationship',
-          atmosphere: 'Professional and exclusive'
-        }
-      ])
-    },
     {
       id: 'hongdae',
       name: 'Hongdae District',
       description: 'Youth culture and entertainment hub',
-      position: { x: 15, y: 25 },
-      size: { width: 32, height: 28 },
+      position: { x: 5, y: 5 },
+      size: { width: 40, height: 40 },
       locations: applyAntiOverlapPositions([
         {
           id: 'hongdae_cafe',
@@ -137,11 +103,45 @@ export function WorldMapSystem8({
       ])
     },
     {
+      id: 'gangnam',
+      name: 'Gangnam District', 
+      description: 'Luxury shopping and business center',
+      position: { x: 55, y: 5 },
+      size: { width: 40, height: 40 },
+      locations: applyAntiOverlapPositions([
+        {
+          id: 'luxury_department_store',
+          name: 'Luxury Department Store',
+          description: 'High-end fashion and premium gifts',
+          position: { x: 0, y: 0 },
+          state: getLocationState('luxury_department_store'),
+          atmosphere: 'Bustling with sophisticated shoppers'
+        },
+        {
+          id: 'gangnam_furnishings',
+          name: 'Gangnam Furnishings',
+          description: 'Premium home decoration specialists',
+          position: { x: 0, y: 0 },
+          state: getLocationState('gangnam_furnishings'),
+          atmosphere: 'Elegant showroom atmosphere'
+        },
+        {
+          id: 'luxury_realtor',
+          name: 'Luxury Realtor',
+          description: 'Exclusive property investments',
+          position: { x: 0, y: 0 },
+          state: storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked',
+          unlockCondition: 'Reach level 3 relationship',
+          atmosphere: 'Professional and exclusive'
+        }
+      ])
+    },
+    {
       id: 'jung_district',
       name: 'Jung District',
       description: 'Historic center and dining',
-      position: { x: 40, y: 65 },
-      size: { width: 30, height: 25 },
+      position: { x: 5, y: 55 },
+      size: { width: 40, height: 40 },
       locations: applyAntiOverlapPositions([
         {
           id: 'myeongdong_restaurant',
@@ -166,8 +166,8 @@ export function WorldMapSystem8({
       id: 'yeongdeungpo',
       name: 'Yeongdeungpo District',
       description: 'Hunter Association headquarters',
-      position: { x: 15, y: 55 },
-      size: { width: 28, height: 26 },
+      position: { x: 55, y: 55 },
+      size: { width: 40, height: 40 },
       locations: applyAntiOverlapPositions([
         {
           id: 'hunter_association',
@@ -200,8 +200,8 @@ export function WorldMapSystem8({
       id: 'personal',
       name: 'Personal Spaces',
       description: 'Private and intimate locations',
-      position: { x: 65, y: 20 },
-      size: { width: 30, height: 30 },
+      position: { x: 30, y: 30 },
+      size: { width: 40, height: 25 },
       locations: applyAntiOverlapPositions([
         {
           id: 'player_apartment',
@@ -437,45 +437,7 @@ export function WorldMapSystem8({
             className="relative w-full h-full max-w-6xl max-h-4xl"
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            {/* Connection Lines Between Zones */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
-              {/* Hongdae to Gangnam */}
-              <line
-                x1="31%" y1="39%"
-                x2="72%" y2="55%"
-                stroke="rgba(147, 51, 234, 0.3)"
-                strokeWidth="2"
-                strokeDasharray="5,5"
-                className="animate-pulse"
-              />
-              {/* Gangnam to Jung */}
-              <line
-                x1="72%" y1="70%"
-                x2="55%" y2="77%"
-                stroke="rgba(147, 51, 234, 0.3)"
-                strokeWidth="2"
-                strokeDasharray="5,5"
-                className="animate-pulse"
-              />
-              {/* Yeongdeungpo to Hongdae */}
-              <line
-                x1="29%" y1="68%"
-                x2="31%" y2="53%"
-                stroke="rgba(147, 51, 234, 0.3)"
-                strokeWidth="2"
-                strokeDasharray="5,5"
-                className="animate-pulse"
-              />
-              {/* Personal to Gangnam */}
-              <line
-                x1="80%" y1="35%"
-                x2="72%" y2="55%"
-                stroke="rgba(168, 85, 247, 0.4)"
-                strokeWidth="3"
-                strokeDasharray="3,7"
-                className="animate-pulse"
-              />
-            </svg>
+
 
             {/* Zone Panels */}
             {zones.map((zone) => (
@@ -498,18 +460,16 @@ export function WorldMapSystem8({
                 }}
                 whileHover={{ scale: 1.02 }}
               >
-                {/* Zone Title - Always Visible */}
-                <div className="absolute -top-6 left-2 right-2">
+                {/* Zone Title - Simplified */}
+                <div className="absolute -top-4 left-2 right-2">
                   <motion.div
-                    className={`bg-black/40 backdrop-blur-sm px-3 py-1 rounded-lg border transition-all duration-300 ${
+                    className={`bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md border transition-all duration-300 ${
                       focusedZone === zone.id 
-                        ? 'border-white/40 bg-black/60' 
+                        ? 'border-white/50' 
                         : 'border-white/20'
                     }`}
-                    animate={focusedZone === zone.id ? { scale: 1.05 } : { scale: 1 }}
                   >
-                    <h3 className="text-white text-xs font-medium text-center">{zone.name}</h3>
-                    <div className="text-white/60 text-[10px] text-center mt-0.5">{zone.description}</div>
+                    <h3 className="text-white text-[10px] font-medium text-center">{zone.name}</h3>
                   </motion.div>
                 </div>
 
