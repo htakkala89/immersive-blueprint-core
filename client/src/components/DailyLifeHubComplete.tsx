@@ -523,10 +523,17 @@ export function DailyLifeHubComplete({
       console.log('Current showTFTRaid state:', showTFTRaid);
       console.log('Activity available check:', activity.available);
       console.log('Energy check:', playerStats.energy, '>=', activity.energyCost, '?', playerStats.energy >= activity.energyCost);
+      
+      // Force the modal to show immediately
       setShowTFTRaid(true);
-      console.log('TFT Raid modal should now be visible');
-      // Don't call onActivitySelect to prevent parent from closing this modal
-      return;
+      console.log('TFT Raid modal state set to true');
+      
+      // Add a timeout check to verify the modal appears
+      setTimeout(() => {
+        console.log('Delayed check - TFT modal visible?', showTFTRaid);
+      }, 100);
+      
+      return; // Prevent parent activity handler from running
     }
     
     if (!activity.available) {
@@ -596,6 +603,17 @@ export function DailyLifeHubComplete({
                   </div>
                   <div className="text-white/70 text-sm mt-1">Energy</div>
                 </div>
+                
+                {/* Debug TFT Button */}
+                <Button
+                  onClick={() => {
+                    console.log('Debug TFT button clicked');
+                    setShowTFTRaid(true);
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-xs"
+                >
+                  Test TFT
+                </Button>
                 
                 <Button
                   onClick={onClose}
