@@ -100,12 +100,16 @@ export function CoopSkillTrainingModal({
     if (promptIndex < skillSequence.length) {
       const prompt = skillSequence[promptIndex];
       
+      console.log(`Scheduling prompt ${promptIndex + 1}: ${prompt.skill} at ${prompt.timing}ms`);
+      
       promptTimerRef.current = setTimeout(() => {
+        console.log(`Showing prompt: ${prompt.skill} - ${prompt.chaAction}`);
         setCurrentPrompt(prompt);
         
         // Auto-clear prompt after duration
         setTimeout(() => {
           if (currentPrompt?.id === prompt.id) {
+            console.log(`Auto-clearing prompt: ${prompt.skill}`);
             setCurrentPrompt(null);
             setPromptIndex(prev => prev + 1);
             scheduleNextPrompt();
@@ -330,18 +334,24 @@ export function CoopSkillTrainingModal({
                   </div>
 
                   {/* Skill Input Buttons */}
-                  <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+                  <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto relative z-50">
                     {Object.entries(SKILL_NAMES).map(([key, name]) => (
                       <motion.button
                         key={key}
-                        onClick={() => handleSkillInput(key)}
-                        className={`p-6 rounded-xl border-2 transition-all duration-200 ${
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log(`Skill button clicked: ${key}`);
+                          handleSkillInput(key);
+                        }}
+                        className={`p-6 rounded-xl border-2 transition-all duration-200 relative z-50 cursor-pointer ${
                           currentPrompt?.skill === key
                             ? 'bg-cyan-500/30 border-cyan-400 shadow-lg shadow-cyan-400/50'
-                            : 'bg-white/10 border-white/30 hover:bg-white/20'
+                            : 'bg-white/10 border-white/30 hover:bg-white/20 hover:border-cyan-400/50'
                         }`}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        style={{ pointerEvents: 'auto' }}
                       >
                         <div className="text-3xl mb-2">{SKILL_ICONS[key as keyof typeof SKILL_ICONS]}</div>
                         <div className="text-white font-semibold">{name}</div>
