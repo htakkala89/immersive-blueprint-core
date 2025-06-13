@@ -168,10 +168,10 @@ export default function ProfileManager({ isVisible, onClose, onLoadProfile, curr
                         <div className="flex items-start justify-between mb-3">
                           <div>
                             <h3 className="font-semibold text-lg">{profile.profileName}</h3>
-                            <p className="text-sm text-purple-300">
-                              {profile.isActive && <Badge className="bg-green-600 text-white text-xs mr-2">Active</Badge>}
-                              Last played: {formatDate(profile.lastPlayed)}
-                            </p>
+                            <div className="text-sm text-purple-300 flex items-center gap-2">
+                              {profile.isActive && <Badge className="bg-green-600 text-white text-xs">Active</Badge>}
+                              <span>Last played: {formatDate(profile.lastPlayed)}</span>
+                            </div>
                           </div>
                         </div>
 
