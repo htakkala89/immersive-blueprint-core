@@ -50,23 +50,58 @@ export function WorldMapSystem8({
   const [selectedLocation, setSelectedLocation] = useState<LocationNode | null>(null);
   const [locationImage, setLocationImage] = useState<string | null>(null);
 
-  // Anti-overlap positioning system for world map nodes
+  // Responsive grid system for different screen sizes
+  const getResponsiveLayout = () => {
+    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const screenHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+    
+    if (screenWidth < 640) { // Mobile
+      return {
+        grid: { cols: 1, rows: 5 },
+        zoneSize: { width: 85, height: 16 },
+        gap: 2
+      };
+    } else if (screenWidth < 1024) { // Tablet
+      return {
+        grid: { cols: 2, rows: 3 },
+        zoneSize: { width: 45, height: 28 },
+        gap: 5
+      };
+    } else { // Desktop
+      return {
+        grid: { cols: 2, rows: 3 },
+        zoneSize: { width: 40, height: 40 },
+        gap: 8
+      };
+    }
+  };
+
+  // Anti-overlap positioning system with responsive touch targets
   const applyAntiOverlapPositions = (locations: LocationNode[]): LocationNode[] => {
     if (locations.length <= 1) return locations;
     
-    const SAFE_POSITIONS = [
-      { x: 5, y: 5 },     // Top-left
-      { x: 95, y: 5 },    // Top-right  
-      { x: 5, y: 95 },    // Bottom-left
-      { x: 95, y: 95 },   // Bottom-right
-      { x: 50, y: 5 },    // Top-center
-      { x: 50, y: 95 },   // Bottom-center
-      { x: 5, y: 50 },    // Left-center
-      { x: 95, y: 50 },   // Right-center
-      { x: 25, y: 25 },   // Inner positions
-      { x: 75, y: 25 },
-      { x: 25, y: 75 },
-      { x: 75, y: 75 }
+    const layout = getResponsiveLayout();
+    const isMobile = layout.grid.cols === 1;
+    
+    const SAFE_POSITIONS = isMobile ? [
+      { x: 15, y: 20 },   // Mobile: Left-aligned
+      { x: 85, y: 20 },   // Mobile: Right-aligned
+      { x: 50, y: 50 },   // Mobile: Center
+      { x: 15, y: 80 },   // Mobile: Bottom-left
+      { x: 85, y: 80 }    // Mobile: Bottom-right
+    ] : [
+      { x: 10, y: 15 },   // Desktop: Top-left
+      { x: 90, y: 15 },   // Desktop: Top-right  
+      { x: 10, y: 85 },   // Desktop: Bottom-left
+      { x: 90, y: 85 },   // Desktop: Bottom-right
+      { x: 50, y: 15 },   // Desktop: Top-center
+      { x: 50, y: 85 },   // Desktop: Bottom-center
+      { x: 10, y: 50 },   // Desktop: Left-center
+      { x: 90, y: 50 },   // Desktop: Right-center
+      { x: 30, y: 30 },   // Desktop: Inner positions
+      { x: 70, y: 30 },
+      { x: 30, y: 70 },
+      { x: 70, y: 70 }
     ];
     
     return locations.map((location, index) => ({
@@ -75,154 +110,178 @@ export function WorldMapSystem8({
     }));
   };
 
-  // Define Seoul zones with clean 2x3 grid layout
-  const zones: ZonePanel[] = [
-    {
-      id: 'hongdae',
-      name: 'Hongdae District',
-      description: 'Youth culture and entertainment hub',
-      position: { x: 5, y: 5 },
-      size: { width: 40, height: 40 },
-      locations: applyAntiOverlapPositions([
-        {
-          id: 'hongdae_cafe',
-          name: 'Cozy Hongdae Cafe',
-          description: 'Perfect spot for intimate conversations',
-          position: { x: 0, y: 0 },
-          state: getLocationState('hongdae_cafe'),
-          atmosphere: 'Warm and romantic ambiance'
-        },
-        {
-          id: 'hangang_park',
-          name: 'Hangang River Park',
-          description: 'Scenic riverside walks and picnics',
-          position: { x: 0, y: 0 },
-          state: getLocationState('hangang_park'),
-          atmosphere: 'Peaceful evening breeze'
-        }
-      ])
-    },
-    {
-      id: 'gangnam',
-      name: 'Gangnam District', 
-      description: 'Luxury shopping and business center',
-      position: { x: 55, y: 5 },
-      size: { width: 40, height: 40 },
-      locations: applyAntiOverlapPositions([
-        {
-          id: 'luxury_department_store',
-          name: 'Luxury Department Store',
-          description: 'High-end fashion and premium gifts',
-          position: { x: 0, y: 0 },
-          state: getLocationState('luxury_department_store'),
-          atmosphere: 'Bustling with sophisticated shoppers'
-        },
-        {
-          id: 'gangnam_furnishings',
-          name: 'Gangnam Furnishings',
-          description: 'Premium home decoration specialists',
-          position: { x: 0, y: 0 },
-          state: getLocationState('gangnam_furnishings'),
-          atmosphere: 'Elegant showroom atmosphere'
-        },
-        {
-          id: 'luxury_realtor',
-          name: 'Luxury Realtor',
-          description: 'Exclusive property investments',
-          position: { x: 0, y: 0 },
-          state: storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked',
-          unlockCondition: 'Reach level 3 relationship',
-          atmosphere: 'Professional and exclusive'
-        }
-      ])
-    },
-    {
-      id: 'jung_district',
-      name: 'Jung District',
-      description: 'Historic center and dining',
-      position: { x: 5, y: 55 },
-      size: { width: 40, height: 40 },
-      locations: applyAntiOverlapPositions([
-        {
-          id: 'myeongdong_restaurant',
-          name: 'Myeongdong Restaurant',
-          description: 'Traditional Korean fine dining',
-          position: { x: 0, y: 0 },
-          state: getLocationState('myeongdong_restaurant'),
-          atmosphere: 'Elegant traditional setting'
-        },
-        {
-          id: 'namsan_tower',
-          name: 'N Seoul Tower',
-          description: 'Romantic city views and love locks',
-          position: { x: 0, y: 0 },
-          state: playerAffection >= 5 ? getLocationState('namsan_tower') : 'locked',
-          unlockCondition: 'Build deeper affection with Cha Hae-In',
-          atmosphere: 'Breathtaking panoramic views'
-        }
-      ])
-    },
-    {
-      id: 'yeongdeungpo',
-      name: 'Yeongdeungpo District',
-      description: 'Hunter Association headquarters',
-      position: { x: 55, y: 55 },
-      size: { width: 40, height: 40 },
-      locations: applyAntiOverlapPositions([
-        {
-          id: 'hunter_association',
-          name: 'Hunter Association HQ',
-          description: 'Official hunter business and meetings',
-          position: { x: 0, y: 0 },
-          state: getLocationState('hunter_association'),
-          atmosphere: 'Professional and bustling with activity'
-        },
-        {
-          id: 'training_facility',
-          name: 'Elite Training Center',
-          description: 'Advanced combat training with Cha Hae-In',
-          position: { x: 0, y: 0 },
-          state: playerAffection >= 3 ? getLocationState('training_facility') : 'locked',
-          unlockCondition: 'Gain Cha Hae-In\'s trust through missions',
-          atmosphere: 'Intense training environment'
-        },
-        {
-          id: 'hunter_market',
-          name: 'Hunter Market',
-          description: 'Trading hub for monster materials and equipment',
-          position: { x: 0, y: 0 },
-          state: getLocationState('hunter_market'),
-          atmosphere: 'Bustling marketplace with rare treasures'
-        }
-      ])
-    },
-    {
-      id: 'personal',
-      name: 'Personal Spaces',
-      description: 'Private and intimate locations',
-      position: { x: 30, y: 30 },
-      size: { width: 40, height: 25 },
-      locations: applyAntiOverlapPositions([
-        {
-          id: 'player_apartment',
-          name: 'Your Apartment',
-          description: 'Your private sanctuary',
-          position: { x: 0, y: 0 },
-          state: getLocationState('player_apartment'),
-          atmosphere: 'Comfortable and personal'
-        },
-        {
-          id: 'chahaein_apartment',
-          name: 'Cha Hae-In\'s Apartment',
-          description: 'Her intimate private space',
-          position: { x: 0, y: 0 },
-          state: playerAffection >= 7 ? getLocationState('chahaein_apartment') : 'locked',
-          unlockCondition: 'Develop deep intimacy with Cha Hae-In',
-          atmosphere: 'Warm and inviting sanctuary'
-        }
-      ])
-    }
-  ];
+  // Generate responsive zone layout
+  const generateResponsiveZones = (): ZonePanel[] => {
+    const layout = getResponsiveLayout();
+    const { grid, zoneSize, gap } = layout;
+    
+    const calculatePosition = (index: number) => {
+      if (grid.cols === 1) { // Mobile: vertical stack
+        return {
+          x: (100 - zoneSize.width) / 2,
+          y: gap + (index * (zoneSize.height + gap))
+        };
+      } else { // Desktop/Tablet: 2x3 grid
+        const row = Math.floor(index / grid.cols);
+        const col = index % grid.cols;
+        return {
+          x: gap + (col * (zoneSize.width + gap)),
+          y: gap + (row * (zoneSize.height + gap))
+        };
+      }
+    };
+
+    return [
+      {
+        id: 'hongdae',
+        name: 'Hongdae District',
+        description: 'Youth culture and entertainment hub',
+        position: calculatePosition(0),
+        size: zoneSize,
+        locations: applyAntiOverlapPositions([
+          {
+            id: 'hongdae_cafe',
+            name: 'Cozy Hongdae Cafe',
+            description: 'Perfect spot for intimate conversations',
+            position: { x: 0, y: 0 },
+            state: getLocationState('hongdae_cafe'),
+            atmosphere: 'Warm and romantic ambiance'
+          },
+          {
+            id: 'hangang_park',
+            name: 'Hangang River Park',
+            description: 'Scenic riverside walks and picnics',
+            position: { x: 0, y: 0 },
+            state: getLocationState('hangang_park'),
+            atmosphere: 'Peaceful evening breeze'
+          }
+        ])
+      },
+      {
+        id: 'gangnam',
+        name: 'Gangnam District', 
+        description: 'Luxury shopping and business center',
+        position: calculatePosition(1),
+        size: zoneSize,
+        locations: applyAntiOverlapPositions([
+          {
+            id: 'luxury_department_store',
+            name: 'Luxury Department Store',
+            description: 'High-end fashion and premium gifts',
+            position: { x: 0, y: 0 },
+            state: getLocationState('luxury_department_store'),
+            atmosphere: 'Bustling with sophisticated shoppers'
+          },
+          {
+            id: 'gangnam_furnishings',
+            name: 'Gangnam Furnishings',
+            description: 'Premium home decoration specialists',
+            position: { x: 0, y: 0 },
+            state: getLocationState('gangnam_furnishings'),
+            atmosphere: 'Elegant showroom atmosphere'
+          },
+          {
+            id: 'luxury_realtor',
+            name: 'Luxury Realtor',
+            description: 'Exclusive property investments',
+            position: { x: 0, y: 0 },
+            state: storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked',
+            unlockCondition: 'Reach level 3 relationship',
+            atmosphere: 'Professional and exclusive'
+          }
+        ])
+      },
+      {
+        id: 'jung_district',
+        name: 'Jung District',
+        description: 'Historic center and dining',
+        position: calculatePosition(2),
+        size: zoneSize,
+        locations: applyAntiOverlapPositions([
+          {
+            id: 'myeongdong_restaurant',
+            name: 'Myeongdong Restaurant',
+            description: 'Traditional Korean fine dining',
+            position: { x: 0, y: 0 },
+            state: getLocationState('myeongdong_restaurant'),
+            atmosphere: 'Elegant traditional setting'
+          },
+          {
+            id: 'namsan_tower',
+            name: 'N Seoul Tower',
+            description: 'Romantic city views and love locks',
+            position: { x: 0, y: 0 },
+            state: playerAffection >= 5 ? getLocationState('namsan_tower') : 'locked',
+            unlockCondition: 'Build deeper affection with Cha Hae-In',
+            atmosphere: 'Breathtaking panoramic views'
+          }
+        ])
+      },
+      {
+        id: 'yeongdeungpo',
+        name: 'Yeongdeungpo District',
+        description: 'Hunter Association headquarters',
+        position: calculatePosition(3),
+        size: zoneSize,
+        locations: applyAntiOverlapPositions([
+          {
+            id: 'hunter_association',
+            name: 'Hunter Association HQ',
+            description: 'Official hunter business and meetings',
+            position: { x: 0, y: 0 },
+            state: getLocationState('hunter_association'),
+            atmosphere: 'Professional and bustling with activity'
+          },
+          {
+            id: 'training_facility',
+            name: 'Elite Training Center',
+            description: 'Advanced combat training with Cha Hae-In',
+            position: { x: 0, y: 0 },
+            state: playerAffection >= 3 ? getLocationState('training_facility') : 'locked',
+            unlockCondition: 'Gain Cha Hae-In\'s trust through missions',
+            atmosphere: 'Intense training environment'
+          },
+          {
+            id: 'hunter_market',
+            name: 'Hunter Market',
+            description: 'Trading hub for monster materials and equipment',
+            position: { x: 0, y: 0 },
+            state: getLocationState('hunter_market'),
+            atmosphere: 'Bustling marketplace with rare treasures'
+          }
+        ])
+      },
+      {
+        id: 'personal',
+        name: 'Personal Spaces',
+        description: 'Private and intimate locations',
+        position: calculatePosition(4),
+        size: zoneSize,
+        locations: applyAntiOverlapPositions([
+          {
+            id: 'player_apartment',
+            name: 'Your Apartment',
+            description: 'Your private sanctuary',
+            position: { x: 0, y: 0 },
+            state: getLocationState('player_apartment'),
+            atmosphere: 'Comfortable and personal'
+          },
+          {
+            id: 'chahaein_apartment',
+            name: 'Cha Hae-In\'s Apartment',
+            description: 'Her intimate private space',
+            position: { x: 0, y: 0 },
+            state: playerAffection >= 7 ? getLocationState('chahaein_apartment') : 'locked',
+            unlockCondition: 'Develop deep intimacy with Cha Hae-In',
+            atmosphere: 'Warm and inviting sanctuary'
+          }
+        ])
+      }
+    ];
+  };
+
+  // Use responsive zones
+  const zones = generateResponsiveZones();
 
   function getLocationState(locationId: string): 'default' | 'presence' | 'quest' | 'gate' {
     // Check if Cha Hae-In is present
@@ -431,10 +490,10 @@ export function WorldMapSystem8({
           <X className="w-6 h-6" />
         </Button>
 
-        {/* Map Container */}
-        <div className="absolute inset-0 flex items-center justify-center p-20">
+        {/* Responsive Map Container */}
+        <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-8 md:p-12 lg:p-20">
           <motion.div
-            className="relative w-full h-full max-w-6xl max-h-4xl"
+            className="relative w-full h-full max-w-7xl max-h-5xl"
             style={{ transform: `scale(${zoomLevel})` }}
           >
 
