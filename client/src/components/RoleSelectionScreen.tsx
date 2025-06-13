@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Settings } from 'lucide-react';
+import { Crown, Settings, User, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ProfileManager from '@/components/ProfileManager';
 
 interface RoleSelectionScreenProps {
   onSelectRole: (role: 'player' | 'creator') => void;
 }
 
 export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) {
+  const [showProfileManager, setShowProfileManager] = useState(false);
+  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
+
+  const handleLoadProfile = (profileId: number) => {
+    setSelectedProfileId(profileId);
+    setShowProfileManager(false);
+    // Automatically enter player mode with loaded profile
+    onSelectRole('player');
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Background Image Overlay */}

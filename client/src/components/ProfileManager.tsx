@@ -90,8 +90,8 @@ export default function ProfileManager({ isVisible, onClose, onLoadProfile, curr
     }
   });
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -202,7 +202,7 @@ export default function ProfileManager({ isVisible, onClose, onLoadProfile, curr
                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                             size="sm"
                           >
-                            <Load className="w-4 h-4 mr-2" />
+                            <Download className="w-4 h-4 mr-2" />
                             Load
                           </Button>
                           <Button

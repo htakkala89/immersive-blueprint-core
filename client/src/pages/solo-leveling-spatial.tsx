@@ -53,6 +53,7 @@ import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
 import { CreatorPortalDashboard } from '@/components/CreatorPortalDashboard';
 import EpisodeSelector from '@/components/EpisodeSelector';
 import EpisodePlayer from '@/components/EpisodePlayer';
+import ProfileManager from '@/components/ProfileManager';
 import SommelierDialog from '@/components/SommelierDialog';
 import LuxuryRealtor from '@/components/LuxuryRealtor';
 import { LocationInteractiveNodes } from '@/components/LocationInteractiveNodes';
@@ -283,6 +284,9 @@ export default function SoloLevelingSpatial() {
   // System 18: Episode Playback System state
   const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
   const [currentEpisode, setCurrentEpisode] = useState<string | null>(null);
+
+  // Profile Management System state
+  const [showProfileManager, setShowProfileManager] = useState(false);
 
   // Role Selection System - Start with selection screen
   const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>('none');
