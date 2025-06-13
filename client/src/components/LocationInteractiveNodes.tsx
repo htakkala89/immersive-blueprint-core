@@ -600,42 +600,55 @@ export function LocationInteractiveNodes({
     });
   };
 
-  // ABSOLUTE NO-OVERLAP RULE: Force nodes into a strict grid system
+  // Mobile-optimized grid system with responsive positioning
   const adjustNodePositions = (rawNodes: InteractiveNode[]): InteractiveNode[] => {
     if (rawNodes.length === 0) return rawNodes;
     
-    // Calculate grid positions based on screen quadrants with massive spacing
-    const getGridPosition = (index: number, total: number): { x: number; y: number } => {
+    // Mobile-first responsive grid positioning
+    const getResponsiveGridPosition = (index: number, total: number): { x: number; y: number } => {
+      // Single node - center position
       if (total === 1) return { x: 50, y: 50 };
-      if (total === 2) return index === 0 ? { x: 20, y: 30 } : { x: 80, y: 70 };
+      
+      // Two nodes - left and right with safe margins
+      if (total === 2) return index === 0 ? { x: 25, y: 50 } : { x: 75, y: 50 };
+      
+      // Three nodes - triangle formation optimized for mobile
       if (total === 3) return [
-        { x: 20, y: 20 },
-        { x: 80, y: 20 },
-        { x: 50, y: 80 }
+        { x: 50, y: 25 },   // Top center
+        { x: 25, y: 75 },   // Bottom left
+        { x: 75, y: 75 }    // Bottom right
       ][index];
       
-      // For 4+ nodes, use corners and edges with extreme spacing
-      const positions = [
-        { x: 10, y: 10 },   // Top left corner
-        { x: 90, y: 10 },   // Top right corner  
-        { x: 10, y: 90 },   // Bottom left corner
-        { x: 90, y: 90 },   // Bottom right corner
-        { x: 50, y: 10 },   // Top center
-        { x: 50, y: 90 },   // Bottom center
-        { x: 10, y: 50 },   // Left center
-        { x: 90, y: 50 },   // Right center
-        { x: 25, y: 25 },   // Inner ring
-        { x: 75, y: 25 },
-        { x: 25, y: 75 },
-        { x: 75, y: 75 }
+      // Four nodes - corners with mobile-safe margins
+      if (total === 4) return [
+        { x: 20, y: 25 },   // Top left
+        { x: 80, y: 25 },   // Top right
+        { x: 20, y: 75 },   // Bottom left
+        { x: 80, y: 75 }    // Bottom right
+      ][index];
+      
+      // Five or more nodes - organized grid pattern
+      const mobileOptimizedPositions = [
+        { x: 20, y: 20 },   // Top row
+        { x: 50, y: 20 },
+        { x: 80, y: 20 },
+        { x: 20, y: 50 },   // Middle row
+        { x: 80, y: 50 },
+        { x: 20, y: 80 },   // Bottom row
+        { x: 50, y: 80 },
+        { x: 80, y: 80 },
+        { x: 35, y: 35 },   // Secondary positions if needed
+        { x: 65, y: 35 },
+        { x: 35, y: 65 },
+        { x: 65, y: 65 }
       ];
       
-      return positions[index % positions.length];
+      return mobileOptimizedPositions[index % mobileOptimizedPositions.length];
     };
     
     return rawNodes.map((node, index) => ({
       ...node,
-      position: getGridPosition(index, rawNodes.length)
+      position: getResponsiveGridPosition(index, rawNodes.length)
     }));
   };
 
@@ -839,12 +852,13 @@ export function LocationInteractiveNodes({
         return (
           <motion.div
             key={node.id}
-            className="absolute pointer-events-auto cursor-pointer z-40 opacity-100"
+            className="absolute pointer-events-auto cursor-pointer z-40"
             style={{
               left: `${node.position.x}%`,
               top: `${node.position.y}%`,
-              minWidth: '80px',
-              minHeight: '80px'
+              transform: 'translate(-50%, -50%)', // Center the node on its position
+              minWidth: '100px',
+              minHeight: '100px'
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -852,41 +866,39 @@ export function LocationInteractiveNodes({
               console.log('🎯 NODE CLICKED:', node.id);
               handleNodeClick(node);
             }}
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {/* Mobile-friendly large node */}
-            <motion.div
-              className="w-12 h-12 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
-              style={{
-                minWidth: '48px',
-                minHeight: '48px',
-                padding: '8px',
-                margin: '16px'
-              }}
-              animate={available ? {
-                boxShadow: [
-                  '0 0 5px rgba(147, 51, 234, 0.6)',
-                  '0 0 15px rgba(147, 51, 234, 0.8)',
-                  '0 0 5px rgba(147, 51, 234, 0.6)'
-                ]
-              } : {}}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <IconComponent className="w-6 h-6 text-white" />
-            </motion.div>
+            {/* Mobile-optimized node container */}
+            <div className="flex flex-col items-center justify-center">
+              {/* Node orb with proper touch target */}
+              <motion.div
+                className={`w-14 h-14 rounded-full flex items-center justify-center border-2 mb-2 ${
+                  available 
+                    ? 'bg-purple-500/90 border-purple-300 shadow-lg' 
+                    : 'bg-gray-600/70 border-gray-400'
+                }`}
+                animate={available ? {
+                  boxShadow: [
+                    '0 0 8px rgba(147, 51, 234, 0.6)',
+                    '0 0 20px rgba(147, 51, 234, 0.8)',
+                    '0 0 8px rgba(147, 51, 234, 0.6)'
+                  ]
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <IconComponent className="w-7 h-7 text-white" />
+              </motion.div>
 
-            {/* Node Label with 8px spacing from orb */}
-            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-              <div className={`backdrop-blur-sm rounded-md text-sm border ${
-                available 
-                  ? 'bg-black/80 border-purple-400/50 text-purple-200'
-                  : 'bg-black/60 border-gray-500/50 text-gray-400'
-              }`}
-              style={{
-                padding: '4px 8px' // 4px micro spacing vertical, 8px standard horizontal
-              }}>
-                {node.label}
+              {/* Node label positioned below orb */}
+              <div className="text-center">
+                <div className={`px-3 py-1 rounded-lg text-xs font-medium border backdrop-blur-sm ${
+                  available 
+                    ? 'bg-black/85 border-purple-400/60 text-purple-100' 
+                    : 'bg-black/70 border-gray-500/50 text-gray-300'
+                }`}>
+                  {node.label}
+                </div>
               </div>
             </div>
           </motion.div>
