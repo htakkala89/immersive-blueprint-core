@@ -111,6 +111,8 @@ export function DungeonRaidSystem11({
     { id: 'revival_stone', name: 'Revival Stone', icon: '💎', quantity: 2, isRevivalItem: true }
   ]);
   const [showInventory, setShowInventory] = useState(false);
+  const [showCombatInventory, setShowCombatInventory] = useState(false);
+  const [itemCooldowns, setItemCooldowns] = useState<Record<string, number>>({});
   const [deathState, setDeathState] = useState<{
     isPlayerDead: boolean;
     deadPlayer: string | null;
@@ -357,10 +359,28 @@ export function DungeonRaidSystem11({
     }
   };
 
-  // Handle consumable item usage
-  const useConsumableItem = (itemId: string) => {
+  // Enhanced combat item usage with cooldowns
+  const useCombatItem = (itemId: string) => {
     const item = playerInventory.find(inv => inv.id === itemId);
-    if (!item || item.quantity <= 0) return;
+    if (!item || item.quantity <= 0 || itemCooldowns[itemId] > 0) return;
+
+    const jinwoo = players.find(p => p.id === 'jinwoo');
+    if (!jinwoo) return;
+
+    // Start item cooldown (2 seconds for most items)
+    const cooldownTime = item.isRevivalItem ? 10000 : 2000;
+    setItemCooldowns(prev => ({ ...prev, [itemId]: cooldownTime }));
+    
+    // Handle cooldown countdown
+    const cooldownInterval = setInterval(() => {
+      setItemCooldowns(prev => {
+        const newCooldown = Math.max(0, prev[itemId] - 100);
+        if (newCooldown === 0) {
+          clearInterval(cooldownInterval);
+        }
+        return { ...prev, [itemId]: newCooldown };
+      });
+    }, 100);
 
     // Handle revival items
     if (item.isRevivalItem && deathState.isPlayerDead) {
@@ -389,17 +409,21 @@ export function DungeonRaidSystem11({
       return;
     }
 
-    // Regular consumable usage
+    // Apply item effects to all living players
     setPlayers(prevPlayers => prevPlayers.map(player => {
-      if (item.healAmount && player.health > 0) {
-        const newHealth = Math.min(player.maxHealth, player.health + item.healAmount);
-        console.log(`${player.name} used ${item.name} - healed for ${newHealth - player.health} HP`);
-        return { ...player, health: newHealth };
-      }
-      if (item.manaAmount && player.health > 0) {
-        const newMana = Math.min(player.maxMana, player.mana + item.manaAmount);
-        console.log(`${player.name} used ${item.name} - restored ${newMana - player.mana} MP`);
-        return { ...player, mana: newMana };
+      if (player.health > 0) {
+        let newHealth = player.health;
+        let newMana = player.mana;
+        
+        if (item.healAmount) {
+          newHealth = Math.min(player.maxHealth, player.health + item.healAmount);
+        }
+        if (item.manaAmount) {
+          newMana = Math.min(player.maxMana, player.mana + item.manaAmount);
+        }
+        
+        console.log(`${player.name} used ${item.name} - healed for ${newHealth - player.health} HP, restored ${newMana - player.mana} MP`);
+        return { ...player, health: newHealth, mana: newMana };
       }
       return player;
     }));
@@ -409,18 +433,21 @@ export function DungeonRaidSystem11({
       inv.id === itemId ? { ...inv, quantity: inv.quantity - 1 } : inv
     ));
 
-    // Visual feedback
+    // Visual feedback for healing
     setDamageNumbers(prev => [...prev, {
       id: `heal-${Date.now()}`,
       damage: item.healAmount || item.manaAmount || 0,
-      x: 300,
-      y: 300,
+      x: jinwoo.x,
+      y: jinwoo.y - 30,
       timestamp: Date.now(),
       isHealing: true
     }]);
 
-    setShowInventory(false);
+    setShowCombatInventory(false);
   };
+
+  // Legacy function for compatibility
+  const useConsumableItem = useCombatItem;
 
   const [skills] = useState<Skill[]>([
     {
@@ -1211,6 +1238,18 @@ export function DungeonRaidSystem11({
           >
             <X className="w-5 h-5" />
           </Button>
+
+          {/* Combat Inventory Button (Top-Left, below close button) */}
+          {gamePhase === 'combat' && (
+            <Button
+              onClick={() => setShowCombatInventory(true)}
+              variant="ghost"
+              size="sm"
+              className="absolute top-16 left-4 text-slate-400 hover:text-white z-[100] bg-black/30 backdrop-blur-sm rounded-full p-2"
+            >
+              <Package className="w-5 h-5" />
+            </Button>
+          )}
 
           {/* Full-Screen Battlefield Canvas */}
           <div className={`absolute inset-0 ${screenShake ? 'animate-shake' : ''} ${cameraShake ? 'animate-camera-shake' : ''}`}>

@@ -34,7 +34,7 @@ import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
-import { DungeonRaidWithInventory } from '@/components/DungeonRaidWithInventory';
+import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
@@ -4028,7 +4028,7 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      <DungeonRaidWithInventory
+      <DungeonRaidSystem11
         isVisible={showDungeonRaid}
         onClose={() => {
           console.log('Closing dungeon raid');
@@ -4737,7 +4737,7 @@ export default function SoloLevelingSpatial() {
 
       {/* System 11: Dungeon Raid System */}
       {showDungeonRaid && (
-        <DungeonRaidWithInventory
+        <DungeonRaidSystem11
           isVisible={showDungeonRaid}
           onClose={() => setShowDungeonRaid(false)}
           onRaidComplete={(success, loot) => {
