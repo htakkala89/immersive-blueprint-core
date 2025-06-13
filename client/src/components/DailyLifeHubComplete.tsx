@@ -673,6 +673,17 @@ export function DailyLifeHubComplete({
                       }`}
                       onClick={() => {
                         console.log('🖱️ Button clicked for activity:', activity.id);
+                        console.log('🖱️ Activity available:', activity.available);
+                        console.log('🖱️ Can afford (energy):', canAfford);
+                        console.log('🖱️ Is locked:', isLocked);
+                        
+                        // Force TFT launch if it's the TFT activity regardless of other conditions
+                        if (activity.id === 'tft_style_raid') {
+                          console.log('🎯 FORCED TFT LAUNCH');
+                          setShowTFTRaid(true);
+                          return;
+                        }
+                        
                         handleActivitySelect(activity);
                       }}
                     >
