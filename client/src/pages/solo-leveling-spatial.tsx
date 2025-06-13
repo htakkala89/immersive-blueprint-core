@@ -3763,11 +3763,11 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-[9999] flex flex-col"
+            className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-[9999] flex flex-col mobile-chat-container"
             style={{ 
-              height: 'calc(70vh - max(20px, var(--safe-area-inset-bottom)))',
-              maxHeight: 'calc(70vh - max(20px, var(--safe-area-inset-bottom)))',
-              paddingBottom: 'max(20px, var(--safe-area-inset-bottom))',
+              height: 'calc(75vh - max(20px, env(safe-area-inset-bottom)))',
+              maxHeight: 'calc(75vh - max(20px, env(safe-area-inset-bottom)))',
+              paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
               backdropFilter: 'blur(20px) saturate(180%)',
               background: `
                 linear-gradient(135deg, 
@@ -3931,8 +3931,8 @@ export default function SoloLevelingSpatial() {
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-3 overflow-y-auto scroll-smooth flex-1"
-                      style={{ minHeight: '200px' }}
+                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area"
+                      style={{ height: '200px', maxHeight: '200px' }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
