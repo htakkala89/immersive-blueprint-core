@@ -1,0 +1,179 @@
+{
+  "id": "EP_MORNING_TRAINING",
+  "title": "Dawn of Partnership",
+  "description": "An early morning training session reveals deeper connections between you and Cha Hae-In as you prepare for upcoming challenges together.",
+  "prerequisite": {
+    "player_level": 5,
+    "affection_level": 15,
+    "completed_episodes": []
+  },
+  "beats": [
+    {
+      "beat_id": "morning_invitation",
+      "title": "The Early Call",
+      "actions": [
+        {
+          "type": "DELIVER_MESSAGE",
+          "title": "Training Invitation",
+          "message": "Cha Hae-In has sent you a message: 'Meet me at the Hunter Association training facility at dawn. I want to show you some advanced techniques.'"
+        },
+        {
+          "type": "ACTIVATE_QUEST",
+          "quest_id": "EP_MORNING_TRAINING",
+          "title": "Dawn Training Session",
+          "description": "Meet Cha Hae-In at the Hunter Association for early morning training",
+          "objectives": ["Go to Hunter Association", "Find Cha Hae-In in the training facility"]
+        },
+        {
+          "type": "SET_CHA_MOOD",
+          "mood": "Focused"
+        },
+        {
+          "type": "FORCE_CHA_LOCATION",
+          "location": "hunter_association"
+        }
+      ],
+      "completion_condition": "location_reached(hunter_association)"
+    },
+    {
+      "beat_id": "training_begins",
+      "title": "Synchronized Movements",
+      "actions": [
+        {
+          "type": "START_DIALOGUE_SCENE",
+          "dialogue_file": "EP_MORNING_TRAINING_INTRO",
+          "opening_line": "Cha Hae-In is already in the training room, moving through precise sword forms. She notices your arrival and smiles warmly.",
+          "choices": [
+            {
+              "text": "Compliment her form and technique",
+              "effects": { "add_affection": 3 }
+            },
+            {
+              "text": "Ask if she's been here long",
+              "effects": { "add_affection": 1 }
+            },
+            {
+              "text": "Request to train alongside her",
+              "effects": { "add_affection": 2 }
+            }
+          ]
+        },
+        {
+          "type": "SET_CHA_MOOD",
+          "mood": "Confident"
+        }
+      ],
+      "completion_condition": "choice_selected"
+    },
+    {
+      "beat_id": "skill_demonstration",
+      "title": "Learning Together",
+      "actions": [
+        {
+          "type": "DIALOGUE_SEQUENCE",
+          "character": "Cha Hae-In",
+          "dialogue": [
+            {
+              "text": "Your instincts are impressive, but let me show you how to channel your energy more efficiently. Watch my stance.",
+              "emotion": "focused"
+            }
+          ]
+        },
+        {
+          "type": "SET_QUEST_OBJECTIVE",
+          "quest_id": "EP_MORNING_TRAINING",
+          "objective": "Practice the advanced technique Cha Hae-In demonstrated"
+        },
+        {
+          "type": "CHOICE_NODE",
+          "prompt": "As you attempt to replicate her movements, you feel a surge of power. How do you respond?",
+          "choices": [
+            {
+              "text": "Focus intensely on perfecting the technique",
+              "effects": { "add_experience": 50, "add_affection": 2 }
+            },
+            {
+              "text": "Ask for her guidance and corrections",
+              "effects": { "add_affection": 4, "add_experience": 25 }
+            },
+            {
+              "text": "Suggest training together regularly",
+              "effects": { "add_affection": 5, "unlock_activity": "cooperative_training" }
+            }
+          ]
+        }
+      ],
+      "completion_condition": "choice_selected"
+    },
+    {
+      "beat_id": "breakthrough_moment",
+      "title": "Synchronized Power",
+      "actions": [
+        {
+          "type": "RELATIONSHIP_PROGRESSION",
+          "milestone": {
+            "name": "Training Partners",
+            "description": "Your connection with Cha Hae-In deepens through shared combat expertise",
+            "rewards": {
+              "affection": 8,
+              "experience": 100,
+              "money": 25000
+            }
+          }
+        },
+        {
+          "type": "CREATE_MEMORY_STAR",
+          "title": "Dawn Training",
+          "description": "The morning you and Cha Hae-In discovered your synchronized fighting potential",
+          "emotion": "accomplished"
+        },
+        {
+          "type": "UNLOCK_ACTIVITY",
+          "activity_id": "cooperative_skill_training"
+        },
+        {
+          "type": "DIALOGUE_SEQUENCE",
+          "character": "Cha Hae-In",
+          "dialogue": [
+            {
+              "text": "That was... incredible. I've never felt such synchronization with another hunter. We should train together more often.",
+              "emotion": "romantic"
+            }
+          ]
+        }
+      ],
+      "completion_condition": "dialogue_scene_complete"
+    },
+    {
+      "beat_id": "episode_conclusion",
+      "title": "Stronger Together",
+      "actions": [
+        {
+          "type": "COMPLETE_QUEST",
+          "quest_id": "EP_MORNING_TRAINING"
+        },
+        {
+          "type": "REWARD_PLAYER",
+          "gold": 50000,
+          "experience": 150,
+          "items": [
+            {
+              "name": "Training Partner's Charm",
+              "description": "A small charm Cha Hae-In gave you after your first joint training session",
+              "type": "accessory"
+            }
+          ]
+        },
+        {
+          "type": "REMOVE_CHA_LOCATION_OVERRIDE"
+        },
+        {
+          "type": "SHOW_NOTIFICATION",
+          "title": "Episode Complete",
+          "message": "Your partnership with Cha Hae-In has reached a new level of trust and coordination"
+        }
+      ],
+      "completion_condition": "automatic"
+    }
+  ]
+}
