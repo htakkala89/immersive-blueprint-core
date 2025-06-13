@@ -124,44 +124,191 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete }: Episode
             {/* Beat Actions/Choices */}
             <div className="space-y-4">
               {currentBeat.actions?.map((action, index) => {
-                if (action.type === 'START_DIALOGUE_SCENE') {
+                // Handle narrative text
+                if (action.type === 'narrative_text') {
                   return (
                     <Card key={index} className="bg-white/5 backdrop-blur-md border-purple-600/20">
                       <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
+                        <p className="text-white text-lg leading-relaxed">{action.content}</p>
+                      </CardContent>
+                    </Card>
+                  );
+                }
+
+                // Handle system messages
+                if (action.type === 'system_message') {
+                  return (
+                    <Card key={index} className="bg-blue-500/10 backdrop-blur-md border-blue-600/30">
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-3">
+                          <MessageCircle className="w-5 h-5 text-blue-400" />
+                          <p className="text-blue-200">{action.content}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                }
+
+                // Handle location changes
+                if (action.type === 'set_location') {
+                  return (
+                    <Card key={index} className="bg-green-500/10 backdrop-blur-md border-green-600/30">
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                            <span className="text-white text-sm">📍</span>
+                          </div>
+                          <div>
+                            <p className="text-green-200 font-medium">Location: {action.location}</p>
+                            {action.time && <p className="text-green-300 text-sm">Time: {action.time}</p>}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                }
+
+                // Handle shop displays
+                if (action.type === 'show_shop') {
+                  return (
+                    <Card key={index} className="bg-yellow-500/10 backdrop-blur-md border-yellow-600/30">
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          <h3 className="text-yellow-200 font-bold text-lg">{action.shop_data?.name}</h3>
+                          <div className="grid gap-2">
+                            {action.shop_data?.items?.map((item: any, itemIndex: number) => (
+                              <div key={itemIndex} className="bg-black/20 rounded p-3">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <p className="text-white font-medium">{item.name}</p>
+                                    <p className="text-gray-300 text-sm">{item.description}</p>
+                                    <p className="text-green-400 text-sm">{item.effect}</p>
+                                  </div>
+                                  <p className="text-yellow-400 font-bold">₩{item.price?.toLocaleString()}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                }
+
+                // Handle choice nodes
+                if (action.type === 'choice_node') {
+                  return (
+                    <Card key={index} className="bg-purple-500/10 backdrop-blur-md border-purple-600/30">
+                      <CardContent className="p-4">
+                        <div className="space-y-4">
+                          <p className="text-white font-medium">{action.prompt}</p>
+                          <div className="space-y-2">
+                            {action.choices?.map((choice: any, choiceIndex: number) => (
+                              <Button
+                                key={choiceIndex}
+                                onClick={() => handleChoice({ action, choice, index })}
+                                variant="outline"
+                                className="w-full text-left justify-start bg-white/5 border-purple-400 text-white hover:bg-purple-600/30"
+                              >
+                                {choice.text}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                }
+
+                // Handle dialogue sequences
+                if (action.type === 'dialogue_sequence') {
+                  return (
+                    <Card key={index} className="bg-pink-500/10 backdrop-blur-md border-pink-600/30">
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
                           <div className="flex items-center space-x-3">
                             <Heart className="w-5 h-5 text-pink-400" />
-                            <span className="text-white">Dialogue Scene Available</span>
+                            <p className="text-pink-200 font-medium">{action.character}</p>
                           </div>
-                          <Button 
-                            onClick={() => handleChoice({ action, index })}
-                            className="bg-pink-600 hover:bg-pink-700 text-white"
-                          >
-                            Start Conversation
-                          </Button>
+                          {action.dialogue?.map((line: any, lineIndex: number) => (
+                            <div key={lineIndex} className="bg-black/20 rounded p-3">
+                              <p className="text-white">{line.text}</p>
+                              {line.emotion && (
+                                <p className="text-pink-300 text-sm italic mt-1">*{line.emotion}*</p>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       </CardContent>
                     </Card>
                   );
                 }
 
-                if (action.type === 'DELIVER_MESSAGE') {
+                // Handle intimate moments
+                if (action.type === 'intimate_moment') {
                   return (
-                    <Card key={index} className="bg-white/5 backdrop-blur-md border-purple-600/20">
+                    <Card key={index} className="bg-red-500/10 backdrop-blur-md border-red-600/30">
                       <CardContent className="p-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <MessageCircle className="w-4 h-4 text-blue-400" />
-                            <span className="text-sm text-blue-300">Message from {action.sender}</span>
+                        <div className="space-y-4">
+                          <div className="flex items-center space-x-3">
+                            <Heart className="w-5 h-5 text-red-400" />
+                            <h3 className="text-red-200 font-bold">{action.moment?.name}</h3>
                           </div>
-                          <p className="text-white">{action.message_content}</p>
+                          <p className="text-white">{action.moment?.description}</p>
+                          <div className="space-y-2">
+                            {action.moment?.choices?.map((choice: any, choiceIndex: number) => (
+                              <Button
+                                key={choiceIndex}
+                                onClick={() => handleChoice({ action, choice, index })}
+                                variant="outline"
+                                className="w-full text-left justify-start bg-white/5 border-red-400 text-white hover:bg-red-600/30"
+                              >
+                                {choice.text}
+                              </Button>
+                            ))}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
                   );
                 }
 
-                return null;
+                // Handle relationship progression
+                if (action.type === 'relationship_progression') {
+                  return (
+                    <Card key={index} className="bg-gold-500/10 backdrop-blur-md border-yellow-600/30">
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-3">
+                            <Crown className="w-5 h-5 text-yellow-400" />
+                            <h3 className="text-yellow-200 font-bold">{action.milestone?.name}</h3>
+                          </div>
+                          <p className="text-white">{action.milestone?.description}</p>
+                          {action.milestone?.rewards && (
+                            <div className="bg-black/20 rounded p-3">
+                              <p className="text-green-400 text-sm font-medium">Rewards:</p>
+                              <ul className="text-green-300 text-sm space-y-1">
+                                {Object.entries(action.milestone.rewards).map(([key, value]) => (
+                                  <li key={key}>+{value} {key.replace('_', ' ')}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                }
+
+                // Default fallback for unknown actions
+                return (
+                  <Card key={index} className="bg-gray-500/10 backdrop-blur-md border-gray-600/30">
+                    <CardContent className="p-4">
+                      <p className="text-gray-300">Action: {action.type}</p>
+                      {action.content && <p className="text-white mt-2">{action.content}</p>}
+                    </CardContent>
+                  </Card>
+                );
               })}
 
               {/* Continue Button */}
