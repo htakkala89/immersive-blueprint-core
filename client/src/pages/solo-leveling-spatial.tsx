@@ -1861,8 +1861,7 @@ export default function SoloLevelingSpatial() {
         unspentSkillPoints: loadedGameState.skillPoints || 0,
         storyProgress: loadedGameState.storyProgress || 0,
         unlockedActivities: loadedGameState.unlockedActivities || [],
-        sharedMemories: loadedGameState.sharedMemories || [],
-        choices: loadedGameState.choices || []
+        sharedMemories: loadedGameState.sharedMemories || []
       });
 
       console.log('Profile loaded successfully:', profile.profileName);

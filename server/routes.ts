@@ -18,6 +18,9 @@ import { narrativeArchitect } from "./narrative-architect-api";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
+import { db } from "./db";
+import { playerProfiles, gameStates, episodeProgress, insertPlayerProfileSchema, insertGameStateSchema } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
