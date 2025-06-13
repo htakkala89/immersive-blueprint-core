@@ -35,38 +35,8 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
   const [showEpisodeBuilder, setShowEpisodeBuilder] = useState(false);
   const [editingEpisode, setEditingEpisode] = useState<Episode | null>(null);
   const [viewingEpisode, setViewingEpisode] = useState<Episode | null>(null);
-  const [episodes, setEpisodes] = useState<Episode[]>([
-    {
-      id: 'EP01_Red_Echo',
-      title: 'Echoes of the Red Gate',
-      description: 'A mysterious A-Rank gate appears with strange energy readings that seem connected to Jin-Woo\'s past.',
-      status: 'published',
-      created: new Date('2024-01-15'),
-      lastModified: new Date('2024-01-20'),
-      plays: 1247,
-      completionRate: 87
-    },
-    {
-      id: 'EP02_White_Tiger',
-      title: 'White Tiger Guild Alliance',
-      description: 'An unexpected alliance proposal from the White Tiger Guild tests relationships and loyalties.',
-      status: 'published',
-      created: new Date('2024-01-22'),
-      lastModified: new Date('2024-01-25'),
-      plays: 892,
-      completionRate: 92
-    },
-    {
-      id: 'EP03_Romantic_Evening',
-      title: 'Starlit Confessions',
-      description: 'A romantic evening at N Seoul Tower where true feelings are finally revealed.',
-      status: 'draft',
-      created: new Date('2024-02-01'),
-      lastModified: new Date('2024-02-03'),
-      plays: 0,
-      completionRate: 0
-    }
-  ]);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getStatusColor = (status: Episode['status']) => {
     switch (status) {
@@ -94,6 +64,43 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
     }
   };
 
+  // Load episodes from the API
+  const loadEpisodes = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/episodes');
+      if (!response.ok) {
+        throw new Error('Failed to fetch episodes');
+      }
+      const data = await response.json();
+      
+      // Transform API data to match our Episode interface
+      const transformedEpisodes = data.episodes.map((ep: any) => ({
+        id: ep.id,
+        title: ep.title,
+        description: ep.description,
+        status: ep.status || 'draft',
+        created: new Date(), // Episodes don't have creation dates in current schema
+        lastModified: new Date(),
+        plays: 0, // Not tracked yet in the system
+        completionRate: 0 // Not tracked yet in the system
+      }));
+      
+      setEpisodes(transformedEpisodes);
+    } catch (error) {
+      console.error('Failed to load episodes:', error);
+      // Keep empty episodes array if loading fails
+      setEpisodes([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load episodes when component mounts
+  React.useEffect(() => {
+    loadEpisodes();
+  }, []);
+
   if (showEpisodeBuilder) {
     return (
       <NarrativeArchitectAI
@@ -101,6 +108,7 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
         onClose={() => {
           setShowEpisodeBuilder(false);
           setEditingEpisode(null);
+          loadEpisodes(); // Refresh episodes when closing builder
         }}
       />
     );
@@ -292,16 +300,34 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
               </Button>
             </div>
 
-            <div className="space-y-4">
-              {episodes.map((episode, index) => (
-                <motion.div
-                  key={episode.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors"
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-white/60">Loading episodes...</div>
+              </div>
+            ) : episodes.length === 0 ? (
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center">
+                <BookOpen className="w-12 h-12 text-white/40 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">No Episodes Yet</h3>
+                <p className="text-slate-400 mb-6">Create your first AI-generated episode to bring your Solo Leveling stories to life.</p>
+                <Button
+                  onClick={() => setShowEpisodeBuilder(true)}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
-                  <div className="flex items-start justify-between">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Your First Episode
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {episodes.map((episode, index) => (
+                  <motion.div
+                    key={episode.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <h3 className="text-lg font-semibold text-white">{episode.title}</h3>
@@ -359,7 +385,8 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                   </div>
                 </motion.div>
               ))}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
