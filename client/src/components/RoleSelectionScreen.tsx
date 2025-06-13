@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Settings, User, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProfileManager from '@/components/ProfileManager';
+import { FirstTimeProfileCreation } from '@/components/FirstTimeProfileCreation';
 
 interface RoleSelectionScreenProps {
   onSelectRole: (role: 'player' | 'creator', profileId?: number) => void;
@@ -11,12 +12,88 @@ interface RoleSelectionScreenProps {
 export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) {
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
+  const [showFirstTimeCreation, setShowFirstTimeCreation] = useState(false);
+  const [isCreatingProfile, setIsCreatingProfile] = useState(false);
+  const [existingProfiles, setExistingProfiles] = useState<any[]>([]);
+
+  // Check for existing profiles on component mount
+  useEffect(() => {
+    const checkExistingProfiles = async () => {
+      try {
+        const response = await fetch('/api/profiles');
+        if (response.ok) {
+          const data = await response.json();
+          setExistingProfiles(data.profiles || []);
+        }
+      } catch (error) {
+        console.error('Failed to check existing profiles:', error);
+      }
+    };
+    checkExistingProfiles();
+  }, []);
 
   const handleLoadProfile = (profileId: number) => {
     setSelectedProfileId(profileId);
     setShowProfileManager(false);
-    // Automatically enter player mode with loaded profile
     onSelectRole('player', profileId);
+  };
+
+  const handleJoinWorld = () => {
+    if (existingProfiles.length === 0) {
+      // First time user - show profile creation
+      setShowFirstTimeCreation(true);
+    } else {
+      // Existing user - show profile manager
+      setShowProfileManager(true);
+    }
+  };
+
+  const handleCreateFirstProfile = async (profileName: string) => {
+    setIsCreatingProfile(true);
+    try {
+      const response = await fetch('/api/profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profileName,
+          description: 'Beginning your journey as an S-Rank Hunter',
+          gameData: {
+            level: 1,
+            health: 100,
+            maxHealth: 100,
+            mana: 50,
+            maxMana: 50,
+            affectionLevel: 0,
+            intimacyLevel: 1,
+            gold: 100,
+            currentScene: "hunter_association",
+            energy: 100,
+            maxEnergy: 100,
+            experience: 0,
+            apartmentTier: 1,
+            stats: { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
+            statPoints: 0,
+            skillPoints: 0,
+            inventory: [],
+            skills: [],
+            activeQuests: [],
+            completedQuests: [],
+            storyFlags: {},
+            choiceHistory: []
+          }
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to create profile');
+      
+      const newProfile = await response.json();
+      setShowFirstTimeCreation(false);
+      onSelectRole('player', newProfile.id);
+    } catch (error) {
+      console.error('Failed to create profile:', error);
+    } finally {
+      setIsCreatingProfile(false);
+    }
   };
 
   const handleNewGame = async () => {
@@ -134,7 +211,7 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
             transition={{ delay: 0.6, duration: 0.6 }}
           >
             <Button
-              onClick={handleNewGame}
+              onClick={handleJoinWorld}
               className="w-full h-20 bg-gradient-to-r from-green-600/80 to-emerald-600/80 hover:from-green-500/90 hover:to-emerald-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
               style={{
                 background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(16, 185, 129, 0.8) 100%)',
@@ -257,6 +334,14 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
         onLoadProfile={handleLoadProfile}
         currentGameState={{}} // Empty state for role selection screen
       />
+
+      {/* First Time Profile Creation */}
+      {showFirstTimeCreation && (
+        <FirstTimeProfileCreation
+          onCreateProfile={handleCreateFirstProfile}
+          isCreating={isCreatingProfile}
+        />
+      )}
     </div>
   );
 }
