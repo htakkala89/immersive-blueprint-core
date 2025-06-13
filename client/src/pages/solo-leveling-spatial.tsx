@@ -3814,7 +3814,7 @@ export default function SoloLevelingSpatial() {
               
               {/* Dialogue Text - Enhanced Glassmorphism */}
               <motion.div
-                className="rounded-lg p-4 flex-1 overflow-y-auto mb-3"
+                className="rounded-lg p-4 flex-1 mb-3 flex flex-col"
                 style={{
                   backdropFilter: 'blur(12px) saturate(150%)',
                   background: `
@@ -3931,7 +3931,8 @@ export default function SoloLevelingSpatial() {
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-3 max-h-48 overflow-y-auto scroll-smooth"
+                      className="space-y-3 flex-1 overflow-y-auto scroll-smooth"
+                      style={{ minHeight: '200px', maxHeight: 'calc(100% - 120px)' }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
