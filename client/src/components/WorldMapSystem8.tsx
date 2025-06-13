@@ -57,10 +57,11 @@ export function WorldMapSystem8({
     
     if (screenWidth < 640) { // Mobile Portrait
       return {
-        grid: { cols: 1, rows: 5 },
-        zoneSize: { width: 90, height: 15 },
-        gap: 3,
-        touchTarget: { min: 48, optimal: 56 }
+        grid: { cols: 2, rows: 3 },
+        zoneSize: { width: 48, height: 32 },
+        gap: 2,
+        touchTarget: { min: 48, optimal: 56 },
+        isMobile: true
       };
     } else if (screenWidth < 1024) { // Tablet
       return {
@@ -84,27 +85,28 @@ export function WorldMapSystem8({
     if (locations.length <= 1) return locations;
     
     const layout = getResponsiveLayout();
-    const isMobile = layout.grid.cols === 1;
+    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const isMobile = screenWidth < 640;
     
     const SAFE_POSITIONS = isMobile ? [
-      { x: 15, y: 20 },   // Mobile: Left-aligned
-      { x: 85, y: 20 },   // Mobile: Right-aligned
-      { x: 50, y: 50 },   // Mobile: Center
-      { x: 15, y: 80 },   // Mobile: Bottom-left
-      { x: 85, y: 80 }    // Mobile: Bottom-right
+      { x: 25, y: 30 },   // Mobile: Compact positions
+      { x: 75, y: 30 },   
+      { x: 25, y: 70 },   
+      { x: 75, y: 70 },   
+      { x: 50, y: 50 }    // Mobile: Center
     ] : [
-      { x: 10, y: 15 },   // Desktop: Top-left
-      { x: 90, y: 15 },   // Desktop: Top-right  
-      { x: 10, y: 85 },   // Desktop: Bottom-left
-      { x: 90, y: 85 },   // Desktop: Bottom-right
-      { x: 50, y: 15 },   // Desktop: Top-center
-      { x: 50, y: 85 },   // Desktop: Bottom-center
-      { x: 10, y: 50 },   // Desktop: Left-center
-      { x: 90, y: 50 },   // Desktop: Right-center
-      { x: 30, y: 30 },   // Desktop: Inner positions
-      { x: 70, y: 30 },
-      { x: 30, y: 70 },
-      { x: 70, y: 70 }
+      { x: 15, y: 20 },   // Desktop: Spread out
+      { x: 85, y: 20 },   
+      { x: 15, y: 80 },   
+      { x: 85, y: 80 },   
+      { x: 50, y: 20 },   
+      { x: 50, y: 80 },   
+      { x: 15, y: 50 },   
+      { x: 85, y: 50 },   
+      { x: 30, y: 35 },   
+      { x: 70, y: 35 },
+      { x: 30, y: 65 },
+      { x: 70, y: 65 }
     ];
     
     return locations.map((location, index) => ({
@@ -117,21 +119,15 @@ export function WorldMapSystem8({
   const generateResponsiveZones = (): ZonePanel[] => {
     const layout = getResponsiveLayout();
     const { grid, zoneSize, gap } = layout;
+    const isMobile = grid.cols === 1;
     
     const calculatePosition = (index: number) => {
-      if (grid.cols === 1) { // Mobile: vertical stack
-        return {
-          x: (100 - zoneSize.width) / 2,
-          y: gap + (index * (zoneSize.height + gap))
-        };
-      } else { // Desktop/Tablet: 2x3 grid
-        const row = Math.floor(index / grid.cols);
-        const col = index % grid.cols;
-        return {
-          x: gap + (col * (zoneSize.width + gap)),
-          y: gap + (row * (zoneSize.height + gap))
-        };
-      }
+      const row = Math.floor(index / grid.cols);
+      const col = index % grid.cols;
+      return {
+        x: gap + (col * (zoneSize.width + gap)),
+        y: gap + (row * (zoneSize.height + gap))
+      };
     };
 
     return [
@@ -258,8 +254,8 @@ export function WorldMapSystem8({
         id: 'personal',
         name: 'Personal Spaces',
         description: 'Private and intimate locations',
-        position: calculatePosition(4),
-        size: zoneSize,
+        position: { x: 25, y: 70 },
+        size: { width: 50, height: 25 },
         locations: applyAntiOverlapPositions([
           {
             id: 'player_apartment',
@@ -494,7 +490,7 @@ export function WorldMapSystem8({
         </Button>
 
         {/* Responsive Map Container */}
-        <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-8 md:p-12 lg:p-20">
+        <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-6 md:p-12 lg:p-20">
           <motion.div
             className="relative w-full h-full max-w-7xl max-h-5xl"
             style={{ transform: `scale(${zoomLevel})` }}
