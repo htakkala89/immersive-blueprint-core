@@ -4108,8 +4108,12 @@ export default function SoloLevelingSpatial() {
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area"
-                      style={{ height: '200px', maxHeight: '200px' }}
+                      className="space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
+                      style={{ 
+                        minHeight: '120px',
+                        maxHeight: 'calc(100% - 60px)',
+                        flex: 1
+                      }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
@@ -4128,8 +4132,8 @@ export default function SoloLevelingSpatial() {
                             </div>
                           ) : (
                             // Cha Hae-In messages: Left-aligned, bright white, script-like
-                            <div className="max-w-[75%]">
-                              <p className="text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap">
+                            <div className="max-w-[85%]">
+                              <p className="text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap text-sm">
                                 {entry.text}
                               </p>
                             </div>
@@ -4160,7 +4164,7 @@ export default function SoloLevelingSpatial() {
               </motion.div>
               
               {/* Bottom Section - Always Visible */}
-              <div className="space-y-3" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
+              <div className="space-y-2" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
                 {/* Thought Prompts */}
                 {thoughtPrompts.length > 0 && (
                   <motion.div
