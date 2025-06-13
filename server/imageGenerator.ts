@@ -159,7 +159,8 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     }
 
     const location = 'us-central1';
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-001:predict`;
+    // Using latest Imagen 3.0 Fast model (most recent available)
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagegeneration@006:predict`;
     
     console.log('🎨 Attempting Google Imagen generation...');
     
@@ -195,7 +196,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       console.log('Vertex AI Imagen failed:', response.status, errorText);
       
       // Try alternative Imagen model
-      const altEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-001:predict`;
+      const altEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
       
       const altResponse = await fetch(altEndpoint, {
         method: 'POST',

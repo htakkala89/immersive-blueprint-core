@@ -28,7 +28,29 @@ function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string 
     iat: now
   };
 
-  return jwt.sign(payload, serviceAccount.private_key, { algorithm: 'RS256' });
+  // Ensure private key has proper line breaks and format
+  let privateKey = serviceAccount.private_key;
+  
+  // Handle escaped newlines from JSON
+  if (privateKey.includes('\\n')) {
+    privateKey = privateKey.replace(/\\n/g, '\n');
+  }
+  
+  // Ensure proper formatting
+  if (!privateKey.includes('\n')) {
+    // If no line breaks, add them at standard positions
+    privateKey = privateKey.replace(/-----BEGIN PRIVATE KEY-----/, '-----BEGIN PRIVATE KEY-----\n')
+                           .replace(/-----END PRIVATE KEY-----/, '\n-----END PRIVATE KEY-----');
+    
+    // Add line breaks every 64 characters for the key content
+    const keyContent = privateKey.replace('-----BEGIN PRIVATE KEY-----\n', '')
+                                 .replace('\n-----END PRIVATE KEY-----', '');
+    const formattedContent = keyContent.match(/.{1,64}/g)?.join('\n') || keyContent;
+    privateKey = `-----BEGIN PRIVATE KEY-----\n${formattedContent}\n-----END PRIVATE KEY-----`;
+  }
+  
+  console.log('🔑 Using formatted private key for JWT signing');
+  return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
 }
 
 // Get OAuth access token from Google
