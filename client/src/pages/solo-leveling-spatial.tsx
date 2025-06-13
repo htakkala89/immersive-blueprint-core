@@ -2183,7 +2183,15 @@ export default function SoloLevelingSpatial() {
     const nextBeatIndex = episodeBeatIndex + 1;
     if (nextBeatIndex < activeEpisode.beats.length) {
       setEpisodeBeatIndex(nextBeatIndex);
-      executeEpisodeBeat(activeEpisode, nextBeatIndex);
+      // Execute next beat immediately
+      const nextBeat = activeEpisode.beats[nextBeatIndex];
+      if (nextBeat) {
+        nextBeat.actions.forEach((action: any, actionIndex: number) => {
+          setTimeout(() => {
+            executeStoryAction(action);
+          }, actionIndex * 1000);
+        });
+      }
     } else {
       // Episode completed
       setActiveEpisode(null);
