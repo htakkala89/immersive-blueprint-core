@@ -46,9 +46,14 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
       if (!response.ok) throw new Error('Failed to fetch episode');
       const data = await response.json();
       
-      // Validate episode data structure
-      if (!data.episode || !data.episode.id || !data.episode.beats) {
-        throw new Error('Invalid episode data structure');
+      // Validate episode data structure - handle both beats and commands formats
+      if (!data.episode || !data.episode.id) {
+        throw new Error('Invalid episode data: missing episode or id');
+      }
+      
+      // Support episodes with either beats or commands structure
+      if (!data.episode.beats && !data.episode.commands) {
+        throw new Error('Invalid episode data: missing beats or commands');
       }
       
       return data;

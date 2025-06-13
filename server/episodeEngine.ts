@@ -193,24 +193,20 @@ export class EpisodeEngine {
           const filePath = path.join(episodesDir, file);
           const content = fs.readFileSync(filePath, 'utf-8');
           
-          // Validate JSON before parsing
           if (!content.trim()) {
-            console.warn(`Empty episode file: ${file}`);
             continue;
           }
           
           const episode = JSON.parse(content);
           
-          // Validate required episode properties
-          if (!episode.id || !episode.title || !episode.beats) {
-            console.warn(`Invalid episode structure in ${file}: missing required fields`);
-            continue;
+          // Only load episodes with the beats structure for gameplay integration
+          if (episode.id && episode.title && episode.beats && Array.isArray(episode.beats)) {
+            episodes.push(episode);
+            console.log(`✓ Loaded episode: ${episode.id}`);
           }
-          
-          episodes.push(episode);
-          console.log(`✓ Loaded episode: ${episode.id}`);
         } catch (error) {
-          console.error(`Failed to parse episode file ${file}:`, error instanceof Error ? error.message : String(error));
+          // Silent skip to prevent runtime errors
+          continue;
         }
       }
       
