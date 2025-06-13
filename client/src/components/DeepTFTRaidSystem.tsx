@@ -480,22 +480,17 @@ export function DeepTFTRaidSystem({
       timerInterval = setInterval(() => {
         setCombatTimer(prev => {
           if (prev <= 1) {
-            // Combat finished - determine winner
+            // Combat timeout - determine winner based on remaining units
             const playerAlive = combatUnits.filter(u => u.isPlayer && u.health > 0).length;
             const enemyAlive = combatUnits.filter(u => !u.isPlayer && u.health > 0).length;
             
-            if (playerAlive > 0 && enemyAlive === 0) {
+            // Player wins ties or when they have more units alive
+            if (playerAlive >= enemyAlive) {
               handleVictory();
-            } else if (enemyAlive > 0 && playerAlive === 0) {
-              handleDefeat();
             } else {
-              // Tie or timeout - player wins if more units alive
-              if (playerAlive >= enemyAlive) {
-                handleVictory();
-              } else {
-                handleDefeat();
-              }
+              handleDefeat();
             }
+            
             setIsAutoCombat(false);
             return 0;
           }
@@ -582,6 +577,35 @@ export function DeepTFTRaidSystem({
           });
         });
       }, 800); // Faster combat for better animations
+
+      // Check for battle end conditions every tick
+      const victoryCheckInterval = setInterval(() => {
+        setCombatUnits(currentUnits => {
+          const playerAlive = currentUnits.filter(u => u.isPlayer && u.health > 0).length;
+          const enemyAlive = currentUnits.filter(u => !u.isPlayer && u.health > 0).length;
+          
+          // End battle immediately if one side is eliminated
+          if (playerAlive > 0 && enemyAlive === 0) {
+            setTimeout(() => {
+              handleVictory();
+              setIsAutoCombat(false);
+            }, 500); // Small delay for visual clarity
+          } else if (enemyAlive > 0 && playerAlive === 0) {
+            setTimeout(() => {
+              handleDefeat();
+              setIsAutoCombat(false);
+            }, 500);
+          }
+          
+          return currentUnits;
+        });
+      }, 500); // Check every 0.5 seconds
+
+      return () => {
+        clearInterval(combatInterval);
+        clearInterval(timerInterval);
+        clearInterval(victoryCheckInterval);
+      };
     }
     
     return () => {
