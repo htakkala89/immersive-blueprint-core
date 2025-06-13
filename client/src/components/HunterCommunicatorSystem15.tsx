@@ -25,6 +25,7 @@ interface Message {
   read: boolean;
   state?: 'sent' | 'delivered' | 'read';
   isUrgent?: boolean;
+  photoUrl?: string;
   proposedActivity?: {
     type: string;
     location: string;
@@ -371,6 +372,40 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
 
     setCurrentInput('');
   };
+
+  // Handle photo delivery from dialogue system
+  useEffect(() => {
+    if (pendingPhotoDelivery && selectedConversation === 'cha_hae_in') {
+      const photoMessage: Message = {
+        id: `msg_${Date.now()}_photo`,
+        senderId: 'cha_hae_in',
+        senderName: 'Cha Hae-In',
+        content: `*A photo message arrives with a soft chime* 📸\n\n"As requested... but this stays between us." ${pendingPhotoDelivery.context}`,
+        timestamp: new Date(),
+        read: false,
+        state: 'delivered',
+        photoUrl: pendingPhotoDelivery.imageUrl
+      };
+
+      setConversations(prev => prev.map(conv => 
+        conv.id === 'cha_hae_in' 
+          ? {
+              ...conv,
+              messages: [...conv.messages, photoMessage],
+              lastMessage: photoMessage,
+              unreadCount: conv.unreadCount + 1
+            }
+          : conv
+      ));
+
+      // Auto-scroll to new message
+      setTimeout(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+      }, 100);
+    }
+  }, [pendingPhotoDelivery, selectedConversation]);
 
   // Check connection status based on player location
   useEffect(() => {
@@ -1199,6 +1234,41 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                 >
                                   {message.content}
                                 </p>
+                                
+                                {/* Enhanced Photo Display with Premium Frosted Glass */}
+                                {message.photoUrl && (
+                                  <div 
+                                    className="mt-4 rounded-2xl overflow-hidden relative"
+                                    style={{
+                                      background: `
+                                        linear-gradient(135deg, 
+                                          rgba(255, 255, 255, 0.08) 0%,
+                                          rgba(255, 255, 255, 0.05) 25%,
+                                          rgba(255, 255, 255, 0.06) 50%,
+                                          rgba(255, 255, 255, 0.04) 75%,
+                                          rgba(255, 255, 255, 0.07) 100%
+                                        )
+                                      `,
+                                      backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
+                                      WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
+                                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                                      maxWidth: '300px'
+                                    }}
+                                  >
+                                    <img 
+                                      src={message.photoUrl} 
+                                      alt="Shared photo"
+                                      className="w-full h-auto object-cover"
+                                      style={{
+                                        filter: 'brightness(1.05) contrast(1.1) saturate(1.1)'
+                                      }}
+                                    />
+                                    <div 
+                                      className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
+                                    />
+                                  </div>
+                                )}
                                 <span 
                                   className="text-xs text-slate-400 mt-2 block"
                                   style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}

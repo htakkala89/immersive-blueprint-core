@@ -328,6 +328,13 @@ export default function SoloLevelingSpatial() {
   const [storyFlags, setStoryFlags] = useState<string[]>(['beginning_journey', 'gate_clearance_quest_active']);
   const [visitHistory, setVisitHistory] = useState<Record<string, number>>({});
   const [chaHaeInPresent, setChaHaeInPresent] = useState(true);
+  
+  // Cross-system photo sharing state
+  const [pendingPhotoDelivery, setPendingPhotoDelivery] = useState<{
+    type: 'intimate';
+    context: string;
+    imageUrl?: string;
+  } | null>(null);
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
