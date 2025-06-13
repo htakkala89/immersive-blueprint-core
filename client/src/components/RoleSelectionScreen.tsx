@@ -19,6 +19,55 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
     onSelectRole('player', profileId);
   };
 
+  const handleNewGame = async () => {
+    try {
+      // Create a new profile with default starting values
+      const response = await fetch('/api/profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profileName: `New Game ${new Date().toLocaleDateString()}`,
+          description: 'Fresh start in Solo Leveling',
+          gameData: {
+            level: 1,
+            health: 100,
+            maxHealth: 100,
+            mana: 50,
+            maxMana: 50,
+            affectionLevel: 0,
+            intimacyLevel: 1,
+            gold: 100,
+            currentScene: "hunter_association",
+            energy: 100,
+            maxEnergy: 100,
+            experience: 0,
+            maxExperience: 100,
+            apartmentTier: 1,
+            stats: { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
+            statPoints: 0,
+            skillPoints: 0,
+            storyProgress: 0,
+            inventory: [],
+            activeQuests: [],
+            completedQuests: [],
+            unlockedActivities: [],
+            sharedMemories: [],
+            storyFlags: {}
+          }
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to create new game');
+      
+      const { profile } = await response.json();
+      
+      // Automatically load the new profile and enter player mode
+      onSelectRole('player', profile.id);
+    } catch (error) {
+      console.error('Error creating new game:', error);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Background Image Overlay */}
@@ -78,28 +127,56 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
 
         {/* Role Selection Buttons */}
         <div className="space-y-6">
-          {/* Player Experience Button */}
+          {/* New Game Button */}
+          <motion.div
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+          >
+            <Button
+              onClick={handleNewGame}
+              className="w-full h-20 bg-gradient-to-r from-green-600/80 to-emerald-600/80 hover:from-green-500/90 hover:to-emerald-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
+              style={{
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(16, 185, 129, 0.8) 100%)',
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              <div className="flex items-center justify-center space-x-4">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-bold text-white">Start New Game</h3>
+                  <p className="text-xs text-slate-200 opacity-90">
+                    Begin fresh adventure with default starting stats
+                  </p>
+                </div>
+              </div>
+            </Button>
+          </motion.div>
+
+          {/* Continue Game Button */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
             <Button
-              onClick={() => onSelectRole('player')}
-              className="w-full h-24 bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
+              onClick={() => setShowProfileManager(true)}
+              className="w-full h-20 bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
               style={{
                 background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(59, 130, 246, 0.8) 100%)',
                 backdropFilter: 'blur(10px)'
               }}
             >
               <div className="flex items-center justify-center space-x-4">
-                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                  <Crown className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <Database className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-xl font-bold text-white">Enter Player Experience</h3>
-                  <p className="text-sm text-slate-200 opacity-90">
-                    Immerse yourself in the spatial romance adventure
+                  <h3 className="text-lg font-bold text-white">Continue Game</h3>
+                  <p className="text-xs text-slate-200 opacity-90">
+                    Load saved progress and manage profiles
                   </p>
                 </div>
               </div>
