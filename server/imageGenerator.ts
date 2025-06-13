@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import type { GameState } from "@shared/schema";
 import AdmZip from 'adm-zip';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { GoogleAuth } from 'google-auth-library';
 
