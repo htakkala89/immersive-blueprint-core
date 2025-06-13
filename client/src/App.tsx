@@ -12,13 +12,13 @@ import Marketplace from "@/pages/marketplace";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={ChapterSelect} />
+      <Route path="/" component={SoloLevelingSpatial} />
       <Route path="/chapter-select" component={ChapterSelect} />
       <Route path="/solo-leveling" component={SoloLevelingSpatial} />
       <Route path="/daily-life-hub" component={DailyLifeHub} />
       <Route path="/marketplace" component={Marketplace} />
       <Route path="/rpg" component={Game} />
-      <Route component={ChapterSelect} />
+      <Route component={SoloLevelingSpatial} />
     </Switch>
   );
 }
