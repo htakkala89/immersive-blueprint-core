@@ -3822,8 +3822,8 @@ export default function SoloLevelingSpatial() {
                       rgba(30, 41, 59, 0.15) 0%, 
                       rgba(51, 65, 85, 0.12) 25%,
                       rgba(30, 41, 59, 0.13) 50%,
-                      rgba(15, 23, 42, 0.4) 75%,
-                      rgba(30, 41, 59, 0.35) 100%
+                      rgba(15, 23, 42, 0.18) 75%,
+                      rgba(30, 41, 59, 0.15) 100%
                     )
                   `,
                   border: '1px solid rgba(139, 92, 246, 0.2)'
