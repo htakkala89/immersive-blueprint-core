@@ -32,6 +32,8 @@ interface CreatorPortalDashboardProps {
 
 export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps) {
   const [showEpisodeBuilder, setShowEpisodeBuilder] = useState(false);
+  const [editingEpisode, setEditingEpisode] = useState<Episode | null>(null);
+  const [viewingEpisode, setViewingEpisode] = useState<Episode | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([
     {
       id: 'EP01_Red_Echo',
@@ -76,12 +78,109 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
   const totalPlays = episodes.reduce((sum, ep) => sum + ep.plays, 0);
   const avgCompletionRate = episodes.filter(ep => ep.plays > 0).reduce((sum, ep) => sum + ep.completionRate, 0) / episodes.filter(ep => ep.plays > 0).length || 0;
 
+  const handleEditEpisode = (episode: Episode) => {
+    setEditingEpisode(episode);
+    setShowEpisodeBuilder(true);
+  };
+
+  const handleViewEpisode = (episode: Episode) => {
+    setViewingEpisode(episode);
+  };
+
+  const handleDeleteEpisode = (episodeId: string) => {
+    if (confirm('Are you sure you want to delete this episode? This action cannot be undone.')) {
+      setEpisodes(prev => prev.filter(ep => ep.id !== episodeId));
+    }
+  };
+
   if (showEpisodeBuilder) {
     return (
       <NarrativeArchitectAI
         isVisible={true}
-        onClose={() => setShowEpisodeBuilder(false)}
+        onClose={() => {
+          setShowEpisodeBuilder(false);
+          setEditingEpisode(null);
+        }}
       />
+    );
+  }
+
+  // Episode Details Modal
+  if (viewingEpisode) {
+    return (
+      <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border border-white/20 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+          <div className="p-6 border-b border-white/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-2">{viewingEpisode.title}</h2>
+                <div className="flex items-center space-x-3">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(viewingEpisode.status)}`}>
+                    {viewingEpisode.status}
+                  </span>
+                  <span className="text-slate-400 text-sm">
+                    Created: {viewingEpisode.created.toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewingEpisode(null)}
+                className="text-white hover:bg-white/10"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="p-6 overflow-y-auto">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2">Description</h3>
+                <p className="text-slate-300">{viewingEpisode.description}</p>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-white/5 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-white">{viewingEpisode.plays}</div>
+                  <div className="text-sm text-slate-400">Total Plays</div>
+                </div>
+                <div className="bg-white/5 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-white">{viewingEpisode.completionRate}%</div>
+                  <div className="text-sm text-slate-400">Completion Rate</div>
+                </div>
+                <div className="bg-white/5 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {Math.round((Date.now() - viewingEpisode.created.getTime()) / (1000 * 60 * 60 * 24))}d
+                  </div>
+                  <div className="text-sm text-slate-400">Days Old</div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <Button
+                  onClick={() => {
+                    setViewingEpisode(null);
+                    handleEditEpisode(viewingEpisode);
+                  }}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                >
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Edit Episode
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setViewingEpisode(null)}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -232,6 +331,8 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                         size="sm"
                         variant="ghost"
                         className="text-white hover:bg-white/10"
+                        onClick={() => handleEditEpisode(episode)}
+                        title="Edit Episode"
                       >
                         <Edit3 className="w-4 h-4" />
                       </Button>
@@ -239,6 +340,8 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                         size="sm"
                         variant="ghost"
                         className="text-white hover:bg-white/10"
+                        onClick={() => handleViewEpisode(episode)}
+                        title="View Episode Details"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -246,6 +349,8 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                         size="sm"
                         variant="ghost"
                         className="text-red-400 hover:bg-red-400/10"
+                        onClick={() => handleDeleteEpisode(episode.id)}
+                        title="Delete Episode"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
