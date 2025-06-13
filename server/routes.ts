@@ -771,7 +771,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Deactivate other profiles
       await db
         .update(playerProfiles)
-        .set({ isActive: false })
+        .set({ isActive: false });
+      
+      // Set new profile as active
+      await db
+        .update(playerProfiles)
+        .set({ isActive: true })
         .where(eq(playerProfiles.id, newProfile.id));
       
       res.json({ profile: newProfile });

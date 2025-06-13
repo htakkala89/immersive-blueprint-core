@@ -290,6 +290,7 @@ export default function SoloLevelingSpatial() {
 
   // Role Selection System - Start with selection screen
   const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>('none');
+  const [loadedProfileId, setLoadedProfileId] = useState<number | null>(null);
 
   // Sommelier Dialog state
   const [showSommelierDialog, setShowSommelierDialog] = useState(false);
@@ -1824,11 +1825,69 @@ export default function SoloLevelingSpatial() {
     return () => clearInterval(interval);
   }, []);
 
+  // Profile loading functionality
+  const loadProfileData = async (profileId: number) => {
+    try {
+      const response = await fetch(`/api/profiles/${profileId}/load`);
+      if (!response.ok) throw new Error('Failed to load profile');
+      
+      const { profile, gameState: loadedGameState } = await response.json();
+      
+      // Update current game state with loaded data
+      setGameState({
+        level: loadedGameState.level || 1,
+        health: loadedGameState.health || 100,
+        maxHealth: loadedGameState.maxHealth || 100,
+        mana: loadedGameState.mana || 50,
+        maxMana: loadedGameState.maxMana || 50,
+        affection: loadedGameState.affectionLevel || 0,
+        currentScene: loadedGameState.currentScene || "hunter_association",
+        inventory: loadedGameState.inventory || [],
+        inCombat: loadedGameState.inCombat || false,
+        gold: loadedGameState.gold || 100,
+        intimacyLevel: loadedGameState.intimacyLevel || 1,
+        energy: loadedGameState.energy || 100,
+        maxEnergy: loadedGameState.maxEnergy || 100,
+        experience: loadedGameState.experience || 0,
+        maxExperience: loadedGameState.maxExperience || 100,
+        apartmentTier: loadedGameState.apartmentTier || 1,
+        playerId: loadedGameState.sessionId,
+        activeQuests: loadedGameState.activeQuests || [],
+        completedQuests: loadedGameState.completedQuests || [],
+        intelligence: loadedGameState.stats?.intelligence || 10,
+        storyFlags: loadedGameState.storyFlags || {},
+        stats: loadedGameState.stats || { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
+        unspentStatPoints: loadedGameState.statPoints || 0,
+        unspentSkillPoints: loadedGameState.skillPoints || 0,
+        storyProgress: loadedGameState.storyProgress || 0,
+        unlockedActivities: loadedGameState.unlockedActivities || [],
+        sharedMemories: loadedGameState.sharedMemories || [],
+        choices: loadedGameState.choices || []
+      });
+
+      console.log('Profile loaded successfully:', profile.profileName);
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
+  };
+
+  // Load profile data when entering player mode with a loaded profile
+  useEffect(() => {
+    if (selectedRole === 'player' && loadedProfileId) {
+      loadProfileData(loadedProfileId);
+    }
+  }, [selectedRole, loadedProfileId]);
+
   // Role Selection Screen - Entry Point
   if (selectedRole === 'none') {
     return (
       <RoleSelectionScreen 
-        onSelectRole={(role) => setSelectedRole(role)}
+        onSelectRole={(role, profileId) => {
+          setSelectedRole(role);
+          if (profileId) {
+            setLoadedProfileId(profileId);
+          }
+        }}
       />
     );
   }

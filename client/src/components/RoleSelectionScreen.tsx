@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import ProfileManager from '@/components/ProfileManager';
 
 interface RoleSelectionScreenProps {
-  onSelectRole: (role: 'player' | 'creator') => void;
+  onSelectRole: (role: 'player' | 'creator', profileId?: number) => void;
 }
 
 export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) {
@@ -16,7 +16,7 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
     setSelectedProfileId(profileId);
     setShowProfileManager(false);
     // Automatically enter player mode with loaded profile
-    onSelectRole('player');
+    onSelectRole('player', profileId);
   };
 
   return (
@@ -133,6 +133,32 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
               </div>
             </Button>
           </motion.div>
+
+          {/* Profile Manager Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="pt-4 border-t border-white/10"
+          >
+            <Button
+              onClick={() => setShowProfileManager(true)}
+              variant="outline"
+              className="w-full h-16 bg-white/5 hover:bg-white/10 border-white/20 hover:border-white/30 backdrop-blur-sm transition-all duration-300 group"
+            >
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <Database className="w-4 h-4 text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-white">Manage Save Profiles</h3>
+                  <p className="text-xs text-slate-300 opacity-80">
+                    Load saved games for team testing
+                  </p>
+                </div>
+              </div>
+            </Button>
+          </motion.div>
         </div>
 
         {/* Footer */}
@@ -170,6 +196,14 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
           />
         ))}
       </div>
+
+      {/* Profile Manager Modal */}
+      <ProfileManager
+        isVisible={showProfileManager}
+        onClose={() => setShowProfileManager(false)}
+        onLoadProfile={handleLoadProfile}
+        currentGameState={{}} // Empty state for role selection screen
+      />
     </div>
   );
 }
