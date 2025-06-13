@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Heart, Shield, Zap, Sword, Package } from 'lucide-react';
 
 interface ShadowSoldier {
   id: string;
@@ -25,6 +27,16 @@ interface RaidEnemy {
   weakPoint?: string;
 }
 
+interface HealingItem {
+  id: string;
+  name: string;
+  healAmount: number;
+  target: 'player' | 'cha' | 'both';
+  icon: string;
+  count: number;
+  description: string;
+}
+
 interface RaidState {
   phase: 'preparation' | 'battle' | 'victory' | 'defeat';
   currentWave: number;
@@ -41,6 +53,8 @@ interface RaidState {
   battleLog: string[];
   shadowSoldiers: ShadowSoldier[];
   activeEffects: string[];
+  healingItems: HealingItem[];
+  animatingDamage: { id: string; damage: number; x: number; y: number }[];
 }
 
 interface RaidSystemProps {
@@ -56,7 +70,39 @@ export function RaidSystem({ isVisible, onClose, onVictory, playerLevel, affecti
   const [selectedAction, setSelectedAction] = useState<string>('');
   const [animationPhase, setAnimationPhase] = useState<string>('');
   const [combatText, setCombatText] = useState<string[]>([]);
+  const [damageAnimations, setDamageAnimations] = useState<any[]>([]);
   const battleLogRef = useRef<HTMLDivElement>(null);
+
+  // Initialize healing items
+  const initialHealingItems: HealingItem[] = [
+    {
+      id: 'health_potion',
+      name: 'Health Potion',
+      healAmount: 200,
+      target: 'player',
+      icon: '🧪',
+      count: 3,
+      description: 'Restores 200 HP to Jin-Woo'
+    },
+    {
+      id: 'mana_crystal',
+      name: 'Mana Crystal', 
+      healAmount: 150,
+      target: 'cha',
+      icon: '💎',
+      count: 2,
+      description: 'Restores 150 HP to Cha Hae-In'
+    },
+    {
+      id: 'elixir',
+      name: 'Divine Elixir',
+      healAmount: 300,
+      target: 'both',
+      icon: '✨',
+      count: 1,
+      description: 'Restores 300 HP to both hunters'
+    }
+  ];
 
   const shadowSoldiers: ShadowSoldier[] = [
     {
@@ -164,8 +210,69 @@ export function RaidSystem({ isVisible, onClose, onVictory, playerLevel, affecti
       expEarned: 0,
       battleLog: ['Gate detected! Preparing for battle...'],
       shadowSoldiers: shadowSoldiers.filter(s => s.available),
-      activeEffects: []
+      activeEffects: [],
+      healingItems: [...initialHealingItems],
+      animatingDamage: []
     });
+  };
+
+  // Use healing item function
+  const useHealingItem = (itemId: string) => {
+    if (!raidState) return;
+    
+    const item = raidState.healingItems.find(i => i.id === itemId);
+    if (!item || item.count <= 0) return;
+    
+    let updatedState = { ...raidState };
+    let newBattleLog = [...raidState.battleLog];
+    
+    // Apply healing
+    if (item.target === 'player' || item.target === 'both') {
+      const healAmount = Math.min(item.healAmount, updatedState.playerMaxHealth - updatedState.playerHealth);
+      updatedState.playerHealth += healAmount;
+      newBattleLog.push(`Jin-Woo restored ${healAmount} HP with ${item.name}!`);
+      
+      // Add healing animation
+      setDamageAnimations(prev => [...prev, {
+        id: Date.now().toString(),
+        value: `+${healAmount}`,
+        x: Math.random() * 200 + 100,
+        y: Math.random() * 100 + 200,
+        color: 'text-green-400',
+        type: 'heal'
+      }]);
+    }
+    
+    if (item.target === 'cha' || item.target === 'both') {
+      const healAmount = Math.min(item.healAmount, updatedState.chaHaeInMaxHealth - updatedState.chaHaeInHealth);
+      updatedState.chaHaeInHealth += healAmount;
+      newBattleLog.push(`Cha Hae-In restored ${healAmount} HP with ${item.name}!`);
+      
+      // Add healing animation
+      setDamageAnimations(prev => [...prev, {
+        id: Date.now().toString() + '_cha',
+        value: `+${healAmount}`,
+        x: Math.random() * 200 + 400,
+        y: Math.random() * 100 + 200,
+        color: 'text-blue-400',
+        type: 'heal'
+      }]);
+    }
+    
+    // Reduce item count
+    updatedState.healingItems = updatedState.healingItems.map(i => 
+      i.id === itemId ? { ...i, count: i.count - 1 } : i
+    );
+    
+    updatedState.battleLog = newBattleLog;
+    setRaidState(updatedState);
+    
+    // Clear animation after delay
+    setTimeout(() => {
+      setDamageAnimations(prev => prev.filter(anim => 
+        !anim.id.includes(Date.now().toString())
+      ));
+    }, 2000);
   };
 
   const executeAction = async (action: string, target?: string) => {
@@ -181,6 +288,16 @@ export function RaidSystem({ isVisible, onClose, onVictory, playerLevel, affecti
         const damage = Math.floor(150 + Math.random() * 100);
         newBattleLog.push(`Jin-Woo strikes with his Demon King's Daggers for ${damage} damage!`);
         newCombatText.push(`-${damage} DMG`);
+        
+        // Add damage animation
+        setDamageAnimations(prev => [...prev, {
+          id: Date.now().toString(),
+          value: `-${damage}`,
+          x: Math.random() * 200 + 600,
+          y: Math.random() * 100 + 150,
+          color: 'text-red-400',
+          type: 'damage'
+        }]);
         
         // Apply damage to first enemy
         if (updatedState.enemies.length > 0) {
@@ -351,6 +468,23 @@ export function RaidSystem({ isVisible, onClose, onVictory, playerLevel, affecti
                      animationPhase.includes('heal') ? '💚' : '✨'}
                   </div>
                 )}
+
+                {/* Floating Damage Numbers */}
+                <AnimatePresence>
+                  {damageAnimations.map((anim) => (
+                    <motion.div
+                      key={anim.id}
+                      initial={{ opacity: 1, y: 0, scale: 1 }}
+                      animate={{ opacity: 0, y: -50, scale: 1.2 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 2 }}
+                      className={`absolute font-bold text-2xl pointer-events-none ${anim.color}`}
+                      style={{ left: anim.x, top: anim.y }}
+                    >
+                      {anim.value}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
 
                 {/* Combat Text */}
                 <div className="absolute top-4 right-4 space-y-2">
