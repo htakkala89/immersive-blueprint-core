@@ -130,7 +130,11 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
         break;
     }
     
-    setTimeout(() => setIsProcessing(false), 1000);
+    // Auto-advance to next command after processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      advanceStory();
+    }, 1000);
   };
 
   const handleChoice = (choice: any) => {
@@ -173,7 +177,7 @@ export default function EpisodePlayer({ episodeId, onBack, onComplete, gameState
     if (currentCommand && pendingChoices.length === 0 && !isProcessing) {
       processCommand(currentCommand);
     }
-  }, [currentCommand, pendingChoices, isProcessing]);
+  }, [currentCommandIndex]);
 
   if (isLoading) {
     return (
