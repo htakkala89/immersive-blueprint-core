@@ -2670,8 +2670,7 @@ export default function SoloLevelingSpatial() {
                 break;
                 
               // Generic location nodes
-              case 'counter':
-              case 'window_seat':
+              case 'generic_counter':
                 // Trigger environmental interaction with thought prompt
                 handleEnvironmentalInteraction({
                   id: nodeId,
