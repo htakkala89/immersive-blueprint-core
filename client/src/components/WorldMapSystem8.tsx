@@ -348,16 +348,52 @@ export function WorldMapSystem8({
           }}
         />
 
-        {/* Header Panel */}
+        {/* Enhanced Header Panel */}
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="absolute top-6 left-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4"
+          className="absolute top-6 left-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4 min-w-[280px]"
         >
-          <h1 className="text-white text-2xl font-bold mb-1">Monarch's Seoul</h1>
-          <div className="text-white/60 text-sm">
+          <h1 className="text-white text-2xl font-bold mb-2">Monarch's Seoul</h1>
+          <div className="text-white/60 text-sm space-y-1">
             <div className="capitalize">{currentTime} • Ethereal Projection</div>
             <div>{getTimeDescription()}</div>
+            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/10">
+              <div className="text-xs">Affection: {playerAffection}/10</div>
+              <div className="flex-1 bg-white/10 rounded-full h-1">
+                <div 
+                  className="bg-purple-400 h-1 rounded-full transition-all duration-500"
+                  style={{ width: `${(playerAffection / 10) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Legend Panel */}
+        <motion.div
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4"
+        >
+          <h3 className="text-white text-sm font-medium mb-3">Legend</h3>
+          <div className="space-y-2 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200"></div>
+              <span className="text-white/80">Cha Hae-In Present</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border border-purple-300"></div>
+              <span className="text-white/80">Available</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border border-blue-300"></div>
+              <span className="text-white/80">Quest Available</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-gray-600 border border-gray-500"></div>
+              <span className="text-white/80">Locked</span>
+            </div>
           </div>
         </motion.div>
 
@@ -401,6 +437,46 @@ export function WorldMapSystem8({
             className="relative w-full h-full max-w-6xl max-h-4xl"
             style={{ transform: `scale(${zoomLevel})` }}
           >
+            {/* Connection Lines Between Zones */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+              {/* Hongdae to Gangnam */}
+              <line
+                x1="31%" y1="39%"
+                x2="72%" y2="55%"
+                stroke="rgba(147, 51, 234, 0.3)"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+                className="animate-pulse"
+              />
+              {/* Gangnam to Jung */}
+              <line
+                x1="72%" y1="70%"
+                x2="55%" y2="77%"
+                stroke="rgba(147, 51, 234, 0.3)"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+                className="animate-pulse"
+              />
+              {/* Yeongdeungpo to Hongdae */}
+              <line
+                x1="29%" y1="68%"
+                x2="31%" y2="53%"
+                stroke="rgba(147, 51, 234, 0.3)"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+                className="animate-pulse"
+              />
+              {/* Personal to Gangnam */}
+              <line
+                x1="80%" y1="35%"
+                x2="72%" y2="55%"
+                stroke="rgba(168, 85, 247, 0.4)"
+                strokeWidth="3"
+                strokeDasharray="3,7"
+                className="animate-pulse"
+              />
+            </svg>
+
             {/* Zone Panels */}
             {zones.map((zone) => (
               <motion.div
@@ -422,19 +498,20 @@ export function WorldMapSystem8({
                 }}
                 whileHover={{ scale: 1.02 }}
               >
-                {/* Zone Title */}
-                <AnimatePresence>
-                  {focusedZone === zone.id && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute -top-8 left-4 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/20"
-                    >
-                      <h3 className="text-white text-sm font-medium">{zone.name}</h3>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Zone Title - Always Visible */}
+                <div className="absolute -top-6 left-2 right-2">
+                  <motion.div
+                    className={`bg-black/40 backdrop-blur-sm px-3 py-1 rounded-lg border transition-all duration-300 ${
+                      focusedZone === zone.id 
+                        ? 'border-white/40 bg-black/60' 
+                        : 'border-white/20'
+                    }`}
+                    animate={focusedZone === zone.id ? { scale: 1.05 } : { scale: 1 }}
+                  >
+                    <h3 className="text-white text-xs font-medium text-center">{zone.name}</h3>
+                    <div className="text-white/60 text-[10px] text-center mt-0.5">{zone.description}</div>
+                  </motion.div>
+                </div>
 
                 {/* Location Nodes */}
                 {zone.locations.map((location) => (
@@ -451,28 +528,34 @@ export function WorldMapSystem8({
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {/* Location Orb */}
+                    {/* Enhanced Location Orb */}
                     <div className="relative">
                       <motion.div
-                        className={`w-6 h-6 rounded-full relative ${
-                          location.state === 'locked' ? 'bg-gray-600' :
-                          location.state === 'presence' ? 'bg-yellow-400' :
-                          location.state === 'quest' ? 'bg-yellow-400' :
-                          location.state === 'gate' ? 'bg-red-400' : 'bg-purple-400'
+                        className={`w-8 h-8 rounded-full relative border-2 ${
+                          location.state === 'locked' 
+                            ? 'bg-gray-600 border-gray-500' :
+                          location.state === 'presence' 
+                            ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 border-yellow-200' :
+                          location.state === 'quest' 
+                            ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300' :
+                          location.state === 'gate' 
+                            ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-300' 
+                            : 'bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300'
                         }`}
                         animate={
                           location.state === 'presence' ? {
                             boxShadow: [
-                              '0 0 10px rgba(255, 215, 0, 0.6)',
-                              '0 0 20px rgba(255, 215, 0, 0.8)',
-                              '0 0 10px rgba(255, 215, 0, 0.6)'
-                            ]
+                              '0 0 15px rgba(255, 215, 0, 0.7)',
+                              '0 0 25px rgba(255, 215, 0, 0.9)',
+                              '0 0 15px rgba(255, 215, 0, 0.7)'
+                            ],
+                            scale: [1, 1.1, 1]
                           } :
                           location.state !== 'locked' ? {
                             boxShadow: [
-                              '0 0 5px rgba(147, 51, 234, 0.6)',
-                              '0 0 15px rgba(147, 51, 234, 0.8)',
-                              '0 0 5px rgba(147, 51, 234, 0.6)'
+                              '0 0 8px rgba(147, 51, 234, 0.6)',
+                              '0 0 18px rgba(147, 51, 234, 0.8)',
+                              '0 0 8px rgba(147, 51, 234, 0.6)'
                             ]
                           } : {}
                         }
@@ -482,31 +565,37 @@ export function WorldMapSystem8({
                         
                         {location.state === 'locked' && (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <Lock className="w-3 h-3 text-white/60" />
+                            <Lock className="w-4 h-4 text-white/70" />
                           </div>
                         )}
                       </motion.div>
 
-                      {/* Location Label - Only show for hovered location */}
+                      {/* Enhanced Location Label */}
                       <AnimatePresence>
                         {hoveredLocation === location.id && (
                           <motion.div
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 5 }}
-                            className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10"
+                            initial={{ opacity: 0, y: 5, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 5, scale: 0.9 }}
+                            className="absolute top-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-20"
                           >
-                            <div className={`backdrop-blur-sm px-3 py-2 rounded-lg text-sm border shadow-lg ${
+                            <div className={`backdrop-blur-md px-4 py-2 rounded-xl text-sm border-2 shadow-xl ${
                               location.state === 'presence' 
-                                ? 'bg-yellow-400/20 border-yellow-400/50 text-yellow-100'
-                                : 'bg-black/80 border-white/30 text-white'
+                                ? 'bg-gradient-to-br from-yellow-400/30 to-yellow-500/20 border-yellow-400/60 text-yellow-100'
+                                : location.state === 'locked'
+                                ? 'bg-gradient-to-br from-gray-600/30 to-gray-700/20 border-gray-500/60 text-gray-200'
+                                : 'bg-gradient-to-br from-purple-500/30 to-purple-600/20 border-purple-400/60 text-white'
                             }`}>
-                              <div className="flex items-center gap-2">
-                                {location.name}
-                                {location.state === 'presence' && (
-                                  <span className="text-yellow-300 text-xs">✨ Cha Hae-In is here</span>
-                                )}
-                              </div>
+                              <div className="font-medium">{location.name}</div>
+                              <div className="text-xs opacity-80 mt-1">{location.description}</div>
+                              {location.state === 'presence' && (
+                                <div className="text-yellow-300 text-xs mt-1 flex items-center gap-1">
+                                  <span className="animate-pulse">✨</span> Cha Hae-In is here
+                                </div>
+                              )}
+                              {location.state === 'locked' && (
+                                <div className="text-gray-400 text-xs mt-1">{location.unlockCondition}</div>
+                              )}
                             </div>
                           </motion.div>
                         )}
