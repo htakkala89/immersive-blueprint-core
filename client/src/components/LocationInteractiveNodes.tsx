@@ -600,9 +600,9 @@ export function LocationInteractiveNodes({
     });
   };
 
-  // Anti-overlap system: Ensure minimum distance between nodes
+  // Anti-overlap system: Ensure minimum distance between nodes for mobile touch
   const adjustNodePositions = (rawNodes: InteractiveNode[]): InteractiveNode[] => {
-    const MINIMUM_DISTANCE = 15; // 15% screen distance minimum
+    const MINIMUM_DISTANCE = 25; // 25% screen distance minimum for mobile touch
     const adjustedNodes = [...rawNodes];
     
     for (let i = 0; i < adjustedNodes.length; i++) {
@@ -620,12 +620,12 @@ export function LocationInteractiveNodes({
           const newX = node1.position.x + Math.cos(angle) * MINIMUM_DISTANCE;
           const newY = node1.position.y + Math.sin(angle) * MINIMUM_DISTANCE;
           
-          // Keep within screen bounds
+          // Keep within screen bounds with more padding for mobile
           adjustedNodes[j] = {
             ...node2,
             position: {
-              x: Math.max(10, Math.min(90, newX)),
-              y: Math.max(10, Math.min(90, newY))
+              x: Math.max(15, Math.min(85, newX)),
+              y: Math.max(15, Math.min(85, newY))
             }
           };
         }
@@ -850,14 +850,14 @@ export function LocationInteractiveNodes({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            {/* Node Orb with reduced size to prevent overlapping */}
+            {/* Mobile-friendly large node */}
             <motion.div
-              className="w-4 h-4 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
+              className="w-12 h-12 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
               style={{
-                minWidth: '16px',
-                minHeight: '16px',
-                padding: '2px', // Reduced padding
-                margin: '4px' // Reduced margin
+                minWidth: '48px',
+                minHeight: '48px',
+                padding: '8px',
+                margin: '16px'
               }}
               animate={available ? {
                 boxShadow: [
@@ -868,7 +868,7 @@ export function LocationInteractiveNodes({
               } : {}}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <IconComponent className="w-2 h-2 text-white" />
+              <IconComponent className="w-6 h-6 text-white" />
             </motion.div>
 
             {/* Node Label with 8px spacing from orb */}
