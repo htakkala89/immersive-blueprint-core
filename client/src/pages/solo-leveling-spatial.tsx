@@ -242,7 +242,7 @@ export default function SoloLevelingSpatial() {
   const [isLongPressing, setIsLongPressing] = useState(false);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const [isFocusMode, setIsFocusMode] = useState(false);
-  const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy' | 'romantic' | 'surprised' | 'contemplative' | 'amused' | 'concerned'>('focused');
+  const [chaHaeInExpression, setChaHaeInExpression] = useState<'neutral' | 'focused' | 'recognition' | 'welcoming' | 'happy' | 'romantic' | 'surprised' | 'contemplative' | 'amused' | 'concerned' | 'loving'>('focused');
   const [showLivingPortrait, setShowLivingPortrait] = useState(false);
   const [emotionalImage, setEmotionalImage] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
@@ -1118,6 +1118,43 @@ export default function SoloLevelingSpatial() {
 
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
+    
+    // Check if this is an episode choice selection
+    if (activeEpisode && thoughtPrompts.length > 0) {
+      // Handle episode choice selection
+      const currentBeat = activeEpisode.beats[episodeBeatIndex];
+      if (currentBeat?.actions[0]?.type === 'choice_node') {
+        const action = currentBeat.actions[0];
+        const selectedChoice = action.choices?.find((choice: any) => choice.text === message);
+        
+        if (selectedChoice) {
+          // Process the selected choice
+          setCurrentDialogue(selectedChoice.result || `You chose: ${message}`);
+          setDialogueActive(true);
+          setShowLivingPortrait(true);
+          
+          // Apply choice effects if any
+          if (selectedChoice.effects) {
+            setGameState(prev => ({
+              ...prev,
+              affection: Math.min(100, prev.affection + (selectedChoice.effects.affection || 0)),
+              gold: (prev.gold || 0) + (selectedChoice.effects.money || 0),
+              intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + (selectedChoice.effects.intimacy || 0))
+            }));
+          }
+          
+          // Clear thought prompts and advance episode
+          setThoughtPrompts([]);
+          
+          // Auto-advance episode after a brief pause
+          setTimeout(() => {
+            continueEpisode();
+          }, 2000);
+          
+          return;
+        }
+      }
+    }
     
     // Add user message to conversation history
     setConversationHistory(prev => [...prev, {
@@ -3936,6 +3973,7 @@ export default function SoloLevelingSpatial() {
                                           chaHaeInExpression === 'amused' ? '#06b6d4' :
                                           chaHaeInExpression === 'contemplative' ? '#6366f1' :
                                           chaHaeInExpression === 'concerned' ? '#ef4444' :
+                                          chaHaeInExpression === 'loving' ? '#f472b6' :
                                           chaHaeInExpression === 'focused' ? '#8b5cf6' : '#64748b'
                         }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -3947,6 +3985,7 @@ export default function SoloLevelingSpatial() {
                            chaHaeInExpression === 'amused' ? '😄' :
                            chaHaeInExpression === 'contemplative' ? '🤔' :
                            chaHaeInExpression === 'concerned' ? '😟' :
+                           chaHaeInExpression === 'loving' ? '🥰' :
                            chaHaeInExpression === 'focused' ? '🎯' : '😐'}
                         </span>
                       </motion.div>
