@@ -3765,7 +3765,9 @@ export default function SoloLevelingSpatial() {
           <motion.div
             className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-[9999] flex flex-col"
             style={{ 
-              maxHeight: '75vh',
+              height: 'calc(70vh - max(20px, var(--safe-area-inset-bottom)))',
+              maxHeight: 'calc(70vh - max(20px, var(--safe-area-inset-bottom)))',
+              paddingBottom: 'max(20px, var(--safe-area-inset-bottom))',
               backdropFilter: 'blur(120px) saturate(300%)',
               background: `
                 linear-gradient(135deg, 
@@ -3787,7 +3789,7 @@ export default function SoloLevelingSpatial() {
             exit={{ y: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            <div className="flex flex-col h-full min-h-0 p-4 pb-safe">
+            <div className="flex flex-col h-full min-h-0 p-4" style={{ paddingBottom: '0' }}>
               
               {/* Close Button - Enhanced Glassmorphism */}
               <motion.button
@@ -3980,7 +3982,7 @@ export default function SoloLevelingSpatial() {
               </motion.div>
               
               {/* Bottom Section - Always Visible */}
-              <div className="space-y-3">
+              <div className="space-y-3" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
                 {/* Thought Prompts */}
                 {thoughtPrompts.length > 0 && (
                   <motion.div
