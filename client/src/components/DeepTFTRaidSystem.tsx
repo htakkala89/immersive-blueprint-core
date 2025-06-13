@@ -619,6 +619,7 @@ export function DeepTFTRaidSystem({
 
   // Generate shop
   const generateShop = () => {
+    console.log('generateShop called - characterPool:', Object.keys(characterPool).length, 'SHADOW_DATA:', SHADOW_DATA.length);
     const newShop: ShopSlot[] = [];
     
     for (let i = 0; i < 5; i++) {
@@ -633,9 +634,13 @@ export function DeepTFTRaidSystem({
         characterPool[char.id] > 0
       );
       
+      console.log('Available chars for shop slot', i, ':', availableChars.length);
+      
       if (availableChars.length > 0) {
         const randomChar = availableChars[Math.floor(Math.random() * availableChars.length)];
         const character = createCharacterFromData(randomChar);
+        
+        console.log('Generated character:', character.name, 'cost:', randomChar.tier);
         
         newShop.push({
           character,
@@ -643,6 +648,7 @@ export function DeepTFTRaidSystem({
           locked: false
         });
       } else {
+        console.log('No available characters for shop slot', i);
         newShop.push({
           character: null,
           cost: 0,
@@ -651,13 +657,18 @@ export function DeepTFTRaidSystem({
       }
     }
     
+    console.log('Final shop:', newShop.map(s => s.character?.name || 'empty'));
     setShop(newShop);
   };
 
   // Buy character from shop
   const buyCharacter = (shopIndex: number) => {
     const slot = shop[shopIndex];
-    if (!slot.character || gold < slot.cost) return;
+    console.log('buyCharacter called:', { shopIndex, slot, gold, cost: slot?.cost });
+    if (!slot.character || gold < slot.cost) {
+      console.log('Purchase cancelled - no character or insufficient gold');
+      return;
+    }
     
     // Check for available bench space
     const benchIndex = bench.findIndex(unit => unit === null);
@@ -717,6 +728,7 @@ export function DeepTFTRaidSystem({
 
   // Drag and drop handlers
   const handleDragStart = (unit: Character, source: 'board' | 'bench', index: number) => {
+    console.log('handleDragStart:', { unit: unit.name, source, index });
     setDraggedUnit(unit);
     setDragSource(source);
     setDragSourceIndex(index);
@@ -731,7 +743,11 @@ export function DeepTFTRaidSystem({
   };
 
   const handleDrop = (targetIndex: number, targetLocation: 'board' | 'bench') => {
-    if (!draggedUnit || !dragSource || dragSourceIndex === null) return;
+    console.log('handleDrop called:', { targetIndex, targetLocation, draggedUnit: draggedUnit?.name, dragSource, dragSourceIndex });
+    if (!draggedUnit || !dragSource || dragSourceIndex === null) {
+      console.log('Drop cancelled - missing drag state');
+      return;
+    }
     
     // Check team size limit for board placement (only if coming from bench to board)
     if (targetLocation === 'board' && dragSource === 'bench') {
@@ -856,9 +872,17 @@ export function DeepTFTRaidSystem({
     setIsAutoCombat(true);
   };
 
-  // Initialize shop on component mount
+  // Initialize character pool and shop on component mount
   useEffect(() => {
-    generateShop();
+    // Initialize character pool with available units
+    const initialPool: {[key: string]: number} = {};
+    SHADOW_DATA.forEach(char => {
+      initialPool[char.id] = char.tier <= 3 ? 30 : char.tier === 4 ? 20 : 10; // Higher tier = fewer copies
+    });
+    setCharacterPool(initialPool);
+    
+    // Generate initial shop
+    setTimeout(() => generateShop(), 100); // Small delay to ensure character pool is set
   }, []);
 
   // Combat simulation
@@ -1278,7 +1302,7 @@ export function DeepTFTRaidSystem({
 
         {/* Permanent Bench Area - Above Shop */}
         <div className="absolute bottom-20 left-28 right-8 h-16 bg-gradient-to-b from-slate-600 to-slate-700 rounded-lg border border-slate-500 p-2">
-          <h4 className="text-white font-bold text-xs mb-1">Bench (0/9)</h4>
+          <h4 className="text-white font-bold text-xs mb-1">Bench ({bench.filter(u => u !== null).length}/9)</h4>
           <div className="flex gap-1">
             {bench.map((unit, index) => (
               <div
