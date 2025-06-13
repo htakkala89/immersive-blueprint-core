@@ -3768,18 +3768,18 @@ export default function SoloLevelingSpatial() {
               height: 'calc(70vh - max(20px, var(--safe-area-inset-bottom)))',
               maxHeight: 'calc(70vh - max(20px, var(--safe-area-inset-bottom)))',
               paddingBottom: 'max(20px, var(--safe-area-inset-bottom))',
-              backdropFilter: 'blur(120px) saturate(300%)',
+              backdropFilter: 'blur(20px) saturate(180%)',
               background: `
                 linear-gradient(135deg, 
-                  rgba(30, 41, 59, 0.95) 0%, 
-                  rgba(51, 65, 85, 0.85) 25%,
-                  rgba(30, 41, 59, 0.9) 50%,
-                  rgba(15, 23, 42, 0.95) 75%,
-                  rgba(30, 41, 59, 0.9) 100%
+                  rgba(30, 41, 59, 0.3) 0%, 
+                  rgba(51, 65, 85, 0.25) 25%,
+                  rgba(30, 41, 59, 0.28) 50%,
+                  rgba(15, 23, 42, 0.35) 75%,
+                  rgba(30, 41, 59, 0.25) 100%
                 ),
-                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.04) 0%, transparent 50%)
               `,
               border: '1px solid rgba(139, 92, 246, 0.3)',
               borderBottom: 'none'
@@ -3795,9 +3795,9 @@ export default function SoloLevelingSpatial() {
               <motion.button
                 className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-colors z-[10000]"
                 style={{
-                  backdropFilter: 'blur(40px) saturate(200%)',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                  backdropFilter: 'blur(12px) saturate(150%)',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)'
                 }}
                 onClick={exitFocusMode}
                 whileHover={{ 
@@ -3816,12 +3816,12 @@ export default function SoloLevelingSpatial() {
               <motion.div
                 className="rounded-lg p-4 flex-1 overflow-y-auto mb-3"
                 style={{
-                  backdropFilter: 'blur(60px) saturate(200%)',
+                  backdropFilter: 'blur(12px) saturate(150%)',
                   background: `
                     linear-gradient(135deg, 
-                      rgba(30, 41, 59, 0.4) 0%, 
-                      rgba(51, 65, 85, 0.3) 25%,
-                      rgba(30, 41, 59, 0.35) 50%,
+                      rgba(30, 41, 59, 0.15) 0%, 
+                      rgba(51, 65, 85, 0.12) 25%,
+                      rgba(30, 41, 59, 0.13) 50%,
                       rgba(15, 23, 42, 0.4) 75%,
                       rgba(30, 41, 59, 0.35) 100%
                     )
@@ -3996,17 +3996,17 @@ export default function SoloLevelingSpatial() {
                         key={index}
                         className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
                         style={{
-                          backdropFilter: 'blur(40px) saturate(180%)',
+                          backdropFilter: 'blur(12px) saturate(150%)',
                           background: `
                             linear-gradient(135deg, 
-                              rgba(139, 92, 246, 0.25) 0%, 
-                              rgba(168, 85, 247, 0.2) 25%,
-                              rgba(139, 92, 246, 0.22) 50%,
-                              rgba(124, 58, 237, 0.25) 75%,
-                              rgba(139, 92, 246, 0.2) 100%
+                              rgba(139, 92, 246, 0.15) 0%, 
+                              rgba(168, 85, 247, 0.12) 25%,
+                              rgba(139, 92, 246, 0.13) 50%,
+                              rgba(124, 58, 237, 0.15) 75%,
+                              rgba(139, 92, 246, 0.12) 100%
                             )
                           `,
-                          border: '1px solid rgba(139, 92, 246, 0.4)'
+                          border: '1px solid rgba(139, 92, 246, 0.25)'
                         }}
                         whileHover={{ 
                           scale: 1.05,
@@ -4043,19 +4043,19 @@ export default function SoloLevelingSpatial() {
                       updateExpressionBasedOnInput(e.target.value);
                     }}
                     placeholder="Speak from the heart..."
-                    className="flex-1 text-white placeholder:text-slate-400 rounded-lg px-3 py-2 text-sm border-0 outline-none"
+                    className="flex-1 text-white placeholder:text-slate-300/70 rounded-lg px-3 py-2 text-sm border-0 outline-none"
                     style={{
-                      backdropFilter: 'blur(40px) saturate(180%)',
+                      backdropFilter: 'blur(12px) saturate(150%)',
                       background: `
                         linear-gradient(135deg, 
-                          rgba(30, 41, 59, 0.3) 0%, 
-                          rgba(51, 65, 85, 0.25) 25%,
-                          rgba(30, 41, 59, 0.28) 50%,
-                          rgba(15, 23, 42, 0.3) 75%,
-                          rgba(30, 41, 59, 0.25) 100%
+                          rgba(30, 41, 59, 0.15) 0%, 
+                          rgba(51, 65, 85, 0.12) 25%,
+                          rgba(30, 41, 59, 0.13) 50%,
+                          rgba(15, 23, 42, 0.18) 75%,
+                          rgba(30, 41, 59, 0.12) 100%
                         )
                       `,
-                      border: '1px solid rgba(139, 92, 246, 0.3)'
+                      border: '1px solid rgba(139, 92, 246, 0.2)'
                     }}
                     onKeyPress={(e) => e.key === 'Enter' && handlePlayerResponse(playerInput)}
                   />
@@ -4063,15 +4063,15 @@ export default function SoloLevelingSpatial() {
                     onClick={() => handlePlayerResponse(playerInput)}
                     className="rounded-lg px-4 py-2 text-white disabled:opacity-50"
                     style={{
-                      backdropFilter: 'blur(40px) saturate(180%)',
+                      backdropFilter: 'blur(12px) saturate(150%)',
                       background: `
                         linear-gradient(135deg, 
-                          rgba(139, 92, 246, 0.6) 0%, 
-                          rgba(236, 72, 153, 0.5) 50%,
-                          rgba(139, 92, 246, 0.6) 100%
+                          rgba(139, 92, 246, 0.3) 0%, 
+                          rgba(236, 72, 153, 0.25) 50%,
+                          rgba(139, 92, 246, 0.3) 100%
                         )
                       `,
-                      border: '1px solid rgba(139, 92, 246, 0.4)'
+                      border: '1px solid rgba(139, 92, 246, 0.25)'
                     }}
                     whileHover={{
                       background: `
