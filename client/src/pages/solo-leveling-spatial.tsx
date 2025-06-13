@@ -3931,8 +3931,8 @@ export default function SoloLevelingSpatial() {
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-3 overflow-y-auto scroll-smooth"
-                      style={{ height: '280px', maxHeight: '280px' }}
+                      className="space-y-3 overflow-y-auto scroll-smooth flex-1"
+                      style={{ minHeight: '200px' }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
