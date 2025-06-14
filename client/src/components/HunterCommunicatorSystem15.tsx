@@ -906,7 +906,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                   backdropFilter: 'blur(20px)',
                 }}
               >
-                <div className="p-4 md:p-6">
+                <div className="p-6 md:p-6">
                   <h3 
                     className="text-lg font-semibold text-white mb-4 md:mb-6"
                     style={{
@@ -916,7 +916,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                   >
                     Conversations
                   </h3>
-                  <div className="space-y-2 md:space-y-3">
+                  <div className="space-y-4 md:space-y-3">
                     {conversations.map((conversation) => (
                       <motion.div
                         key={conversation.id}
@@ -940,16 +940,16 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             ? '1px solid rgba(147,51,234,0.3)'
                             : '1px solid rgba(255,255,255,0.1)',
                           borderRadius: '20px',
-                          padding: '12px 16px',
-                          minHeight: '72px',
+                          padding: '20px 24px',
+                          minHeight: '88px',
                           boxShadow: selectedConversation === conversation.id
                             ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 25px rgba(147,51,234,0.15), 0 0 20px rgba(147,51,234,0.1)'
                             : 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)'
                         }}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           <div 
-                            className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden"
+                            className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
                             style={{
                               background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                               backdropFilter: 'blur(10px)',
@@ -973,7 +973,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
                               <span 
-                                className="font-medium text-white"
+                                className="font-medium text-white text-lg"
                                 style={{
                                   textShadow: '0 1px 2px rgba(0,0,0,0.8)',
                                   filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
@@ -996,7 +996,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               )}
                             </div>
                             <p 
-                              className="text-sm text-slate-300 mb-1 leading-relaxed"
+                              className="text-base text-slate-300 mb-2 leading-relaxed"
                               style={{
                                 textShadow: '0 1px 2px rgba(0,0,0,0.8)',
                                 display: '-webkit-box',
@@ -1009,7 +1009,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               {conversation.lastMessage.content}
                             </p>
                             <span 
-                              className="text-xs text-slate-400"
+                              className="text-sm text-slate-400"
                               style={{
                                 textShadow: '0 1px 1px rgba(0,0,0,0.8)'
                               }}
