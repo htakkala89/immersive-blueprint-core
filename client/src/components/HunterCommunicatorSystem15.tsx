@@ -676,7 +676,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       <motion.div
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
-        className="w-full max-w-4xl h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
+        className="w-full max-w-lg md:max-w-4xl h-[85vh] md:h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
         style={{
           background: `
             linear-gradient(135deg, 
@@ -697,7 +697,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
           backdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
           WebkitBackdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: '24px',
+          borderRadius: '16px',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}
       >
@@ -722,7 +722,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         />
         {/* Enhanced Header */}
         <div 
-          className="flex items-center justify-between p-6 relative z-20"
+          className="flex items-center justify-between p-4 md:p-6 relative z-20"
           style={{
             background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
             backdropFilter: 'blur(20px)',
@@ -779,7 +779,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-all duration-200"
+            className="text-slate-400 hover:text-white transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center"
             style={{
               background: 'rgba(255,255,255,0.05)',
               backdropFilter: 'blur(10px)',
@@ -802,7 +802,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         >
           <button
             onClick={() => setActiveTab('messages')}
-            className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 transition-all duration-300 relative ${
+            className={`flex-1 px-3 py-4 md:px-4 md:py-3 flex items-center justify-center gap-2 transition-all duration-300 relative min-h-[48px] ${
               activeTab === 'messages'
                 ? 'text-blue-300'
                 : 'text-slate-400 hover:text-white'
@@ -848,7 +848,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
           </button>
           <button
             onClick={() => setActiveTab('alerts')}
-            className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 transition-all duration-300 relative ${
+            className={`flex-1 px-3 py-4 md:px-4 md:py-3 flex items-center justify-center gap-2 transition-all duration-300 relative min-h-[48px] ${
               activeTab === 'alerts'
                 ? 'text-blue-300'
                 : 'text-slate-400 hover:text-white'
@@ -900,13 +900,13 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
             <>
               {/* Enhanced Conversation List with Floating Pills */}
               <div 
-                className="w-1/3 relative z-10"
+                className="w-full md:w-1/3 relative z-10"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
                   backdropFilter: 'blur(20px)',
                 }}
               >
-                <div className="p-6">
+                <div className="p-4 md:p-6">
                   <h3 
                     className="text-lg font-semibold text-white mb-6"
                     style={{
