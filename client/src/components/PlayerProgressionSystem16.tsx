@@ -298,7 +298,7 @@ export function PlayerProgressionSystem16({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-7xl h-[90vh] mx-4"
+        className="w-full max-w-7xl h-[90vh] mx-4 flex flex-col overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(51, 65, 85, 0.9) 100%)',
           backdropFilter: 'blur(20px) saturate(180%)',
@@ -386,11 +386,11 @@ export function PlayerProgressionSystem16({
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">
           {activeTab === 'stats' && (
-            <div className="h-full overflow-y-auto character-scrollbar p-6">
+            <div className="h-full overflow-y-auto character-scrollbar p-3 md:p-6" style={{ WebkitOverflowScrolling: 'touch' }}>
               <div className="max-w-4xl mx-auto space-y-6">
                 {/* Enhanced Hunter Profile Card */}
                 <motion.div 
-                  className="relative rounded-xl p-6 border overflow-hidden"
+                  className="relative rounded-xl p-4 md:p-6 border overflow-hidden"
                   style={{
                     background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%)',
                     backdropFilter: 'blur(20px) saturate(180%)',
@@ -413,7 +413,7 @@ export function PlayerProgressionSystem16({
                     </h3>
                     
                     {/* Profile Stats Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6 mb-4 md:mb-6">
                       <motion.div 
                         className="text-center p-4 rounded-lg bg-slate-800/50 border border-slate-700/50"
                         whileHover={{ scale: 1.02 }}
@@ -577,7 +577,7 @@ export function PlayerProgressionSystem16({
                   </div>
                   
                   {/* Stats Grid */}
-                  <div className="p-6">
+                  <div className="p-3 md:p-6">
                     <div className="grid gap-4">
                       {Object.entries(playerData.stats || {}).length > 0 ? 
                         Object.entries(playerData.stats || {}).map(([statKey, value], index) => {
