@@ -676,7 +676,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       <motion.div
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
-        className="w-full max-w-lg md:max-w-4xl h-[85vh] md:h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
+        className="w-full max-w-full md:max-w-4xl h-[90vh] md:h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
         style={{
           background: `
             linear-gradient(135deg, 
@@ -900,7 +900,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
             <>
               {/* Enhanced Conversation List with Floating Pills */}
               <div 
-                className="w-full md:w-1/3 relative z-10"
+                className="w-full md:w-1/3 relative z-10 flex-1 md:flex-none"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
                   backdropFilter: 'blur(20px)',
@@ -916,7 +916,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                   >
                     Conversations
                   </h3>
-                  <div className="space-y-6 md:space-y-3">
+                  <div className="space-y-8 md:space-y-3">
                     {conversations.map((conversation) => (
                       <motion.div
                         key={conversation.id}
@@ -939,17 +939,17 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           border: selectedConversation === conversation.id
                             ? '1px solid rgba(147,51,234,0.3)'
                             : '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '20px',
-                          padding: '32px 32px',
-                          minHeight: '140px',
+                          borderRadius: '24px',
+                          padding: '40px 32px',
+                          minHeight: '180px',
                           boxShadow: selectedConversation === conversation.id
                             ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 25px rgba(147,51,234,0.15), 0 0 20px rgba(147,51,234,0.1)'
                             : 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)'
                         }}
                       >
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-6">
                           <div 
-                            className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+                            className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
                             style={{
                               background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                               backdropFilter: 'blur(10px)',
@@ -973,7 +973,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
                               <span 
-                                className="font-medium text-white text-xl"
+                                className="font-medium text-white text-2xl"
                                 style={{
                                   textShadow: '0 1px 2px rgba(0,0,0,0.8)',
                                   filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
@@ -996,7 +996,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               )}
                             </div>
                             <p 
-                              className="text-lg text-slate-300 mb-3 leading-relaxed"
+                              className="text-xl text-slate-300 mb-4 leading-relaxed"
                               style={{
                                 textShadow: '0 1px 2px rgba(0,0,0,0.8)',
                                 display: '-webkit-box',
@@ -1009,7 +1009,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               {conversation.lastMessage.content}
                             </p>
                             <span 
-                              className="text-base text-slate-400"
+                              className="text-lg text-slate-400"
                               style={{
                                 textShadow: '0 1px 1px rgba(0,0,0,0.8)'
                               }}
