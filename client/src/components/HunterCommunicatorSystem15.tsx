@@ -667,7 +667,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 50 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-2xl flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-2xl flex items-center justify-center z-50 p-2 md:p-4"
       style={{
         backdropFilter: 'blur(60px) saturate(180%)',
         background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.4), rgba(0,0,0,0.7))'
@@ -940,16 +940,16 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             ? '1px solid rgba(147,51,234,0.3)'
                             : '1px solid rgba(255,255,255,0.1)',
                           borderRadius: '24px',
-                          padding: '40px 32px',
-                          minHeight: '180px',
+                          padding: '48px 36px',
+                          minHeight: '220px',
                           boxShadow: selectedConversation === conversation.id
                             ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 25px rgba(147,51,234,0.15), 0 0 20px rgba(147,51,234,0.1)'
                             : 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)'
                         }}
                       >
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-8">
                           <div 
-                            className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+                            className="w-28 h-28 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
                             style={{
                               background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                               backdropFilter: 'blur(10px)',
