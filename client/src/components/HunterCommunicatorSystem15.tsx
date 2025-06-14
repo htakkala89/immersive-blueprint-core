@@ -1400,7 +1400,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             value={currentInput}
                             onChange={(e) => setCurrentInput(e.target.value)}
                             placeholder={canSendMessages ? "Type your message..." : "Select a conversation to start messaging"}
-                            className="flex-1 min-h-[50px] max-h-32 text-white placeholder-slate-400 border-0 resize-none"
+                            className="flex-1 min-h-[52px] max-h-32 text-white placeholder-slate-400 border-0 resize-none text-base"
                             disabled={!canSendMessages}
                             style={{
                               background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
@@ -1409,7 +1409,9 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               borderRadius: '16px',
                               padding: '16px',
                               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.1)',
-                              textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                              textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                              WebkitUserSelect: 'text',
+                              userSelect: 'text'
                             }}
                             onKeyPress={(e) => {
                               if (e.key === 'Enter' && !e.shiftKey) {
