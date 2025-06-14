@@ -29,7 +29,7 @@ import { TalkOnBalconyModal } from '@/components/TalkOnBalconyModal';
 import { MyeongdongDinnerModal } from '@/components/MyeongdongDinnerModal';
 import { DevToolsPanel } from '@/components/DevToolsPanel';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
-import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
+import { HunterCommunicatorMobile } from '@/components/HunterCommunicatorMobile';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
@@ -5256,7 +5256,7 @@ export default function SoloLevelingSpatial() {
       />
 
       {/* System 15: Hunter's Communicator */}
-      <HunterCommunicatorSystem15
+      <HunterCommunicatorMobile
         isVisible={showCommunicator}
         onClose={() => setShowCommunicator(false)}
         onQuestAccept={handleQuestAccept}
