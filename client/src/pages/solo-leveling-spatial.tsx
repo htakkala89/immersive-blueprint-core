@@ -2127,7 +2127,8 @@ export default function SoloLevelingSpatial() {
       const { profile, gameState: loadedGameState } = await response.json();
       
       // Update current game state with loaded data
-      setGameState({
+      setGameState(prev => ({
+        ...prev,
         level: loadedGameState.level || 1,
         health: loadedGameState.health || 100,
         maxHealth: loadedGameState.maxHealth || 100,
@@ -2147,15 +2148,22 @@ export default function SoloLevelingSpatial() {
         playerId: loadedGameState.sessionId,
         activeQuests: loadedGameState.activeQuests || [],
         completedQuests: loadedGameState.completedQuests || [],
-        intelligence: loadedGameState.stats?.intelligence || 10,
+        stats: loadedGameState.stats && Object.keys(loadedGameState.stats).length > 0 
+          ? loadedGameState.stats 
+          : {
+              strength: 25,
+              agility: 20,
+              vitality: 18,
+              intelligence: 15,
+              sense: 12
+            },
+        unspentStatPoints: loadedGameState.statPoints || 5,
+        unspentSkillPoints: loadedGameState.skillPoints || 3,
+        hunterRank: loadedGameState.hunterRank || 'E-Rank',
         storyFlags: loadedGameState.storyFlags || {},
-        stats: loadedGameState.stats || { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
-        unspentStatPoints: loadedGameState.statPoints || 0,
-        unspentSkillPoints: loadedGameState.skillPoints || 0,
-        storyProgress: loadedGameState.storyProgress || 0,
         unlockedActivities: loadedGameState.unlockedActivities || [],
         sharedMemories: loadedGameState.sharedMemories || []
-      });
+      }));
 
       console.log('Profile loaded successfully:', profile.profileName);
     } catch (error) {
@@ -4815,7 +4823,7 @@ export default function SoloLevelingSpatial() {
           maxHealth: gameState.maxHealth,
           mana: gameState.mana,
           maxMana: gameState.maxMana,
-          stats: gameState.stats || {
+          stats: gameState.stats && Object.keys(gameState.stats).length > 0 ? gameState.stats : {
             strength: 25,
             agility: 20,
             vitality: 18,
