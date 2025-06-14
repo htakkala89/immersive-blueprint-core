@@ -593,7 +593,7 @@ export function PlayerProgressionSystem16({
                               transition={{ delay: 0.6 + index * 0.1 }}
                             >
                               <div 
-                                className="flex items-center justify-between p-4 rounded-xl border transition-all duration-300 group-hover:shadow-lg"
+                                className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 md:p-4 rounded-xl border transition-all duration-300 group-hover:shadow-lg gap-3 sm:gap-0"
                                 style={{
                                   background: 'linear-gradient(135deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.6) 100%)',
                                   border: '1px solid rgba(148, 163, 184, 0.2)'
@@ -658,6 +658,7 @@ export function PlayerProgressionSystem16({
                                     </div>
                                   </div>
                                   
+                                <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                                   {playerData.unspentStatPoints > 0 && (
                                     <motion.div
                                       whileHover={{ scale: 1.05 }}
@@ -665,15 +666,16 @@ export function PlayerProgressionSystem16({
                                     >
                                       <Button
                                         onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
-                                        className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 border border-purple-400/30 shadow-lg transition-all duration-200"
+                                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 border border-purple-400/30 shadow-lg transition-all duration-200"
                                         style={{
                                           boxShadow: '0 4px 15px rgba(147, 51, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                                         }}
                                       >
-                                        <Plus className="w-5 h-5 text-white" />
+                                        <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                                       </Button>
                                     </motion.div>
                                   )}
+                                </div>
                                 </div>
                               </div>
                             </motion.div>
