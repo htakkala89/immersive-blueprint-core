@@ -908,7 +908,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
               >
                 <div className="p-4 md:p-6">
                   <h3 
-                    className="text-lg font-semibold text-white mb-6"
+                    className="text-lg font-semibold text-white mb-4 md:mb-6"
                     style={{
                       textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
                       filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
@@ -916,7 +916,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                   >
                     Conversations
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     {conversations.map((conversation) => (
                       <motion.div
                         key={conversation.id}
@@ -940,7 +940,8 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             ? '1px solid rgba(147,51,234,0.3)'
                             : '1px solid rgba(255,255,255,0.1)',
                           borderRadius: '20px',
-                          padding: '16px',
+                          padding: '12px 16px',
+                          minHeight: '72px',
                           boxShadow: selectedConversation === conversation.id
                             ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 25px rgba(147,51,234,0.15), 0 0 20px rgba(147,51,234,0.1)'
                             : 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)'
@@ -1044,7 +1045,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                   <>
                     {/* Enhanced Chat Header */}
                     <div 
-                      className="p-6"
+                      className="p-4 md:p-6"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
                         backdropFilter: 'blur(15px)',
@@ -1119,7 +1120,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                     {/* Enhanced Messages with Liquid Glassmorphism */}
                     <div 
                       ref={chatContainerRef} 
-                      className="flex-1 overflow-y-auto p-6 space-y-6 relative"
+                      className="flex-1 overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-6 relative"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01), rgba(255,255,255,0.02))',
                         backdropFilter: 'blur(50px) saturate(180%) contrast(120%)',
@@ -1133,7 +1134,8 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           0 4px 16px rgba(0,0,0,0.1)
                         `,
                         position: 'relative',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        WebkitOverflowScrolling: 'touch'
                       }}
                     >
                       {/* Liquid glassmorphism shimmering inner border */}
@@ -1364,7 +1366,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
 
                     {/* Enhanced Message Input */}
                     <div 
-                      className="p-6 relative z-20"
+                      className="p-4 md:p-6 relative z-20"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
                         backdropFilter: 'blur(15px)',
@@ -1419,7 +1421,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           <Button
                             onClick={handleSendMessage}
                             disabled={!currentInput.trim() || !canSendMessages}
-                            className="px-4 py-3 text-white transition-all duration-200"
+                            className="px-4 py-3 text-white transition-all duration-200 min-h-[48px] min-w-[48px] flex items-center justify-center"
                             style={{
                               background: currentInput.trim() && canSendMessages
                                 ? 'linear-gradient(135deg, rgba(59,130,246,0.8), rgba(37,99,235,0.9))'
