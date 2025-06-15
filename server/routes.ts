@@ -1900,6 +1900,17 @@ Respond as a text message:`;
 
         const personalityPrompt = getPersonalityPrompt(conversationContext);
         
+        // Build conversation history context for continuity
+        let conversationHistoryContext = '';
+        if (conversationHistory && Array.isArray(conversationHistory) && conversationHistory.length > 0) {
+          const recentHistory = conversationHistory.slice(-6); // Last 6 messages for context
+          conversationHistoryContext = `
+RECENT CONVERSATION:
+${recentHistory.map(msg => `${msg.type === 'user' ? 'Jin-Woo' : 'You'}: "${msg.text}"`).join('\n')}
+
+CONVERSATION FLOW: Reference and build upon what was just discussed. Show natural conversation progression and emotional continuity.`;
+        }
+        
         // Check for episode guidance - inject natural story progression
         const episodeGuidance = await episodeEngine.getEpisodeGuidance('GAMEPLAY_TEST', 2);
         
@@ -1910,6 +1921,8 @@ CURRENT SITUATION:
 - Time: ${context?.timeOfDay || 'afternoon'}
 - Activity: ${context?.activity || 'working on reports'}
 - Weather: ${context?.weather || 'clear'}
+- Current Affection: ${gameState.affection || 25}/100
+${conversationHistoryContext}
 
 Jin-Woo just said: "${message}"
 
@@ -1917,12 +1930,15 @@ ${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide the conve
 
 RESPONSE INSTRUCTIONS:
 - Respond naturally as Cha Hae-In in character
+- Build upon the recent conversation naturally - reference what was just discussed
+- Show emotional continuity from previous responses
 - Reference the current location and situation
-- Show appropriate emotional reactions based on affection level
+- Show appropriate emotional reactions based on affection level (${gameState.affection || 25}/100)
 - Keep response conversational and under 100 words
 - Use "Jin-Woo" when addressing him directly
 - Show your hunter expertise when relevant
-- Express growing feelings if affection is high enough
+- Express growing feelings if affection is high enough (50+ = romantic interest, 70+ = deep feelings)
+- Remember topics already discussed and build upon them naturally
 ${episodeGuidance ? '- After responding to the current message, naturally suggest the story progression mentioned above' : ''}`;
         
         const result = await model.generateContent(fullPrompt);

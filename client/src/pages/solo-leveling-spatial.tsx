@@ -1442,14 +1442,20 @@ export default function SoloLevelingSpatial() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message,
-          gameState,
+          gameState: {
+            ...gameState,
+            profileId: loadedProfileId
+          },
           context: {
             location: playerLocation,
             timeOfDay,
             weather,
             activity: coffeeActivityContext || currentLocationData.chaActivity,
-            affectionLevel: gameState.affection
-          }
+            affectionLevel: gameState.affection,
+            profileId: loadedProfileId
+          },
+          conversationHistory: conversationHistory,
+          communicatorMode: false // Explicitly mark as in-person dialogue
         })
       });
       
