@@ -485,13 +485,24 @@ export function WorldMapSystem8({
           </div>
         </motion.div>
 
-        {/* Legend Panel */}
+        {/* Legend Panel with Cha Hae-In Status */}
         <motion.div
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           className="absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4"
         >
           <h3 className="text-white text-sm font-medium mb-3">Legend</h3>
+          
+          {/* Cha Hae-In Status Debug */}
+          <div className="mb-4 p-2 bg-yellow-500/10 border border-yellow-400/30 rounded-lg">
+            <div className="text-yellow-300 text-xs font-bold mb-1">Cha Hae-In Status:</div>
+            <div className="text-white text-xs">
+              Location: {chaHaeInLocation || 'Not Available'}
+            </div>
+            <div className="text-white text-xs">
+              Time: {currentTime} | Affection: {playerAffection}
+            </div>
+          </div>
           <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200 relative">
