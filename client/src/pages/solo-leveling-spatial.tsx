@@ -4476,6 +4476,10 @@ export default function SoloLevelingSpatial() {
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
+            { icon: Zap, label: 'Test Combat', color: 'text-red-400', onClick: () => { 
+              initiateCombat('dungeon', true);
+              setMonarchAuraVisible(false);
+            }},
             { icon: Power, label: 'Exit Game', color: 'text-red-300', onClick: () => { 
               if (confirm('Are you sure you want to exit the game?')) {
                 window.location.href = '/';
@@ -5845,6 +5849,26 @@ export default function SoloLevelingSpatial() {
           money: gameState.gold || 0,
           energy: gameState.energy || 80
         }}
+      />
+
+      {/* Enhanced Combat System */}
+      <EnhancedCombatSystem
+        isVisible={enhancedCombatVisible}
+        onClose={() => setEnhancedCombatVisible(false)}
+        onCombatComplete={handleCombatComplete}
+        playerLevel={gameState.level}
+        playerStats={{
+          hp: gameState.health,
+          maxHp: gameState.maxHealth,
+          mp: gameState.mana,
+          maxMp: gameState.maxMana,
+          attack: (gameState.stats?.strength || 25) * 2,
+          defense: (gameState.stats?.vitality || 18) * 1.5,
+          agility: gameState.stats?.agility || 20
+        }}
+        enemies={combatEnemies}
+        battleType="dungeon"
+        chaHaeInPresent={playerLocation === 'training_facility' || gameState.affection >= 3}
       />
 
     </div>
