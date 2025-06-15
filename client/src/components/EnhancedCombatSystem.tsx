@@ -715,38 +715,56 @@ export function EnhancedCombatSystem({
           </button>
         </div>
 
+        {/* Manual Strike Button Test */}
+        <div className="flex justify-center mb-2">
+          <button
+            onClick={() => {
+              console.log('🗡️ MANUAL STRIKE CLICKED!');
+              setSelectedAction('basic_attack');
+              console.log('✅ Strike action selected manually');
+            }}
+            className="bg-yellow-600 text-white px-4 py-2 rounded font-bold"
+            style={{ zIndex: 9999 }}
+          >
+            MANUAL STRIKE TEST
+          </button>
+        </div>
+
         <div className="flex justify-center space-x-4 mb-4 relative z-10">
-          {combatActions.map((action, index) => (
-            <button
-              key={`${action.id}-${index}`}
-              onClick={() => {
-                console.log('🗡️ COMBAT ACTION CLICKED:', action.name, action.id);
-                if (action.type === 'attack' || action.type === 'skill') {
-                  setSelectedAction(action.id);
-                  console.log('✅ Action selected for targeting:', action.id);
-                } else {
-                  executeAction(action.id);
-                  console.log('🚀 Direct action executed:', action.id);
-                }
-              }}
-              className={`relative px-6 py-3 bg-gradient-to-br cursor-pointer ${
-                selectedAction === action.id 
-                  ? 'from-blue-600 to-blue-800 ring-2 ring-blue-400' 
-                  : 'from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800'
-              } text-white border border-white/20 transition-all duration-200 rounded`}
-              style={{ zIndex: 9999 }}
-            >
-              <div className="flex items-center space-x-2">
-                {action.icon}
-                <span className="font-medium">{action.name}</span>
-              </div>
-              {action.manaCost > 0 && (
-                <div className="text-xs text-blue-300 mt-1">
-                  MP: {action.manaCost}
+          {combatActions.map((action, index) => {
+            console.log('Rendering action:', action.name, action.id, 'at index', index);
+            return (
+              <button
+                key={`${action.id}-${index}`}
+                onClick={() => {
+                  console.log('🗡️ COMBAT ACTION CLICKED:', action.name, action.id);
+                  if (action.type === 'attack' || action.type === 'skill') {
+                    setSelectedAction(action.id);
+                    console.log('✅ Action selected for targeting:', action.id);
+                  } else {
+                    executeAction(action.id);
+                    console.log('🚀 Direct action executed:', action.id);
+                  }
+                }}
+                className={`relative px-6 py-3 bg-gradient-to-br cursor-pointer ${
+                  selectedAction === action.id 
+                    ? 'from-blue-600 to-blue-800 ring-2 ring-blue-400' 
+                    : 'from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800'
+                } text-white border border-white/20 transition-all duration-200 rounded`}
+                style={{ zIndex: 9999 }}
+              >
+                <div className="flex items-center space-x-2">
+                  {action.icon}
+                  <span className="font-medium">{action.name}</span>
                 </div>
-              )}
-            </button>
-          ))}
+                {action.manaCost > 0 && (
+                  <div className="text-xs text-blue-300 mt-1">
+                    MP: {action.manaCost}
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Combat Log */}
