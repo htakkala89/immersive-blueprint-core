@@ -5,7 +5,7 @@ import {
   Flame, Wind, Skull, Star, Crown, Package,
   ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
   Settings, Play, Pause, RotateCcw, Sparkles,
-  Eye, Crosshair, ShieldCheck, Activity
+  Eye, Crosshair, ShieldCheck, Activity, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -571,87 +571,90 @@ export function UltimateCombatSystem({
   const [showEquipmentModal, setShowEquipmentModal] = useState(false);
   const [selectedEquipmentType, setSelectedEquipmentType] = useState<'weapon' | 'armor' | 'accessory' | null>(null);
 
-  // Available equipment for each type
-  const availableEquipment = {
-    weapon: [
-      {
-        id: 'knight_sword',
-        name: "Knight's Blade",
-        type: 'weapon' as const,
-        tier: 'common' as const,
-        stats: { attack: 35 },
-        icon: '⚔️',
-        description: 'A sturdy steel blade'
-      },
-      {
-        id: 'flame_sword',
-        name: "Flame Reaper",
-        type: 'weapon' as const,
-        tier: 'rare' as const,
-        stats: { attack: 85 },
-        icon: '🔥',
-        description: 'Burns enemies with each strike'
-      },
-      {
-        id: 'shadow_dagger',
-        name: "Shadow Monarch's Dagger",
-        type: 'weapon' as const,
-        tier: 'legendary' as const,
-        stats: { attack: 150, critRate: 25 },
-        icon: '🗡️',
-        description: 'Grants power over shadows'
+  // Player inventory equipment state
+  const [availableEquipment, setAvailableEquipment] = useState<{
+    weapon: any[];
+    armor: any[];
+    accessory: any[];
+  }>({
+    weapon: [],
+    armor: [],
+    accessory: []
+  });
+
+  // Load player's available equipment from actual game inventory and vendor purchases
+  useEffect(() => {
+    const loadAvailableEquipment = async () => {
+      try {
+        const sessionId = 'default_session'; // Get from session storage if needed
+        
+        // Get player profile to access purchased equipment
+        const profileResponse = await fetch(`/api/profiles/${10}/load`, {
+          headers: { 'x-session-id': sessionId }
+        });
+        
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          const profile = profileData.profile;
+          
+          // Extract purchased equipment from vendor transactions
+          const purchasedItems = profile.inventory || [];
+          
+          // Filter equipment by type from actual purchases
+          const weapons = purchasedItems.filter((item: any) => 
+            item.category === 'weapons' && item.type === 'equipment'
+          ).map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            type: 'weapon',
+            tier: item.rarity || 'common',
+            stats: item.stats || { attack: 30 },
+            icon: item.icon || '⚔️',
+            description: item.description || 'A purchased weapon'
+          }));
+          
+          const armors = purchasedItems.filter((item: any) => 
+            item.category === 'armor' && item.type === 'equipment'
+          ).map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            type: 'armor',
+            tier: item.rarity || 'common',
+            stats: item.stats || { defense: 20 },
+            icon: item.icon || '🛡️',
+            description: item.description || 'Protective armor'
+          }));
+          
+          const accessories = purchasedItems.filter((item: any) => 
+            item.category === 'accessories' && item.type === 'equipment'
+          ).map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            type: 'accessory',
+            tier: item.rarity || 'common',
+            stats: item.stats || { mp: 15 },
+            icon: item.icon || '💍',
+            description: item.description || 'A useful accessory'
+          }));
+
+          setAvailableEquipment({
+            weapon: weapons.length > 0 ? weapons : [],
+            armor: armors.length > 0 ? armors : [],
+            accessory: accessories.length > 0 ? accessories : []
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load equipment from vendor purchases:', error);
+        setAvailableEquipment({
+          weapon: [],
+          armor: [],
+          accessory: []
+        });
       }
-    ],
-    armor: [
-      {
-        id: 'leather_armor',
-        name: "Hunter's Leathers",
-        type: 'armor' as const,
-        tier: 'common' as const,
-        stats: { defense: 25, hp: 50 },
-        icon: '🛡️',
-        description: 'Basic protection for hunters'
-      },
-      {
-        id: 'plate_armor',
-        name: "Steel Plate Armor",
-        type: 'armor' as const,
-        tier: 'rare' as const,
-        stats: { defense: 65, hp: 150 },
-        icon: '⚒️',
-        description: 'Heavy protection against attacks'
-      },
-      {
-        id: 'shadow_cloak',
-        name: "Monarch's Shadow Cloak",
-        type: 'armor' as const,
-        tier: 'legendary' as const,
-        stats: { defense: 120, hp: 300, speed: 15 },
-        icon: '🦇',
-        description: 'Enhances shadow abilities'
-      }
-    ],
-    accessory: [
-      {
-        id: 'power_ring',
-        name: "Ring of Power",
-        type: 'accessory' as const,
-        tier: 'rare' as const,
-        stats: { attack: 20, mp: 30 },
-        icon: '💍',
-        description: 'Increases magical power'
-      },
-      {
-        id: 'shadow_pendant',
-        name: "Shadow Heart Pendant",
-        type: 'accessory' as const,
-        tier: 'legendary' as const,
-        stats: { attack: 40, mp: 80, critRate: 15 },
-        icon: '🔮',
-        description: 'Channels pure shadow energy'
-      }
-    ]
-  };
+    };
+
+    loadAvailableEquipment();
+  }, []);
 
   // Equipment Swap Handler
   const handleEquipmentSwap = (type: 'weapon' | 'armor' | 'accessory') => {
