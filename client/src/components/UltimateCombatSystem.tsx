@@ -567,14 +567,107 @@ export function UltimateCombatSystem({
   }, [getEnhancedStats, statusEffects]);
 
   // Start Combat
+  // Equipment selection state
+  const [showEquipmentModal, setShowEquipmentModal] = useState(false);
+  const [selectedEquipmentType, setSelectedEquipmentType] = useState<'weapon' | 'armor' | 'accessory' | null>(null);
+
+  // Available equipment for each type
+  const availableEquipment = {
+    weapon: [
+      {
+        id: 'knight_sword',
+        name: "Knight's Blade",
+        type: 'weapon' as const,
+        tier: 'common' as const,
+        stats: { attack: 35 },
+        icon: '⚔️',
+        description: 'A sturdy steel blade'
+      },
+      {
+        id: 'flame_sword',
+        name: "Flame Reaper",
+        type: 'weapon' as const,
+        tier: 'rare' as const,
+        stats: { attack: 85 },
+        icon: '🔥',
+        description: 'Burns enemies with each strike'
+      },
+      {
+        id: 'shadow_dagger',
+        name: "Shadow Monarch's Dagger",
+        type: 'weapon' as const,
+        tier: 'legendary' as const,
+        stats: { attack: 150, critRate: 25 },
+        icon: '🗡️',
+        description: 'Grants power over shadows'
+      }
+    ],
+    armor: [
+      {
+        id: 'leather_armor',
+        name: "Hunter's Leathers",
+        type: 'armor' as const,
+        tier: 'common' as const,
+        stats: { defense: 25, hp: 50 },
+        icon: '🛡️',
+        description: 'Basic protection for hunters'
+      },
+      {
+        id: 'plate_armor',
+        name: "Steel Plate Armor",
+        type: 'armor' as const,
+        tier: 'rare' as const,
+        stats: { defense: 65, hp: 150 },
+        icon: '⚒️',
+        description: 'Heavy protection against attacks'
+      },
+      {
+        id: 'shadow_cloak',
+        name: "Monarch's Shadow Cloak",
+        type: 'armor' as const,
+        tier: 'legendary' as const,
+        stats: { defense: 120, hp: 300, speed: 15 },
+        icon: '🦇',
+        description: 'Enhances shadow abilities'
+      }
+    ],
+    accessory: [
+      {
+        id: 'power_ring',
+        name: "Ring of Power",
+        type: 'accessory' as const,
+        tier: 'rare' as const,
+        stats: { attack: 20, mp: 30 },
+        icon: '💍',
+        description: 'Increases magical power'
+      },
+      {
+        id: 'shadow_pendant',
+        name: "Shadow Heart Pendant",
+        type: 'accessory' as const,
+        tier: 'legendary' as const,
+        stats: { attack: 40, mp: 80, critRate: 15 },
+        icon: '🔮',
+        description: 'Channels pure shadow energy'
+      }
+    ]
+  };
+
   // Equipment Swap Handler
   const handleEquipmentSwap = (type: 'weapon' | 'armor' | 'accessory') => {
-    // Create a simple equipment selection modal or alert for now
-    alert(`Equipment swap for ${type} - Coming soon! This will open an equipment selection interface.`);
-    
-    // TODO: Implement equipment selection modal
-    // For now, just show which slot was clicked
-    addToCombatLog(`Preparing to change ${type}...`);
+    setSelectedEquipmentType(type);
+    setShowEquipmentModal(true);
+    addToCombatLog(`Opening ${type} selection...`);
+  };
+
+  // Equip Item Handler
+  const handleEquipItem = (item: any) => {
+    setCurrentEquipment(prev => ({
+      ...prev,
+      [selectedEquipmentType!]: item
+    }));
+    setShowEquipmentModal(false);
+    addToCombatLog(`Equipped ${item.name}!`);
   };
 
   const startCombat = () => {
@@ -667,7 +760,7 @@ export function UltimateCombatSystem({
 
         {/* Preparation Phase */}
         {battlePhase === 'preparation' && (
-          <div className="h-full flex flex-col p-3 md:p-6">
+          <div className="h-full flex flex-col p-3 md:p-6 overflow-y-auto">
             <div className="text-center mb-4 md:mb-6">
               <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">
                 Prepare for Battle
@@ -1175,6 +1268,69 @@ export function UltimateCombatSystem({
                 Continue
               </Button>
             </motion.div>
+          </div>
+        )}
+
+        {/* Equipment Selection Modal */}
+        {showEquipmentModal && selectedEquipmentType && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-slate-900 border border-purple-500/30 rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-white capitalize">
+                    Select {selectedEquipmentType}
+                  </h2>
+                  <button
+                    onClick={() => setShowEquipmentModal(false)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {availableEquipment[selectedEquipmentType].map(item => (
+                    <button
+                      key={item.id}
+                      onClick={() => handleEquipItem(item)}
+                      className="w-full bg-white/5 hover:bg-white/10 border border-gray-500/30 hover:border-purple-500/50 rounded-lg p-4 text-left transition-all"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="text-2xl">{item.icon}</div>
+                        <div className="flex-1">
+                          <div className="text-white font-semibold">{item.name}</div>
+                          <div className={`text-xs font-medium mb-1 ${
+                            item.tier === 'legendary' ? 'text-orange-400' :
+                            item.tier === 'rare' ? 'text-purple-400' : 'text-gray-400'
+                          }`}>
+                            {item.tier.toUpperCase()}
+                          </div>
+                          <div className="text-gray-300 text-sm mb-2">
+                            {item.description}
+                          </div>
+                          <div className="flex flex-wrap gap-2 text-xs">
+                            {Object.entries(item.stats).map(([stat, value]) => (
+                              <span key={stat} className="bg-green-500/20 text-green-300 px-2 py-1 rounded">
+                                +{value} {stat.toUpperCase()}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => setShowEquipmentModal(false)}
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </motion.div>
