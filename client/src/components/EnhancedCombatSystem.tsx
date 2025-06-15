@@ -713,20 +713,16 @@ export function EnhancedCombatSystem({
                   console.log('❌ Action disabled - Turn:', turn, 'Phase:', battlePhase);
                 }
               }}
-              disabled={
-                turn !== 'player' || 
-                battlePhase !== 'combat' ||
-                actionCooldowns[action.id] > 0 ||
-                playerMp < action.manaCost
-              }
+              disabled={false}
+              style={{
+                opacity: 1,
+                cursor: 'pointer'
+              }}
               className={`relative px-6 py-3 bg-gradient-to-br ${
                 selectedAction === action.id 
                   ? 'from-blue-600 to-blue-800 ring-2 ring-blue-400' 
                   : 'from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800'
               } text-white border border-white/20 transition-all duration-200`}
-              style={{
-                opacity: actionCooldowns[action.id] > 0 ? 0.5 : 1
-              }}
             >
               <div className="flex items-center space-x-2">
                 {action.icon}
