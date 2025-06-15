@@ -730,41 +730,48 @@ export function EnhancedCombatSystem({
           </button>
         </div>
 
-        <div className="flex justify-center space-x-4 mb-4 relative z-10">
-          {combatActions.map((action, index) => {
-            console.log('Rendering action:', action.name, action.id, 'at index', index);
-            return (
-              <button
-                key={`${action.id}-${index}`}
-                onClick={() => {
-                  console.log('🗡️ COMBAT ACTION CLICKED:', action.name, action.id);
-                  if (action.type === 'attack' || action.type === 'skill') {
-                    setSelectedAction(action.id);
-                    console.log('✅ Action selected for targeting:', action.id);
-                  } else {
-                    executeAction(action.id);
-                    console.log('🚀 Direct action executed:', action.id);
-                  }
-                }}
-                className={`relative px-6 py-3 bg-gradient-to-br cursor-pointer ${
-                  selectedAction === action.id 
-                    ? 'from-blue-600 to-blue-800 ring-2 ring-blue-400' 
-                    : 'from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800'
-                } text-white border border-white/20 transition-all duration-200 rounded`}
-                style={{ zIndex: 9999 }}
-              >
-                <div className="flex items-center space-x-2">
-                  {action.icon}
-                  <span className="font-medium">{action.name}</span>
+        <div className="flex justify-center space-x-4 mb-4">
+          {/* Working Strike Button - Copy of Manual Test */}
+          <button
+            onClick={() => {
+              console.log('🗡️ WORKING STRIKE CLICKED!');
+              setSelectedAction('basic_attack');
+              console.log('✅ Strike selected for targeting');
+            }}
+            className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded font-bold border border-white/20"
+          >
+            ⚔️ Strike
+          </button>
+          
+          {/* Other Action Buttons */}
+          {combatActions.slice(1).map((action, index) => (
+            <button
+              key={`${action.id}-${index}`}
+              onClick={() => {
+                console.log('🗡️ OTHER ACTION CLICKED:', action.name, action.id);
+                if (action.type === 'attack' || action.type === 'skill') {
+                  setSelectedAction(action.id);
+                  console.log('✅ Action selected for targeting:', action.id);
+                } else {
+                  executeAction(action.id);
+                  console.log('🚀 Direct action executed:', action.id);
+                }
+              }}
+              className={`px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white border border-white/20 rounded ${
+                selectedAction === action.id ? 'ring-2 ring-blue-400' : ''
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                {action.icon}
+                <span className="font-medium">{action.name}</span>
+              </div>
+              {action.manaCost > 0 && (
+                <div className="text-xs text-blue-300 mt-1">
+                  MP: {action.manaCost}
                 </div>
-                {action.manaCost > 0 && (
-                  <div className="text-xs text-blue-300 mt-1">
-                    MP: {action.manaCost}
-                  </div>
-                )}
-              </button>
-            );
-          })}
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Combat Log */}
