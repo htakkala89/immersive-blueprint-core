@@ -1631,15 +1631,26 @@ async function registerRoutes(app: Express): Promise<Server> {
       const playerId = gameState.playerId || 'default_player';
       
       // Auto-detect if communicator mode should be used based on availability constraints
-      const shouldUseCommunicator = communicatorMode || 
+      // Only use communicator mode if explicitly requested or truly restricted
+      const shouldUseCommunicator = communicatorMode === true || 
         (context?.isRestricted === true) || 
         (characterState?.status === 'busy') ||
         (characterState?.status === 'unavailable') ||
-        (context?.timeOfDay === 'night' && (gameState.affectionLevel || 0) < 50) ||
         (context?.levelRestricted === true);
+        
+      // If player is at the same location as Cha Hae-In, it's always in-person dialogue
+      const isInPersonDialogue = context?.location && 
+        (context.location === 'hongdae_cafe' || 
+         context.location === 'chahaein_apartment' || 
+         context.location === 'player_apartment' ||
+         context.location === 'myeongdong_restaurant' ||
+         context.location === 'hangang_park' ||
+         context.location === 'gangnam_tower') &&
+        !communicatorMode; // Only override if not explicitly in communicator mode
 
       // Handle communicator mode with full affection tracking
-      if (shouldUseCommunicator) {
+      // But skip communicator mode if this is in-person dialogue
+      if (shouldUseCommunicator && !isInPersonDialogue) {
         console.log('📱 Hunter\'s Communicator mode - texting conversation with full affection tracking');
         
         const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
@@ -1779,10 +1790,10 @@ Respond as a text message:`;
           showAffectionHeart,
           communicatorMode: true,
           thoughtPrompts: [
-            "I wish we could talk in person",
+            "Can we meet up soon?",
             "What are you up to?", 
-            "Hope to see you soon",
-            "Missing you"
+            "Hope to see you tonight",
+            "Missing our conversations"
           ]
         });
       }
