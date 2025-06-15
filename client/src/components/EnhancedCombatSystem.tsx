@@ -641,11 +641,18 @@ export function EnhancedCombatSystem({
                 zIndex: 20
               }}
               onClick={() => {
-                if (turn === 'player' && selectedAction) {
+                console.log('🎯 Enemy clicked:', enemy.id, 'Turn:', turn, 'Selected action:', selectedAction, 'Battle phase:', battlePhase);
+                if (turn === 'player' && selectedAction && battlePhase === 'combat') {
+                  console.log('✅ Executing attack on enemy:', enemy.id);
                   setTargetSelection(enemy.id);
                   executeAction(selectedAction, enemy.id);
                   setSelectedAction(null);
                   setTargetSelection(null);
+                } else {
+                  console.log('❌ Cannot attack - conditions not met');
+                  if (turn !== 'player') console.log('Not player turn');
+                  if (!selectedAction) console.log('No action selected');
+                  if (battlePhase !== 'combat') console.log('Not in combat phase');
                 }
               }}
             >
@@ -689,12 +696,17 @@ export function EnhancedCombatSystem({
             <Button
               key={action.id}
               onClick={() => {
+                console.log('🔥 Action button clicked:', action.name, 'Turn:', turn, 'Phase:', battlePhase);
                 if (turn === 'player' && battlePhase === 'combat') {
                   if (action.type === 'attack' || action.type === 'skill') {
+                    console.log('🎯 Selecting action for targeting:', action.id);
                     setSelectedAction(action.id);
                   } else {
+                    console.log('🚀 Executing non-targeting action:', action.id);
                     executeAction(action.id);
                   }
+                } else {
+                  console.log('❌ Action disabled - Turn:', turn, 'Phase:', battlePhase);
                 }
               }}
               disabled={
