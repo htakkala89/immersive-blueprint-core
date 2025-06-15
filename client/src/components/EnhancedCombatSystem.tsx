@@ -493,14 +493,15 @@ export function EnhancedCombatSystem({
           }}
         />
 
-        {/* Massive Enemy Display - Ultra-Prominent */}
-        <div className="absolute inset-0 flex items-center justify-center pt-8 pb-32">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12 md:gap-16">
+        {/* Mobile-First Enemy Display */}
+        <div className="absolute inset-0 flex items-center justify-center pt-8 pb-48 md:pb-32">
+          {/* Mobile: Single Column Stack, Desktop: Grid */}
+          <div className="flex flex-col md:grid md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-12 w-full max-w-sm md:max-w-none px-4">
             {enemies.map((enemy) => (
               <motion.div
                 key={enemy.id}
                 className={`relative cursor-pointer transform transition-all duration-300 ${
-                  targetSelection === enemy.id ? 'ring-4 ring-red-400 scale-110' : 'hover:scale-105'
+                  targetSelection === enemy.id ? 'ring-4 ring-red-400 scale-105' : 'hover:scale-102'
                 }`}
                 onClick={() => {
                   console.log('Enemy clicked:', enemy.id, 'Selected action:', selectedAction);
@@ -512,55 +513,54 @@ export function EnhancedCombatSystem({
                     setTargetSelection(null);
                   }
                 }}
-                whileHover={{ scale: 1.08, y: -5 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                {/* Enemy Card Background */}
-                <div className="bg-black/60 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                  {/* Enemy Avatar - Massive */}
-                  <div 
-                    className={`w-32 h-32 md:w-40 md:h-40 mx-auto rounded-full flex items-center justify-center border-4 mb-4 ${
-                      enemy.isBoss ? 'border-yellow-400 bg-gradient-to-br from-yellow-600 via-red-700 to-red-900' :
-                      enemy.isElite ? 'border-purple-400 bg-gradient-to-br from-purple-600 via-purple-800 to-purple-900' :
-                      'border-red-400 bg-gradient-to-br from-red-500 via-red-700 to-red-800'
-                    }`}
-                    style={{
-                      boxShadow: enemy.isBoss ? '0 0 40px rgba(234,179,8,1), inset 0 0 30px rgba(0,0,0,0.4)' : 
-                                 enemy.isElite ? '0 0 35px rgba(147,51,234,1), inset 0 0 25px rgba(0,0,0,0.4)' :
-                                 '0 0 30px rgba(239,68,68,1), inset 0 0 20px rgba(0,0,0,0.4)'
-                    }}
-                  >
-                    {enemy.isBoss ? <Crown className="w-16 h-16 md:w-20 md:h-20 text-yellow-300" /> :
-                     enemy.isElite ? <Star className="w-14 h-14 md:w-18 md:h-18 text-purple-300" /> :
-                     <Skull className="w-14 h-14 md:w-18 md:h-18 text-red-300" />}
-                  </div>
-                  
-                  {/* Enemy Info */}
-                  <div className="text-center">
-                    <div className="text-lg md:text-xl text-white font-bold mb-1">{enemy.name}</div>
-                    <div className={`text-sm mb-3 ${
-                      enemy.isBoss ? 'text-yellow-400' : enemy.isElite ? 'text-purple-400' : 'text-red-400'
-                    }`}>
-                      {enemy.isElite ? 'Elite Monster' : enemy.isBoss ? 'Boss Monster' : 'Regular Monster'}
+                {/* Mobile: Horizontal Layout, Desktop: Vertical Card */}
+                <div className="bg-black/70 backdrop-blur-lg rounded-xl md:rounded-2xl p-4 md:p-6 border border-white/20">
+                  <div className="flex md:block items-center md:text-center space-x-4 md:space-x-0">
+                    {/* Enemy Avatar - Responsive Size */}
+                    <div 
+                      className={`w-16 h-16 md:w-32 md:h-32 xl:w-40 xl:h-40 md:mx-auto rounded-full flex items-center justify-center border-2 md:border-4 md:mb-4 flex-shrink-0 ${
+                        enemy.isBoss ? 'border-yellow-400 bg-gradient-to-br from-yellow-600 via-red-700 to-red-900' :
+                        enemy.isElite ? 'border-purple-400 bg-gradient-to-br from-purple-600 via-purple-800 to-purple-900' :
+                        'border-red-400 bg-gradient-to-br from-red-500 via-red-700 to-red-800'
+                      }`}
+                      style={{
+                        boxShadow: enemy.isBoss ? '0 0 20px rgba(234,179,8,0.8), inset 0 0 15px rgba(0,0,0,0.4)' : 
+                                   enemy.isElite ? '0 0 18px rgba(147,51,234,0.8), inset 0 0 12px rgba(0,0,0,0.4)' :
+                                   '0 0 15px rgba(239,68,68,0.8), inset 0 0 10px rgba(0,0,0,0.4)'
+                      }}
+                    >
+                      {enemy.isBoss ? <Crown className="w-8 h-8 md:w-16 md:h-16 xl:w-20 xl:h-20 text-yellow-300" /> :
+                       enemy.isElite ? <Star className="w-7 h-7 md:w-14 md:h-14 xl:w-18 xl:h-18 text-purple-300" /> :
+                       <Skull className="w-7 h-7 md:w-14 md:h-14 xl:w-18 xl:h-18 text-red-300" />}
                     </div>
                     
-                    {/* HP Bar - Enhanced */}
-                    <div className="w-full h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-600 mb-2">
-                      <motion.div
-                        className={`h-full ${
-                          enemy.isBoss ? 'bg-gradient-to-r from-yellow-400 to-red-500' :
-                          enemy.isElite ? 'bg-gradient-to-r from-purple-400 to-red-500' :
-                          'bg-gradient-to-r from-red-400 to-red-600'
-                        }`}
-                        animate={{ width: `${(enemy.hp / enemy.maxHp) * 100}%` }}
-                        transition={{ duration: 0.3 }}
-                        style={{
-                          boxShadow: 'inset 0 0 10px rgba(255,255,255,0.3)'
-                        }}
-                      />
-                    </div>
-                    <div className="text-sm text-center text-gray-200 font-bold">
-                      {enemy.hp}/{enemy.maxHp} HP
+                    {/* Enemy Info - Mobile Horizontal, Desktop Vertical */}
+                    <div className="flex-1 md:block">
+                      <div className="text-base md:text-lg xl:text-xl text-white font-bold mb-1">{enemy.name}</div>
+                      <div className={`text-xs md:text-sm mb-2 md:mb-3 ${
+                        enemy.isBoss ? 'text-yellow-400' : enemy.isElite ? 'text-purple-400' : 'text-red-400'
+                      }`}>
+                        {enemy.isElite ? 'Elite' : enemy.isBoss ? 'Boss' : 'Regular'}
+                      </div>
+                      
+                      {/* HP Bar - Responsive */}
+                      <div className="w-full h-2 md:h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-600 mb-1 md:mb-2">
+                        <motion.div
+                          className={`h-full ${
+                            enemy.isBoss ? 'bg-gradient-to-r from-yellow-400 to-red-500' :
+                            enemy.isElite ? 'bg-gradient-to-r from-purple-400 to-red-500' :
+                            'bg-gradient-to-r from-red-400 to-red-600'
+                          }`}
+                          animate={{ width: `${(enemy.hp / enemy.maxHp) * 100}%` }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
+                      <div className="text-xs md:text-sm text-gray-200 font-medium">
+                        {enemy.hp}/{enemy.maxHp} HP
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -879,20 +879,138 @@ export function EnhancedCombatSystem({
         </AnimatePresence>
       </div>
 
-      {/* Enhanced Action Panel */}
-      <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-xl border-t border-white/20 z-30">
-        {/* Action Selection Grid */}
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-white font-bold text-lg">Combat Actions</h3>
+      {/* Mobile-Optimized Action Panel */}
+      <div className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-white/20 z-30">
+        <div className="p-3 md:p-4">
+          {/* Header - Compact on Mobile */}
+          <div className="flex items-center justify-between mb-2 md:mb-3">
+            <h3 className="text-white font-bold text-base md:text-lg">Actions</h3>
             {selectedAction && (
-              <div className="text-blue-400 text-sm">
-                Selected: <span className="font-medium">{selectedAction.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+              <div className="text-blue-400 text-xs md:text-sm">
+                <span className="font-medium">{selectedAction.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
               </div>
             )}
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {/* Mobile: Scrollable Row, Desktop: Grid */}
+          <div className="md:hidden">
+            <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
+              {/* Strike */}
+              <motion.button
+                onClick={() => setSelectedAction('basic_attack')}
+                className={`flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all duration-200 ${
+                  selectedAction === 'basic_attack' 
+                    ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg' 
+                    : 'bg-gray-800/70 border-gray-600 text-gray-300'
+                }`}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="flex flex-col items-center justify-center h-full space-y-1">
+                  <Sword className="w-5 h-5" />
+                  <span className="text-xs font-medium">Strike</span>
+                </div>
+              </motion.button>
+
+              {/* Shadow Exchange */}
+              <motion.button
+                onClick={() => setSelectedAction('shadow_exchange')}
+                disabled={playerMp < 20}
+                className={`flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all duration-200 ${
+                  selectedAction === 'shadow_exchange'
+                    ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg'
+                    : playerMp < 20
+                    ? 'bg-gray-900/50 border-gray-700 text-gray-500'
+                    : 'bg-gray-800/70 border-gray-600 text-gray-300'
+                }`}
+                whileTap={playerMp >= 20 ? { scale: 0.95 } : {}}
+              >
+                <div className="flex flex-col items-center justify-center h-full space-y-1">
+                  <Zap className="w-5 h-5" />
+                  <span className="text-xs font-medium">Shadow</span>
+                  <span className="text-xs text-blue-400">20</span>
+                </div>
+              </motion.button>
+
+              {/* Summon Igris */}
+              <motion.button
+                onClick={() => setSelectedAction('summon_igris')}
+                disabled={playerMp < 50}
+                className={`flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all duration-200 ${
+                  selectedAction === 'summon_igris'
+                    ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg'
+                    : playerMp < 50
+                    ? 'bg-gray-900/50 border-gray-700 text-gray-500'
+                    : 'bg-gray-800/70 border-gray-600 text-gray-300'
+                }`}
+                whileTap={playerMp >= 50 ? { scale: 0.95 } : {}}
+              >
+                <div className="flex flex-col items-center justify-center h-full space-y-1">
+                  <Crown className="w-5 h-5" />
+                  <span className="text-xs font-medium">Igris</span>
+                  <span className="text-xs text-blue-400">50</span>
+                </div>
+              </motion.button>
+
+              {/* Ruler's Authority */}
+              <motion.button
+                onClick={() => setSelectedAction('rulers_authority')}
+                disabled={playerMp < 30}
+                className={`flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all duration-200 ${
+                  selectedAction === 'rulers_authority'
+                    ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg'
+                    : playerMp < 30
+                    ? 'bg-gray-900/50 border-gray-700 text-gray-500'
+                    : 'bg-gray-800/70 border-gray-600 text-gray-300'
+                }`}
+                whileTap={playerMp >= 30 ? { scale: 0.95 } : {}}
+              >
+                <div className="flex flex-col items-center justify-center h-full space-y-1">
+                  <Target className="w-5 h-5" />
+                  <span className="text-xs font-medium">Ruler's</span>
+                  <span className="text-xs text-blue-400">30</span>
+                </div>
+              </motion.button>
+
+              {/* Shadow Step */}
+              <motion.button
+                onClick={() => setSelectedAction('shadow_step')}
+                disabled={playerMp < 10}
+                className={`flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all duration-200 ${
+                  selectedAction === 'shadow_step'
+                    ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg'
+                    : playerMp < 10
+                    ? 'bg-gray-900/50 border-gray-700 text-gray-500'
+                    : 'bg-gray-800/70 border-gray-600 text-gray-300'
+                }`}
+                whileTap={playerMp >= 10 ? { scale: 0.95 } : {}}
+              >
+                <div className="flex flex-col items-center justify-center h-full space-y-1">
+                  <Wind className="w-5 h-5" />
+                  <span className="text-xs font-medium">Step</span>
+                  <span className="text-xs text-blue-400">10</span>
+                </div>
+              </motion.button>
+
+              {/* Defend */}
+              <motion.button
+                onClick={() => setSelectedAction('defend')}
+                className={`flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all duration-200 ${
+                  selectedAction === 'defend'
+                    ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg'
+                    : 'bg-gray-800/70 border-gray-600 text-gray-300'
+                }`}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="flex flex-col items-center justify-center h-full space-y-1">
+                  <Shield className="w-5 h-5" />
+                  <span className="text-xs font-medium">Defend</span>
+                </div>
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Desktop: Grid Layout */}
+          <div className="hidden md:grid md:grid-cols-3 gap-3">
             {/* Strike */}
             <motion.button
               onClick={() => setSelectedAction('basic_attack')}
@@ -1014,12 +1132,12 @@ export function EnhancedCombatSystem({
             </motion.button>
           </div>
 
-          {/* Combat Log */}
+          {/* Combat Log - Compact */}
           {combatLog.length > 0 && (
-            <div className="mt-4 bg-black/40 rounded-lg p-3 max-h-20 overflow-y-auto">
+            <div className="mt-3 bg-black/40 rounded-lg p-2 md:p-3 max-h-16 md:max-h-20 overflow-y-auto">
               <div className="text-xs text-gray-300 space-y-1">
-                {combatLog.slice(-3).map((log, index) => (
-                  <div key={index} className="opacity-80">
+                {combatLog.slice(-2).map((log, index) => (
+                  <div key={index} className="opacity-80 truncate">
                     {log}
                   </div>
                 ))}
