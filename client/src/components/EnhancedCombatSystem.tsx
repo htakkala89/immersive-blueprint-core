@@ -410,18 +410,18 @@ export function EnhancedCombatSystem({
         transition: 'transform 0.1s ease-out'
       }}
     >
-      {/* Battle HUD */}
-      <div className="flex justify-between items-start p-6 relative z-20">
+      {/* Battle HUD - Mobile Optimized */}
+      <div className="flex flex-col md:flex-row justify-between items-start p-3 md:p-6 relative z-20 space-y-3 md:space-y-0">
         {/* Player Stats */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
-          <h3 className="text-white font-bold mb-2">Jin-Woo</h3>
+        <div className="bg-black/40 backdrop-blur-lg rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/20 w-full md:w-auto">
+          <h3 className="text-white font-bold mb-2 text-sm md:text-base">Jin-Woo</h3>
           <div className="space-y-2">
             <div>
-              <div className="flex justify-between text-sm text-white mb-1">
+              <div className="flex justify-between text-xs md:text-sm text-white mb-1">
                 <span>HP</span>
                 <span>{playerHp}/{playerStats.maxHp}</span>
               </div>
-              <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div className="w-full md:w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-red-500"
                   initial={{ width: '100%' }}
@@ -431,11 +431,11 @@ export function EnhancedCombatSystem({
               </div>
             </div>
             <div>
-              <div className="flex justify-between text-sm text-white mb-1">
+              <div className="flex justify-between text-xs md:text-sm text-white mb-1">
                 <span>MP</span>
                 <span>{playerMp}/{playerStats.maxMp}</span>
               </div>
-              <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div className="w-full md:w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-blue-500"
                   initial={{ width: '100%' }}
@@ -445,7 +445,7 @@ export function EnhancedCombatSystem({
               </div>
             </div>
           </div>
-          <div className="mt-2 text-sm text-yellow-400">
+          <div className="mt-2 text-xs md:text-sm text-yellow-400">
             Combo: {combo}
           </div>
         </div>
@@ -497,21 +497,20 @@ export function EnhancedCombatSystem({
           </div>
         )}
 
-        {/* Turn Indicator */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
-          <div className={`text-xl font-bold ${turn === 'player' ? 'text-green-400' : 'text-red-400'}`}>
+        {/* Turn Indicator - Mobile Optimized */}
+        <div className="bg-black/40 backdrop-blur-lg rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/20 w-full md:w-auto">
+          <div className={`text-lg md:text-xl font-bold ${turn === 'player' ? 'text-green-400' : 'text-red-400'}`}>
             {turn === 'player' ? 'Your Turn' : 'Enemy Turn'}
           </div>
           {battlePhase === 'preparation' && (
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-col sm:flex-row gap-2 mt-2 w-full">
               <Button
                 onClick={() => {
                   console.log('🚀 Start Battle clicked! Changing phase from', battlePhase, 'to combat');
                   setBattlePhase('combat');
                   console.log('✅ Battle phase changed to combat');
                 }}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 text-lg"
-                size="lg"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold px-4 md:px-6 py-2 md:py-3 text-base md:text-lg w-full sm:w-auto"
               >
                 🎯 START BATTLE
               </Button>
@@ -694,53 +693,30 @@ export function EnhancedCombatSystem({
         </AnimatePresence>
       </div>
 
-      {/* Action Bar */}
-      <div className="bg-black/60 backdrop-blur-lg border-t border-white/20 p-4">
+      {/* Action Bar - Mobile Optimized */}
+      <div className="bg-black/60 backdrop-blur-lg border-t border-white/20 p-3 md:p-4">
         {/* DEBUG INFO */}
-        <div className="flex justify-center mb-2 text-white text-sm">
+        <div className="flex justify-center mb-2 text-white text-xs md:text-sm">
           Phase: {battlePhase} | Turn: {turn} | Selected: {selectedAction || 'none'}
         </div>
-        
-        {/* TEST BUTTON - Remove after debugging */}
-        <div className="flex justify-center mb-2">
-          <button 
-            onClick={() => {
-              console.log('🚨 TEST BUTTON CLICKED!');
-              console.log('Current state:', { battlePhase, turn, selectedAction });
-            }}
-            className="bg-red-500 text-white px-4 py-2 rounded font-bold"
-            style={{ zIndex: 9999 }}
-          >
-            TEST CLICK - Phase: {battlePhase}
-          </button>
-        </div>
 
-        {/* Manual Strike Button Test */}
-        <div className="flex justify-center mb-2">
+        {/* Action Buttons - Mobile Grid Layout */}
+        <div className="grid grid-cols-2 md:flex md:justify-center gap-2 md:gap-4 mb-4">
+          {/* Strike Button */}
           <button
             onClick={() => {
-              console.log('🗡️ MANUAL STRIKE CLICKED!');
+              console.log('⚔️ STRIKE CLICKED!');
               setSelectedAction('basic_attack');
-              console.log('✅ Strike action selected manually');
+              console.log('Strike selected for targeting');
             }}
-            className="bg-yellow-600 text-white px-4 py-2 rounded font-bold"
-            style={{ zIndex: 9999 }}
+            className={`bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white px-4 md:px-6 py-4 md:py-3 rounded-lg md:rounded font-bold border border-white/20 transition-colors min-h-[60px] md:min-h-auto ${
+              selectedAction === 'basic_attack' ? 'ring-2 ring-blue-400 bg-blue-700' : ''
+            }`}
           >
-            MANUAL STRIKE TEST
-          </button>
-        </div>
-
-        <div className="flex justify-center space-x-4 mb-4">
-          {/* Working Strike Button - Copy of Manual Test */}
-          <button
-            onClick={() => {
-              console.log('🗡️ WORKING STRIKE CLICKED!');
-              setSelectedAction('basic_attack');
-              console.log('✅ Strike selected for targeting');
-            }}
-            className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded font-bold border border-white/20"
-          >
-            ⚔️ Strike
+            <div className="flex flex-col md:flex-row items-center md:space-x-2">
+              <Sword className="w-5 h-5 md:w-4 md:h-4" />
+              <span className="text-sm md:text-base font-medium mt-1 md:mt-0">Strike</span>
+            </div>
           </button>
           
           {/* Other Action Buttons */}
@@ -748,22 +724,22 @@ export function EnhancedCombatSystem({
             <button
               key={`${action.id}-${index}`}
               onClick={() => {
-                console.log('🗡️ OTHER ACTION CLICKED:', action.name, action.id);
+                console.log('ACTION CLICKED:', action.name, action.id);
                 if (action.type === 'attack' || action.type === 'skill') {
                   setSelectedAction(action.id);
-                  console.log('✅ Action selected for targeting:', action.id);
+                  console.log('Action selected for targeting:', action.id);
                 } else {
                   executeAction(action.id);
-                  console.log('🚀 Direct action executed:', action.id);
+                  console.log('Direct action executed:', action.id);
                 }
               }}
-              className={`px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white border border-white/20 rounded ${
-                selectedAction === action.id ? 'ring-2 ring-blue-400' : ''
+              className={`bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white px-4 md:px-6 py-4 md:py-3 rounded-lg md:rounded font-bold border border-white/20 transition-colors min-h-[60px] md:min-h-auto ${
+                selectedAction === action.id ? 'ring-2 ring-blue-400 bg-blue-700' : ''
               }`}
             >
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-col md:flex-row items-center md:space-x-2">
                 {action.icon}
-                <span className="font-medium">{action.name}</span>
+                <span className="text-sm md:text-base font-medium mt-1 md:mt-0">{action.name}</span>
               </div>
               {action.manaCost > 0 && (
                 <div className="text-xs text-blue-300 mt-1">
@@ -774,9 +750,9 @@ export function EnhancedCombatSystem({
           ))}
         </div>
 
-        {/* Combat Log */}
-        <div className="bg-black/40 rounded-lg p-3 max-h-24 overflow-y-auto">
-          <div className="text-sm text-gray-300 space-y-1">
+        {/* Combat Log - Mobile Optimized */}
+        <div className="bg-black/40 rounded-lg p-2 md:p-3 max-h-20 md:max-h-24 overflow-y-auto">
+          <div className="text-xs md:text-sm text-gray-300 space-y-1">
             {combatLog.map((log, index) => (
               <div key={index} className="opacity-80">
                 {log}
