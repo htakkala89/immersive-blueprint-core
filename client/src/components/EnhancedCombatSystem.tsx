@@ -493,14 +493,14 @@ export function EnhancedCombatSystem({
           }}
         />
 
-        {/* Enemy Display - Large and Prominent */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-12">
+        {/* Massive Enemy Display - Ultra-Prominent */}
+        <div className="absolute inset-0 flex items-center justify-center pt-8 pb-32">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12 md:gap-16">
             {enemies.map((enemy) => (
               <motion.div
                 key={enemy.id}
-                className={`relative cursor-pointer transform transition-all duration-200 hover:scale-105 ${
-                  targetSelection === enemy.id ? 'ring-4 ring-red-400 scale-105' : ''
+                className={`relative cursor-pointer transform transition-all duration-300 ${
+                  targetSelection === enemy.id ? 'ring-4 ring-red-400 scale-110' : 'hover:scale-105'
                 }`}
                 onClick={() => {
                   console.log('Enemy clicked:', enemy.id, 'Selected action:', selectedAction);
@@ -512,48 +512,56 @@ export function EnhancedCombatSystem({
                     setTargetSelection(null);
                   }
                 }}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.08, y: -5 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {/* Enemy Avatar - Much Larger */}
-                <div 
-                  className={`w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center border-4 ${
-                    enemy.isBoss ? 'border-yellow-400 bg-gradient-to-br from-red-700 via-red-800 to-red-900' :
-                    enemy.isElite ? 'border-purple-400 bg-gradient-to-br from-purple-700 via-purple-800 to-purple-900' :
-                    'border-red-400 bg-gradient-to-br from-red-600 via-red-700 to-red-800'
-                  }`}
-                  style={{
-                    boxShadow: enemy.isBoss ? '0 0 30px rgba(234,179,8,0.8), inset 0 0 20px rgba(0,0,0,0.3)' : 
-                               enemy.isElite ? '0 0 25px rgba(147,51,234,0.8), inset 0 0 15px rgba(0,0,0,0.3)' :
-                               '0 0 20px rgba(239,68,68,0.8), inset 0 0 10px rgba(0,0,0,0.3)'
-                  }}
-                >
-                  {enemy.isBoss ? <Crown className="w-12 h-12 md:w-16 md:h-16 text-yellow-400" /> :
-                   enemy.isElite ? <Star className="w-10 h-10 md:w-14 md:h-14 text-purple-400" /> :
-                   <Skull className="w-10 h-10 md:w-14 md:h-14 text-red-400" />}
-                </div>
-                
-                {/* Enemy Info Panel */}
-                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-32 md:w-40">
-                  <div className="text-center mb-2">
-                    <div className="text-sm md:text-base text-white font-bold mb-1">{enemy.name}</div>
-                    <div className="text-xs text-gray-300">{enemy.isElite ? 'Elite' : enemy.isBoss ? 'Boss' : 'Regular'}</div>
+                {/* Enemy Card Background */}
+                <div className="bg-black/60 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                  {/* Enemy Avatar - Massive */}
+                  <div 
+                    className={`w-32 h-32 md:w-40 md:h-40 mx-auto rounded-full flex items-center justify-center border-4 mb-4 ${
+                      enemy.isBoss ? 'border-yellow-400 bg-gradient-to-br from-yellow-600 via-red-700 to-red-900' :
+                      enemy.isElite ? 'border-purple-400 bg-gradient-to-br from-purple-600 via-purple-800 to-purple-900' :
+                      'border-red-400 bg-gradient-to-br from-red-500 via-red-700 to-red-800'
+                    }`}
+                    style={{
+                      boxShadow: enemy.isBoss ? '0 0 40px rgba(234,179,8,1), inset 0 0 30px rgba(0,0,0,0.4)' : 
+                                 enemy.isElite ? '0 0 35px rgba(147,51,234,1), inset 0 0 25px rgba(0,0,0,0.4)' :
+                                 '0 0 30px rgba(239,68,68,1), inset 0 0 20px rgba(0,0,0,0.4)'
+                    }}
+                  >
+                    {enemy.isBoss ? <Crown className="w-16 h-16 md:w-20 md:h-20 text-yellow-300" /> :
+                     enemy.isElite ? <Star className="w-14 h-14 md:w-18 md:h-18 text-purple-300" /> :
+                     <Skull className="w-14 h-14 md:w-18 md:h-18 text-red-300" />}
                   </div>
                   
-                  {/* HP Bar - Larger */}
-                  <div className="w-full h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-600">
-                    <motion.div
-                      className={`h-full ${
-                        enemy.isBoss ? 'bg-gradient-to-r from-yellow-500 to-red-500' :
-                        enemy.isElite ? 'bg-gradient-to-r from-purple-500 to-red-500' :
-                        'bg-gradient-to-r from-red-500 to-red-600'
-                      }`}
-                      animate={{ width: `${(enemy.hp / enemy.maxHp) * 100}%` }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </div>
-                  <div className="text-xs text-center text-gray-300 mt-1 font-medium">
-                    {enemy.hp}/{enemy.maxHp} HP
+                  {/* Enemy Info */}
+                  <div className="text-center">
+                    <div className="text-lg md:text-xl text-white font-bold mb-1">{enemy.name}</div>
+                    <div className={`text-sm mb-3 ${
+                      enemy.isBoss ? 'text-yellow-400' : enemy.isElite ? 'text-purple-400' : 'text-red-400'
+                    }`}>
+                      {enemy.isElite ? 'Elite Monster' : enemy.isBoss ? 'Boss Monster' : 'Regular Monster'}
+                    </div>
+                    
+                    {/* HP Bar - Enhanced */}
+                    <div className="w-full h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-600 mb-2">
+                      <motion.div
+                        className={`h-full ${
+                          enemy.isBoss ? 'bg-gradient-to-r from-yellow-400 to-red-500' :
+                          enemy.isElite ? 'bg-gradient-to-r from-purple-400 to-red-500' :
+                          'bg-gradient-to-r from-red-400 to-red-600'
+                        }`}
+                        animate={{ width: `${(enemy.hp / enemy.maxHp) * 100}%` }}
+                        transition={{ duration: 0.3 }}
+                        style={{
+                          boxShadow: 'inset 0 0 10px rgba(255,255,255,0.3)'
+                        }}
+                      />
+                    </div>
+                    <div className="text-sm text-center text-gray-200 font-bold">
+                      {enemy.hp}/{enemy.maxHp} HP
+                    </div>
                   </div>
                 </div>
 
