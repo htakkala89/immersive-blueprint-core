@@ -5851,24 +5851,14 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      {/* Enhanced Combat System */}
-      <EnhancedCombatSystem
+      {/* Enhanced Combat System - Mobile First */}
+      <EnhancedCombatSystemNew
         isVisible={enhancedCombatVisible}
         onClose={() => setEnhancedCombatVisible(false)}
-        onCombatComplete={handleCombatComplete}
-        playerLevel={gameState.level}
         playerStats={{
-          hp: gameState.health,
           maxHp: gameState.maxHealth,
-          mp: gameState.mana,
-          maxMp: gameState.maxMana,
-          attack: (gameState.stats?.strength || 25) * 2,
-          defense: (gameState.stats?.vitality || 18) * 1.5,
-          agility: gameState.stats?.agility || 20
+          maxMp: gameState.maxMana
         }}
-        enemies={combatEnemies}
-        battleType="dungeon"
-        chaHaeInPresent={playerLocation === 'training_facility' || gameState.affection >= 3}
       />
 
     </div>
