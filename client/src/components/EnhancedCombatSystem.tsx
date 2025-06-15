@@ -751,65 +751,115 @@ export function EnhancedCombatSystem({
         </AnimatePresence>
       </div>
 
-      {/* Action Bar - Mobile Optimized */}
-      <div className="bg-black/60 backdrop-blur-lg border-t border-white/20 p-3 md:p-4">
+      {/* Action Bar - Compact List Design */}
+      <div className="bg-black/60 backdrop-blur-lg border-t border-white/20">
         {/* DEBUG INFO */}
-        <div className="flex justify-center mb-2 text-white text-xs md:text-sm">
+        <div className="flex justify-center p-2 text-white text-xs border-b border-gray-700/50">
           Phase: {battlePhase} | Turn: {turn} | Selected: {selectedAction || 'none'}
         </div>
 
-        {/* Action Buttons - Mobile Grid Layout */}
-        <div className="grid grid-cols-2 md:flex md:justify-center gap-2 md:gap-4 mb-4">
+        {/* Attack List - Scrollable */}
+        <div className="max-h-40 overflow-y-auto">
           {/* Strike Button */}
           <button
             onClick={() => {
-              console.log('⚔️ STRIKE CLICKED!');
+              console.log('Strike clicked!');
               setSelectedAction('basic_attack');
-              console.log('Strike selected for targeting');
             }}
-            className={`bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white px-4 md:px-6 py-4 md:py-3 rounded-lg md:rounded font-bold border border-white/20 transition-colors min-h-[60px] md:min-h-auto ${
-              selectedAction === 'basic_attack' ? 'ring-2 ring-blue-400 bg-blue-700' : ''
+            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
+              selectedAction === 'basic_attack' ? 'bg-blue-600/80 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700/50'
             }`}
           >
-            <div className="flex flex-col md:flex-row items-center md:space-x-2">
-              <Sword className="w-5 h-5 md:w-4 md:h-4" />
-              <span className="text-sm md:text-base font-medium mt-1 md:mt-0">Strike</span>
+            <div className="flex items-center space-x-3">
+              <Sword className="w-5 h-5" />
+              <span className="font-medium">Strike</span>
             </div>
           </button>
           
-          {/* Other Action Buttons */}
-          {combatActions.slice(1).map((action, index) => (
-            <button
-              key={`${action.id}-${index}`}
-              onClick={() => {
-                console.log('ACTION CLICKED:', action.name, action.id);
-                if (action.type === 'attack' || action.type === 'skill') {
-                  setSelectedAction(action.id);
-                  console.log('Action selected for targeting:', action.id);
-                } else {
-                  executeAction(action.id);
-                  console.log('Direct action executed:', action.id);
-                }
-              }}
-              className={`bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white px-4 md:px-6 py-4 md:py-3 rounded-lg md:rounded font-bold border border-white/20 transition-colors min-h-[60px] md:min-h-auto ${
-                selectedAction === action.id ? 'ring-2 ring-blue-400 bg-blue-700' : ''
-              }`}
-            >
-              <div className="flex flex-col md:flex-row items-center md:space-x-2">
-                {action.icon}
-                <span className="text-sm md:text-base font-medium mt-1 md:mt-0">{action.name}</span>
-              </div>
-              {action.manaCost > 0 && (
-                <div className="text-xs text-blue-300 mt-1">
-                  MP: {action.manaCost}
-                </div>
-              )}
-            </button>
-          ))}
+          {/* Shadow Exchange */}
+          <button
+            onClick={() => setSelectedAction('shadow_exchange')}
+            disabled={jinWooStats.mp < 20}
+            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
+              selectedAction === 'shadow_exchange' ? 'bg-blue-600/80 text-white' : 
+              jinWooStats.mp < 20 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              'bg-transparent text-gray-300 hover:bg-gray-700/50'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Zap className="w-5 h-5" />
+              <span className="font-medium">Shadow Exchange</span>
+            </div>
+            <span className="text-sm text-blue-400">20 MP</span>
+          </button>
+
+          {/* Summon Igris */}
+          <button
+            onClick={() => setSelectedAction('summon_igris')}
+            disabled={jinWooMP < 50}
+            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
+              selectedAction === 'summon_igris' ? 'bg-blue-600/80 text-white' : 
+              jinWooMP < 50 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              'bg-transparent text-gray-300 hover:bg-gray-700/50'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Crown className="w-5 h-5" />
+              <span className="font-medium">Summon Igris</span>
+            </div>
+            <span className="text-sm text-blue-400">50 MP</span>
+          </button>
+
+          {/* Ruler's Authority */}
+          <button
+            onClick={() => setSelectedAction('rulers_authority')}
+            disabled={jinWooMP < 30}
+            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
+              selectedAction === 'rulers_authority' ? 'bg-blue-600/80 text-white' : 
+              jinWooMP < 30 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              'bg-transparent text-gray-300 hover:bg-gray-700/50'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Target className="w-5 h-5" />
+              <span className="font-medium">Ruler's Authority</span>
+            </div>
+            <span className="text-sm text-blue-400">30 MP</span>
+          </button>
+
+          {/* Shadow Step */}
+          <button
+            onClick={() => setSelectedAction('shadow_step')}
+            disabled={jinWooMP < 10}
+            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
+              selectedAction === 'shadow_step' ? 'bg-blue-600/80 text-white' : 
+              jinWooMP < 10 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              'bg-transparent text-gray-300 hover:bg-gray-700/50'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Wind className="w-5 h-5" />
+              <span className="font-medium">Shadow Step</span>
+            </div>
+            <span className="text-sm text-blue-400">10 MP</span>
+          </button>
+
+          {/* Defend */}
+          <button
+            onClick={() => setSelectedAction('defend')}
+            className={`w-full flex items-center justify-between p-3 transition-colors ${
+              selectedAction === 'defend' ? 'bg-blue-600/80 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700/50'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Shield className="w-5 h-5" />
+              <span className="font-medium">Defend</span>
+            </div>
+          </button>
         </div>
 
         {/* Combat Log - Mobile Optimized */}
-        <div className="bg-black/40 rounded-lg p-2 md:p-3 max-h-20 md:max-h-24 overflow-y-auto">
+        <div className="bg-black/40 rounded-lg p-2 md:p-3 max-h-20 md:max-h-24 overflow-y-auto mt-3">
           <div className="text-xs md:text-sm text-gray-300 space-y-1">
             {combatLog.map((log, index) => (
               <div key={index} className="opacity-80">
