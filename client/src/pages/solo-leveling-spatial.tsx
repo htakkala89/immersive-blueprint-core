@@ -4152,8 +4152,8 @@ export default function SoloLevelingSpatial() {
               <motion.div
                 className="rounded-lg p-4 mb-3 flex flex-col"
                 style={{
-                  height: '200px',
-                  maxHeight: '200px',
+                  height: '220px',
+                  maxHeight: '220px',
                   backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
                   WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
                   background: `
