@@ -505,7 +505,11 @@ export function EnhancedCombatSystem({
           {battlePhase === 'preparation' && (
             <div className="flex gap-2 mt-2">
               <Button
-                onClick={() => setBattlePhase('combat')}
+                onClick={() => {
+                  console.log('🚀 Start Battle clicked! Changing phase from', battlePhase, 'to combat');
+                  setBattlePhase('combat');
+                  console.log('✅ Battle phase changed to combat');
+                }}
                 className="bg-green-600 hover:bg-green-700"
               >
                 Start Battle
