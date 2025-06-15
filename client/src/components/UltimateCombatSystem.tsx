@@ -608,8 +608,12 @@ export function UltimateCombatSystem({
           console.log('Profile data structure:', profile);
           console.log('GameState structure:', gameState);
           
-          // Filter weapons from purchases
-          const weapons = purchasedItems.filter((item: any) => 
+          // Filter weapons from purchases with detailed logging
+          const weapons = purchasedItems.filter((item: any) => {
+            const isWeapon = item.category === 'weapons' || item.type === 'weapon';
+            console.log(`Checking item: ${item.name}, category: ${item.category}, type: ${item.type}, isWeapon: ${isWeapon}`);
+            return isWeapon;
+          }).filter((item: any) => 
             item.category === 'weapons' || item.type === 'weapon'
           ).map((item: any) => ({
             id: item.id,
