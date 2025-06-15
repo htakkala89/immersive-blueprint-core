@@ -61,9 +61,26 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
     setViewingEpisode(episode);
   };
 
-  const handleDeleteEpisode = (episodeId: string) => {
+  const handleDeleteEpisode = async (episodeId: string) => {
     if (confirm('Are you sure you want to delete this episode? This action cannot be undone.')) {
-      setEpisodes(prev => prev.filter(ep => ep.id !== episodeId));
+      try {
+        const response = await fetch(`/api/episodes/${episodeId}`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          // Remove from local state after successful deletion
+          setEpisodes(prev => prev.filter(ep => ep.id !== episodeId));
+          console.log('Episode deleted successfully');
+        } else {
+          const error = await response.json();
+          console.error('Failed to delete episode:', error);
+          alert('Failed to delete episode. Please try again.');
+        }
+      } catch (error) {
+        console.error('Delete episode error:', error);
+        alert('Failed to delete episode. Please try again.');
+      }
     }
   };
 
