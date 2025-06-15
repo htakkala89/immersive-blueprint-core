@@ -695,14 +695,22 @@ export function EnhancedCombatSystem({
 
       {/* Action Bar */}
       <div className="bg-black/60 backdrop-blur-lg border-t border-white/20 p-4">
+        {/* DEBUG INFO */}
+        <div className="flex justify-center mb-2 text-white text-sm">
+          Phase: {battlePhase} | Turn: {turn} | Selected: {selectedAction || 'none'}
+        </div>
+        
         {/* TEST BUTTON - Remove after debugging */}
         <div className="flex justify-center mb-2">
           <button 
-            onClick={() => console.log('🚨 TEST BUTTON CLICKED!')}
+            onClick={() => {
+              console.log('🚨 TEST BUTTON CLICKED!');
+              console.log('Current state:', { battlePhase, turn, selectedAction });
+            }}
             className="bg-red-500 text-white px-4 py-2 rounded font-bold"
             style={{ zIndex: 9999 }}
           >
-            TEST CLICK
+            TEST CLICK - Phase: {battlePhase}
           </button>
         </div>
 
