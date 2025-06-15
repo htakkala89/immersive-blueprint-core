@@ -600,6 +600,11 @@ export function UltimateCombatSystem({
           const profileData = await profileResponse.json();
           const profile = profileData.profile;
           
+          console.log('USEEFFECT - Full profile data:', JSON.stringify(profile, null, 2));
+          console.log('USEEFFECT - Profile keys:', Object.keys(profile));
+          console.log('USEEFFECT - Profile inventory field:', profile.inventory);
+          console.log('USEEFFECT - Profile gameState field:', profile.gameState);
+          
           // Get purchased items from profile.inventory (where equipment is actually stored)
           const purchasedItems = profile.inventory || [];
           
