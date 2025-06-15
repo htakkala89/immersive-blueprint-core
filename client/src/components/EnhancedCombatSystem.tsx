@@ -699,18 +699,19 @@ export function EnhancedCombatSystem({
           {combatActions.map((action) => (
             <Button
               key={action.id}
-              onClick={() => {
-                console.log('🔥 Action button clicked:', action.name, 'Turn:', turn, 'Phase:', battlePhase);
-                if (turn === 'player' && battlePhase === 'combat') {
-                  if (action.type === 'attack' || action.type === 'skill') {
-                    console.log('🎯 Selecting action for targeting:', action.id);
-                    setSelectedAction(action.id);
-                  } else {
-                    console.log('🚀 Executing non-targeting action:', action.id);
-                    executeAction(action.id);
-                  }
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔥 Action button clicked:', action.name, 'ID:', action.id, 'Type:', action.type);
+                console.log('Current state - Turn:', turn, 'Phase:', battlePhase, 'Selected:', selectedAction);
+                
+                if (action.type === 'attack' || action.type === 'skill') {
+                  console.log('🎯 This is a targeting action, setting selectedAction to:', action.id);
+                  setSelectedAction(action.id);
+                  console.log('✅ Selected action set. Now click an enemy to attack.');
                 } else {
-                  console.log('❌ Action disabled - Turn:', turn, 'Phase:', battlePhase);
+                  console.log('🚀 This is a direct action, executing immediately:', action.id);
+                  executeAction(action.id);
                 }
               }}
               disabled={false}
