@@ -2683,69 +2683,319 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
     }
   });
 
-  // Inventory system
-  app.get("/api/inventory", async (req, res) => {
+  // Enhanced Equipment & Inventory System
+  app.get("/api/player-equipment", async (req, res) => {
+    try {
+      const equipment = {
+        weapon: {
+          id: 'kaisel_fang',
+          name: 'Kaisel\'s Fang',
+          type: 'weapon',
+          tier: 'mythic',
+          stats: { attack: 280, critRate: 25, critDamage: 150 },
+          abilities: ['Shadow Enhancement', 'Dragon Slayer'],
+          description: 'A blade forged from the fang of the Shadow Dragon Kaisel',
+          icon: '⚔️'
+        },
+        armor: {
+          id: 'shadow_mail',
+          name: 'Shadow Sovereign\'s Mail',
+          type: 'armor',
+          tier: 'legendary',
+          stats: { defense: 180, hp: 500, speed: 15 },
+          abilities: ['Shadow Step', 'Damage Reduction'],
+          description: 'Armor that bends light and shadow to protect its wearer',
+          icon: '🛡️'
+        },
+        accessory: {
+          id: 'monarch_seal',
+          name: 'Seal of the Shadow Monarch',
+          type: 'accessory',
+          tier: 'mythic',
+          stats: { mp: 300, attack: 50, critRate: 15 },
+          abilities: ['Mana Regeneration', 'Shadow Army Enhancement'],
+          description: 'The ultimate symbol of shadow dominion',
+          icon: '💍'
+        }
+      };
+      
+      res.json({ equipment });
+    } catch (error) {
+      console.error("Equipment error:", error);
+      res.status(500).json({ error: "Failed to get equipment" });
+    }
+  });
+
+  app.get("/api/combat-inventory", async (req, res) => {
     try {
       const inventory = [
         {
-          id: 'demon_sword',
-          name: 'Demon Monarch\'s Blade',
-          type: 'weapon',
-          rarity: 'legendary',
-          attack: 150,
-          description: 'A legendary sword forged from shadow energy'
+          id: 'healing_potion',
+          name: 'Superior Healing Potion',
+          type: 'health',
+          quantity: 8,
+          cooldown: 0,
+          maxCooldown: 2000,
+          effects: { heal: 350 },
+          description: 'Instantly restores significant HP',
+          icon: '🧪'
         },
         {
-          id: 'shadow_armor',
-          name: 'Shadow Sovereign Armor',
-          type: 'armor',
-          rarity: 'epic',
-          defense: 120,
-          description: 'Armor that phases between dimensions'
+          id: 'mana_elixir',
+          name: 'Mana Elixir',
+          type: 'mana',
+          quantity: 5,
+          cooldown: 0,
+          maxCooldown: 1500,
+          effects: { manaRestore: 250 },
+          description: 'Restores large amount of MP',
+          icon: '💙'
         },
         {
-          id: 'monarch_ring',
-          name: 'Ring of the Shadow Monarch',
-          type: 'accessory',
-          rarity: 'legendary',
-          mana: 100,
-          description: 'Increases shadow magic power'
+          id: 'shadow_essence',
+          name: 'Concentrated Shadow Essence',
+          type: 'buff',
+          quantity: 3,
+          cooldown: 0,
+          maxCooldown: 10000,
+          effects: {
+            buffs: [
+              { type: 'shadow_power', value: 75, duration: 30000 },
+              { type: 'critical_rate', value: 30, duration: 30000 }
+            ]
+          },
+          description: 'Drastically enhances shadow abilities',
+          icon: '🌑'
+        },
+        {
+          id: 'berserker_rage',
+          name: 'Berserker\'s Fury',
+          type: 'buff',
+          quantity: 2,
+          cooldown: 0,
+          maxCooldown: 30000,
+          effects: {
+            buffs: [
+              { type: 'attack', value: 150, duration: 20000 },
+              { type: 'speed', value: 75, duration: 20000 }
+            ]
+          },
+          description: 'Massive power boost with risks',
+          icon: '🔥'
+        },
+        {
+          id: 'revival_stone',
+          name: 'Phoenix Revival Stone',
+          type: 'special',
+          quantity: 1,
+          cooldown: 0,
+          maxCooldown: 60000,
+          effects: { heal: 500, manaRestore: 200 },
+          description: 'Instantly revives and fully heals',
+          icon: '💎'
         }
       ];
       
       res.json({ inventory });
     } catch (error) {
-      console.error("Inventory error:", error);
-      res.status(500).json({ error: "Failed to get inventory" });
+      console.error("Combat inventory error:", error);
+      res.status(500).json({ error: "Failed to get combat inventory" });
     }
   });
 
-  // Equipment management
+  // Equipment management endpoints
   app.post("/api/equip-item", async (req, res) => {
     try {
-      const { gameState, item } = req.body;
+      const { itemId, slot, sessionId } = req.body;
       
-      const gameStateUpdate = {
-        ...gameState,
-        equipment: {
-          ...gameState.equipment,
-          [item.type]: item
+      // In a real implementation, this would update the database
+      // For now, return success confirmation
+      res.json({ 
+        success: true, 
+        message: `Equipped ${itemId} to ${slot} slot`,
+        updatedStats: {
+          attack: 350,
+          defense: 180,
+          hp: 1200,
+          mp: 800
         }
-      };
-      
-      res.json({ gameStateUpdate });
+      });
     } catch (error) {
-      console.error("Equipment error:", error);
+      console.error("Equip item error:", error);
       res.status(500).json({ error: "Failed to equip item" });
     }
   });
 
-  // Raid system
-  app.post("/api/start-raid", async (req, res) => {
+  app.post("/api/unequip-item", async (req, res) => {
     try {
-      const { gameState, raidType } = req.body;
+      const { slot, sessionId } = req.body;
       
-      const raids = {
+      res.json({ 
+        success: true, 
+        message: `Unequipped item from ${slot} slot`,
+        updatedStats: {
+          attack: 200,
+          defense: 100,
+          hp: 800,
+          mp: 500
+        }
+      });
+    } catch (error) {
+      console.error("Unequip item error:", error);
+      res.status(500).json({ error: "Failed to unequip item" });
+    }
+  });
+
+  app.post("/api/use-combat-item", async (req, res) => {
+    try {
+      const { itemId, sessionId, targetId } = req.body;
+      
+      // Simulate item usage effects
+      const itemEffects = {
+        'healing_potion': { hp: 350, message: 'Restored 350 HP' },
+        'mana_elixir': { mp: 250, message: 'Restored 250 MP' },
+        'shadow_essence': { 
+          buffs: [
+            { type: 'shadow_power', value: 75, duration: 30000 },
+            { type: 'critical_rate', value: 30, duration: 30000 }
+          ],
+          message: 'Shadow power enhanced!' 
+        },
+        'berserker_rage': {
+          buffs: [
+            { type: 'attack', value: 150, duration: 20000 },
+            { type: 'speed', value: 75, duration: 20000 }
+          ],
+          message: 'Berserker fury activated!'
+        },
+        'revival_stone': { hp: 500, mp: 200, message: 'Phoenix revival!' }
+      };
+      
+      const effect = itemEffects[itemId as keyof typeof itemEffects] || { message: 'Item used' };
+      
+      res.json({ 
+        success: true, 
+        effect,
+        remainingQuantity: Math.max(0, Math.floor(Math.random() * 5))
+      });
+    } catch (error) {
+      console.error("Use combat item error:", error);
+      res.status(500).json({ error: "Failed to use combat item" });
+    }
+  });
+
+  // Enhanced combat encounter system
+  app.post("/api/start-combat", async (req, res) => {
+    try {
+      const { battleType, difficulty, location } = req.body;
+      
+      // Generate dynamic enemies based on battle type and difficulty
+      const enemies = generateEnemiesForCombat(battleType, difficulty, location);
+      
+      res.json({ 
+        success: true,
+        enemies,
+        battleConditions: {
+          environment: location || 'dungeon',
+          weatherEffects: Math.random() > 0.7 ? 'shadow_storm' : 'normal',
+          specialRules: battleType === 'boss' ? ['no_items', 'enrage_timer'] : []
+        }
+      });
+    } catch (error) {
+      console.error("Start combat error:", error);
+      res.status(500).json({ error: "Failed to start combat" });
+    }
+  });
+
+  function generateEnemiesForCombat(battleType: string, difficulty: string, location: string) {
+    const difficultyMultipliers = {
+      'easy': 0.7,
+      'normal': 1.0,
+      'hard': 1.3,
+      'nightmare': 1.8
+    };
+    
+    const multiplier = difficultyMultipliers[difficulty as keyof typeof difficultyMultipliers] || 1.0;
+    
+    if (battleType === 'boss') {
+      return [{
+        id: 'shadow_lord',
+        name: 'Shadow Lord Baran',
+        type: 'demon',
+        rank: 'boss',
+        level: Math.floor(25 * multiplier),
+        hp: Math.floor(2500 * multiplier),
+        maxHp: Math.floor(2500 * multiplier),
+        mp: Math.floor(500 * multiplier),
+        maxMp: Math.floor(500 * multiplier),
+        attack: Math.floor(180 * multiplier),
+        defense: Math.floor(120 * multiplier),
+        speed: 45,
+        position: { x: 70, y: 40 },
+        aggro: 100,
+        status: [],
+        attackCooldown: 0,
+        skills: [],
+        weaknesses: ['light', 'holy'],
+        resistances: ['shadow', 'dark'],
+        dropTable: [
+          { itemId: 'shadow_essence', name: 'Shadow Essence', type: 'consumable', rarity: 'rare', quantity: 2, dropRate: 80 },
+          { itemId: 'demon_core', name: 'Demon Core', type: 'material', rarity: 'epic', quantity: 1, dropRate: 50 }
+        ]
+      }];
+    } else {
+      return [
+        {
+          id: 'shadow_beast_1',
+          name: 'Shadow Wolf',
+          type: 'beast',
+          rank: 'normal',
+          level: Math.floor(15 * multiplier),
+          hp: Math.floor(450 * multiplier),
+          maxHp: Math.floor(450 * multiplier),
+          mp: Math.floor(100 * multiplier),
+          maxMp: Math.floor(100 * multiplier),
+          attack: Math.floor(85 * multiplier),
+          defense: Math.floor(45 * multiplier),
+          speed: 65,
+          position: { x: 60, y: 30 },
+          aggro: 0,
+          status: [],
+          attackCooldown: 0,
+          skills: [],
+          weaknesses: ['fire'],
+          resistances: ['shadow'],
+          dropTable: []
+        },
+        {
+          id: 'shadow_warrior_1',
+          name: 'Shadow Warrior',
+          type: 'humanoid',
+          rank: 'elite',
+          level: Math.floor(18 * multiplier),
+          hp: Math.floor(800 * multiplier),
+          maxHp: Math.floor(800 * multiplier),
+          mp: Math.floor(150 * multiplier),
+          maxMp: Math.floor(150 * multiplier),
+          attack: Math.floor(120 * multiplier),
+          defense: Math.floor(80 * multiplier),
+          speed: 50,
+          position: { x: 80, y: 50 },
+          aggro: 0,
+          status: [],
+          attackCooldown: 0,
+          skills: [],
+          weaknesses: ['light'],
+          resistances: ['physical'],
+          dropTable: []
+        }
+      ];
+    }
+  }
+
+  // Return the server instance
+  return server;
+}
         shadow_dungeon: {
           name: 'Shadow Realm Dungeon',
           description: 'A dangerous dungeon filled with shadow creatures',
