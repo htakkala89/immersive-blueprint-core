@@ -605,6 +605,8 @@ export function UltimateCombatSystem({
           const purchasedItems = gameState.inventory || [];
           
           console.log('Loading equipment from inventory:', purchasedItems);
+          console.log('Profile data structure:', profile);
+          console.log('GameState structure:', gameState);
           
           // Filter weapons from purchases
           const weapons = purchasedItems.filter((item: any) => 
