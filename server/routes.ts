@@ -1346,6 +1346,57 @@ async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Episode System - Delete episode
+  app.delete("/api/episodes/:episodeId", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // Check if episode exists
+      const episode = await episodeEngine.getEpisode(episodeId);
+      if (!episode) {
+        return res.status(404).json({ error: "Episode not found" });
+      }
+      
+      // Delete episode file from server/episodes directory
+      const episodesDir = path.join(process.cwd(), 'server/episodes');
+      const episodeFilePath = path.join(episodesDir, `${episodeId}.json`);
+      
+      if (fs.existsSync(episodeFilePath)) {
+        fs.unlinkSync(episodeFilePath);
+        console.log(`🗑️ Deleted episode file: ${episodeId}.json`);
+      }
+      
+      // Remove from episodeEngine cache
+      await episodeEngine.removeEpisode(episodeId);
+      
+      // Clean up any episode progress records from database
+      try {
+        const episodeProgressRecords = await db.select().from(episodeProgress)
+          .where(eq(episodeProgress.episodeId, episodeId));
+        
+        if (episodeProgressRecords.length > 0) {
+          await db.delete(episodeProgress)
+            .where(eq(episodeProgress.episodeId, episodeId));
+          console.log(`🗑️ Cleaned up ${episodeProgressRecords.length} episode progress records for ${episodeId}`);
+        }
+      } catch (dbError) {
+        console.log("Episode progress cleanup note:", dbError);
+      }
+      
+      console.log(`✅ Episode ${episodeId} deleted successfully`);
+      res.json({ 
+        success: true, 
+        message: `Episode "${episode.title}" has been deleted` 
+      });
+    } catch (error) {
+      console.error("Failed to delete episode:", error);
+      res.status(500).json({ error: "Failed to delete episode" });
+    }
+  });
+
   // Episode System - Execute episode action
   app.post("/api/episodes/:episodeId/execute", async (req, res) => {
     try {
