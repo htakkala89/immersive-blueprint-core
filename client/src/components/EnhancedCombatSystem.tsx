@@ -779,10 +779,10 @@ export function EnhancedCombatSystem({
           {/* Shadow Exchange */}
           <button
             onClick={() => setSelectedAction('shadow_exchange')}
-            disabled={jinWooMP < 20}
+            disabled={playerMp < 20}
             className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
               selectedAction === 'shadow_exchange' ? 'bg-blue-600/80 text-white' : 
-              jinWooMP < 20 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              playerMp < 20 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
               'bg-transparent text-gray-300 hover:bg-gray-700/50'
             }`}
           >
@@ -796,10 +796,10 @@ export function EnhancedCombatSystem({
           {/* Summon Igris */}
           <button
             onClick={() => setSelectedAction('summon_igris')}
-            disabled={jinWooMP < 50}
+            disabled={playerMp < 50}
             className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
               selectedAction === 'summon_igris' ? 'bg-blue-600/80 text-white' : 
-              jinWooMP < 50 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              playerMp < 50 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
               'bg-transparent text-gray-300 hover:bg-gray-700/50'
             }`}
           >
@@ -813,10 +813,10 @@ export function EnhancedCombatSystem({
           {/* Ruler's Authority */}
           <button
             onClick={() => setSelectedAction('rulers_authority')}
-            disabled={jinWooMP < 30}
+            disabled={playerMp < 30}
             className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
               selectedAction === 'rulers_authority' ? 'bg-blue-600/80 text-white' : 
-              jinWooMP < 30 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              playerMp < 30 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
               'bg-transparent text-gray-300 hover:bg-gray-700/50'
             }`}
           >
@@ -830,10 +830,10 @@ export function EnhancedCombatSystem({
           {/* Shadow Step */}
           <button
             onClick={() => setSelectedAction('shadow_step')}
-            disabled={jinWooMP < 10}
+            disabled={playerMp < 10}
             className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
               selectedAction === 'shadow_step' ? 'bg-blue-600/80 text-white' : 
-              jinWooMP < 10 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              playerMp < 10 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
               'bg-transparent text-gray-300 hover:bg-gray-700/50'
             }`}
           >
