@@ -670,7 +670,7 @@ export function UltimateCombatSystem({
   }, []);
 
   // Refresh equipment after granting starting items
-  const refreshEquipment = () => {
+  const refreshEquipment = async () => {
     const loadAvailableEquipment = async () => {
       try {
         const sessionId = 'default_session';
@@ -747,13 +747,17 @@ export function UltimateCombatSystem({
   };
 
   // Equipment Swap Handler
-  const handleEquipmentSwap = (type: 'weapon' | 'armor' | 'accessory') => {
+  const handleEquipmentSwap = async (type: 'weapon' | 'armor' | 'accessory') => {
     setSelectedEquipmentType(type);
     setShowEquipmentModal(true);
     addToCombatLog(`Opening ${type} selection...`);
     
+    console.log('MODAL OPENING - Current availableEquipment state:', availableEquipment);
+    console.log('MODAL OPENING - Selected type:', type);
+    console.log('MODAL OPENING - Available for type:', availableEquipment[type]);
+    
     // Force refresh equipment when modal opens
-    refreshEquipment();
+    await refreshEquipment();
   };
 
   // Calculate stat comparison for equipment preview
