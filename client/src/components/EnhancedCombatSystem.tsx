@@ -206,8 +206,18 @@ export function EnhancedCombatSystem({
 
   // Execute player action
   const executeAction = useCallback((actionId: string, targetId?: string) => {
+    console.log('🎯 Executing action:', actionId, 'on target:', targetId);
     const action = combatActions.find(a => a.id === actionId);
-    if (!action || actionCooldowns[actionId] > 0) return;
+    if (!action) {
+      console.log('❌ Action not found:', actionId);
+      return;
+    }
+    if (actionCooldowns[actionId] > 0) {
+      console.log('❌ Action on cooldown:', actionId, actionCooldowns[actionId]);
+      return;
+    }
+
+    console.log('✅ Action executing:', action.name);
 
     // Set cooldown
     setActionCooldowns(prev => ({ ...prev, [actionId]: action.cooldown }));
@@ -221,25 +231,35 @@ export function EnhancedCombatSystem({
       case 'attack':
       case 'skill':
         if (targetId) {
-          setEnemies(prev => prev.map(enemy => {
-            if (enemy.id === targetId) {
-              const damage = action.damage || 0;
-              const actualDamage = Math.max(1, damage - enemy.defense);
-              const isCritical = Math.random() < 0.15;
-              const finalDamage = isCritical ? actualDamage * 2 : actualDamage;
-              
-              addDamageNumber(finalDamage, isCritical ? 'critical' : 'damage', enemy.position);
-              triggerCameraShake();
-              
-              logMessage = `${action.name} hits ${enemy.name} for ${finalDamage} damage${isCritical ? ' (Critical!)' : ''}`;
-              
-              return {
-                ...enemy,
-                hp: Math.max(0, enemy.hp - finalDamage)
-              };
-            }
-            return enemy;
-          }));
+          console.log('🎯 Attacking target:', targetId);
+          setEnemies(prev => {
+            const newEnemies = prev.map(enemy => {
+              if (enemy.id === targetId) {
+                const damage = action.damage || 0;
+                const actualDamage = Math.max(1, damage - enemy.defense);
+                const isCritical = Math.random() < 0.15;
+                const finalDamage = isCritical ? actualDamage * 2 : actualDamage;
+                
+                console.log(`💥 Damage calculated: ${finalDamage} (${isCritical ? 'CRITICAL' : 'normal'})`);
+                
+                addDamageNumber(finalDamage, isCritical ? 'critical' : 'damage', enemy.position);
+                triggerCameraShake();
+                
+                logMessage = `${action.name} hits ${enemy.name} for ${finalDamage} damage${isCritical ? ' (Critical!)' : ''}`;
+                
+                return {
+                  ...enemy,
+                  hp: Math.max(0, enemy.hp - finalDamage)
+                };
+              }
+              return enemy;
+            });
+            console.log('🔄 Updated enemies:', newEnemies);
+            return newEnemies;
+          });
+        } else {
+          console.log('❌ No target provided for attack action');
+          logMessage = `${action.name} - No target selected!`;
         }
         break;
 
