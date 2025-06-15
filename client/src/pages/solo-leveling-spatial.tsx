@@ -35,6 +35,7 @@ import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
+import { EnhancedCombatSystem } from '@/components/EnhancedCombatSystem';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
@@ -247,6 +248,25 @@ export default function SoloLevelingSpatial() {
   const [emotionalImage, setEmotionalImage] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
+  
+  // Enhanced Combat System State
+  const [enhancedCombatVisible, setEnhancedCombatVisible] = useState(false);
+  const [combatEnemies, setCombatEnemies] = useState<Array<{
+    id: string;
+    name: string;
+    type: string;
+    level: number;
+    hp: number;
+    maxHp: number;
+    attack: number;
+    defense: number;
+    position: { x: number; y: number };
+    aggro: number;
+    status: string[];
+    attackCooldown: number;
+    isElite: boolean;
+    isBoss: boolean;
+  }>>([]);
   const [scheduledActivities, setScheduledActivities] = useState<any[]>([]);
   const [showActivityNotification, setShowActivityNotification] = useState(false);
   const [showActivityScheduled, setShowActivityScheduled] = useState(false);
@@ -1495,6 +1515,116 @@ export default function SoloLevelingSpatial() {
       console.error('Failed to generate avatar expression:', error);
     } finally {
       setIsGeneratingAvatar(false);
+    }
+  };
+
+  // Enhanced Combat System Functions
+  const initiateCombat = (battleType: 'dungeon' | 'boss' | 'pvp' | 'training' = 'dungeon', includeChaeHaein = false) => {
+    // Generate appropriate enemies based on battle type
+    const enemies = [];
+    
+    if (battleType === 'boss') {
+      enemies.push({
+        id: 'shadow_beast_alpha',
+        name: 'Shadow Beast Alpha',
+        type: 'boss',
+        level: gameState.level + 3,
+        hp: 300,
+        maxHp: 300,
+        attack: 45,
+        defense: 20,
+        position: { x: 600, y: 250 },
+        aggro: 0,
+        status: [],
+        attackCooldown: 0,
+        isElite: false,
+        isBoss: true
+      });
+    } else if (battleType === 'training') {
+      enemies.push({
+        id: 'training_dummy',
+        name: 'Training Dummy',
+        type: 'construct',
+        level: gameState.level,
+        hp: 100,
+        maxHp: 100,
+        attack: 20,
+        defense: 5,
+        position: { x: 500, y: 300 },
+        aggro: 0,
+        status: [],
+        attackCooldown: 0,
+        isElite: false,
+        isBoss: false
+      });
+    } else {
+      // Standard dungeon enemies
+      enemies.push(
+        {
+          id: 'shadow_wolf_1',
+          name: 'Shadow Wolf',
+          type: 'beast',
+          level: gameState.level,
+          hp: 80,
+          maxHp: 80,
+          attack: 25,
+          defense: 10,
+          position: { x: 500, y: 250 },
+          aggro: 0,
+          status: [],
+          attackCooldown: 0,
+          isElite: false,
+          isBoss: false
+        },
+        {
+          id: 'shadow_archer_1',
+          name: 'Shadow Archer',
+          type: 'humanoid',
+          level: gameState.level + 1,
+          hp: 60,
+          maxHp: 60,
+          attack: 30,
+          defense: 8,
+          position: { x: 650, y: 200 },
+          aggro: 0,
+          status: [],
+          attackCooldown: 0,
+          isElite: true,
+          isBoss: false
+        }
+      );
+    }
+    
+    setCombatEnemies(enemies);
+    setEnhancedCombatVisible(true);
+  };
+
+  const handleCombatComplete = (result: { victory: boolean; rewards: any; experience: number }) => {
+    setEnhancedCombatVisible(false);
+    
+    if (result.victory) {
+      // Award experience and rewards
+      setGameState(prev => ({
+        ...prev,
+        experience: (prev.experience || 0) + result.experience,
+        gold: (prev.gold || 0) + (result.rewards.gold || 0)
+      }));
+      
+      setNotifications(prev => [...prev, {
+        id: `combat_victory_${Date.now()}`,
+        type: 'success' as const,
+        title: 'Victory!',
+        content: `Gained ${result.experience} XP and ${result.rewards.gold || 0} gold`,
+        timestamp: new Date()
+      }]);
+    } else {
+      setNotifications(prev => [...prev, {
+        id: `combat_defeat_${Date.now()}`,
+        type: 'warning' as const,
+        title: 'Defeated',
+        content: 'You were defeated in battle. Train harder!',
+        timestamp: new Date()
+      }]);
     }
   };
 
