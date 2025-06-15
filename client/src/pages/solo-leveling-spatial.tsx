@@ -689,24 +689,33 @@ export default function SoloLevelingSpatial() {
 
   const getChaHaeInLocation = (): string | null => {
     const currentTime = timeOfDay; // Use the timeOfDay state which can be overridden by dev menu
-    const affection = gameState.affection;
+    const affection = gameState.affection || 0;
     
-    // Deterministic location system - Cha Hae-In has a predictable schedule
+    // Enhanced movement system - Cha Hae-In moves more frequently with lower requirements
     if (currentTime === 'morning') {
       if (affection >= 80) return 'player_apartment'; // Very intimate - stays overnight
-      if (affection >= 70) return 'chahaein_apartment'; // High affection - at her place
+      if (affection >= 60) return 'chahaein_apartment'; // High affection - at her place
+      if (affection >= 30) return 'hongdae_cafe'; // Morning coffee meeting
       return 'hunter_association'; // Always at work in mornings
     } else if (currentTime === 'afternoon') {
+      if (affection >= 50) {
+        // Rotates between locations during afternoon breaks
+        const locations = ['hunter_association', 'training_facility', 'hunter_market'];
+        return locations[Math.floor(Date.now() / (1000 * 60 * 30)) % locations.length]; // Changes every 30 min
+      }
       return 'hunter_association'; // Always at Hunter Association during work hours
     } else if (currentTime === 'evening') {
-      if (affection >= 60) return 'myeongdong_restaurant'; // Dinner together if close
-      if (affection >= 40) return 'hongdae_cafe'; // Casual meetup
-      if (Math.random() > 0.7 && affection >= 70) return 'luxury_realtor'; // Looking at properties together
+      if (affection >= 70) return 'luxury_realtor'; // Looking at properties together
+      if (affection >= 50) return 'myeongdong_restaurant'; // Dinner together
+      if (affection >= 25) return 'hongdae_cafe'; // Casual evening meetup
+      if (affection >= 10) return 'training_facility'; // Late training session
       return 'hunter_association'; // Still working late
     } else { // night
       if (affection >= 80) return 'player_apartment'; // Very intimate - spends night together
-      if (affection >= 70) return 'chahaein_apartment'; // High affection - at her place
-      return null; // Not available at night unless very close
+      if (affection >= 60) return 'chahaein_apartment'; // High affection - at her place
+      if (affection >= 40) return 'training_facility'; // Late night training
+      if (affection >= 20) return 'hongdae_cafe'; // Night cafe study session
+      return null; // Not available at night unless some connection
     }
   };
 
