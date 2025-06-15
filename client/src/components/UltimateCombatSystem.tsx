@@ -1479,7 +1479,13 @@ export function UltimateCombatSystem({
                 </div>
 
                 <div className="space-y-3">
-                  {availableEquipment[selectedEquipmentType].length === 0 ? (
+                  {(() => {
+                    console.log('Modal debug - selectedEquipmentType:', selectedEquipmentType);
+                    console.log('Available equipment keys:', Object.keys(availableEquipment));
+                    console.log(`Looking for equipment of type "${selectedEquipmentType}":`, availableEquipment[selectedEquipmentType]);
+                    return null;
+                  })()}
+                  {availableEquipment[selectedEquipmentType]?.length === 0 ? (
                     <div className="text-center text-gray-400 py-8">
                       <div className="text-lg mb-2">No {selectedEquipmentType}s available</div>
                       <div className="text-sm">Equipment count: {availableEquipment[selectedEquipmentType].length}</div>
