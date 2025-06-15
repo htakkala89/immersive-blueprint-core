@@ -696,28 +696,17 @@ export function EnhancedCombatSystem({
       {/* Action Bar */}
       <div className="bg-black/60 backdrop-blur-lg border-t border-white/20 p-4">
         <div className="flex justify-center space-x-4 mb-4">
-          {combatActions.map((action) => (
+          {combatActions.map((action, index) => (
             <Button
-              key={action.id}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🔥 Action button clicked:', action.name, 'ID:', action.id, 'Type:', action.type);
-                console.log('Current state - Turn:', turn, 'Phase:', battlePhase, 'Selected:', selectedAction);
-                
+              key={`${action.id}-${index}`}
+              onClick={() => {
+                console.log('BUTTON CLICKED:', action.name);
                 if (action.type === 'attack' || action.type === 'skill') {
-                  console.log('🎯 This is a targeting action, setting selectedAction to:', action.id);
                   setSelectedAction(action.id);
-                  console.log('✅ Selected action set. Now click an enemy to attack.');
+                  console.log('Action selected:', action.id);
                 } else {
-                  console.log('🚀 This is a direct action, executing immediately:', action.id);
                   executeAction(action.id);
                 }
-              }}
-              disabled={false}
-              style={{
-                opacity: 1,
-                cursor: 'pointer'
               }}
               className={`relative px-6 py-3 bg-gradient-to-br ${
                 selectedAction === action.id 
@@ -732,12 +721,6 @@ export function EnhancedCombatSystem({
               {action.manaCost > 0 && (
                 <div className="text-xs text-blue-300 mt-1">
                   MP: {action.manaCost}
-                </div>
-              )}
-              {actionCooldowns[action.id] > 0 && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded">
-                  <Clock className="w-4 h-4 text-white" />
-                  <span className="ml-1 text-white text-sm">{actionCooldowns[action.id]}</span>
                 </div>
               )}
             </Button>
