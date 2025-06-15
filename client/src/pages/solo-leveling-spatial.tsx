@@ -4150,8 +4150,10 @@ export default function SoloLevelingSpatial() {
               
               {/* Dialogue Text - Enhanced Glassmorphism */}
               <motion.div
-                className="rounded-lg p-4 flex-1 mb-3 flex flex-col"
+                className="rounded-lg p-4 mb-3 flex flex-col"
                 style={{
+                  height: '200px',
+                  maxHeight: '200px',
                   backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
                   WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
                   background: `
