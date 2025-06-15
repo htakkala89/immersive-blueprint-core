@@ -616,11 +616,8 @@ export function UltimateCombatSystem({
           const weapons = purchasedItems.filter((item: any) => {
             const isWeapon = item.category === 'weapons' || item.type === 'weapon';
             console.log(`Checking item: ${item.name}, category: "${item.category}", type: "${item.type}", isWeapon: ${isWeapon}`);
-            console.log('Full item object:', item);
             return isWeapon;
-          }).filter((item: any) => 
-            item.category === 'weapons' || item.type === 'weapon'
-          ).map((item: any) => ({
+          }).map((item: any) => ({
             id: item.id,
             name: item.name,
             type: 'weapon',
