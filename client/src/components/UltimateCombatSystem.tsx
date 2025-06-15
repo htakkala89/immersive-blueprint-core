@@ -589,9 +589,9 @@ export function UltimateCombatSystem({
   useEffect(() => {
     const loadAvailableEquipment = async () => {
       try {
-        const sessionId = 'default_session'; // Get from session storage if needed
+        const sessionId = 'default_session';
         
-        // Get player profile to access purchased equipment
+        // Get player profile to access purchased equipment from gameState
         const profileResponse = await fetch(`/api/profiles/${10}/load`, {
           headers: { 'x-session-id': sessionId }
         });
@@ -600,50 +600,57 @@ export function UltimateCombatSystem({
           const profileData = await profileResponse.json();
           const profile = profileData.profile;
           
-          // Extract purchased equipment from vendor transactions
-          const purchasedItems = profile.inventory || [];
+          // Get purchased items from gameState.inventory (where shop purchases are stored)
+          const gameState = profile.gameState || {};
+          const purchasedItems = gameState.inventory || [];
           
-          // Filter equipment by type from actual purchases
+          console.log('Loading equipment from inventory:', purchasedItems);
+          
+          // Filter weapons from purchases
           const weapons = purchasedItems.filter((item: any) => 
-            item.category === 'weapons' && item.type === 'equipment'
+            item.category === 'weapons' || item.type === 'weapon'
           ).map((item: any) => ({
             id: item.id,
             name: item.name,
             type: 'weapon',
             tier: item.rarity || 'common',
-            stats: item.stats || { attack: 30 },
+            stats: item.stats || { attack: item.damage || 50 },
             icon: item.icon || '⚔️',
             description: item.description || 'A purchased weapon'
           }));
           
+          // Filter armor from purchases
           const armors = purchasedItems.filter((item: any) => 
-            item.category === 'armor' && item.type === 'equipment'
+            item.category === 'armor' || item.type === 'armor'
           ).map((item: any) => ({
             id: item.id,
             name: item.name,
             type: 'armor',
             tier: item.rarity || 'common',
-            stats: item.stats || { defense: 20 },
+            stats: item.stats || { defense: item.defense || 30 },
             icon: item.icon || '🛡️',
             description: item.description || 'Protective armor'
           }));
           
+          // Filter accessories from purchases
           const accessories = purchasedItems.filter((item: any) => 
-            item.category === 'accessories' && item.type === 'equipment'
+            item.category === 'accessories' || item.type === 'accessory'
           ).map((item: any) => ({
             id: item.id,
             name: item.name,
             type: 'accessory',
             tier: item.rarity || 'common',
-            stats: item.stats || { mp: 15 },
+            stats: item.stats || { mp: 25 },
             icon: item.icon || '💍',
             description: item.description || 'A useful accessory'
           }));
 
+          console.log('Loaded equipment:', { weapons: weapons.length, armors: armors.length, accessories: accessories.length });
+
           setAvailableEquipment({
-            weapon: weapons.length > 0 ? weapons : [],
-            armor: armors.length > 0 ? armors : [],
-            accessory: accessories.length > 0 ? accessories : []
+            weapon: weapons,
+            armor: armors,
+            accessory: accessories
           });
         }
       } catch (error) {
