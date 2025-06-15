@@ -55,6 +55,9 @@ export function EnhancedCombatSystemNew({
   // UI State
   const [damageNumbers, setDamageNumbers] = useState<DamageNumber[]>([]);
   const [cameraShake, setCameraShake] = useState(false);
+  const [shadowSoldiers, setShadowSoldiers] = useState<Array<{id: string; name: string; type: string}>>([]);
+  const [showPowerAura, setShowPowerAura] = useState(false);
+  const [combatLog, setCombatLog] = useState<string[]>([]);
 
   // Execute combat action
   const executeAction = useCallback((action: string, targetId: string) => {
@@ -64,29 +67,52 @@ export function EnhancedCombatSystemNew({
     let damage = 0;
     let mpCost = 0;
 
+    let logMessage = '';
+    let powerLevel = 1;
+
     switch (action) {
       case 'basic_attack':
         damage = Math.floor(Math.random() * 30) + 20;
+        logMessage = `Jin-Woo strikes with overwhelming force!`;
+        powerLevel = 1;
         break;
       case 'shadow_exchange':
         damage = Math.floor(Math.random() * 50) + 40;
         mpCost = 20;
+        logMessage = `Shadow Exchange! Jin-Woo teleports behind the enemy!`;
+        powerLevel = 2;
         break;
       case 'summon_igris':
         damage = Math.floor(Math.random() * 80) + 70;
         mpCost = 50;
+        logMessage = `"Arise!" Igris, the Blood-Red Commander emerges!`;
+        powerLevel = 4;
+        // Add Igris to shadow army
+        setShadowSoldiers(prev => {
+          if (!prev.find(s => s.id === 'igris')) {
+            return [...prev, { id: 'igris', name: 'Igris', type: 'Knight' }];
+          }
+          return prev;
+        });
         break;
       case 'rulers_authority':
         damage = Math.floor(Math.random() * 60) + 50;
         mpCost = 30;
+        logMessage = `Ruler's Authority! Telekinetic power crushes the enemy!`;
+        powerLevel = 3;
+        setShowPowerAura(true);
+        setTimeout(() => setShowPowerAura(false), 1000);
         break;
       case 'shadow_step':
         damage = Math.floor(Math.random() * 40) + 30;
         mpCost = 10;
+        logMessage = `Shadow Step! Jin-Woo moves like darkness itself!`;
+        powerLevel = 2;
         break;
       case 'defend':
-        // Heal instead of attack
         setPlayerHp(prev => Math.min(prev + 20, playerStats.maxHp));
+        logMessage = `Jin-Woo takes a defensive stance, recovering health.`;
+        setCombatLog(prev => [...prev.slice(-2), logMessage]);
         return;
     }
 
@@ -102,13 +128,13 @@ export function EnhancedCombatSystemNew({
     // Consume MP
     setPlayerMp(prev => Math.max(0, prev - mpCost));
 
-    // Add damage number
+    // Add enhanced damage number with power scaling
     const damageNumber: DamageNumber = {
       id: Date.now().toString(),
       value: damage,
       x: Math.random() * 200 + 100,
       y: Math.random() * 200 + 100,
-      type: 'damage'
+      type: powerLevel >= 3 ? 'heal' : 'damage' // Use different colors for high power
     };
     setDamageNumbers(prev => [...prev, damageNumber]);
 
@@ -117,12 +143,15 @@ export function EnhancedCombatSystemNew({
       setDamageNumbers(prev => prev.filter(d => d.id !== damageNumber.id));
     }, 1500);
 
-    // Camera shake effect
+    // Enhanced camera shake based on power level
     setCameraShake(true);
-    setTimeout(() => setCameraShake(false), 200);
+    setTimeout(() => setCameraShake(false), powerLevel * 100 + 100);
 
-    // Increase combo
-    setCombo(prev => prev + 1);
+    // Increase combo with power scaling
+    setCombo(prev => prev + powerLevel);
+    
+    // Add to combat log
+    setCombatLog(prev => [...prev.slice(-2), logMessage]);
   }, [enemies, playerMp, playerStats.maxHp]);
 
   // Check for battle end
@@ -283,8 +312,17 @@ export function EnhancedCombatSystemNew({
 
       {/* Mobile-First Battle Arena */}
       <div className="flex-1 relative overflow-hidden">
-        {/* Battle Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-blue-900/20 to-black" />
+        {/* Battle Background with Power Aura */}
+        <div className={`absolute inset-0 transition-all duration-1000 ${
+          showPowerAura 
+            ? 'bg-gradient-to-b from-purple-900/50 via-blue-900/30 to-black' 
+            : 'bg-gradient-to-b from-gray-900 via-blue-900/20 to-black'
+        }`} />
+        
+        {/* Monarch Power Aura Effect */}
+        {showPowerAura && (
+          <div className="absolute inset-0 bg-gradient-radial from-purple-500/20 via-transparent to-transparent animate-pulse" />
+        )}
 
         {/* Enemy Display Container */}
         <div className="h-full flex flex-col">
@@ -557,48 +595,226 @@ export function EnhancedCombatSystemNew({
             </div>
           </div>
 
-          {/* Desktop: Grid Layout */}
-          <div className="hidden md:grid md:grid-cols-3 gap-3">
-            <motion.button
-              onClick={() => setSelectedAction('basic_attack')}
-              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
-                selectedAction === 'basic_attack' 
-                  ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30' 
-                  : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
-              }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="flex flex-col items-center space-y-2">
-                <Sword className="w-6 h-6" />
-                <span className="font-medium">Strike</span>
-                <span className="text-xs opacity-70">Basic Attack</span>
+          {/* Combat Log - Enhanced for Solo Leveling */}
+          {combatLog.length > 0 && (
+            <div className="mt-3 bg-black/60 backdrop-blur-lg rounded-lg p-3 border border-purple-400/30">
+              <div className="text-xs text-purple-300 font-bold mb-2">System Messages</div>
+              <div className="text-xs text-gray-200 space-y-1 max-h-16 overflow-y-auto">
+                {combatLog.slice(-3).map((log, index) => (
+                  <div key={index} className="opacity-90 leading-relaxed">
+                    {log}
+                  </div>
+                ))}
               </div>
-            </motion.button>
+            </div>
+          )}
+        </div>
 
-            <motion.button
-              onClick={() => setSelectedAction('shadow_exchange')}
-              disabled={playerMp < 20}
-              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
-                selectedAction === 'shadow_exchange'
-                  ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
-                  : playerMp < 20
-                  ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
-                  : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+        {/* Desktop: Grid Layout */}
+        <div className="hidden md:grid md:grid-cols-3 gap-3">
+          <motion.button
+            onClick={() => setSelectedAction('basic_attack')}
+            className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+              selectedAction === 'basic_attack' 
+                ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30' 
+                : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+            }`}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="flex flex-col items-center space-y-2">
+              <Sword className="w-6 h-6" />
+              <span className="font-medium">Strike</span>
+              <span className="text-xs opacity-70">Basic Attack</span>
+            </div>
+          </motion.button>
+
+          <motion.button
+            onClick={() => setSelectedAction('shadow_exchange')}
+            disabled={playerMp < 20}
+            className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+              selectedAction === 'shadow_exchange'
+                ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                : playerMp < 20
+                ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+            }`}
+            whileHover={playerMp >= 20 ? { scale: 1.02 } : {}}
+            whileTap={playerMp >= 20 ? { scale: 0.98 } : {}}
+          >
+            <div className="flex flex-col items-center space-y-2">
+              <Zap className="w-6 h-6" />
+              <span className="font-medium">Shadow Exchange</span>
+              <span className="text-xs text-blue-400">20 MP</span>
+            </div>
+          </motion.button>
+
+          <motion.button
+            onClick={() => setSelectedAction('summon_igris')}
+            disabled={playerMp < 50}
+            className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+              selectedAction === 'summon_igris'
+                ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                : playerMp < 50
+                ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+            }`}
+            whileHover={playerMp >= 50 ? { scale: 1.02 } : {}}
+            whileTap={playerMp >= 50 ? { scale: 0.98 } : {}}
+          >
+            <div className="flex flex-col items-center space-y-2">
+              <Crown className="w-6 h-6" />
+              <span className="font-medium">Summon Igris</span>
+              <span className="text-xs text-blue-400">50 MP</span>
+            </div>
+          </motion.button>
+
+          <motion.button
+            onClick={() => setSelectedAction('rulers_authority')}
+            disabled={playerMp < 30}
+            className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+              selectedAction === 'rulers_authority'
+                ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                : playerMp < 30
+                ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+            }`}
+            whileHover={playerMp >= 30 ? { scale: 1.02 } : {}}
+            whileTap={playerMp >= 30 ? { scale: 0.98 } : {}}
+          >
+            <div className="flex flex-col items-center space-y-2">
+              <Target className="w-6 h-6" />
+              <span className="font-medium">Ruler's Authority</span>
+              <span className="text-xs text-blue-400">30 MP</span>
+            </div>
+          </motion.button>
+
+          <motion.button
+            onClick={() => setSelectedAction('shadow_step')}
+            disabled={playerMp < 10}
+            className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+              selectedAction === 'shadow_step'
+                ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                : playerMp < 10
+                ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+            }`}
+            whileHover={playerMp >= 10 ? { scale: 1.02 } : {}}
+            whileTap={playerMp >= 10 ? { scale: 0.98 } : {}}
+          >
+            <div className="flex flex-col items-center space-y-2">
+              <Wind className="w-6 h-6" />
+              <span className="font-medium">Shadow Step</span>
+              <span className="text-xs text-blue-400">10 MP</span>
+            </div>
+          </motion.button>
+
+          <motion.button
+            onClick={() => setSelectedAction('defend')}
+            className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+              selectedAction === 'defend'
+                ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+            }`}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="flex flex-col items-center space-y-2">
+              <Shield className="w-6 h-6" />
+              <span className="font-medium">Defend</span>
+              <span className="text-xs opacity-70">Reduce Damage</span>
+            </div>
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Shadow Army Display */}
+      {shadowSoldiers.length > 0 && (
+        <div className="absolute top-4 left-4 z-40">
+          <div className="bg-black/80 backdrop-blur-lg rounded-lg p-3 border border-purple-400/30 min-w-[200px]">
+            <div className="text-purple-300 text-sm font-bold mb-2 flex items-center">
+              <Crown className="w-4 h-4 mr-2" />
+              Shadow Army
+            </div>
+            <div className="space-y-2">
+              {shadowSoldiers.map((soldier) => (
+                <div key={soldier.id} className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                  <span className="text-white text-xs font-medium">{soldier.name}</span>
+                  <span className="text-purple-300 text-xs">({soldier.type})</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Damage Numbers Overlay */}
+      <div className="absolute inset-0 pointer-events-none">
+        <AnimatePresence>
+          {damageNumbers.map((damage) => (
+            <motion.div
+              key={damage.id}
+              initial={{ opacity: 1, y: 0, scale: 1 }}
+              animate={{ 
+                opacity: 0, 
+                y: -50, 
+                scale: 1.2,
+                x: Math.random() * 40 - 20 
+              }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5 }}
+              className={`absolute text-2xl font-bold pointer-events-none ${
+                damage.type === 'damage' ? 'text-red-400' :
+                damage.type === 'heal' ? 'text-green-400' :
+                'text-blue-400'
               }`}
-              whileHover={playerMp >= 20 ? { scale: 1.02 } : {}}
-              whileTap={playerMp >= 20 ? { scale: 0.98 } : {}}
+              style={{
+                left: `${damage.x}px`,
+                top: `${damage.y}px`,
+                textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+              }}
             >
-              <div className="flex flex-col items-center space-y-2">
-                <Zap className="w-6 h-6" />
-                <span className="font-medium">Shadow Exchange</span>
-                <span className="text-xs text-blue-400">20 MP</span>
-              </div>
-            </motion.button>
+              {damage.type === 'damage' ? '-' : '+'}
+              {damage.value}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
 
-            <motion.button
-              onClick={() => setSelectedAction('summon_igris')}
-              disabled={playerMp < 50}
+      {/* Battle Result Overlay */}
+      <AnimatePresence>
+        {(battlePhase === 'victory' || battlePhase === 'defeat') && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          >
+            <div className="bg-black/90 backdrop-blur-xl rounded-2xl p-8 border border-white/20 text-center max-w-md mx-4">
+              <h2 className={`text-3xl font-bold mb-4 ${
+                battlePhase === 'victory' ? 'text-green-400' : 'text-red-400'
+              }`}>
+                {battlePhase === 'victory' ? '🏆 Victory!' : '💀 Defeat!'}
+              </h2>
+              <p className="text-gray-300 mb-6">
+                {battlePhase === 'victory' 
+                  ? 'You have successfully defeated all enemies!' 
+                  : 'Your HP reached zero. Better luck next time!'}
+              </p>
+              <button
+                onClick={onClose}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              >
+                Return to World
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
               className={`p-4 rounded-xl border-2 transition-all duration-200 ${
                 selectedAction === 'summon_igris'
                   ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
