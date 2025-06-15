@@ -700,10 +700,10 @@ export default function SoloLevelingSpatial() {
   // Automatic Date Scene Triggering System
   useEffect(() => {
     const checkScheduledDates = async () => {
-      if (!currentProfile?.id) return;
+      if (!loadedProfileId) return;
       
       try {
-        const response = await fetch(`/api/scheduled-dates/${currentProfile.id}`);
+        const response = await fetch(`/api/scheduled-dates/${loadedProfileId}`);
         if (response.ok) {
           const data = await response.json();
           const scheduledDates = data.dates || [];
@@ -734,7 +734,7 @@ export default function SoloLevelingSpatial() {
     checkScheduledDates(); // Initial check
     
     return () => clearInterval(dateCheckInterval);
-  }, [currentProfile?.id, activeDate]);
+  }, [loadedProfileId, activeDate]);
 
   // Helper function to get location display name
   const getLocationName = (locationId: string): string => {
@@ -764,7 +764,14 @@ export default function SoloLevelingSpatial() {
     setDateScenePhase('arrival');
     
     // Generate scene image for the date location
-    generateSceneImage(dateInfo.location);
+    fetch('/api/generate-scene-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        location: dateInfo.location,
+        timeOfDay: getCurrentTimeOfDay()
+      })
+    }).catch(error => console.log('Scene generation error:', error));
     
     // Show notification about the date starting
     setNotifications(prev => [...prev, {
@@ -778,14 +785,14 @@ export default function SoloLevelingSpatial() {
 
   // Complete date scene and mark as finished
   const completeDateScene = async () => {
-    if (!activeDate || !currentProfile?.id) return;
+    if (!activeDate || !loadedProfileId) return;
     
     try {
       // Mark date as completed in database
       const response = await fetch(`/api/complete-date/${activeDate.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profileId: currentProfile.id })
+        body: JSON.stringify({ profileId: loadedProfileId })
       });
       
       if (response.ok) {
@@ -5087,6 +5094,146 @@ export default function SoloLevelingSpatial() {
           }));
         }}
       />
+
+      {/* Automatic Date Scene Interface */}
+      <AnimatePresence>
+        {showDateScene && activeDate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[10000] flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-4xl mx-4 bg-gradient-to-br from-purple-900/95 to-pink-900/95 border border-purple-500/50 rounded-2xl overflow-hidden"
+            >
+              {/* Date Header */}
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-center">
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <Heart className="text-pink-200" size={24} />
+                  <h2 className="text-2xl font-bold text-white">Date Time!</h2>
+                  <Heart className="text-pink-200" size={24} />
+                </div>
+                <p className="text-purple-100">
+                  You're meeting Cha Hae-In at {getLocationName(activeDate.location)}
+                </p>
+                <div className="text-sm text-purple-200 mt-2">
+                  {activeDate.dateType.charAt(0).toUpperCase() + activeDate.dateType.slice(1)} Date
+                  {activeDate.playerPromised && " • Promise Made"}
+                </div>
+              </div>
+
+              {/* Date Scene Content */}
+              <div className="p-8">
+                {dateScenePhase === 'arrival' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center space-y-6"
+                  >
+                    <div className="text-white text-lg">
+                      You arrive at {getLocationName(activeDate.location)} and see Cha Hae-In waiting for you.
+                      {activeDate.playerPromised && " She smiles warmly - you kept your promise."}
+                    </div>
+                    
+                    <div className="bg-purple-800/30 rounded-lg p-4 border border-purple-500/30">
+                      <div className="text-purple-200 text-sm mb-2">Cha Hae-In says:</div>
+                      <div className="text-white">
+                        {activeDate.dateType === 'casual' && "Jin-Woo! Right on time. I'm looking forward to spending time together."}
+                        {activeDate.dateType === 'romantic' && "You came... *blush* I've been looking forward to this all day."}
+                        {activeDate.dateType === 'intimate' && "Jin-Woo... *heart racing* I'm so happy you're here with me."}
+                        {activeDate.dateType === 'special' && "This is perfect, Jin-Woo. Just the two of us... *loving smile*"}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <button
+                        onClick={() => setDateScenePhase('dialogue')}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 px-6 rounded-lg font-semibold transition-all"
+                      >
+                        Start the Date
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowDateScene(false);
+                          setActiveDate(null);
+                        }}
+                        className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white py-4 px-6 rounded-lg font-semibold transition-all"
+                      >
+                        Leave (Miss Date)
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {dateScenePhase === 'dialogue' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-6"
+                  >
+                    <div className="bg-gradient-to-r from-purple-800/40 to-pink-800/40 rounded-lg p-6 border border-purple-500/30">
+                      <div className="text-center text-white text-lg mb-4">
+                        Enjoy your {activeDate.dateType} date together
+                      </div>
+                      
+                      {/* Mini dialogue interface for the date */}
+                      <div className="bg-black/30 rounded-lg p-4 space-y-4">
+                        <div className="text-purple-200 text-sm">Date Activity</div>
+                        <div className="text-white">
+                          {activeDate.dateType === 'casual' && "You and Cha Hae-In enjoy casual conversation over coffee, sharing stories and getting to know each other better."}
+                          {activeDate.dateType === 'romantic' && "The atmosphere is romantic as you both share meaningful glances and heartfelt conversation."}
+                          {activeDate.dateType === 'intimate' && "You feel a deep connection as you share intimate moments and personal thoughts."}
+                          {activeDate.dateType === 'special' && "This special occasion creates beautiful memories that will last forever."}
+                        </div>
+                      </div>
+
+                      <div className="mt-6 text-center">
+                        <button
+                          onClick={() => setDateScenePhase('completion')}
+                          className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white py-3 px-8 rounded-lg font-semibold transition-all"
+                        >
+                          Complete Date
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {dateScenePhase === 'completion' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center space-y-6"
+                  >
+                    <div className="text-green-400 text-xl font-bold">Date Completed Successfully!</div>
+                    
+                    <div className="bg-green-800/30 rounded-lg p-4 border border-green-500/30">
+                      <div className="text-green-200 text-sm mb-2">Results:</div>
+                      <div className="text-white space-y-2">
+                        <div>✓ Date completed as promised</div>
+                        <div>✓ Cha Hae-In is very happy</div>
+                        <div>✓ +{activeDate.playerPromised ? '8' : '5'} Affection gained</div>
+                        {activeDate.playerPromised && <div>✓ Promise kept - extra reward!</div>}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={completeDateScene}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 px-8 rounded-lg font-semibold transition-all"
+                    >
+                      Return to World
+                    </button>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <RelationshipConstellationSystem6
         isVisible={showConstellation}

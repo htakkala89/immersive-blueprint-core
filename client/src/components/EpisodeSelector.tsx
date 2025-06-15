@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Play, Clock, Heart, Star, ArrowLeft } from 'lucide-react';
+import { Play, Clock, Heart, Star, ArrowLeft, Trash2, MoreVertical } from 'lucide-react';
 import { Episode } from '@/../../shared/episodic-story-types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface EpisodeSelectorProps {
   onSelectEpisode: (episode: Episode) => void;
