@@ -567,7 +567,7 @@ export function WorldMapSystem8({
         {/* Mobile Carousel - Bottom positioned */}
         <div className="md:hidden absolute bottom-20 left-0 right-0 z-20">
           <div className="px-4">
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4">
+            <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {zones.map((zone) => (
                 <motion.div
                   key={zone.id}
