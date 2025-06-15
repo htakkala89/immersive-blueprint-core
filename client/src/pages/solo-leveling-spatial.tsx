@@ -36,6 +36,7 @@ import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
 import { EnhancedCombatSystemFixed } from '@/components/EnhancedCombatSystemFixed';
+import { UltimateCombatSystem } from '@/components/UltimateCombatSystem';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
@@ -293,7 +294,7 @@ export default function SoloLevelingSpatial() {
   const [showCommunicator, setShowCommunicator] = useState(false);
   const [notifications, setNotifications] = useState<Array<{
     id: string;
-    type: 'message' | 'quest' | 'episode_available';
+    type: 'message' | 'quest' | 'episode_available' | 'success' | 'warning';
     title: string;
     content: string;
     timestamp: Date;
@@ -344,6 +345,17 @@ export default function SoloLevelingSpatial() {
   }>>([]);
 
 
+
+  // Ultimate Combat System state
+  const [showUltimateCombat, setShowUltimateCombat] = useState(false);
+  const [playerEquipment, setPlayerEquipment] = useState<any>({
+    weapon: null,
+    armor: null,
+    accessory: null
+  });
+  const [ultimateInventory, setUltimateInventory] = useState<any[]>([]);
+  const [battleType, setBattleType] = useState<'dungeon' | 'boss' | 'raid' | 'pvp' | 'training'>('dungeon');
+  const [combatDifficulty, setCombatDifficulty] = useState<'easy' | 'normal' | 'hard' | 'nightmare'>('normal');
 
   // System 8: World Map state - activeQuests defined below with other quest states
   
