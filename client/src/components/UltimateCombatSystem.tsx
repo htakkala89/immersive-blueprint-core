@@ -832,13 +832,13 @@ export function UltimateCombatSystem({
             </div>
 
             {/* Start Battle Button */}
-            <div className="text-center mt-6">
+            <div className="text-center mt-4 md:mt-6">
               <Button
                 onClick={startCombat}
                 size="lg"
-                className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white px-12 py-4 text-xl"
+                className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white px-8 md:px-12 py-3 md:py-4 text-lg md:text-xl w-full max-w-sm md:max-w-none md:w-auto touch-manipulation"
               >
-                <Play className="w-6 h-6 mr-3" />
+                <Play className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
                 Enter Combat
               </Button>
             </div>
