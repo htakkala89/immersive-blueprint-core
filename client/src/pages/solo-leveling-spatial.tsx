@@ -48,6 +48,7 @@ import QuestBoard from '@/components/QuestBoard';
 import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
 import { SparkleEffect } from '@/components/SparkleEffect';
 import { MysticalEye } from '@/components/MysticalEye';
+import { DateSchedulingSystem } from '@/components/DateSchedulingSystem';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
 import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
 import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
@@ -298,6 +299,9 @@ export default function SoloLevelingSpatial() {
 
   // System 3: Quest Log state
   const [showQuestLog, setShowQuestLog] = useState(false);
+
+  // Date Scheduling System state
+  const [showDateScheduling, setShowDateScheduling] = useState(false);
 
   // System 18: Episodic Story Engine state
   const [showStoryEngine, setShowStoryEngine] = useState(false);
@@ -1422,6 +1426,14 @@ export default function SoloLevelingSpatial() {
   console.log('Current scene:', gameState.currentScene);
   console.log('Should Cha be present?', currentLocationData?.chaHaeInPresent);
   console.log('Cha position:', currentLocationData?.chaPosition);
+
+  // Date scheduling handler
+  const handleDateScheduled = (affectionChange: number) => {
+    setGameState(prev => ({
+      ...prev,
+      affection: Math.max(0, Math.min(100, prev.affection + affectionChange))
+    }));
+  };
 
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
@@ -4560,6 +4572,7 @@ export default function SoloLevelingSpatial() {
             { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
             { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
+            { icon: Calendar, label: 'Schedule Date', color: 'text-rose-300', onClick: () => { setShowDateScheduling(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },

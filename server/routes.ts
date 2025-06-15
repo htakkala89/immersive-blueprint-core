@@ -1630,27 +1630,20 @@ async function registerRoutes(app: Express): Promise<Server> {
       } = req.body;
       const playerId = gameState.playerId || 'default_player';
       
-      // Auto-detect if communicator mode should be used based on availability constraints
-      // Only use communicator mode if explicitly requested or truly restricted
-      const shouldUseCommunicator = communicatorMode === true || 
-        (context?.isRestricted === true) || 
-        (characterState?.status === 'busy') ||
-        (characterState?.status === 'unavailable') ||
-        (context?.levelRestricted === true);
-        
-      // If player is at the same location as Cha Hae-In, it's always in-person dialogue
-      const isInPersonDialogue = context?.location && 
+      // Determine conversation mode: in-person takes priority over communicator
+      const isInPersonDialogue = !communicatorMode && context?.location && 
         (context.location === 'hongdae_cafe' || 
          context.location === 'chahaein_apartment' || 
          context.location === 'player_apartment' ||
          context.location === 'myeongdong_restaurant' ||
          context.location === 'hangang_park' ||
-         context.location === 'gangnam_tower') &&
-        !communicatorMode; // Only override if not explicitly in communicator mode
+         context.location === 'gangnam_tower');
 
-      // Handle communicator mode with full affection tracking
-      // But skip communicator mode if this is in-person dialogue
-      if (shouldUseCommunicator && !isInPersonDialogue) {
+      // Only use communicator mode if explicitly requested AND not in person
+      const shouldUseCommunicator = communicatorMode === true && !isInPersonDialogue;
+
+      // Handle communicator mode (texting only)
+      if (shouldUseCommunicator) {
         console.log('📱 Hunter\'s Communicator mode - texting conversation with full affection tracking');
         
         const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
