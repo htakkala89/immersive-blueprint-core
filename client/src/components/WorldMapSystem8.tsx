@@ -485,11 +485,11 @@ export function WorldMapSystem8({
           </div>
         </motion.div>
 
-        {/* Legend Panel with Cha Hae-In Status - Mobile responsive positioning */}
+        {/* Legend Panel - Mobile optimized to avoid overlay */}
         <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          className="absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4 z-10 max-w-[280px] sm:max-w-none"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="hidden md:block absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4 z-10 max-w-[320px]"
         >
           <h3 className="text-white text-sm font-medium mb-3">Legend</h3>
           
@@ -503,6 +503,7 @@ export function WorldMapSystem8({
               Time: {currentTime} | Affection: {playerAffection}
             </div>
           </div>
+
           <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200 relative">
@@ -526,6 +527,26 @@ export function WorldMapSystem8({
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full opacity-60"></div>
               </div>
               <span className="text-white/80">Locked (Cha Hae-In present)</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Mobile Status Bar - Compact, positioned at bottom above carousel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="md:hidden absolute bottom-[200px] left-4 right-4 z-20"
+        >
+          <div className="bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-3">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-yellow-300 font-bold">Cha Hae-In:</span>
+                <span className="text-white">{chaHaeInLocation || 'Not Available'}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-white/70">{currentTime}</span>
+                <span className="text-purple-300">💖 {playerAffection}</span>
+              </div>
             </div>
           </div>
         </motion.div>
