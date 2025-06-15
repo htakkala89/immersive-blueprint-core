@@ -567,6 +567,16 @@ export function UltimateCombatSystem({
   }, [getEnhancedStats, statusEffects]);
 
   // Start Combat
+  // Equipment Swap Handler
+  const handleEquipmentSwap = (type: 'weapon' | 'armor' | 'accessory') => {
+    // Create a simple equipment selection modal or alert for now
+    alert(`Equipment swap for ${type} - Coming soon! This will open an equipment selection interface.`);
+    
+    // TODO: Implement equipment selection modal
+    // For now, just show which slot was clicked
+    addToCombatLog(`Preparing to change ${type}...`);
+  };
+
   const startCombat = () => {
     setBattlePhase('combat');
     setEnemies(initialEnemies);
@@ -657,17 +667,17 @@ export function UltimateCombatSystem({
 
         {/* Preparation Phase */}
         {battlePhase === 'preparation' && (
-          <div className="h-full flex flex-col p-6">
-            <div className="text-center mb-6">
-              <h1 className="text-4xl font-bold text-white mb-2">
+          <div className="h-full flex flex-col p-3 md:p-6">
+            <div className="text-center mb-4 md:mb-6">
+              <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">
                 Prepare for Battle
               </h1>
-              <p className="text-purple-300">
+              <p className="text-purple-300 text-sm md:text-base">
                 Equip your gear and ready your items before entering combat
               </p>
             </div>
 
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {/* Equipment Panel */}
               <Card className="bg-white/10 backdrop-blur-md border-purple-500/30">
                 <CardContent className="p-6">
@@ -676,66 +686,78 @@ export function UltimateCombatSystem({
                     Equipment
                   </h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Weapon Slot */}
-                    <div className="bg-white/5 rounded-lg p-4 border border-orange-500/30">
-                      <div className="text-orange-400 text-sm mb-2">WEAPON</div>
+                    <button
+                      onClick={() => handleEquipmentSwap('weapon')}
+                      className="w-full bg-white/5 hover:bg-white/10 rounded-lg p-3 md:p-4 border border-orange-500/30 hover:border-orange-500/50 transition-all active:scale-95 cursor-pointer touch-manipulation"
+                    >
+                      <div className="text-orange-400 text-xs md:text-sm mb-2 text-left font-medium">WEAPON</div>
                       {currentEquipment.weapon ? (
-                        <div className="flex items-center space-x-3">
-                          <div className="text-2xl">{currentEquipment.weapon.icon}</div>
-                          <div>
-                            <div className="text-white font-semibold">{currentEquipment.weapon.name}</div>
-                            <div className="text-green-400 text-sm">
+                        <div className="flex items-center space-x-2 md:space-x-3">
+                          <div className="text-xl md:text-2xl flex-shrink-0">{currentEquipment.weapon.icon}</div>
+                          <div className="flex-1 text-left min-w-0">
+                            <div className="text-white font-semibold text-sm md:text-base truncate">{currentEquipment.weapon.name}</div>
+                            <div className="text-green-400 text-xs md:text-sm">
                               +{currentEquipment.weapon.stats.attack} ATK
                             </div>
                           </div>
+                          <div className="text-gray-400 text-xs hidden sm:block">Tap to change</div>
                         </div>
                       ) : (
-                        <div className="text-gray-400 text-center py-4">
-                          No weapon equipped
+                        <div className="text-gray-400 text-center py-2 md:py-3 text-sm">
+                          No weapon equipped - Tap to equip
                         </div>
                       )}
-                    </div>
+                    </button>
 
                     {/* Armor Slot */}
-                    <div className="bg-white/5 rounded-lg p-4 border border-blue-500/30">
-                      <div className="text-blue-400 text-sm mb-2">ARMOR</div>
+                    <button
+                      onClick={() => handleEquipmentSwap('armor')}
+                      className="w-full bg-white/5 hover:bg-white/10 rounded-lg p-3 md:p-4 border border-blue-500/30 hover:border-blue-500/50 transition-all active:scale-95 cursor-pointer touch-manipulation"
+                    >
+                      <div className="text-blue-400 text-xs md:text-sm mb-2 text-left font-medium">ARMOR</div>
                       {currentEquipment.armor ? (
-                        <div className="flex items-center space-x-3">
-                          <div className="text-2xl">{currentEquipment.armor.icon}</div>
-                          <div>
-                            <div className="text-white font-semibold">{currentEquipment.armor.name}</div>
-                            <div className="text-green-400 text-sm">
+                        <div className="flex items-center space-x-2 md:space-x-3">
+                          <div className="text-xl md:text-2xl flex-shrink-0">{currentEquipment.armor.icon}</div>
+                          <div className="flex-1 text-left min-w-0">
+                            <div className="text-white font-semibold text-sm md:text-base truncate">{currentEquipment.armor.name}</div>
+                            <div className="text-green-400 text-xs md:text-sm">
                               +{currentEquipment.armor.stats.defense} DEF
                             </div>
                           </div>
+                          <div className="text-gray-400 text-xs hidden sm:block">Tap to change</div>
                         </div>
                       ) : (
-                        <div className="text-gray-400 text-center py-4">
-                          No armor equipped
+                        <div className="text-gray-400 text-center py-2 md:py-3 text-sm">
+                          No armor equipped - Tap to equip
                         </div>
                       )}
-                    </div>
+                    </button>
 
                     {/* Accessory Slot */}
-                    <div className="bg-white/5 rounded-lg p-4 border border-purple-500/30">
-                      <div className="text-purple-400 text-sm mb-2">ACCESSORY</div>
+                    <button
+                      onClick={() => handleEquipmentSwap('accessory')}
+                      className="w-full bg-white/5 hover:bg-white/10 rounded-lg p-3 md:p-4 border border-purple-500/30 hover:border-purple-500/50 transition-all active:scale-95 cursor-pointer touch-manipulation"
+                    >
+                      <div className="text-purple-400 text-xs md:text-sm mb-2 text-left font-medium">ACCESSORY</div>
                       {currentEquipment.accessory ? (
-                        <div className="flex items-center space-x-3">
-                          <div className="text-2xl">{currentEquipment.accessory.icon}</div>
-                          <div>
-                            <div className="text-white font-semibold">{currentEquipment.accessory.name}</div>
-                            <div className="text-green-400 text-sm">
+                        <div className="flex items-center space-x-2 md:space-x-3">
+                          <div className="text-xl md:text-2xl flex-shrink-0">{currentEquipment.accessory.icon}</div>
+                          <div className="flex-1 text-left min-w-0">
+                            <div className="text-white font-semibold text-sm md:text-base truncate">{currentEquipment.accessory.name}</div>
+                            <div className="text-green-400 text-xs md:text-sm">
                               Special Effects
                             </div>
                           </div>
+                          <div className="text-gray-400 text-xs hidden sm:block">Tap to change</div>
                         </div>
                       ) : (
-                        <div className="text-gray-400 text-center py-4">
-                          No accessory equipped
+                        <div className="text-gray-400 text-center py-2 md:py-3 text-sm">
+                          No accessory equipped - Tap to equip
                         </div>
                       )}
-                    </div>
+                    </button>
                   </div>
                 </CardContent>
               </Card>
@@ -748,21 +770,21 @@ export function UltimateCombatSystem({
                     Battle Items
                   </h3>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2 md:gap-3">
                     {enhancedConsumables.map(item => (
                       <div
                         key={item.id}
-                        className="bg-white/5 rounded-lg p-3 border border-gray-500/30 hover:border-purple-500/50 transition-colors"
+                        className="bg-white/5 rounded-lg p-2 md:p-3 border border-gray-500/30 hover:border-purple-500/50 transition-colors touch-manipulation"
                       >
                         <div className="text-center">
-                          <div className="text-2xl mb-2">{item.icon}</div>
-                          <div className="text-white text-sm font-semibold mb-1">
+                          <div className="text-xl md:text-2xl mb-1 md:mb-2">{item.icon}</div>
+                          <div className="text-white text-xs md:text-sm font-semibold mb-1">
                             {item.name}
                           </div>
-                          <div className="text-green-400 text-xs mb-2">
+                          <div className="text-green-400 text-xs mb-1 md:mb-2">
                             x{item.quantity}
                           </div>
-                          <div className="text-gray-400 text-xs">
+                          <div className="text-gray-400 text-xs hidden md:block">
                             {item.description}
                           </div>
                         </div>
