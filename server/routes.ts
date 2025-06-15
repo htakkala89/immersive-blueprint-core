@@ -812,7 +812,113 @@ async function registerRoutes(app: Express): Promise<Server> {
           storyPath: gameState?.storyPath || "entrance",
           choiceHistory: gameState?.choiceHistory || [],
           storyFlags: gameState?.storyFlags || {},
-          inventory: gameState?.inventory || [],
+          inventory: gameState?.inventory || [
+            // Starting Equipment - Demon King's Daggers and essential gear
+            {
+              id: 'demon_daggers',
+              name: 'Demon King\'s Daggers',
+              category: 'weapons',
+              type: 'weapon',
+              rarity: 'legendary',
+              stats: { attack: 250, critRate: 25, critDamage: 50 },
+              icon: '🗡️',
+              description: 'Twin daggers imbued with demonic power. A legendary weapon for S-Rank Hunters.',
+              value: 5000
+            },
+            {
+              id: 'starter_sword',
+              name: 'Reinforced Steel Sword',
+              category: 'weapons',
+              type: 'weapon',
+              rarity: 'common',
+              stats: { attack: 120, critRate: 5 },
+              icon: '⚔️',
+              description: 'A well-balanced sword made from reinforced steel.',
+              value: 1000
+            },
+            {
+              id: 'knight_helmet',
+              name: 'Knight Captain Helmet',
+              category: 'armor',
+              type: 'armor',
+              rarity: 'rare',
+              stats: { defense: 45, hp: 100 },
+              icon: '🛡️',
+              description: 'A sturdy helmet worn by elite knight captains.',
+              value: 1000
+            },
+            {
+              id: 'hunter_boots',
+              name: 'Hunter Leather Boots',
+              category: 'armor',
+              type: 'armor',
+              rarity: 'common',
+              stats: { defense: 25, speed: 15 },
+              icon: '👢',
+              description: 'Comfortable boots favored by dungeon hunters.',
+              value: 1000
+            },
+            {
+              id: 'mana_ring',
+              name: 'Ring of Mana Flow',
+              category: 'accessories',
+              type: 'accessory',
+              rarity: 'epic',
+              stats: { mp: 200 },
+              icon: '💍',
+              description: 'A mystical ring that enhances mana circulation.',
+              value: 1000
+            },
+            // Starting Consumables
+            {
+              id: 'health_potion',
+              name: 'Superior Healing Potion',
+              category: 'consumables',
+              type: 'consumable',
+              rarity: 'common',
+              quantity: 5,
+              effects: { healing: 150 },
+              icon: '🧪',
+              description: 'Restores 150 HP instantly',
+              value: 200
+            },
+            {
+              id: 'mana_elixir',
+              name: 'Mana Elixir',
+              category: 'consumables',
+              type: 'consumable',
+              rarity: 'rare',
+              quantity: 3,
+              effects: { mana: 100 },
+              icon: '💙',
+              description: 'Restores 100 MP instantly',
+              value: 300
+            },
+            {
+              id: 'shadow_essence',
+              name: 'Shadow Essence',
+              category: 'consumables',
+              type: 'consumable',
+              rarity: 'epic',
+              quantity: 2,
+              effects: { buff: 'shadow_enhancement', duration: 5 },
+              icon: '🌑',
+              description: 'Enhances shadow abilities for 5 turns',
+              value: 500
+            },
+            {
+              id: 'berserker_potion',
+              name: 'Berserker Potion',
+              category: 'consumables',
+              type: 'consumable',
+              rarity: 'legendary',
+              quantity: 1,
+              effects: { buff: 'berserker_rage', duration: 3 },
+              icon: '🔥',
+              description: 'Doubles attack power for 3 turns',
+              value: 1000
+            }
+          ],
           stats: gameState?.stats || {},
           skills: gameState?.skills || [],
           scheduledActivities: gameState?.scheduledActivities || [],
