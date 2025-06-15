@@ -35,7 +35,7 @@ import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
-import { EnhancedCombatSystem } from '@/components/EnhancedCombatSystem';
+import { EnhancedCombatSystemNew } from '@/components/EnhancedCombatSystemNew';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';

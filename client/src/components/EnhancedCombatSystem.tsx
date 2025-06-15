@@ -410,98 +410,159 @@ export function EnhancedCombatSystem({
         transition: 'transform 0.1s ease-out'
       }}
     >
-      {/* Top HUD Bar */}
-      <div className="absolute top-0 left-0 right-0 bg-black/60 backdrop-blur-sm border-b border-white/10 z-30">
-        <div className="flex items-center justify-between p-3">
-          {/* Player Stats - Minimal HUD */}
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <Crown className="w-5 h-5 text-yellow-400" />
-              <span className="text-white font-bold">Jin-Woo</span>
-              <span className="text-yellow-400 text-sm">Lv.{playerLevel}</span>
+      {/* Mobile-First Top Status Bar */}
+      <div className="bg-black/80 backdrop-blur-sm border-b border-white/10 z-30">
+        <div className="p-2 md:p-3">
+          {/* Mobile: Stacked Layout */}
+          <div className="flex flex-col space-y-2 md:hidden">
+            {/* Player Name & Level */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Crown className="w-4 h-4 text-yellow-400" />
+                <span className="text-white font-bold text-sm">Jin-Woo</span>
+                <span className="text-yellow-400 text-xs">Lv.{playerLevel}</span>
+              </div>
+              {/* Battle Phase Indicator */}
+              <div className="text-xs text-green-400 font-medium">
+                {battlePhase === 'preparation' ? 'PREPARE' : turn === 'player' ? 'YOUR TURN' : 'ENEMY TURN'}
+              </div>
             </div>
             
-            {/* HP Bar */}
-            <div className="flex items-center space-x-2">
-              <Heart className="w-4 h-4 text-red-400" />
-              <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-red-600 to-red-400"
-                  animate={{ width: `${(playerHp / playerStats.maxHp) * 100}%` }}
-                  transition={{ duration: 0.3 }}
-                />
+            {/* Health & Mana Bars */}
+            <div className="flex items-center space-x-4">
+              <div className="flex-1 flex items-center space-x-2">
+                <Heart className="w-3 h-3 text-red-400" />
+                <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-red-500 to-red-400"
+                    animate={{ width: `${(playerHp / playerStats.maxHp) * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+                <span className="text-white text-xs min-w-[2rem]">{playerHp}</span>
               </div>
-              <span className="text-white text-xs font-medium">{playerHp}</span>
+              
+              <div className="flex-1 flex items-center space-x-2">
+                <Zap className="w-3 h-3 text-blue-400" />
+                <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-blue-500 to-blue-400"
+                    animate={{ width: `${(playerMp / playerStats.maxMp) * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+                <span className="text-white text-xs min-w-[2rem]">{playerMp}</span>
+              </div>
+              
+              {combo > 0 && (
+                <div className="flex items-center space-x-1">
+                  <Star className="w-3 h-3 text-yellow-400" />
+                  <span className="text-yellow-400 text-xs font-bold">x{combo}</span>
+                </div>
+              )}
             </div>
-
-            {/* MP Bar */}
-            <div className="flex items-center space-x-2">
-              <Zap className="w-4 h-4 text-blue-400" />
-              <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-blue-600 to-blue-400"
-                  animate={{ width: `${(playerMp / playerStats.maxMp) * 100}%` }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-              <span className="text-white text-xs font-medium">{playerMp}</span>
-            </div>
-
-            {combo > 0 && (
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 text-yellow-400" />
-                <span className="text-yellow-400 text-sm font-bold">x{combo}</span>
-              </div>
-            )}
           </div>
 
-          {/* Battle Controls */}
-          <div className="flex items-center space-x-2">
+          {/* Desktop: Horizontal Layout */}
+          <div className="hidden md:flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Crown className="w-5 h-5 text-yellow-400" />
+                <span className="text-white font-bold">Jin-Woo</span>
+                <span className="text-yellow-400 text-sm">Lv.{playerLevel}</span>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Heart className="w-4 h-4 text-red-400" />
+                <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-red-600 to-red-400"
+                    animate={{ width: `${(playerHp / playerStats.maxHp) * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+                <span className="text-white text-xs font-medium">{playerHp}</span>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Zap className="w-4 h-4 text-blue-400" />
+                <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-blue-600 to-blue-400"
+                    animate={{ width: `${(playerMp / playerStats.maxMp) * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+                <span className="text-white text-xs font-medium">{playerMp}</span>
+              </div>
+
+              {combo > 0 && (
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 text-yellow-400" />
+                  <span className="text-yellow-400 text-sm font-bold">x{combo}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              {battlePhase === 'preparation' ? (
+                <Button
+                  onClick={() => {
+                    setBattlePhase('combat');
+                    console.log('Battle started!');
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2"
+                >
+                  START BATTLE
+                </Button>
+              ) : (
+                <div className="text-green-400 font-bold">
+                  {turn === 'player' ? 'YOUR TURN' : 'ENEMY TURN'}
+                </div>
+              )}
+              <Button
+                onClick={onClose}
+                variant="outline"
+                size="sm"
+                className="text-white border-white/30 hover:bg-white/10"
+              >
+                Exit
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Battle Controls */}
+          <div className="md:hidden mt-2 flex justify-center">
             {battlePhase === 'preparation' ? (
               <Button
                 onClick={() => {
                   setBattlePhase('combat');
                   console.log('Battle started!');
                 }}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-2 rounded-lg"
               >
                 START BATTLE
               </Button>
-            ) : (
-              <div className="text-green-400 font-bold">
-                {turn === 'player' ? 'YOUR TURN' : 'ENEMY TURN'}
-              </div>
-            )}
-            <Button
-              onClick={onClose}
-              variant="outline"
-              size="sm"
-              className="text-white border-white/30 hover:bg-white/10"
-            >
-              Exit
-            </Button>
+            ) : null}
           </div>
         </div>
       </div>
-      {/* Main Battle Arena */}
-      <div className="flex-1 relative pt-16">
+      {/* Mobile-First Battle Arena */}
+      <div className="flex-1 relative overflow-hidden">
         {/* Battle Background */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23141B2D"/><stop offset="100%" style="stop-color:%23000000"/></linearGradient></defs><rect width="1000" height="600" fill="url(%23bg)"/><circle cx="200" cy="300" r="50" fill="rgba(59,130,246,0.1)"/><circle cx="800" cy="200" r="30" fill="rgba(239,68,68,0.1)"/></svg>')`,
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-blue-900/20 to-black" />
 
-        {/* Mobile-First Enemy Display */}
-        <div className="absolute inset-0 flex items-center justify-center pt-8 pb-48 md:pb-32">
-          {/* Mobile: Single Column Stack, Desktop: Grid */}
-          <div className="flex flex-col md:grid md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-12 w-full max-w-sm md:max-w-none px-4">
+        {/* Enemy Display Container */}
+        <div className="h-full flex flex-col">
+          {/* Mobile: Vertical Enemy Stack */}
+          <div className="md:hidden flex-1 overflow-y-auto py-4 px-3 space-y-3">
             {enemies.map((enemy) => (
               <motion.div
                 key={enemy.id}
-                className={`relative cursor-pointer transform transition-all duration-300 ${
-                  targetSelection === enemy.id ? 'ring-4 ring-red-400 scale-105' : 'hover:scale-102'
+                className={`bg-black/80 backdrop-blur-lg rounded-xl p-4 border-2 transition-all duration-300 ${
+                  targetSelection === enemy.id 
+                    ? 'border-red-400 bg-red-500/20 shadow-lg shadow-red-500/30' 
+                    : 'border-white/20 hover:border-white/40'
                 }`}
                 onClick={() => {
                   console.log('Enemy clicked:', enemy.id, 'Selected action:', selectedAction);
@@ -513,41 +574,112 @@ export function EnhancedCombatSystem({
                     setTargetSelection(null);
                   }
                 }}
-                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {/* Mobile: Horizontal Layout, Desktop: Vertical Card */}
-                <div className="bg-black/70 backdrop-blur-lg rounded-xl md:rounded-2xl p-4 md:p-6 border border-white/20">
-                  <div className="flex md:block items-center md:text-center space-x-4 md:space-x-0">
-                    {/* Enemy Avatar - Responsive Size */}
+                <div className="flex items-center space-x-4">
+                  {/* Enemy Avatar */}
+                  <div 
+                    className={`w-20 h-20 rounded-full flex items-center justify-center border-3 flex-shrink-0 ${
+                      enemy.isBoss ? 'border-yellow-400 bg-gradient-to-br from-yellow-600 via-red-700 to-red-900' :
+                      enemy.isElite ? 'border-purple-400 bg-gradient-to-br from-purple-600 via-purple-800 to-purple-900' :
+                      'border-red-400 bg-gradient-to-br from-red-500 via-red-700 to-red-800'
+                    }`}
+                    style={{
+                      boxShadow: enemy.isBoss ? '0 0 25px rgba(234,179,8,0.8)' : 
+                                 enemy.isElite ? '0 0 20px rgba(147,51,234,0.8)' :
+                                 '0 0 15px rgba(239,68,68,0.8)'
+                    }}
+                  >
+                    {enemy.isBoss ? <Crown className="w-10 h-10 text-yellow-300" /> :
+                     enemy.isElite ? <Star className="w-9 h-9 text-purple-300" /> :
+                     <Skull className="w-9 h-9 text-red-300" />}
+                  </div>
+                  
+                  {/* Enemy Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-lg text-white font-bold truncate pr-2">{enemy.name}</div>
+                      <div className={`text-sm font-medium ${
+                        enemy.isBoss ? 'text-yellow-400' : enemy.isElite ? 'text-purple-400' : 'text-red-400'
+                      }`}>
+                        {enemy.isElite ? 'Elite' : enemy.isBoss ? 'Boss' : 'Regular'}
+                      </div>
+                    </div>
+                    
+                    {/* HP Bar */}
+                    <div className="w-full h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-600 mb-1">
+                      <motion.div
+                        className={`h-full ${
+                          enemy.isBoss ? 'bg-gradient-to-r from-yellow-400 to-red-500' :
+                          enemy.isElite ? 'bg-gradient-to-r from-purple-400 to-red-500' :
+                          'bg-gradient-to-r from-red-400 to-red-600'
+                        }`}
+                        animate={{ width: `${(enemy.hp / enemy.maxHp) * 100}%` }}
+                        transition={{ duration: 0.3 }}
+                        style={{ boxShadow: 'inset 0 0 8px rgba(255,255,255,0.2)' }}
+                      />
+                    </div>
+                    <div className="text-sm text-gray-200 font-medium">
+                      {enemy.hp}/{enemy.maxHp} HP
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Desktop: Grid Layout */}
+          <div className="hidden md:flex items-center justify-center h-full px-8 py-12">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-12">
+              {enemies.map((enemy) => (
+                <motion.div
+                  key={enemy.id}
+                  className={`relative cursor-pointer transform transition-all duration-300 ${
+                    targetSelection === enemy.id ? 'ring-4 ring-red-400 scale-105' : 'hover:scale-102'
+                  }`}
+                  onClick={() => {
+                    console.log('Enemy clicked:', enemy.id, 'Selected action:', selectedAction);
+                    if (turn === 'player' && selectedAction && battlePhase === 'combat') {
+                      console.log('Executing attack on enemy:', enemy.id);
+                      setTargetSelection(enemy.id);
+                      executeAction(selectedAction, enemy.id);
+                      setSelectedAction(null);
+                      setTargetSelection(null);
+                    }
+                  }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="bg-black/80 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    {/* Enemy Avatar */}
                     <div 
-                      className={`w-16 h-16 md:w-32 md:h-32 xl:w-40 xl:h-40 md:mx-auto rounded-full flex items-center justify-center border-2 md:border-4 md:mb-4 flex-shrink-0 ${
+                      className={`w-32 h-32 xl:w-40 xl:h-40 mx-auto rounded-full flex items-center justify-center border-4 mb-4 ${
                         enemy.isBoss ? 'border-yellow-400 bg-gradient-to-br from-yellow-600 via-red-700 to-red-900' :
                         enemy.isElite ? 'border-purple-400 bg-gradient-to-br from-purple-600 via-purple-800 to-purple-900' :
                         'border-red-400 bg-gradient-to-br from-red-500 via-red-700 to-red-800'
                       }`}
                       style={{
-                        boxShadow: enemy.isBoss ? '0 0 20px rgba(234,179,8,0.8), inset 0 0 15px rgba(0,0,0,0.4)' : 
-                                   enemy.isElite ? '0 0 18px rgba(147,51,234,0.8), inset 0 0 12px rgba(0,0,0,0.4)' :
-                                   '0 0 15px rgba(239,68,68,0.8), inset 0 0 10px rgba(0,0,0,0.4)'
+                        boxShadow: enemy.isBoss ? '0 0 40px rgba(234,179,8,1), inset 0 0 30px rgba(0,0,0,0.4)' : 
+                                   enemy.isElite ? '0 0 35px rgba(147,51,234,1), inset 0 0 25px rgba(0,0,0,0.4)' :
+                                   '0 0 30px rgba(239,68,68,1), inset 0 0 20px rgba(0,0,0,0.4)'
                       }}
                     >
-                      {enemy.isBoss ? <Crown className="w-8 h-8 md:w-16 md:h-16 xl:w-20 xl:h-20 text-yellow-300" /> :
-                       enemy.isElite ? <Star className="w-7 h-7 md:w-14 md:h-14 xl:w-18 xl:h-18 text-purple-300" /> :
-                       <Skull className="w-7 h-7 md:w-14 md:h-14 xl:w-18 xl:h-18 text-red-300" />}
+                      {enemy.isBoss ? <Crown className="w-16 h-16 xl:w-20 xl:h-20 text-yellow-300" /> :
+                       enemy.isElite ? <Star className="w-14 h-14 xl:w-18 xl:h-18 text-purple-300" /> :
+                       <Skull className="w-14 h-14 xl:w-18 xl:h-18 text-red-300" />}
                     </div>
                     
-                    {/* Enemy Info - Mobile Horizontal, Desktop Vertical */}
-                    <div className="flex-1 md:block">
-                      <div className="text-base md:text-lg xl:text-xl text-white font-bold mb-1">{enemy.name}</div>
-                      <div className={`text-xs md:text-sm mb-2 md:mb-3 ${
+                    {/* Enemy Info */}
+                    <div className="text-center">
+                      <div className="text-xl xl:text-2xl text-white font-bold mb-1">{enemy.name}</div>
+                      <div className={`text-sm mb-3 ${
                         enemy.isBoss ? 'text-yellow-400' : enemy.isElite ? 'text-purple-400' : 'text-red-400'
                       }`}>
-                        {enemy.isElite ? 'Elite' : enemy.isBoss ? 'Boss' : 'Regular'}
+                        {enemy.isElite ? 'Elite Monster' : enemy.isBoss ? 'Boss Monster' : 'Regular Monster'}
                       </div>
                       
-                      {/* HP Bar - Responsive */}
-                      <div className="w-full h-2 md:h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-600 mb-1 md:mb-2">
+                      {/* HP Bar */}
+                      <div className="w-full h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-600 mb-2">
                         <motion.div
                           className={`h-full ${
                             enemy.isBoss ? 'bg-gradient-to-r from-yellow-400 to-red-500' :
@@ -556,25 +688,17 @@ export function EnhancedCombatSystem({
                           }`}
                           animate={{ width: `${(enemy.hp / enemy.maxHp) * 100}%` }}
                           transition={{ duration: 0.3 }}
+                          style={{ boxShadow: 'inset 0 0 10px rgba(255,255,255,0.3)' }}
                         />
                       </div>
-                      <div className="text-xs md:text-sm text-gray-200 font-medium">
+                      <div className="text-sm text-gray-200 font-bold">
                         {enemy.hp}/{enemy.maxHp} HP
                       </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Damage Indicator */}
-                {targetSelection === enemy.id && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full border-2 border-red-400"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 0.5, repeat: Infinity }}
-                  />
-                )}
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
 
