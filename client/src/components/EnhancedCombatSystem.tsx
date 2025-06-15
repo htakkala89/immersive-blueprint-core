@@ -695,6 +695,17 @@ export function EnhancedCombatSystem({
 
       {/* Action Bar */}
       <div className="bg-black/60 backdrop-blur-lg border-t border-white/20 p-4">
+        {/* TEST BUTTON - Remove after debugging */}
+        <div className="flex justify-center mb-2">
+          <button 
+            onClick={() => console.log('🚨 TEST BUTTON CLICKED!')}
+            className="bg-red-500 text-white px-4 py-2 rounded font-bold"
+            style={{ zIndex: 9999 }}
+          >
+            TEST CLICK
+          </button>
+        </div>
+
         <div className="flex justify-center space-x-4 mb-4 relative z-10">
           {combatActions.map((action, index) => (
             <div
