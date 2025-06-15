@@ -666,6 +666,82 @@ export function UltimateCombatSystem({
     loadAvailableEquipment();
   }, []);
 
+  // Refresh equipment after granting starting items
+  const refreshEquipment = () => {
+    const loadAvailableEquipment = async () => {
+      try {
+        const sessionId = 'default_session';
+        
+        // Get player profile to access purchased equipment from gameState
+        const profileResponse = await fetch(`/api/profiles/${10}/load`, {
+          headers: { 'x-session-id': sessionId }
+        });
+        
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          const profile = profileData.profile;
+          
+          // Get purchased items from gameState.inventory (where shop purchases are stored)
+          const gameState = profile.gameState || {};
+          const purchasedItems = gameState.inventory || [];
+          
+          console.log('Refreshing equipment from inventory:', purchasedItems);
+          
+          // Filter weapons from purchases
+          const weapons = purchasedItems.filter((item: any) => 
+            item.category === 'weapons' || item.type === 'weapon'
+          ).map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            type: 'weapon',
+            tier: item.rarity || 'common',
+            stats: item.stats || { attack: item.damage || 50 },
+            icon: item.icon || '⚔️',
+            description: item.description || 'A purchased weapon'
+          }));
+          
+          // Filter armor from purchases
+          const armors = purchasedItems.filter((item: any) => 
+            item.category === 'armor' || item.type === 'armor'
+          ).map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            type: 'armor',
+            tier: item.rarity || 'common',
+            stats: item.stats || { defense: item.defense || 30 },
+            icon: item.icon || '🛡️',
+            description: item.description || 'Protective armor'
+          }));
+          
+          // Filter accessories from purchases
+          const accessories = purchasedItems.filter((item: any) => 
+            item.category === 'accessories' || item.type === 'accessory'
+          ).map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            type: 'accessory',
+            tier: item.rarity || 'common',
+            stats: item.stats || { mp: 25 },
+            icon: item.icon || '💍',
+            description: item.description || 'A useful accessory'
+          }));
+
+          console.log('Refreshed equipment:', { weapons: weapons.length, armors: armors.length, accessories: accessories.length });
+
+          setAvailableEquipment({
+            weapon: weapons,
+            armor: armors,
+            accessory: accessories
+          });
+        }
+      } catch (error) {
+        console.error('Failed to refresh equipment:', error);
+      }
+    };
+
+    loadAvailableEquipment();
+  };
+
   // Equipment Swap Handler
   const handleEquipmentSwap = (type: 'weapon' | 'armor' | 'accessory') => {
     setSelectedEquipmentType(type);
