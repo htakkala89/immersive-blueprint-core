@@ -1485,10 +1485,10 @@ export function UltimateCombatSystem({
                     console.log(`Looking for equipment of type "${selectedEquipmentType}":`, availableEquipment[selectedEquipmentType]);
                     return null;
                   })()}
-                  {availableEquipment[selectedEquipmentType]?.length === 0 ? (
+                  {(!availableEquipment[selectedEquipmentType] || availableEquipment[selectedEquipmentType].length === 0) ? (
                     <div className="text-center text-gray-400 py-8">
                       <div className="text-lg mb-2">No {selectedEquipmentType}s available</div>
-                      <div className="text-sm">Equipment count: {availableEquipment[selectedEquipmentType].length}</div>
+                      <div className="text-sm">Equipment count: {availableEquipment[selectedEquipmentType]?.length || 0}</div>
                       <div className="text-xs mt-2">Equipment loading from inventory...</div>
                     </div>
                   ) : (
