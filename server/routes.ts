@@ -965,7 +965,7 @@ async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { profileId } = req.params;
       const { db } = await import('./db');
-      const { playerProfiles, gameStates, episodeProgress } = await import('@shared/schema');
+      const { playerProfiles, gameStates, episodeProgress, scheduledDates } = await import('@shared/schema');
       const { eq } = await import('drizzle-orm');
       
       const profile = await db
@@ -978,12 +978,19 @@ async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Profile not found' });
       }
       
-      // Delete episode progress first
+      console.log(`🗑️ Deleting profile ${profileId} and all associated data...`);
+      
+      // Delete scheduled dates first
+      await db
+        .delete(scheduledDates)
+        .where(eq(scheduledDates.profileId, parseInt(profileId)));
+      
+      // Delete episode progress
       await db
         .delete(episodeProgress)
         .where(eq(episodeProgress.profileId, parseInt(profileId)));
       
-      // Delete profile (this will automatically set gameStateId foreign key to null)
+      // Delete profile
       await db
         .delete(playerProfiles)
         .where(eq(playerProfiles.id, parseInt(profileId)));
@@ -995,6 +1002,7 @@ async function registerRoutes(app: Express): Promise<Server> {
           .where(eq(gameStates.id, profile[0].gameStateId));
       }
       
+      console.log(`✅ Profile ${profileId} deleted successfully`);
       res.json({ success: true });
     } catch (error) {
       console.error('Error deleting profile:', error);

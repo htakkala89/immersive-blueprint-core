@@ -273,6 +273,11 @@ export default function SoloLevelingSpatial() {
   const [showActivityNotification, setShowActivityNotification] = useState(false);
   const [showActivityScheduled, setShowActivityScheduled] = useState(false);
   
+  // Date Scene System state
+  const [activeDate, setActiveDate] = useState<any>(null);
+  const [showDateScene, setShowDateScene] = useState(false);
+  const [dateScenePhase, setDateScenePhase] = useState<'arrival' | 'dialogue' | 'activity' | 'completion'>('arrival');
+  
   // System 2: Affection Heart System state
   const [showAffectionHeart, setShowAffectionHeart] = useState(false);
   const affectionHeartTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -690,6 +695,125 @@ export default function SoloLevelingSpatial() {
     if (hour >= 12 && hour < 18) return 'afternoon';
     if (hour >= 18 && hour < 22) return 'evening';
     return 'night';
+  };
+
+  // Automatic Date Scene Triggering System
+  useEffect(() => {
+    const checkScheduledDates = async () => {
+      if (!currentProfile?.id) return;
+      
+      try {
+        const response = await fetch(`/api/scheduled-dates/${currentProfile.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          const scheduledDates = data.dates || [];
+          
+          // Check if any date should trigger now
+          const now = new Date();
+          const currentDate = scheduledDates.find((date: any) => {
+            const scheduledTime = new Date(date.scheduledTime);
+            const timeDiff = Math.abs(now.getTime() - scheduledTime.getTime());
+            const minutesDiff = timeDiff / (1000 * 60);
+            
+            // Trigger if within 5 minutes of scheduled time and status is 'scheduled'
+            return minutesDiff <= 5 && date.status === 'scheduled';
+          });
+          
+          if (currentDate && !activeDate) {
+            // Trigger automatic date scene
+            triggerDateScene(currentDate);
+          }
+        }
+      } catch (error) {
+        console.log('Date checking error:', error);
+      }
+    };
+    
+    // Check every minute for scheduled dates
+    const dateCheckInterval = setInterval(checkScheduledDates, 60000);
+    checkScheduledDates(); // Initial check
+    
+    return () => clearInterval(dateCheckInterval);
+  }, [currentProfile?.id, activeDate]);
+
+  // Helper function to get location display name
+  const getLocationName = (locationId: string): string => {
+    const locationNames: { [key: string]: string } = {
+      'hongdae_cafe': 'Cozy Hongdae Cafe',
+      'myeongdong_restaurant': 'Myeongdong Restaurant',
+      'hangang_park': 'Hangang River Park',
+      'hunter_association': 'Hunter Association',
+      'training_facility': 'Training Facility',
+      'hunter_market': 'Hunter Market',
+      'chahaein_apartment': 'Cha Hae-In\'s Apartment',
+      'player_apartment': 'Your Apartment'
+    };
+    return locationNames[locationId] || locationId;
+  };
+
+  // Trigger automatic date scene
+  const triggerDateScene = (dateInfo: any) => {
+    console.log('🌟 Triggering automatic date scene:', dateInfo);
+    
+    // Force player to the date location
+    setPlayerLocation(dateInfo.location);
+    
+    // Set up date scene state
+    setActiveDate(dateInfo);
+    setShowDateScene(true);
+    setDateScenePhase('arrival');
+    
+    // Generate scene image for the date location
+    generateSceneImage(dateInfo.location);
+    
+    // Show notification about the date starting
+    setNotifications(prev => [...prev, {
+      id: `date_scene_${Date.now()}`,
+      type: 'message',
+      title: '💕 Date Time!',
+      content: `Cha Hae-In is waiting for you at ${getLocationName(dateInfo.location)}`,
+      timestamp: new Date()
+    }]);
+  };
+
+  // Complete date scene and mark as finished
+  const completeDateScene = async () => {
+    if (!activeDate || !currentProfile?.id) return;
+    
+    try {
+      // Mark date as completed in database
+      const response = await fetch(`/api/complete-date/${activeDate.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileId: currentProfile.id })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Apply affection reward
+        setGameState(prev => ({
+          ...prev,
+          affection: Math.max(0, Math.min(100, (prev.affection || 0) + result.affectionReward))
+        }));
+        
+        // Show completion notification
+        setNotifications(prev => [...prev, {
+          id: `date_complete_${Date.now()}`,
+          type: 'message',
+          title: '💖 Date Completed!',
+          content: `+${result.affectionReward} affection with Cha Hae-In`,
+          timestamp: new Date()
+        }]);
+        
+        // Clear date scene
+        setShowDateScene(false);
+        setActiveDate(null);
+        setDateScenePhase('arrival');
+      }
+    } catch (error) {
+      console.log('Date completion error:', error);
+    }
   };
 
   // Get time-appropriate activity for locations
