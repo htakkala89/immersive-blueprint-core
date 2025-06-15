@@ -4097,8 +4097,8 @@ export default function SoloLevelingSpatial() {
           <motion.div
             className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-[9999] flex flex-col mobile-chat-container"
             style={{ 
-              height: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
-              maxHeight: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
+              height: 'calc(45vh - max(20px, env(safe-area-inset-bottom)))',
+              maxHeight: 'calc(45vh - max(20px, env(safe-area-inset-bottom)))',
               paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
               backdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
               WebkitBackdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
@@ -4278,8 +4278,8 @@ export default function SoloLevelingSpatial() {
                       ref={conversationScrollRef}
                       className="space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
                       style={{ 
-                        maxHeight: '240px',
-                        height: '240px'
+                        maxHeight: '180px',
+                        height: '180px'
                       }}
                     >
                       {conversationHistory.map((entry, index) => (
