@@ -224,6 +224,8 @@ export function UltimateCombatSystem({
   // Load player's available equipment from actual game inventory
   useEffect(() => {
     console.log('USEEFFECT RUNNING - UltimateCombatSystem equipment loading starting...');
+    console.log('USEEFFECT - Current battlePhase:', battlePhase);
+    console.log('USEEFFECT - Component isVisible:', isVisible);
     const loadAvailableEquipment = async () => {
       try {
         // Use the same API endpoints as loadCombatData function
