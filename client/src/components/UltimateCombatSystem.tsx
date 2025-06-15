@@ -698,30 +698,14 @@ export function UltimateCombatSystem({
   const handleItemUse = (item: ConsumableItem) => {
     if (item.quantity <= 0 || item.cooldown > 0) return;
 
-    // During preparation phase, you can use items to buff yourself
+    // During preparation phase, show item info and prepare for combat use
     if (battlePhase === 'preparation') {
-      // Apply item effects
-      if (item.effects.heal) {
-        setPlayerStats(prev => ({
-          ...prev,
-          hp: Math.min(prev.maxHp, prev.hp + item.effects.heal!)
-        }));
-        addToCombatLog(`Used ${item.name} and restored ${item.effects.heal} HP!`);
-      }
-
-      if (item.effects.manaRestore) {
-        setPlayerStats(prev => ({
-          ...prev,
-          mp: Math.min(prev.maxMp, prev.mp + item.effects.manaRestore!)
-        }));
-        addToCombatLog(`Used ${item.name} and restored ${item.effects.manaRestore} MP!`);
-      }
-
+      // Add item effects to status effects for combat preparation
       if (item.effects.buffs) {
         item.effects.buffs.forEach(buff => {
           const newEffect: StatusEffect = {
             id: `${item.id}_${Date.now()}`,
-            name: `${item.name} Boost`,
+            name: `${item.name} Ready`,
             type: 'buff',
             duration: buff.duration,
             value: buff.value,
@@ -730,18 +714,11 @@ export function UltimateCombatSystem({
             icon: <Star className="w-4 h-4" />
           };
           setStatusEffects(prev => [...prev, newEffect]);
-          addToCombatLog(`${item.name} grants ${buff.type} boost (+${buff.value}) for ${buff.duration/1000}s!`);
+          addToCombatLog(`${item.name} prepared for combat - will grant ${buff.type} boost (+${buff.value})!`);
         });
+      } else {
+        addToCombatLog(`${item.name} ready for use - ${item.description}`);
       }
-
-      // Consume the item
-      setEnhancedConsumables(prev => 
-        prev.map(i => 
-          i.id === item.id 
-            ? { ...i, quantity: i.quantity - 1, cooldown: i.maxCooldown }
-            : i
-        )
-      );
 
       // Show visual feedback
       setPowerAura(true);
