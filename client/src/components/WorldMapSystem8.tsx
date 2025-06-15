@@ -148,7 +148,7 @@ export function WorldMapSystem8({
             name: 'Cozy Hongdae Cafe',
             description: 'Perfect spot for intimate conversations',
             position: { x: 0, y: 0 },
-            state: getLocationState('hongdae_cafe'),
+            state: chaHaeInLocation === 'hongdae_cafe' ? 'presence' : getLocationState('hongdae_cafe'),
             atmosphere: 'Warm and romantic ambiance'
           },
           {
@@ -156,7 +156,7 @@ export function WorldMapSystem8({
             name: 'Hangang River Park',
             description: 'Scenic riverside walks and picnics',
             position: { x: 0, y: 0 },
-            state: getLocationState('hangang_park'),
+            state: chaHaeInLocation === 'hangang_park' ? 'presence' : getLocationState('hangang_park'),
             atmosphere: 'Peaceful evening breeze'
           }
         ])
@@ -173,7 +173,7 @@ export function WorldMapSystem8({
             name: 'Luxury Department Store',
             description: 'High-end fashion and premium gifts',
             position: { x: 0, y: 0 },
-            state: getLocationState('luxury_department_store'),
+            state: chaHaeInLocation === 'luxury_department_store' ? 'presence' : getLocationState('luxury_department_store'),
             atmosphere: 'Bustling with sophisticated shoppers'
           },
           {
@@ -181,7 +181,7 @@ export function WorldMapSystem8({
             name: 'Gangnam Furnishings',
             description: 'Premium home decoration specialists',
             position: { x: 0, y: 0 },
-            state: getLocationState('gangnam_furnishings'),
+            state: chaHaeInLocation === 'gangnam_furnishings' ? 'presence' : getLocationState('gangnam_furnishings'),
             atmosphere: 'Elegant showroom atmosphere'
           },
           {
@@ -189,7 +189,7 @@ export function WorldMapSystem8({
             name: 'Luxury Realtor',
             description: 'Exclusive property investments',
             position: { x: 0, y: 0 },
-            state: storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked',
+            state: chaHaeInLocation === 'luxury_realtor' ? 'presence' : (storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked'),
             unlockCondition: 'Reach level 3 relationship',
             atmosphere: 'Professional and exclusive'
           }
@@ -207,7 +207,7 @@ export function WorldMapSystem8({
             name: 'Myeongdong Restaurant',
             description: 'Traditional Korean fine dining',
             position: { x: 0, y: 0 },
-            state: getLocationState('myeongdong_restaurant'),
+            state: chaHaeInLocation === 'myeongdong_restaurant' ? 'presence' : getLocationState('myeongdong_restaurant'),
             atmosphere: 'Elegant traditional setting'
           },
           {
@@ -215,7 +215,7 @@ export function WorldMapSystem8({
             name: 'N Seoul Tower',
             description: 'Romantic city views and love locks',
             position: { x: 0, y: 0 },
-            state: playerAffection >= 5 ? getLocationState('namsan_tower') : 'locked',
+            state: chaHaeInLocation === 'namsan_tower' ? 'presence' : (playerAffection >= 5 ? getLocationState('namsan_tower') : 'locked'),
             unlockCondition: 'Build deeper affection with Cha Hae-In',
             atmosphere: 'Breathtaking panoramic views'
           }
@@ -233,7 +233,7 @@ export function WorldMapSystem8({
             name: 'Hunter Association HQ',
             description: 'Official hunter business and meetings',
             position: { x: 0, y: 0 },
-            state: getLocationState('hunter_association'),
+            state: chaHaeInLocation === 'hunter_association' ? 'presence' : getLocationState('hunter_association'),
             atmosphere: 'Professional and bustling with activity'
           },
           {
@@ -250,7 +250,7 @@ export function WorldMapSystem8({
             name: 'Hunter Market',
             description: 'Trading hub for monster materials and equipment',
             position: { x: 0, y: 0 },
-            state: getLocationState('hunter_market'),
+            state: chaHaeInLocation === 'hunter_market' ? 'presence' : getLocationState('hunter_market'),
             atmosphere: 'Bustling marketplace with rare treasures'
           }
         ])
@@ -267,7 +267,7 @@ export function WorldMapSystem8({
             name: 'Your Apartment',
             description: 'Your private sanctuary',
             position: { x: 0, y: 0 },
-            state: getLocationState('player_apartment'),
+            state: chaHaeInLocation === 'player_apartment' ? 'presence' : getLocationState('player_apartment'),
             atmosphere: 'Comfortable and personal'
           },
           {
@@ -651,13 +651,17 @@ export function WorldMapSystem8({
                             <motion.div
                               animate={{ 
                                 rotate: 360,
-                                scale: [1, 1.1, 1]
+                                scale: [1, 1.2, 1]
                               }}
                               transition={{ 
                                 rotate: { duration: 3, repeat: Infinity, ease: "linear" },
-                                scale: { duration: 2, repeat: Infinity }
+                                scale: { duration: 1.5, repeat: Infinity }
                               }}
-                              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-yellow-100"
+                              className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 text-yellow-100 drop-shadow-lg"
+                              style={{ 
+                                textShadow: '0 0 8px rgba(255, 215, 0, 0.8), 0 0 16px rgba(255, 215, 0, 0.6)',
+                                filter: 'brightness(1.2)'
+                              }}
                             >
                               ✨
                             </motion.div>
