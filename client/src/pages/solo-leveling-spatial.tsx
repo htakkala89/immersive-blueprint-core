@@ -35,7 +35,7 @@ import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
-import { EnhancedCombatSystemNew } from '@/components/EnhancedCombatSystemNew';
+import { EnhancedCombatSystemFixed } from '@/components/EnhancedCombatSystemFixed';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
@@ -5851,8 +5851,8 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      {/* Enhanced Combat System - Mobile First */}
-      <EnhancedCombatSystemNew
+      {/* Enhanced Combat System - Solo Leveling Experience */}
+      <EnhancedCombatSystemFixed
         isVisible={enhancedCombatVisible}
         onClose={() => setEnhancedCombatVisible(false)}
         playerStats={{
