@@ -3070,6 +3070,25 @@ export default function SoloLevelingSpatial() {
             </div>
           </div>
 
+          {/* Combat System Test */}
+          <div className="mb-3">
+            <button 
+              onClick={() => {
+                loadCombatData();
+                setBattleType('dungeon');
+                setCombatDifficulty('normal');
+                setShowUltimateCombat(true);
+                console.log('🎯 DIRECT TEST - Opening Ultimate Combat System');
+              }}
+              className="w-full px-3 py-2 rounded bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-medium text-xs transition-all"
+            >
+              ⚔️ Test Ultimate Combat System
+            </button>
+            <div className="text-xs text-gray-400 mt-1 text-center">
+              Equipment Loading Fix Test
+            </div>
+          </div>
+
           {/* DevTools Access */}
           <div className="mb-3">
             <button 
