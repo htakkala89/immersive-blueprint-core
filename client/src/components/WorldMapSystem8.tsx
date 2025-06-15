@@ -474,11 +474,11 @@ export function WorldMapSystem8({
             <div className="capitalize">{currentTime} • Ethereal Projection</div>
             <div>{getTimeDescription()}</div>
             <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/10">
-              <div className="text-xs">Affection: {playerAffection}/10</div>
+              <div className="text-xs">Affection: {playerAffection}/100</div>
               <div className="flex-1 bg-white/10 rounded-full h-1">
                 <div 
                   className="bg-purple-400 h-1 rounded-full transition-all duration-500"
-                  style={{ width: `${(playerAffection / 10) * 100}%` }}
+                  style={{ width: `${Math.min((playerAffection / 100) * 100, 100)}%` }}
                 />
               </div>
             </div>
