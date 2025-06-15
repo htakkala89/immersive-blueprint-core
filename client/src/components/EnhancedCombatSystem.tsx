@@ -540,7 +540,7 @@ export function EnhancedCombatSystem({
       </div>
 
       {/* Battle Arena */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden min-h-0">
         {/* Background */}
         <div 
           className="absolute inset-0 bg-cover bg-center"
@@ -548,6 +548,64 @@ export function EnhancedCombatSystem({
             backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23141B2D"/><stop offset="100%" style="stop-color:%23000000"/></linearGradient></defs><rect width="1000" height="600" fill="url(%23bg)"/><circle cx="200" cy="300" r="50" fill="rgba(59,130,246,0.1)"/><circle cx="800" cy="200" r="30" fill="rgba(239,68,68,0.1)"/></svg>')`,
           }}
         />
+        
+        {/* Enemies Display - Mobile Optimized */}
+        <div className="absolute inset-0 flex items-center justify-center p-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+            {enemies.map((enemy) => (
+              <motion.div
+                key={enemy.id}
+                className={`relative cursor-pointer transform transition-all duration-200 hover:scale-110 ${
+                  targetSelection === enemy.id ? 'ring-4 ring-red-400 scale-110' : ''
+                }`}
+                onClick={() => {
+                  console.log('Enemy clicked:', enemy.id, 'Selected action:', selectedAction);
+                  if (turn === 'player' && selectedAction && battlePhase === 'combat') {
+                    console.log('Executing attack on enemy:', enemy.id);
+                    setTargetSelection(enemy.id);
+                    executeAction(selectedAction, enemy.id);
+                    setSelectedAction(null);
+                    setTargetSelection(null);
+                  }
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div 
+                  className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border-4 ${
+                    enemy.isBoss ? 'border-yellow-400 bg-gradient-to-br from-red-700 to-red-900' :
+                    enemy.isElite ? 'border-purple-400 bg-gradient-to-br from-purple-700 to-purple-900' :
+                    'border-red-400 bg-gradient-to-br from-red-600 to-red-800'
+                  }`}
+                  style={{
+                    boxShadow: enemy.isBoss ? '0 0 20px rgba(234,179,8,0.6)' : 
+                               enemy.isElite ? '0 0 15px rgba(147,51,234,0.6)' :
+                               '0 0 10px rgba(239,68,68,0.6)'
+                  }}
+                >
+                  {enemy.isBoss ? <Crown className="w-6 h-6 md:w-8 md:h-8 text-yellow-400" /> :
+                   enemy.isElite ? <Star className="w-6 h-6 md:w-8 md:h-8 text-purple-400" /> :
+                   <Skull className="w-6 h-6 md:w-8 md:h-8 text-red-400" />}
+                </div>
+                
+                {/* Enemy HP Bar */}
+                <div className="absolute -top-8 md:-top-10 left-1/2 transform -translate-x-1/2 w-20 md:w-24">
+                  <div className="text-xs md:text-sm text-white text-center mb-1 font-medium">{enemy.name}</div>
+                  <div className="w-full h-1.5 md:h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-red-500"
+                      animate={{ width: `${(enemy.hp / enemy.maxHp) * 100}%` }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                  <div className="text-xs text-center text-gray-300 mt-1">
+                    {enemy.hp}/{enemy.maxHp}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
 
         {/* Damage Numbers */}
         <AnimatePresence>
