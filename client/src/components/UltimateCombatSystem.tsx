@@ -605,13 +605,18 @@ export function UltimateCombatSystem({
           const purchasedItems = gameState.inventory || [];
           
           console.log('Loading equipment from inventory:', purchasedItems);
-          console.log('Profile data structure:', profile);
-          console.log('GameState structure:', gameState);
+          console.log('Each item structure:', purchasedItems.map(item => ({
+            name: item.name,
+            category: item.category,
+            type: item.type,
+            allKeys: Object.keys(item)
+          })));
           
           // Filter weapons from purchases with detailed logging
           const weapons = purchasedItems.filter((item: any) => {
             const isWeapon = item.category === 'weapons' || item.type === 'weapon';
-            console.log(`Checking item: ${item.name}, category: ${item.category}, type: ${item.type}, isWeapon: ${isWeapon}`);
+            console.log(`Checking item: ${item.name}, category: "${item.category}", type: "${item.type}", isWeapon: ${isWeapon}`);
+            console.log('Full item object:', item);
             return isWeapon;
           }).filter((item: any) => 
             item.category === 'weapons' || item.type === 'weapon'
