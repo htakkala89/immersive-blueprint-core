@@ -86,7 +86,7 @@ export function EnhancedCombatSystem({
   // Combat State
   const [playerHp, setPlayerHp] = useState(playerStats.hp);
   const [playerMp, setPlayerMp] = useState(playerStats.mp);
-  const [enemies, setEnemies] = useState<Enemy[]>(initialEnemies);
+  const [enemies, setEnemies] = useState<Enemy[]>([]);
   const [shadowSoldiers, setShadowSoldiers] = useState<ShadowSoldier[]>([]);
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [targetSelection, setTargetSelection] = useState<string | null>(null);
@@ -104,6 +104,25 @@ export function EnhancedCombatSystem({
   const [cameraShake, setCameraShake] = useState(false);
   const [chaHaeInHp, setChaHaeInHp] = useState(100);
   const [chaHaeInMp, setChaHaeInMp] = useState(100);
+
+  // Initialize combat when component becomes visible
+  useEffect(() => {
+    if (isVisible && initialEnemies.length > 0) {
+      console.log('🎯 Initializing combat with enemies:', initialEnemies);
+      setEnemies([...initialEnemies]);
+      setPlayerHp(playerStats.hp);
+      setPlayerMp(playerStats.mp);
+      setBattlePhase('preparation');
+      setTurn('player');
+      setCombo(0);
+      setActionCooldowns({});
+      setShadowSoldiers([]);
+      setCombatLog(['Battle begins! Choose your actions wisely.']);
+      setDamageNumbers([]);
+      setChaHaeInHp(100);
+      setChaHaeInMp(100);
+    }
+  }, [isVisible, initialEnemies, playerStats]);
 
   // Combat Actions
   const combatActions: CombatAction[] = [
@@ -312,7 +331,7 @@ export function EnhancedCombatSystem({
     if (battlePhase === 'combat') {
       const aliveEnemies = enemies.filter(e => e.hp > 0);
       
-      if (aliveEnemies.length === 0) {
+      if (aliveEnemies.length === 0 && enemies.length > 0) {
         setBattlePhase('victory');
         setTimeout(() => {
           onCombatComplete({
@@ -464,12 +483,34 @@ export function EnhancedCombatSystem({
             {turn === 'player' ? 'Your Turn' : 'Enemy Turn'}
           </div>
           {battlePhase === 'preparation' && (
-            <Button
-              onClick={() => setBattlePhase('combat')}
-              className="mt-2 bg-green-600 hover:bg-green-700"
-            >
-              Start Battle
-            </Button>
+            <div className="flex gap-2 mt-2">
+              <Button
+                onClick={() => setBattlePhase('combat')}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Start Battle
+              </Button>
+              <Button
+                onClick={() => {
+                  // Reset combat completely
+                  setEnemies([...initialEnemies]);
+                  setPlayerHp(playerStats.hp);
+                  setPlayerMp(playerStats.mp);
+                  setBattlePhase('preparation');
+                  setTurn('player');
+                  setCombo(0);
+                  setActionCooldowns({});
+                  setShadowSoldiers([]);
+                  setCombatLog(['Battle reset! Choose your actions wisely.']);
+                  setDamageNumbers([]);
+                  setChaHaeInHp(100);
+                  setChaHaeInMp(100);
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Reset Battle
+              </Button>
+            </div>
           )}
         </div>
       </div>
