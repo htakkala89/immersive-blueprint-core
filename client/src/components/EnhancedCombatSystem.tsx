@@ -510,9 +510,10 @@ export function EnhancedCombatSystem({
                   setBattlePhase('combat');
                   console.log('✅ Battle phase changed to combat');
                 }}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 text-lg"
+                size="lg"
               >
-                Start Battle
+                🎯 START BATTLE
               </Button>
               <Button
                 onClick={() => {
