@@ -5798,6 +5798,15 @@ export default function SoloLevelingSpatial() {
           setShowCoffeeActivity(false);
           // Step 5 of spec: Show standard Dialogue UI for conversation
           // Set coffee date context for AI to understand this is a coffee date
+
+      {/* Date Scheduling System */}
+      <DateSchedulingSystem
+        isOpen={showDateScheduling}
+        onClose={() => setShowDateScheduling(false)}
+        profileId={loadedProfileId || 0}
+        currentAffection={gameState.affection}
+        onDateScheduled={handleDateScheduled}
+      />
           setCoffeeActivityContext("enjoying coffee date with Jin-Woo");
           setCurrentDialogue("*Taking a sip of her drink and looking more relaxed* This is nice, Jin-Woo. It's been a while since I've had time to just sit and enjoy a coffee without thinking about the next raid or mission.");
           setThoughtPrompts([
