@@ -687,7 +687,9 @@ export function UltimateCombatSystem({
           // Get purchased items from profile.inventory (where equipment is actually stored)
           const purchasedItems = profile.inventory || [];
           
-          console.log('Refreshing equipment from inventory:', purchasedItems);
+          console.log('REFRESH - Loading equipment from inventory:', purchasedItems.length, 'items');
+          console.log('REFRESH - First item:', purchasedItems[0]?.name, purchasedItems[0]?.type);
+          console.log('REFRESH - Raw inventory:', JSON.stringify(purchasedItems, null, 2));
           
           // Filter weapons from purchases
           const weapons = purchasedItems.filter((item: any) => 
