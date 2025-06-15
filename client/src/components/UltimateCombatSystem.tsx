@@ -587,6 +587,7 @@ export function UltimateCombatSystem({
 
   // Load player's available equipment from actual game inventory and vendor purchases
   useEffect(() => {
+    console.log('USEEFFECT RUNNING - UltimateCombatSystem equipment loading starting...');
     const loadAvailableEquipment = async () => {
       try {
         const sessionId = 'default_session';
