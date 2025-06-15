@@ -20,8 +20,8 @@ import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
 import { db } from "./db";
-import { playerProfiles, gameStates, episodeProgress, insertPlayerProfileSchema, insertGameStateSchema } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { playerProfiles, gameStates, episodeProgress, scheduledDates, insertPlayerProfileSchema, insertGameStateSchema } from "@shared/schema";
+import { eq, and, lt, sql } from "drizzle-orm";
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -2246,6 +2246,257 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
     } catch (error) {
       console.error("Scene image generation error:", error);
       res.status(500).json({ error: "Failed to generate scene image" });
+    }
+  });
+
+  // ===== DATE SCHEDULING SYSTEM WITH CONSEQUENCES =====
+  
+  // Schedule a date with Cha Hae-In
+  app.post("/api/schedule-date", async (req, res) => {
+    try {
+      const { profileId, dateType, location, scheduledTime, playerPromise, chaExpectation } = req.body;
+      
+      if (!profileId || !dateType || !location || !scheduledTime) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const [newDate] = await db.insert(scheduledDates).values({
+        profileId,
+        dateType,
+        location,
+        scheduledTime: new Date(scheduledTime),
+        playerPromised: playerPromise || false,
+        chaExpectation: chaExpectation || null,
+        status: 'scheduled'
+      }).returning();
+
+      console.log(`📅 Date scheduled: ${dateType} at ${location} for ${scheduledTime}`);
+      
+      res.json({ 
+        success: true, 
+        date: newDate,
+        message: `Date scheduled! Cha Hae-In is looking forward to meeting you.`
+      });
+    } catch (error) {
+      console.error("Schedule date error:", error);
+      res.status(500).json({ error: "Failed to schedule date" });
+    }
+  });
+
+  // Complete a scheduled date
+  app.post("/api/complete-date", async (req, res) => {
+    try {
+      const { dateId, profileId } = req.body;
+      
+      if (!dateId || !profileId) {
+        return res.status(400).json({ error: "Date ID and Profile ID required" });
+      }
+
+      // Get the scheduled date
+      const [scheduledDate] = await db.select().from(scheduledDates)
+        .where(eq(scheduledDates.id, dateId) && eq(scheduledDates.profileId, profileId));
+
+      if (!scheduledDate) {
+        return res.status(404).json({ error: "Scheduled date not found" });
+      }
+
+      if (scheduledDate.status !== 'scheduled') {
+        return res.status(400).json({ error: "Date is not in scheduled status" });
+      }
+
+      // Calculate affection boost based on date type and if player promised
+      let affectionBoost = 5; // Base boost for completing date
+      if (scheduledDate.playerPromised) {
+        affectionBoost += 3; // Bonus for keeping promise
+      }
+      
+      // Type-specific bonuses
+      const typeBonus = {
+        'casual': 2,
+        'romantic': 5,
+        'intimate': 8,
+        'special': 10
+      };
+      affectionBoost += typeBonus[scheduledDate.dateType as keyof typeof typeBonus] || 2;
+
+      // Mark date as completed
+      await db.update(scheduledDates).set({
+        status: 'completed',
+        completedAt: new Date(),
+        consequenceApplied: true,
+        affectionImpact: affectionBoost
+      }).where(eq(scheduledDates.id, dateId));
+
+      // Update player's affection
+      const profile = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
+      if (profile[0]?.gameStateId) {
+        await db.update(gameStates).set({
+          affectionLevel: sql`${gameStates.affectionLevel} + ${affectionBoost}`
+        }).where(eq(gameStates.id, profile[0].gameStateId));
+      }
+
+      console.log(`💕 Date completed! Affection boost: +${affectionBoost}`);
+      
+      res.json({ 
+        success: true,
+        affectionBoost,
+        message: `Date completed successfully! Cha Hae-In's affection increased by ${affectionBoost}.`
+      });
+    } catch (error) {
+      console.error("Complete date error:", error);
+      res.status(500).json({ error: "Failed to complete date" });
+    }
+  });
+
+  // Miss a scheduled date (consequences system)
+  app.post("/api/miss-date", async (req, res) => {
+    try {
+      const { dateId, profileId } = req.body;
+      
+      if (!dateId || !profileId) {
+        return res.status(400).json({ error: "Date ID and Profile ID required" });
+      }
+
+      // Get the scheduled date
+      const [scheduledDate] = await db.select().from(scheduledDates)
+        .where(eq(scheduledDates.id, dateId) && eq(scheduledDates.profileId, profileId));
+
+      if (!scheduledDate) {
+        return res.status(404).json({ error: "Scheduled date not found" });
+      }
+
+      // Calculate affection penalty based on promises and date importance
+      let affectionPenalty = -8; // Base penalty for missing date
+      if (scheduledDate.playerPromised) {
+        affectionPenalty -= 5; // Extra penalty for breaking promise
+      }
+      
+      // Type-specific penalties (more important dates = bigger penalties)
+      const typePenalty = {
+        'casual': -3,
+        'romantic': -8,
+        'intimate': -15,
+        'special': -20
+      };
+      affectionPenalty += typePenalty[scheduledDate.dateType as keyof typeof typePenalty] || -5;
+
+      // Mark date as missed
+      await db.update(scheduledDates).set({
+        status: 'missed',
+        missedAt: new Date(),
+        consequenceApplied: true,
+        affectionImpact: affectionPenalty
+      }).where(eq(scheduledDates.id, dateId));
+
+      // Apply affection penalty
+      const profile = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
+      if (profile[0]?.gameStateId) {
+        await db.update(gameStates).set({
+          affectionLevel: sql`GREATEST(0, ${gameStates.affectionLevel} + ${affectionPenalty})`
+        }).where(eq(gameStates.id, profile[0].gameStateId));
+      }
+
+      console.log(`💔 Date missed! Affection penalty: ${affectionPenalty}`);
+      
+      res.json({ 
+        success: true,
+        affectionPenalty,
+        message: scheduledDate.playerPromised 
+          ? `You broke your promise to Cha Hae-In. She's disappointed. Affection decreased by ${Math.abs(affectionPenalty)}.`
+          : `You missed your date with Cha Hae-In. She's hurt. Affection decreased by ${Math.abs(affectionPenalty)}.`
+      });
+    } catch (error) {
+      console.error("Miss date error:", error);
+      res.status(500).json({ error: "Failed to process missed date" });
+    }
+  });
+
+  // Get scheduled dates for a profile
+  app.get("/api/scheduled-dates/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      
+      const dates = await db.select().from(scheduledDates)
+        .where(eq(scheduledDates.profileId, parseInt(profileId)))
+        .orderBy(scheduledDates.scheduledTime);
+
+      res.json({ dates });
+    } catch (error) {
+      console.error("Get scheduled dates error:", error);
+      res.status(500).json({ error: "Failed to get scheduled dates" });
+    }
+  });
+
+  // Check for overdue dates and apply consequences
+  app.post("/api/check-overdue-dates", async (req, res) => {
+    try {
+      const { profileId } = req.body;
+      
+      if (!profileId) {
+        return res.status(400).json({ error: "Profile ID required" });
+      }
+
+      // Find overdue dates (scheduled time has passed and still scheduled)
+      const overdueDates = await db.select().from(scheduledDates)
+        .where(
+          and(
+            eq(scheduledDates.profileId, profileId),
+            eq(scheduledDates.status, 'scheduled'),
+            lt(scheduledDates.scheduledTime, new Date()),
+            eq(scheduledDates.consequenceApplied, false)
+          )
+        );
+
+      let totalPenalty = 0;
+      const missedDates = [];
+
+      for (const date of overdueDates) {
+        // Calculate penalty
+        let penalty = -8;
+        if (date.playerPromised) penalty -= 5;
+        
+        const typePenalty = {
+          'casual': -3,
+          'romantic': -8, 
+          'intimate': -15,
+          'special': -20
+        };
+        penalty += typePenalty[date.dateType as keyof typeof typePenalty] || -5;
+
+        // Mark as missed and apply consequence
+        await db.update(scheduledDates).set({
+          status: 'missed',
+          missedAt: new Date(),
+          consequenceApplied: true,
+          affectionImpact: penalty
+        }).where(eq(scheduledDates.id, date.id));
+
+        totalPenalty += penalty;
+        missedDates.push(date);
+      }
+
+      // Apply total affection penalty
+      if (totalPenalty < 0) {
+        const profile = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
+        if (profile[0]?.gameStateId) {
+          await db.update(gameStates).set({
+            affectionLevel: sql`GREATEST(0, ${gameStates.affectionLevel} + ${totalPenalty})`
+          }).where(eq(gameStates.id, profile[0].gameStateId));
+        }
+      }
+
+      console.log(`⏰ Checked overdue dates: ${overdueDates.length} missed, penalty: ${totalPenalty}`);
+      
+      res.json({ 
+        missedDates: missedDates.length,
+        totalPenalty,
+        message: missedDates.length > 0 
+          ? `You missed ${missedDates.length} date${missedDates.length > 1 ? 's' : ''} with Cha Hae-In. She's disappointed.`
+          : "No overdue dates found."
+      });
+    } catch (error) {
+      console.error("Check overdue dates error:", error);
+      res.status(500).json({ error: "Failed to check overdue dates" });
     }
   });
 

@@ -80,13 +80,38 @@ export const episodeProgress = pgTable("episode_progress", {
   lastPlayedAt: timestamp("last_played_at").defaultNow().notNull(),
 });
 
+// Scheduled Dates System
+export const scheduledDates = pgTable("scheduled_dates", {
+  id: serial("id").primaryKey(),
+  profileId: integer("profile_id").references(() => playerProfiles.id).notNull(),
+  dateType: text("date_type").notNull(), // 'casual', 'romantic', 'intimate', 'special'
+  location: text("location").notNull(),
+  scheduledTime: timestamp("scheduled_time").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  status: text("status").notNull().default("scheduled"), // 'scheduled', 'completed', 'missed', 'cancelled'
+  playerPromised: boolean("player_promised").default(false).notNull(),
+  chaExpectation: text("cha_expectation"), // What Cha Hae-In expects from this date
+  consequenceApplied: boolean("consequence_applied").default(false).notNull(),
+  affectionImpact: integer("affection_impact").default(0).notNull(), // Positive for kept promises, negative for broken ones
+  completedAt: timestamp("completed_at"),
+  missedAt: timestamp("missed_at"),
+});
+
 // Relations
 export const playerProfilesRelations = relations(playerProfiles, ({ one, many }) => ({
   gameState: one(gameStates, {
     fields: [playerProfiles.gameStateId],
     references: [gameStates.id]
   }),
-  episodeProgress: many(episodeProgress)
+  episodeProgress: many(episodeProgress),
+  scheduledDates: many(scheduledDates)
+}));
+
+export const scheduledDatesRelations = relations(scheduledDates, ({ one }) => ({
+  profile: one(playerProfiles, {
+    fields: [scheduledDates.profileId],
+    references: [playerProfiles.id]
+  })
 }));
 
 export const episodesRelations = relations(episodes, ({ many }) => ({
