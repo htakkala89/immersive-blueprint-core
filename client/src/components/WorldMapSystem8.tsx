@@ -485,11 +485,11 @@ export function WorldMapSystem8({
           </div>
         </motion.div>
 
-        {/* Legend Panel with Cha Hae-In Status */}
+        {/* Legend Panel with Cha Hae-In Status - Mobile responsive positioning */}
         <motion.div
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4"
+          className="absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4 z-10 max-w-[280px] sm:max-w-none"
         >
           <h3 className="text-white text-sm font-medium mb-3">Legend</h3>
           
@@ -564,21 +564,83 @@ export function WorldMapSystem8({
           <X className="w-6 h-6" />
         </Button>
 
-        {/* Responsive Map Container */}
+        {/* Mobile Carousel - Bottom positioned */}
+        <div className="md:hidden absolute bottom-20 left-0 right-0 z-20">
+          <div className="px-4">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4">
+              {zones.map((zone) => (
+                <motion.div
+                  key={zone.id}
+                  className="flex-none w-72 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4"
+                  initial={{ x: 50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                >
+                  <h3 className="text-white text-sm font-medium mb-3">{zone.name}</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {zone.locations.map((location) => (
+                      <motion.div
+                        key={location.id}
+                        className="cursor-pointer"
+                        onClick={() => handleLocationClick(location)}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <div className={`w-16 h-16 rounded-full relative border-2 min-w-[64px] min-h-[64px] ${
+                          location.state === 'locked' 
+                            ? 'bg-gray-600 border-gray-500' :
+                          location.state === 'presence' 
+                            ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 border-yellow-200' :
+                          location.state === 'quest' 
+                            ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300' :
+                          location.state === 'gate' 
+                            ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-300' 
+                            : 'bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300'
+                        }`}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            {getLocationIcon(location.state, location.gateRank)}
+                            
+                            {/* Cha Hae-In presence indicator */}
+                            {location.state === 'presence' && (
+                              <motion.div
+                                animate={{ 
+                                  rotate: 360,
+                                  scale: [1, 1.2, 1]
+                                }}
+                                transition={{ 
+                                  rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+                                  scale: { duration: 1.5, repeat: Infinity }
+                                }}
+                                className="absolute -top-1 -right-1 w-5 h-5 text-yellow-100"
+                              >
+                                ✨
+                              </motion.div>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-white text-xs mt-1 text-center truncate">{location.name}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Map Container */}
         <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-6 md:p-12 lg:p-20">
           <motion.div
             className="relative w-full h-full max-w-7xl max-h-5xl"
             style={{ transform: `scale(${zoomLevel})` }}
           >
-
-
-            {/* Zone Panels */}
-            {zones.map((zone) => (
-              <motion.div
-                key={zone.id}
-                className={`absolute bg-black/30 backdrop-blur-sm border border-white/20 rounded-3xl p-6 transition-all duration-300 cursor-pointer ${
-                  focusedZone === zone.id ? 'bg-black/50 border-white/40 shadow-2xl' : ''
-                }`}
+            
+            {/* Desktop Zone Panels - Hidden on mobile */}
+            <div className="hidden md:block absolute inset-0">
+              {zones.map((zone) => (
+                <motion.div
+                  key={zone.id}
+                  className={`absolute bg-black/30 backdrop-blur-sm border border-white/20 rounded-3xl p-6 transition-all duration-300 cursor-pointer ${
+                    focusedZone === zone.id ? 'bg-black/50 border-white/40 shadow-2xl' : ''
+                  }`}
                 style={{
                   left: `${zone.position.x}%`,
                   top: `${zone.position.y}%`,
@@ -743,6 +805,7 @@ export function WorldMapSystem8({
                 ))}
               </motion.div>
             ))}
+            </div>
           </motion.div>
         </div>
 
