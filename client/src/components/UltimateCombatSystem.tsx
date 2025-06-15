@@ -685,9 +685,8 @@ export function UltimateCombatSystem({
           const profileData = await profileResponse.json();
           const profile = profileData.profile;
           
-          // Get purchased items from gameState.inventory (where shop purchases are stored)
-          const gameState = profile.gameState || {};
-          const purchasedItems = gameState.inventory || [];
+          // Get purchased items from profile.inventory (where equipment is actually stored)
+          const purchasedItems = profile.inventory || [];
           
           console.log('Refreshing equipment from inventory:', purchasedItems);
           
