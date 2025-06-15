@@ -4580,8 +4580,8 @@ export default function SoloLevelingSpatial() {
               initiateCombat('dungeon', true);
               setMonarchAuraVisible(false);
             }},
-            { icon: Power, label: 'Exit Game', color: 'text-red-300', onClick: () => { 
-              if (confirm('Are you sure you want to exit the game?')) {
+            { icon: Power, label: 'Leave World', color: 'text-red-300', onClick: () => { 
+              if (confirm('Are you sure you want to leave the world?')) {
                 window.location.href = '/';
               }
               setMonarchAuraVisible(false);
