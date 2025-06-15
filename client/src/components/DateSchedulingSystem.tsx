@@ -35,7 +35,13 @@ export const DateSchedulingSystem = ({
   // Schedule new date form state
   const [selectedDateType, setSelectedDateType] = useState<'casual' | 'romantic' | 'intimate' | 'special'>('casual');
   const [selectedLocation, setSelectedLocation] = useState('hongdae_cafe');
-  const [selectedTime, setSelectedTime] = useState('');
+  const [selectedTime, setSelectedTime] = useState(() => {
+    // Default to tomorrow at 7:30 PM
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(19, 30, 0, 0);
+    return tomorrow.toISOString().slice(0, 16);
+  });
   const [playerPromise, setPlayerPromise] = useState(false);
   const [chaExpectation, setChaExpectation] = useState('');
 
@@ -177,40 +183,48 @@ export const DateSchedulingSystem = ({
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-6 border-b border-purple-400/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Calendar className="text-purple-400" size={24} />
-              <h2 className="text-2xl font-bold text-white">Date Scheduling</h2>
-              <div className="text-sm text-purple-300">Affection: {currentAffection}/100</div>
+        {/* Header - Mobile Optimized */}
+        <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-4 md:p-6 border-b border-purple-400/30">
+          {/* Top Row - Title and Close */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 md:gap-3 flex-1">
+              <Calendar className="text-purple-400" size={20} />
+              <h2 className="text-lg md:text-2xl font-bold text-white">Date Scheduling</h2>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <X size={24} />
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="text-xs md:text-sm text-purple-300 whitespace-nowrap">
+                Affection: {currentAffection}/100
+              </div>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
           
-          {/* Tab Navigation */}
-          <div className="flex gap-4 mt-4">
+          {/* Tab Navigation - Mobile Responsive */}
+          <div className="flex gap-1 md:gap-4">
             {[
-              { id: 'schedule', label: 'Schedule New', icon: Calendar },
-              { id: 'upcoming', label: 'Upcoming', icon: Clock },
-              { id: 'history', label: 'History', icon: Star }
+              { id: 'schedule', label: 'Schedule New', shortLabel: 'New', icon: Calendar },
+              { id: 'upcoming', label: 'Upcoming', shortLabel: 'Upcoming', icon: Clock },
+              { id: 'history', label: 'History', shortLabel: 'History', icon: Star }
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 rounded-lg transition-all flex-1 justify-center ${
                   activeTab === tab.id
                     ? 'bg-purple-500/30 text-purple-200 border border-purple-400/50'
                     : 'text-gray-400 hover:text-purple-300'
                 }`}
               >
-                <tab.icon size={16} />
-                {tab.label}
+                <tab.icon size={14} />
+                <span className="text-xs md:text-sm font-medium">
+                  <span className="md:hidden">{tab.shortLabel}</span>
+                  <span className="hidden md:inline">{tab.label}</span>
+                </span>
               </button>
             ))}
           </div>
