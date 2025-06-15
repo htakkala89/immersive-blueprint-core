@@ -570,6 +570,9 @@ export function UltimateCombatSystem({
   // Equipment selection state
   const [showEquipmentModal, setShowEquipmentModal] = useState(false);
   const [selectedEquipmentType, setSelectedEquipmentType] = useState<'weapon' | 'armor' | 'accessory' | null>(null);
+  
+  // Enemy preview state
+  const [showEnemyPreview, setShowEnemyPreview] = useState(false);
 
   // Player inventory equipment state
   const [availableEquipment, setAvailableEquipment] = useState<{
@@ -868,67 +871,58 @@ export function UltimateCombatSystem({
                   
                   <div className="grid grid-cols-2 gap-2 md:gap-3">
                     {enhancedConsumables.map(item => (
-                      <div
+                      <button
                         key={item.id}
-                        className="bg-white/5 rounded-lg p-2 md:p-3 border border-gray-500/30 hover:border-purple-500/50 transition-colors touch-manipulation"
+                        onClick={() => handleItemUse(item)}
+                        disabled={item.quantity === 0 || item.cooldown > 0}
+                        className={`bg-white/5 rounded-lg p-2 md:p-3 border transition-all touch-manipulation active:scale-95 ${
+                          item.quantity === 0 || item.cooldown > 0
+                            ? 'border-gray-600/30 opacity-50 cursor-not-allowed'
+                            : 'border-gray-500/30 hover:border-purple-500/50 hover:bg-white/10 cursor-pointer'
+                        }`}
                       >
                         <div className="text-center">
                           <div className="text-xl md:text-2xl mb-1 md:mb-2">{item.icon}</div>
                           <div className="text-white text-xs md:text-sm font-semibold mb-1">
                             {item.name}
                           </div>
-                          <div className="text-green-400 text-xs mb-1 md:mb-2">
+                          <div className={`text-xs mb-1 md:mb-2 ${
+                            item.quantity > 0 ? 'text-green-400' : 'text-red-400'
+                          }`}>
                             x{item.quantity}
                           </div>
+                          {item.cooldown > 0 && (
+                            <div className="text-orange-400 text-xs mb-1">
+                              Cooldown: {Math.ceil(item.cooldown / 1000)}s
+                            </div>
+                          )}
                           <div className="text-gray-400 text-xs hidden md:block">
                             {item.description}
                           </div>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Battle Preview */}
-              <Card className="bg-white/10 backdrop-blur-md border-purple-500/30">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                    <Target className="w-5 h-5 mr-2" />
-                    Enemy Preview
-                  </h3>
-                  
-                  <div className="space-y-3">
-                    {initialEnemies.map(enemy => (
-                      <div
-                        key={enemy.id}
-                        className="bg-red-900/20 border border-red-500/30 rounded-lg p-3"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-white font-semibold">{enemy.name}</div>
-                            <div className="text-red-400 text-sm">
-                              Level {enemy.level} {enemy.rank.toUpperCase()}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-red-300 text-sm">
-                              {enemy.hp.toLocaleString()} HP
-                            </div>
-                            <div className="text-orange-300 text-xs">
-                              {enemy.attack} ATK / {enemy.defense} DEF
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+
             </div>
 
-            {/* Start Battle Button */}
-            <div className="text-center mt-4 md:mt-6">
+            {/* Action Buttons */}
+            <div className="text-center mt-4 md:mt-6 space-y-3">
+              {/* Enemy Preview Button */}
+              <Button
+                onClick={() => setShowEnemyPreview(true)}
+                variant="outline"
+                size="lg"
+                className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 text-white border-2 border-purple-500/50 hover:border-purple-400/70 px-6 md:px-8 py-2 md:py-3 text-base md:text-lg w-full max-w-sm md:max-w-none md:w-auto touch-manipulation"
+              >
+                <Eye className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3" />
+                Preview Enemies
+              </Button>
+
+              {/* Start Battle Button */}
               <Button
                 onClick={startCombat}
                 size="lg"
