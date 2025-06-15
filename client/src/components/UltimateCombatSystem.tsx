@@ -676,6 +676,63 @@ export function UltimateCombatSystem({
     addToCombatLog(`Equipped ${item.name}!`);
   };
 
+  // Item Use Handler - Makes Battle Items functional
+  const handleItemUse = (item: ConsumableItem) => {
+    if (item.quantity <= 0 || item.cooldown > 0) return;
+
+    // During preparation phase, you can use items to buff yourself
+    if (battlePhase === 'preparation') {
+      // Apply item effects
+      if (item.effects.heal) {
+        setPlayerStats(prev => ({
+          ...prev,
+          hp: Math.min(prev.maxHp, prev.hp + item.effects.heal!)
+        }));
+        addToCombatLog(`Used ${item.name} and restored ${item.effects.heal} HP!`);
+      }
+
+      if (item.effects.manaRestore) {
+        setPlayerStats(prev => ({
+          ...prev,
+          mp: Math.min(prev.maxMp, prev.mp + item.effects.manaRestore!)
+        }));
+        addToCombatLog(`Used ${item.name} and restored ${item.effects.manaRestore} MP!`);
+      }
+
+      if (item.effects.buffs) {
+        item.effects.buffs.forEach(buff => {
+          const newEffect: StatusEffect = {
+            id: `${item.id}_${Date.now()}`,
+            name: `${item.name} Boost`,
+            type: 'buff',
+            duration: buff.duration,
+            value: buff.value,
+            stackable: false,
+            stacks: 1,
+            icon: <Star className="w-4 h-4" />
+          };
+          setStatusEffects(prev => [...prev, newEffect]);
+          addToCombatLog(`${item.name} grants ${buff.type} boost (+${buff.value}) for ${buff.duration/1000}s!`);
+        });
+      }
+
+      // Consume the item
+      setEnhancedConsumables(prev => 
+        prev.map(i => 
+          i.id === item.id 
+            ? { ...i, quantity: i.quantity - 1, cooldown: i.maxCooldown }
+            : i
+        )
+      );
+
+      // Show visual feedback
+      setPowerAura(true);
+      setTimeout(() => setPowerAura(false), 1000);
+    } else {
+      addToCombatLog(`Save ${item.name} for when you need it most in combat!`);
+    }
+  };
+
   const startCombat = () => {
     setBattlePhase('combat');
     setEnemies(initialEnemies);
