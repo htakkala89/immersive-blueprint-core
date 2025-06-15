@@ -981,7 +981,31 @@ export function UltimateCombatSystem({
                 </CardContent>
               </Card>
 
-
+              {/* Combat Log Panel */}
+              <Card className="bg-white/10 backdrop-blur-md border-purple-500/30">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                    <Activity className="w-5 h-5 mr-2" />
+                    Combat Log
+                  </h3>
+                  
+                  <div className="bg-black/20 rounded-lg p-3 h-48 overflow-y-auto border border-gray-500/30">
+                    <div className="space-y-1">
+                      {combatLog.length === 0 ? (
+                        <div className="text-gray-500 text-sm text-center py-4">
+                          Prepare for battle...
+                        </div>
+                      ) : (
+                        combatLog.map((log, index) => (
+                          <div key={index} className="text-gray-300 text-sm">
+                            <span className="text-purple-400">[{index + 1}]</span> {log}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Action Buttons */}
