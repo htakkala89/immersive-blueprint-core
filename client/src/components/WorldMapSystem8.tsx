@@ -494,7 +494,9 @@ export function WorldMapSystem8({
           <h3 className="text-white text-sm font-medium mb-3">Legend</h3>
           <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200"></div>
+              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200 relative">
+                <div className="absolute inset-0 flex items-center justify-center text-[8px]">✨</div>
+              </div>
               <span className="text-white/80">Cha Hae-In Present</span>
             </div>
             <div className="flex items-center gap-2">
@@ -506,8 +508,13 @@ export function WorldMapSystem8({
               <span className="text-white/80">Quest Available</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gray-600 border border-gray-500"></div>
-              <span className="text-white/80">Locked</span>
+              <div className="w-4 h-4 rounded-full bg-gray-600 border border-gray-500 relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Lock className="w-2 h-2 text-white/70" />
+                </div>
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full opacity-60"></div>
+              </div>
+              <span className="text-white/80">Locked (Cha Hae-In present)</span>
             </div>
           </div>
         </motion.div>
