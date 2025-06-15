@@ -1869,6 +1869,76 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+  // Load combat data from API for Ultimate Combat System
+  const loadCombatData = async () => {
+    try {
+      // Load player equipment
+      const equipmentResponse = await fetch('/api/player/equipment');
+      if (equipmentResponse.ok) {
+        const equipment = await equipmentResponse.json();
+        setPlayerEquipment(equipment);
+      }
+
+      // Load player inventory
+      const inventoryResponse = await fetch('/api/player/inventory');
+      if (inventoryResponse.ok) {
+        const inventory = await inventoryResponse.json();
+        setUltimateInventory(inventory.items || []);
+      }
+    } catch (error) {
+      console.error('Failed to load combat data:', error);
+    }
+  };
+
+  // Ultimate Combat System completion handler
+  const handleUltimateCombatComplete = (result: {
+    victory: boolean;
+    rewards: any;
+    experience: number;
+    gold: number;
+    newEquipment?: any[];
+  }) => {
+    setShowUltimateCombat(false);
+    
+    if (result.victory) {
+      // Update game state with rewards
+      setGameState(prev => ({
+        ...prev,
+        experience: (prev.experience || 0) + result.experience,
+        gold: (prev.gold || 0) + (result.rewards.gold || 0)
+      }));
+      
+      // Add new equipment to inventory if received
+      if (result.newEquipment && result.newEquipment.length > 0) {
+        result.newEquipment.forEach(equipment => {
+          setNotifications(prev => [...prev, {
+            id: `new_equipment_${Date.now()}_${equipment.id}`,
+            type: 'success' as const,
+            title: 'New Equipment!',
+            content: `Obtained ${equipment.name} (${equipment.tier})`,
+            timestamp: new Date()
+          }]);
+        });
+      }
+      
+      setNotifications(prev => [...prev, {
+        id: `ultimate_combat_victory_${Date.now()}`,
+        type: 'success' as const,
+        title: 'Overwhelming Victory!',
+        content: `Gained ${result.experience} XP and ${result.gold} gold`,
+        timestamp: new Date()
+      }]);
+    } else {
+      setNotifications(prev => [...prev, {
+        id: `ultimate_combat_defeat_${Date.now()}`,
+        type: 'warning' as const,
+        title: 'Tactical Retreat',
+        content: 'Regroup and prepare for the next battle!',
+        timestamp: new Date()
+      }]);
+    }
+  };
+
   // DevTools game state update handler
   const handleGameStateUpdate = (updates: any) => {
     setGameState(prevState => ({
@@ -2034,6 +2104,32 @@ export default function SoloLevelingSpatial() {
         setShowHunterMarketVendors(true);
         return;
       }
+    }
+
+    // Handle Ultimate Combat System triggers
+    if (interactionPoint.id === 'gate_entrance' || interactionPoint.id === 'dungeon_portal') {
+      // Load player equipment and inventory from API
+      loadCombatData();
+      setBattleType('dungeon');
+      setCombatDifficulty('normal');
+      setShowUltimateCombat(true);
+      return;
+    }
+
+    if (interactionPoint.id === 'boss_arena' || interactionPoint.id === 'raid_boss') {
+      loadCombatData();
+      setBattleType('boss');
+      setCombatDifficulty('hard');
+      setShowUltimateCombat(true);
+      return;
+    }
+
+    if (interactionPoint.id === 'training_dummy' || interactionPoint.id === 'sparring_area') {
+      loadCombatData();
+      setBattleType('training');
+      setCombatDifficulty('easy');
+      setShowUltimateCombat(true);
+      return;
     }
     
     // Handle intimate spatial interactions at romantic locations
@@ -4724,6 +4820,13 @@ export default function SoloLevelingSpatial() {
               initiateCombat('dungeon', true);
               setMonarchAuraVisible(false);
             }},
+            { icon: Sword, label: 'Ultimate Combat', color: 'text-violet-400', onClick: () => { 
+              loadCombatData();
+              setBattleType('training');
+              setCombatDifficulty('normal');
+              setShowUltimateCombat(true);
+              setMonarchAuraVisible(false);
+            }},
             { icon: Power, label: 'Leave World', color: 'text-red-300', onClick: () => { 
               if (confirm('Are you sure you want to leave the world?')) {
                 window.location.href = '/';
@@ -5812,6 +5915,31 @@ export default function SoloLevelingSpatial() {
       <MonarchArmory2D
         isVisible={showMonarchArmory}
         onClose={() => setShowMonarchArmory(false)}
+      />
+
+      {/* Ultimate Combat System */}
+      <UltimateCombatSystem
+        isVisible={showUltimateCombat}
+        onClose={() => setShowUltimateCombat(false)}
+        onCombatComplete={handleUltimateCombatComplete}
+        playerLevel={gameState.level || 1}
+        playerStats={{
+          hp: gameState.health || 100,
+          maxHp: gameState.maxHealth || 100,
+          mp: gameState.mana || 50,
+          maxMp: gameState.maxMana || 50,
+          attack: (gameState.stats?.strength || 10) * 3,
+          defense: (gameState.stats?.vitality || 10) * 2,
+          agility: gameState.stats?.agility || 10,
+          intelligence: gameState.stats?.intelligence || 10,
+          luck: gameState.stats?.sense || 10
+        }}
+        playerEquipment={playerEquipment}
+        playerInventory={ultimateInventory}
+        enemies={combatEnemies}
+        battleType={battleType}
+        chaHaeInPresent={chaHaeInCurrentLocation === playerLocation}
+        difficulty={combatDifficulty}
       />
 
       {/* DevTools Panel for Activity Management */}
