@@ -410,43 +410,163 @@ export function EnhancedCombatSystem({
         transition: 'transform 0.1s ease-out'
       }}
     >
-      {/* Battle HUD - Mobile Optimized */}
-      <div className="flex flex-col md:flex-row justify-between items-start p-3 md:p-6 relative z-20 space-y-3 md:space-y-0">
-        {/* Player Stats */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/20 w-full md:w-auto">
-          <h3 className="text-white font-bold mb-2 text-sm md:text-base">Jin-Woo</h3>
-          <div className="space-y-2">
-            <div>
-              <div className="flex justify-between text-xs md:text-sm text-white mb-1">
-                <span>HP</span>
-                <span>{playerHp}/{playerStats.maxHp}</span>
-              </div>
-              <div className="w-full md:w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+      {/* Top HUD Bar */}
+      <div className="absolute top-0 left-0 right-0 bg-black/60 backdrop-blur-sm border-b border-white/10 z-30">
+        <div className="flex items-center justify-between p-3">
+          {/* Player Stats - Minimal HUD */}
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <Crown className="w-5 h-5 text-yellow-400" />
+              <span className="text-white font-bold">Jin-Woo</span>
+              <span className="text-yellow-400 text-sm">Lv.{playerLevel}</span>
+            </div>
+            
+            {/* HP Bar */}
+            <div className="flex items-center space-x-2">
+              <Heart className="w-4 h-4 text-red-400" />
+              <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-red-500"
-                  initial={{ width: '100%' }}
+                  className="h-full bg-gradient-to-r from-red-600 to-red-400"
                   animate={{ width: `${(playerHp / playerStats.maxHp) * 100}%` }}
                   transition={{ duration: 0.3 }}
                 />
               </div>
+              <span className="text-white text-xs font-medium">{playerHp}</span>
             </div>
-            <div>
-              <div className="flex justify-between text-xs md:text-sm text-white mb-1">
-                <span>MP</span>
-                <span>{playerMp}/{playerStats.maxMp}</span>
-              </div>
-              <div className="w-full md:w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+
+            {/* MP Bar */}
+            <div className="flex items-center space-x-2">
+              <Zap className="w-4 h-4 text-blue-400" />
+              <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-blue-500"
-                  initial={{ width: '100%' }}
+                  className="h-full bg-gradient-to-r from-blue-600 to-blue-400"
                   animate={{ width: `${(playerMp / playerStats.maxMp) * 100}%` }}
                   transition={{ duration: 0.3 }}
                 />
               </div>
+              <span className="text-white text-xs font-medium">{playerMp}</span>
             </div>
+
+            {combo > 0 && (
+              <div className="flex items-center space-x-1">
+                <Star className="w-4 h-4 text-yellow-400" />
+                <span className="text-yellow-400 text-sm font-bold">x{combo}</span>
+              </div>
+            )}
           </div>
-          <div className="mt-2 text-xs md:text-sm text-yellow-400">
-            Combo: {combo}
+
+          {/* Battle Controls */}
+          <div className="flex items-center space-x-2">
+            {battlePhase === 'preparation' ? (
+              <Button
+                onClick={() => {
+                  setBattlePhase('combat');
+                  console.log('Battle started!');
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2"
+              >
+                START BATTLE
+              </Button>
+            ) : (
+              <div className="text-green-400 font-bold">
+                {turn === 'player' ? 'YOUR TURN' : 'ENEMY TURN'}
+              </div>
+            )}
+            <Button
+              onClick={onClose}
+              variant="outline"
+              size="sm"
+              className="text-white border-white/30 hover:bg-white/10"
+            >
+              Exit
+            </Button>
+          </div>
+        </div>
+      </div>
+      {/* Main Battle Arena */}
+      <div className="flex-1 relative pt-16">
+        {/* Battle Background */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23141B2D"/><stop offset="100%" style="stop-color:%23000000"/></linearGradient></defs><rect width="1000" height="600" fill="url(%23bg)"/><circle cx="200" cy="300" r="50" fill="rgba(59,130,246,0.1)"/><circle cx="800" cy="200" r="30" fill="rgba(239,68,68,0.1)"/></svg>')`,
+          }}
+        />
+
+        {/* Enemy Display - Large and Prominent */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-12">
+            {enemies.map((enemy) => (
+              <motion.div
+                key={enemy.id}
+                className={`relative cursor-pointer transform transition-all duration-200 hover:scale-105 ${
+                  targetSelection === enemy.id ? 'ring-4 ring-red-400 scale-105' : ''
+                }`}
+                onClick={() => {
+                  console.log('Enemy clicked:', enemy.id, 'Selected action:', selectedAction);
+                  if (turn === 'player' && selectedAction && battlePhase === 'combat') {
+                    console.log('Executing attack on enemy:', enemy.id);
+                    setTargetSelection(enemy.id);
+                    executeAction(selectedAction, enemy.id);
+                    setSelectedAction(null);
+                    setTargetSelection(null);
+                  }
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {/* Enemy Avatar - Much Larger */}
+                <div 
+                  className={`w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center border-4 ${
+                    enemy.isBoss ? 'border-yellow-400 bg-gradient-to-br from-red-700 via-red-800 to-red-900' :
+                    enemy.isElite ? 'border-purple-400 bg-gradient-to-br from-purple-700 via-purple-800 to-purple-900' :
+                    'border-red-400 bg-gradient-to-br from-red-600 via-red-700 to-red-800'
+                  }`}
+                  style={{
+                    boxShadow: enemy.isBoss ? '0 0 30px rgba(234,179,8,0.8), inset 0 0 20px rgba(0,0,0,0.3)' : 
+                               enemy.isElite ? '0 0 25px rgba(147,51,234,0.8), inset 0 0 15px rgba(0,0,0,0.3)' :
+                               '0 0 20px rgba(239,68,68,0.8), inset 0 0 10px rgba(0,0,0,0.3)'
+                  }}
+                >
+                  {enemy.isBoss ? <Crown className="w-12 h-12 md:w-16 md:h-16 text-yellow-400" /> :
+                   enemy.isElite ? <Star className="w-10 h-10 md:w-14 md:h-14 text-purple-400" /> :
+                   <Skull className="w-10 h-10 md:w-14 md:h-14 text-red-400" />}
+                </div>
+                
+                {/* Enemy Info Panel */}
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-32 md:w-40">
+                  <div className="text-center mb-2">
+                    <div className="text-sm md:text-base text-white font-bold mb-1">{enemy.name}</div>
+                    <div className="text-xs text-gray-300">{enemy.isElite ? 'Elite' : enemy.isBoss ? 'Boss' : 'Regular'}</div>
+                  </div>
+                  
+                  {/* HP Bar - Larger */}
+                  <div className="w-full h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-600">
+                    <motion.div
+                      className={`h-full ${
+                        enemy.isBoss ? 'bg-gradient-to-r from-yellow-500 to-red-500' :
+                        enemy.isElite ? 'bg-gradient-to-r from-purple-500 to-red-500' :
+                        'bg-gradient-to-r from-red-500 to-red-600'
+                      }`}
+                      animate={{ width: `${(enemy.hp / enemy.maxHp) * 100}%` }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                  <div className="text-xs text-center text-gray-300 mt-1 font-medium">
+                    {enemy.hp}/{enemy.maxHp} HP
+                  </div>
+                </div>
+
+                {/* Damage Indicator */}
+                {targetSelection === enemy.id && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-2 border-red-400"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                  />
+                )}
+              </motion.div>
+            ))}
           </div>
         </div>
 
@@ -751,122 +871,153 @@ export function EnhancedCombatSystem({
         </AnimatePresence>
       </div>
 
-      {/* Action Bar - Compact List Design */}
-      <div className="bg-black/60 backdrop-blur-lg border-t border-white/20">
-        {/* DEBUG INFO */}
-        <div className="flex justify-center p-2 text-white text-xs border-b border-gray-700/50">
-          Phase: {battlePhase} | Turn: {turn} | Selected: {selectedAction || 'none'}
-        </div>
-
-        {/* Attack List - Scrollable */}
-        <div className="max-h-40 overflow-y-auto">
-          {/* Strike Button */}
-          <button
-            onClick={() => {
-              console.log('Strike clicked!');
-              setSelectedAction('basic_attack');
-            }}
-            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
-              selectedAction === 'basic_attack' ? 'bg-blue-600/80 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700/50'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Sword className="w-5 h-5" />
-              <span className="font-medium">Strike</span>
-            </div>
-          </button>
-          
-          {/* Shadow Exchange */}
-          <button
-            onClick={() => setSelectedAction('shadow_exchange')}
-            disabled={playerMp < 20}
-            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
-              selectedAction === 'shadow_exchange' ? 'bg-blue-600/80 text-white' : 
-              playerMp < 20 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
-              'bg-transparent text-gray-300 hover:bg-gray-700/50'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Zap className="w-5 h-5" />
-              <span className="font-medium">Shadow Exchange</span>
-            </div>
-            <span className="text-sm text-blue-400">20 MP</span>
-          </button>
-
-          {/* Summon Igris */}
-          <button
-            onClick={() => setSelectedAction('summon_igris')}
-            disabled={playerMp < 50}
-            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
-              selectedAction === 'summon_igris' ? 'bg-blue-600/80 text-white' : 
-              playerMp < 50 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
-              'bg-transparent text-gray-300 hover:bg-gray-700/50'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Crown className="w-5 h-5" />
-              <span className="font-medium">Summon Igris</span>
-            </div>
-            <span className="text-sm text-blue-400">50 MP</span>
-          </button>
-
-          {/* Ruler's Authority */}
-          <button
-            onClick={() => setSelectedAction('rulers_authority')}
-            disabled={playerMp < 30}
-            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
-              selectedAction === 'rulers_authority' ? 'bg-blue-600/80 text-white' : 
-              playerMp < 30 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
-              'bg-transparent text-gray-300 hover:bg-gray-700/50'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Target className="w-5 h-5" />
-              <span className="font-medium">Ruler's Authority</span>
-            </div>
-            <span className="text-sm text-blue-400">30 MP</span>
-          </button>
-
-          {/* Shadow Step */}
-          <button
-            onClick={() => setSelectedAction('shadow_step')}
-            disabled={playerMp < 10}
-            className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
-              selectedAction === 'shadow_step' ? 'bg-blue-600/80 text-white' : 
-              playerMp < 10 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
-              'bg-transparent text-gray-300 hover:bg-gray-700/50'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Wind className="w-5 h-5" />
-              <span className="font-medium">Shadow Step</span>
-            </div>
-            <span className="text-sm text-blue-400">10 MP</span>
-          </button>
-
-          {/* Defend */}
-          <button
-            onClick={() => setSelectedAction('defend')}
-            className={`w-full flex items-center justify-between p-3 transition-colors ${
-              selectedAction === 'defend' ? 'bg-blue-600/80 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700/50'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Shield className="w-5 h-5" />
-              <span className="font-medium">Defend</span>
-            </div>
-          </button>
-        </div>
-
-        {/* Combat Log - Mobile Optimized */}
-        <div className="bg-black/40 rounded-lg p-2 md:p-3 max-h-20 md:max-h-24 overflow-y-auto mt-3">
-          <div className="text-xs md:text-sm text-gray-300 space-y-1">
-            {combatLog.map((log, index) => (
-              <div key={index} className="opacity-80">
-                {log}
+      {/* Enhanced Action Panel */}
+      <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-xl border-t border-white/20 z-30">
+        {/* Action Selection Grid */}
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-white font-bold text-lg">Combat Actions</h3>
+            {selectedAction && (
+              <div className="text-blue-400 text-sm">
+                Selected: <span className="font-medium">{selectedAction.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
               </div>
-            ))}
+            )}
           </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {/* Strike */}
+            <motion.button
+              onClick={() => setSelectedAction('basic_attack')}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                selectedAction === 'basic_attack' 
+                  ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30' 
+                  : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Sword className="w-6 h-6" />
+                <span className="font-medium">Strike</span>
+                <span className="text-xs opacity-70">Basic Attack</span>
+              </div>
+            </motion.button>
+
+            {/* Shadow Exchange */}
+            <motion.button
+              onClick={() => setSelectedAction('shadow_exchange')}
+              disabled={playerMp < 20}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                selectedAction === 'shadow_exchange'
+                  ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                  : playerMp < 20
+                  ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+              }`}
+              whileHover={playerMp >= 20 ? { scale: 1.02 } : {}}
+              whileTap={playerMp >= 20 ? { scale: 0.98 } : {}}
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Zap className="w-6 h-6" />
+                <span className="font-medium">Shadow Exchange</span>
+                <span className="text-xs text-blue-400">20 MP</span>
+              </div>
+            </motion.button>
+
+            {/* Summon Igris */}
+            <motion.button
+              onClick={() => setSelectedAction('summon_igris')}
+              disabled={playerMp < 50}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                selectedAction === 'summon_igris'
+                  ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                  : playerMp < 50
+                  ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+              }`}
+              whileHover={playerMp >= 50 ? { scale: 1.02 } : {}}
+              whileTap={playerMp >= 50 ? { scale: 0.98 } : {}}
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Crown className="w-6 h-6" />
+                <span className="font-medium">Summon Igris</span>
+                <span className="text-xs text-blue-400">50 MP</span>
+              </div>
+            </motion.button>
+
+            {/* Ruler's Authority */}
+            <motion.button
+              onClick={() => setSelectedAction('rulers_authority')}
+              disabled={playerMp < 30}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                selectedAction === 'rulers_authority'
+                  ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                  : playerMp < 30
+                  ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+              }`}
+              whileHover={playerMp >= 30 ? { scale: 1.02 } : {}}
+              whileTap={playerMp >= 30 ? { scale: 0.98 } : {}}
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Target className="w-6 h-6" />
+                <span className="font-medium">Ruler's Authority</span>
+                <span className="text-xs text-blue-400">30 MP</span>
+              </div>
+            </motion.button>
+
+            {/* Shadow Step */}
+            <motion.button
+              onClick={() => setSelectedAction('shadow_step')}
+              disabled={playerMp < 10}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                selectedAction === 'shadow_step'
+                  ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                  : playerMp < 10
+                  ? 'bg-gray-900/50 border-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+              }`}
+              whileHover={playerMp >= 10 ? { scale: 1.02 } : {}}
+              whileTap={playerMp >= 10 ? { scale: 0.98 } : {}}
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Wind className="w-6 h-6" />
+                <span className="font-medium">Shadow Step</span>
+                <span className="text-xs text-blue-400">10 MP</span>
+              </div>
+            </motion.button>
+
+            {/* Defend */}
+            <motion.button
+              onClick={() => setSelectedAction('defend')}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                selectedAction === 'defend'
+                  ? 'bg-blue-600/80 border-blue-400 text-white shadow-lg shadow-blue-500/30'
+                  : 'bg-gray-800/50 border-gray-600 text-gray-300 hover:bg-gray-700/70 hover:border-gray-500'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Shield className="w-6 h-6" />
+                <span className="font-medium">Defend</span>
+                <span className="text-xs opacity-70">Reduce Damage</span>
+              </div>
+            </motion.button>
+          </div>
+
+          {/* Combat Log */}
+          {combatLog.length > 0 && (
+            <div className="mt-4 bg-black/40 rounded-lg p-3 max-h-20 overflow-y-auto">
+              <div className="text-xs text-gray-300 space-y-1">
+                {combatLog.slice(-3).map((log, index) => (
+                  <div key={index} className="opacity-80">
+                    {log}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
