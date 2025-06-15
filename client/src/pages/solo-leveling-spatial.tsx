@@ -687,6 +687,76 @@ export default function SoloLevelingSpatial() {
     return 'night';
   };
 
+  // Get time-appropriate activity for locations
+  const getTimeAppropriateActivity = (location: string, timeOfDay: string): string => {
+    const locationActivities: { [key: string]: { [key: string]: string } } = {
+      'hongdae_cafe': {
+        'morning': 'enjoying a morning coffee and pastry',
+        'afternoon': 'relaxing with an iced coffee and reading',
+        'evening': 'having a casual coffee date atmosphere',
+        'night': 'winding down with herbal tea'
+      },
+      'myeongdong_restaurant': {
+        'morning': 'having brunch at this cozy restaurant',
+        'afternoon': 'enjoying a lunch break',
+        'evening': 'having dinner in this romantic setting',
+        'night': 'sharing a late dinner together'
+      },
+      'hangang_park': {
+        'morning': 'taking a peaceful morning walk by the river',
+        'afternoon': 'enjoying the afternoon breeze by the Han River',
+        'evening': 'watching the sunset over the river',
+        'night': 'stargazing by the riverside'
+      },
+      'hunter_association': {
+        'morning': 'reviewing morning briefings at the Association',
+        'afternoon': 'handling administrative duties',
+        'evening': 'finishing up work at the Association',
+        'night': 'working late on important reports'
+      },
+      'training_facility': {
+        'morning': 'doing morning training exercises',
+        'afternoon': 'practicing sword techniques',
+        'evening': 'completing evening training session',
+        'night': 'doing late night solo training'
+      },
+      'hunter_market': {
+        'morning': 'browsing equipment in the morning market',
+        'afternoon': 'shopping for supplies',
+        'evening': 'checking out new gear arrivals',
+        'night': 'looking at rare items in the night market'
+      },
+      'chahaein_apartment': {
+        'morning': 'getting ready for the day at home',
+        'afternoon': 'relaxing at home on my day off',
+        'evening': 'unwinding at home after work',
+        'night': 'settling in for the evening at home'
+      },
+      'player_apartment': {
+        'morning': 'spending a cozy morning with you',
+        'afternoon': 'enjoying a relaxing afternoon together',
+        'evening': 'having a quiet evening at your place',
+        'night': 'sharing an intimate night together'
+      }
+    };
+    
+    const activities = locationActivities[location];
+    if (activities && activities[timeOfDay]) {
+      return activities[timeOfDay];
+    }
+    
+    // Fallback for unknown locations
+    if (location.includes('apartment')) {
+      return timeOfDay === 'night' ? 'relaxing at home for the evening' : 'spending time at home';
+    } else if (location.includes('cafe') || location.includes('restaurant')) {
+      return timeOfDay === 'morning' ? 'enjoying a morning coffee' : 'having a relaxing meal';
+    } else if (location.includes('park')) {
+      return 'enjoying some fresh air outdoors';
+    } else {
+      return 'taking a break from work';
+    }
+  };
+
   const getChaHaeInLocation = (): string | null => {
     const currentTime = timeOfDay; // Use the timeOfDay state which can be overridden by dev menu
     const affection = gameState.affection || 0;
@@ -992,7 +1062,7 @@ export default function SoloLevelingSpatial() {
       description: 'Trendy café in the heart of Hongdae\'s artistic district',
       backgroundImage: '/api/scenes/hongdae_cafe.jpg',
       chaHaeInPresent: chaHaeInCurrentLocation === 'hongdae_cafe',
-      chaActivity: 'enjoying her morning latte while reading',
+      chaActivity: getTimeAppropriateActivity('hongdae_cafe', timeOfDay),
       chaPosition: { x: 45, y: 50 },
       chaExpression: 'happy' as const,
       interactiveElements: [
