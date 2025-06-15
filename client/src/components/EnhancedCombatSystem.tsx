@@ -779,10 +779,10 @@ export function EnhancedCombatSystem({
           {/* Shadow Exchange */}
           <button
             onClick={() => setSelectedAction('shadow_exchange')}
-            disabled={jinWooStats.mp < 20}
+            disabled={jinWooMP < 20}
             className={`w-full flex items-center justify-between p-3 border-b border-gray-700/30 transition-colors ${
               selectedAction === 'shadow_exchange' ? 'bg-blue-600/80 text-white' : 
-              jinWooStats.mp < 20 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
+              jinWooMP < 20 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' :
               'bg-transparent text-gray-300 hover:bg-gray-700/50'
             }`}
           >
