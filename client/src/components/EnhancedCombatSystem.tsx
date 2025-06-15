@@ -695,12 +695,12 @@ export function EnhancedCombatSystem({
 
       {/* Action Bar */}
       <div className="bg-black/60 backdrop-blur-lg border-t border-white/20 p-4">
-        <div className="flex justify-center space-x-4 mb-4">
+        <div className="flex justify-center space-x-4 mb-4 relative z-10">
           {combatActions.map((action, index) => (
-            <Button
+            <div
               key={`${action.id}-${index}`}
               onClick={() => {
-                console.log('BUTTON CLICKED:', action.name);
+                console.log('DIV CLICKED:', action.name, action.id);
                 if (action.type === 'attack' || action.type === 'skill') {
                   setSelectedAction(action.id);
                   console.log('Action selected:', action.id);
@@ -708,22 +708,23 @@ export function EnhancedCombatSystem({
                   executeAction(action.id);
                 }
               }}
-              className={`relative px-6 py-3 bg-gradient-to-br ${
+              className={`relative px-6 py-3 bg-gradient-to-br cursor-pointer ${
                 selectedAction === action.id 
                   ? 'from-blue-600 to-blue-800 ring-2 ring-blue-400' 
                   : 'from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800'
-              } text-white border border-white/20 transition-all duration-200`}
+              } text-white border border-white/20 transition-all duration-200 rounded`}
+              style={{ zIndex: 999, position: 'relative' }}
             >
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 pointer-events-none">
                 {action.icon}
                 <span className="font-medium">{action.name}</span>
               </div>
               {action.manaCost > 0 && (
-                <div className="text-xs text-blue-300 mt-1">
+                <div className="text-xs text-blue-300 mt-1 pointer-events-none">
                   MP: {action.manaCost}
                 </div>
               )}
-            </Button>
+            </div>
           ))}
         </div>
 
