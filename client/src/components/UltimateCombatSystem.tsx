@@ -603,9 +603,10 @@ export function UltimateCombatSystem({
           // Get purchased items from profile.inventory (where equipment is actually stored)
           const purchasedItems = profile.inventory || [];
           
-          console.log('FIXED - Loading equipment from inventory:', purchasedItems.length, 'items');
-          console.log('FIXED - First item:', purchasedItems[0]?.name, purchasedItems[0]?.type);
-          console.log('FIXED - Raw inventory:', JSON.stringify(purchasedItems, null, 2));
+          console.log('USEEFFECT - Loading equipment from inventory:', purchasedItems.length, 'items');
+          console.log('USEEFFECT - First item:', purchasedItems[0]?.name, purchasedItems[0]?.type, purchasedItems[0]?.category);
+          console.log('USEEFFECT - Demon King Daggers?', purchasedItems.find(item => item.name?.includes('Demon')));
+          console.log('USEEFFECT - All item names:', purchasedItems.map(item => `${item.name} (${item.type}/${item.category})`));
           
           // Filter weapons from purchases with detailed logging
           const weapons = purchasedItems.filter((item: any) => {
