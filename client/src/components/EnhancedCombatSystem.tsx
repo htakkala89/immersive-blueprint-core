@@ -717,15 +717,16 @@ export function EnhancedCombatSystem({
 
         <div className="flex justify-center space-x-4 mb-4 relative z-10">
           {combatActions.map((action, index) => (
-            <div
+            <button
               key={`${action.id}-${index}`}
               onClick={() => {
-                console.log('DIV CLICKED:', action.name, action.id);
+                console.log('🗡️ COMBAT ACTION CLICKED:', action.name, action.id);
                 if (action.type === 'attack' || action.type === 'skill') {
                   setSelectedAction(action.id);
-                  console.log('Action selected:', action.id);
+                  console.log('✅ Action selected for targeting:', action.id);
                 } else {
                   executeAction(action.id);
+                  console.log('🚀 Direct action executed:', action.id);
                 }
               }}
               className={`relative px-6 py-3 bg-gradient-to-br cursor-pointer ${
@@ -733,18 +734,18 @@ export function EnhancedCombatSystem({
                   ? 'from-blue-600 to-blue-800 ring-2 ring-blue-400' 
                   : 'from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800'
               } text-white border border-white/20 transition-all duration-200 rounded`}
-              style={{ zIndex: 999, position: 'relative' }}
+              style={{ zIndex: 9999 }}
             >
-              <div className="flex items-center space-x-2 pointer-events-none">
+              <div className="flex items-center space-x-2">
                 {action.icon}
                 <span className="font-medium">{action.name}</span>
               </div>
               {action.manaCost > 0 && (
-                <div className="text-xs text-blue-300 mt-1 pointer-events-none">
+                <div className="text-xs text-blue-300 mt-1">
                   MP: {action.manaCost}
                 </div>
               )}
-            </div>
+            </button>
           ))}
         </div>
 
