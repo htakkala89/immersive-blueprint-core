@@ -666,6 +666,24 @@ export function UltimateCombatSystem({
     addToCombatLog(`Opening ${type} selection...`);
   };
 
+  // Calculate stat comparison for equipment preview
+  const getStatComparison = (newItem: any, equipmentType: 'weapon' | 'armor' | 'accessory') => {
+    const currentItem = currentEquipment[equipmentType];
+    const currentStats = currentItem?.stats || {};
+    const newStats = newItem.stats || {};
+    
+    const comparison: Record<string, number> = {};
+    const allStats = new Set([...Object.keys(currentStats), ...Object.keys(newStats)]);
+    
+    allStats.forEach(stat => {
+      const current = currentStats[stat] || 0;
+      const newValue = newStats[stat] || 0;
+      comparison[stat] = newValue - current;
+    });
+    
+    return comparison;
+  };
+
   // Equip Item Handler
   const handleEquipItem = (item: any) => {
     setCurrentEquipment(prev => ({
@@ -841,6 +859,29 @@ export function UltimateCombatSystem({
                     <Settings className="w-5 h-5 mr-2" />
                     Equipment
                   </h3>
+                  
+                  {/* Current Total Stats Display */}
+                  <div className="bg-black/20 rounded-lg p-3 mb-4 border border-green-500/30">
+                    <div className="text-green-400 text-sm font-semibold mb-2">Current Stats</div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="text-center">
+                        <div className="text-orange-300">ATK</div>
+                        <div className="text-white font-bold">{getEnhancedStats().attack}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-blue-300">DEF</div>
+                        <div className="text-white font-bold">{getEnhancedStats().defense}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-red-300">HP</div>
+                        <div className="text-white font-bold">{getEnhancedStats().maxHp}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-purple-300">MP</div>
+                        <div className="text-white font-bold">{getEnhancedStats().maxMp}</div>
+                      </div>
+                    </div>
+                  </div>
                   
                   <div className="space-y-3">
                     {/* Weapon Slot */}
@@ -1362,12 +1403,39 @@ export function UltimateCombatSystem({
                           <div className="text-gray-300 text-sm mb-2">
                             {item.description}
                           </div>
-                          <div className="flex flex-wrap gap-2 text-xs">
+                          
+                          {/* Current Item Stats */}
+                          <div className="flex flex-wrap gap-2 text-xs mb-2">
                             {Object.entries(item.stats).map(([stat, value]) => (
-                              <span key={stat} className="bg-green-500/20 text-green-300 px-2 py-1 rounded">
-                                +{value} {stat.toUpperCase()}
+                              <span key={stat} className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
+                                {value} {stat.toUpperCase()}
                               </span>
                             ))}
+                          </div>
+                          
+                          {/* Stat Comparison */}
+                          <div className="border-t border-gray-600 pt-2">
+                            <div className="text-gray-400 text-xs mb-1">Impact:</div>
+                            <div className="flex flex-wrap gap-1 text-xs">
+                              {Object.entries(getStatComparison(item, selectedEquipmentType)).map(([stat, change]) => {
+                                if (change === 0) return null;
+                                return (
+                                  <span 
+                                    key={stat} 
+                                    className={`px-2 py-1 rounded ${
+                                      change > 0 
+                                        ? 'bg-green-500/20 text-green-300' 
+                                        : 'bg-red-500/20 text-red-300'
+                                    }`}
+                                  >
+                                    {change > 0 ? '+' : ''}{change} {stat.toUpperCase()}
+                                  </span>
+                                );
+                              })}
+                              {Object.values(getStatComparison(item, selectedEquipmentType)).every(v => v === 0) && (
+                                <span className="text-gray-500 text-xs">No stat changes</span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
