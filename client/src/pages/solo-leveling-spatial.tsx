@@ -1911,15 +1911,29 @@ export default function SoloLevelingSpatial() {
       // Load player equipment
       const equipmentResponse = await fetch('/api/player/equipment');
       if (equipmentResponse.ok) {
-        const equipment = await equipmentResponse.json();
-        setPlayerEquipment(equipment);
+        const equipmentText = await equipmentResponse.text();
+        if (equipmentText && equipmentText.trim() !== '' && equipmentText !== 'undefined') {
+          try {
+            const equipment = JSON.parse(equipmentText);
+            setPlayerEquipment(equipment);
+          } catch (parseError) {
+            console.log('Failed to parse equipment response');
+          }
+        }
       }
 
       // Load player inventory
       const inventoryResponse = await fetch('/api/player/inventory');
       if (inventoryResponse.ok) {
-        const inventory = await inventoryResponse.json();
-        setUltimateInventory(inventory.items || []);
+        const inventoryText = await inventoryResponse.text();
+        if (inventoryText && inventoryText.trim() !== '' && inventoryText !== 'undefined') {
+          try {
+            const inventory = JSON.parse(inventoryText);
+            setUltimateInventory(inventory.items || []);
+          } catch (parseError) {
+            console.log('Failed to parse inventory response');
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to load combat data:', error);
@@ -2062,7 +2076,11 @@ export default function SoloLevelingSpatial() {
         })
       });
       
-      const data = await response.json();
+      const responseText = await response.text();
+      if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
+        throw new Error('Invalid response from sell item API');
+      }
+      const data = JSON.parse(responseText);
       setGameState(data.gameState);
       
       // Add transaction to recent transactions
@@ -2266,7 +2284,11 @@ export default function SoloLevelingSpatial() {
         })
       });
       
-      const data = await response.json();
+      const responseText = await response.text();
+      if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
+        throw new Error('Invalid response from interaction API');
+      }
+      const data = JSON.parse(responseText);
       setCurrentDialogue(data.response);
       
       // Generate contextual thought prompts based on the interaction
@@ -2447,9 +2469,16 @@ export default function SoloLevelingSpatial() {
         })
       });
       
-      const data = await response.json();
-      if (data.imageUrl) {
-        setSceneImage(data.imageUrl);
+      const responseText = await response.text();
+      if (responseText && responseText.trim() !== '' && responseText !== 'undefined') {
+        try {
+          const data = JSON.parse(responseText);
+          if (data.imageUrl) {
+            setSceneImage(data.imageUrl);
+          }
+        } catch (parseError) {
+          console.log('Failed to parse scene image response');
+        }
       }
     } catch (error) {
       console.error('Scene generation error:', error);
@@ -2487,9 +2516,16 @@ export default function SoloLevelingSpatial() {
           });
           
           if (response.ok) {
-            const data = await response.json();
-            if (data.imageUrl) {
-              setEmotionalImage(data.imageUrl);
+            const responseText = await response.text();
+            if (responseText && responseText.trim() !== '' && responseText !== 'undefined') {
+              try {
+                const data = JSON.parse(responseText);
+                if (data.imageUrl) {
+                  setEmotionalImage(data.imageUrl);
+                }
+              } catch (parseError) {
+                console.log('Failed to parse emotional image response');
+              }
             }
           }
         } catch (error) {
