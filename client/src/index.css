@@ -31,37 +31,9 @@
   }
   
   .mobile-conversation-area {
-    height: 200px !important;
-    max-height: 200px !important;
-    overflow-y: auto !important;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    height: 120px !important;
+    max-height: 120px !important;
   }
-  
-  .mobile-conversation-area::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-/* Chat message text wrapping and overflow fixes */
-.chat-message-text {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: pre-wrap;
-  max-width: 100%;
-}
-
-.mobile-conversation-area {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-}
-
-.mobile-conversation-area::-webkit-scrollbar {
-  display: none;
 }
 
 /* Responsive Touch Enhancements */

@@ -25,7 +25,6 @@ interface Message {
   read: boolean;
   state?: 'sent' | 'delivered' | 'read';
   isUrgent?: boolean;
-  photoUrl?: string;
   proposedActivity?: {
     type: string;
     location: string;
@@ -91,12 +90,6 @@ interface HunterCommunicatorSystem15Props {
   chaHaeInState?: CharacterState;
   activeQuests?: any[];
   episodeAlerts?: SystemAlert[];
-  chaHaeInAvatar?: string;
-  pendingPhotoDelivery?: {
-    type: 'intimate';
-    context: string;
-    imageUrl?: string;
-  };
 }
 
 export function HunterCommunicatorSystem15({
@@ -107,9 +100,7 @@ export function HunterCommunicatorSystem15({
   onActivityProposed,
   playerLocation,
   timeOfDay,
-  chaHaeInState,
-  chaHaeInAvatar,
-  pendingPhotoDelivery
+  chaHaeInState
 }: HunterCommunicatorSystem15Props): JSX.Element {
   const [activeTab, setActiveTab] = useState<'messages' | 'alerts'>('messages');
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -375,40 +366,6 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     setCurrentInput('');
   };
 
-  // Handle photo delivery from dialogue system
-  useEffect(() => {
-    if (pendingPhotoDelivery && selectedConversation === 'cha_hae_in') {
-      const photoMessage: Message = {
-        id: `msg_${Date.now()}_photo`,
-        senderId: 'cha_hae_in',
-        senderName: 'Cha Hae-In',
-        content: `*A photo message arrives with a soft chime* 📸\n\n"As requested... but this stays between us." ${pendingPhotoDelivery.context}`,
-        timestamp: new Date(),
-        read: false,
-        state: 'delivered',
-        photoUrl: pendingPhotoDelivery.imageUrl
-      };
-
-      setConversations(prev => prev.map(conv => 
-        conv.id === 'cha_hae_in' 
-          ? {
-              ...conv,
-              messages: [...conv.messages, photoMessage],
-              lastMessage: photoMessage,
-              unreadCount: conv.unreadCount + 1
-            }
-          : conv
-      ));
-
-      // Auto-scroll to new message
-      setTimeout(() => {
-        if (chatContainerRef.current) {
-          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-        }
-      }, 100);
-    }
-  }, [pendingPhotoDelivery, selectedConversation]);
-
   // Check connection status based on player location
   useEffect(() => {
     const noSignalLocations = ['deep_dungeon', 'shadow_realm', 'void_space'];
@@ -423,7 +380,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       id: 'cha_hae_in',
       participantId: 'cha_hae_in',
       participantName: 'Cha Hae-In',
-      participantAvatar: chaHaeInAvatar || '', // Use actual avatar image
+      participantAvatar: '👩‍⚔️',
       unreadCount: 1,
       lastMessage: {
         id: 'msg_1',
@@ -667,7 +624,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 50 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-2xl flex items-center justify-center z-50 p-2 md:p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-2xl flex items-center justify-center z-50 p-4"
       style={{
         backdropFilter: 'blur(60px) saturate(180%)',
         background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.4), rgba(0,0,0,0.7))'
@@ -676,29 +633,13 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       <motion.div
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
-        className="w-full max-w-full md:max-w-4xl h-[90vh] md:h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
+        className="w-full max-w-4xl h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
         style={{
-          background: `
-            linear-gradient(135deg, 
-              rgba(255, 255, 255, 0.08) 0%,
-              rgba(255, 255, 255, 0.05) 25%,
-              rgba(255, 255, 255, 0.06) 50%,
-              rgba(255, 255, 255, 0.04) 75%,
-              rgba(255, 255, 255, 0.07) 100%
-            ),
-            linear-gradient(135deg, 
-              rgba(15, 23, 42, 0.15) 0%, 
-              rgba(30, 41, 59, 0.12) 25%,
-              rgba(15, 23, 42, 0.14) 50%,
-              rgba(30, 41, 59, 0.18) 75%,
-              rgba(15, 23, 42, 0.12) 100%
-            )
-          `,
-          backdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
-          WebkitBackdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: '16px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          background: 'linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,41,59,0.75))',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '24px',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8)'
         }}
       >
         {/* Noise texture overlay */}
@@ -722,7 +663,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         />
         {/* Enhanced Header */}
         <div 
-          className="flex items-center justify-between p-4 md:p-6 relative z-20"
+          className="flex items-center justify-between p-6 relative z-20"
           style={{
             background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
             backdropFilter: 'blur(20px)',
@@ -779,7 +720,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="text-slate-400 hover:text-white transition-all duration-200"
             style={{
               background: 'rgba(255,255,255,0.05)',
               backdropFilter: 'blur(10px)',
@@ -802,7 +743,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         >
           <button
             onClick={() => setActiveTab('messages')}
-            className={`flex-1 px-3 py-4 md:px-4 md:py-3 flex items-center justify-center gap-2 transition-all duration-300 relative min-h-[48px] ${
+            className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 transition-all duration-300 relative ${
               activeTab === 'messages'
                 ? 'text-blue-300'
                 : 'text-slate-400 hover:text-white'
@@ -848,7 +789,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
           </button>
           <button
             onClick={() => setActiveTab('alerts')}
-            className={`flex-1 px-3 py-4 md:px-4 md:py-3 flex items-center justify-center gap-2 transition-all duration-300 relative min-h-[48px] ${
+            className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 transition-all duration-300 relative ${
               activeTab === 'alerts'
                 ? 'text-blue-300'
                 : 'text-slate-400 hover:text-white'
@@ -900,15 +841,15 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
             <>
               {/* Enhanced Conversation List with Floating Pills */}
               <div 
-                className="w-full md:w-1/3 relative z-10 flex-1 md:flex-none"
+                className="w-1/3 relative z-10"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
                   backdropFilter: 'blur(20px)',
                 }}
               >
-                <div className="p-6 md:p-6">
+                <div className="p-6">
                   <h3 
-                    className="text-lg font-semibold text-white mb-4 md:mb-6"
+                    className="text-lg font-semibold text-white mb-6"
                     style={{
                       textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1)',
                       filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.1))'
@@ -916,7 +857,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                   >
                     Conversations
                   </h3>
-                  <div className="space-y-8 md:space-y-3">
+                  <div className="space-y-3">
                     {conversations.map((conversation) => (
                       <motion.div
                         key={conversation.id}
@@ -939,17 +880,16 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           border: selectedConversation === conversation.id
                             ? '1px solid rgba(147,51,234,0.3)'
                             : '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '24px',
-                          padding: '48px 36px',
-                          minHeight: '220px',
+                          borderRadius: '20px',
+                          padding: '16px',
                           boxShadow: selectedConversation === conversation.id
                             ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 25px rgba(147,51,234,0.15), 0 0 20px rgba(147,51,234,0.1)'
                             : 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.2)'
                         }}
                       >
-                        <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-3">
                           <div 
-                            className="w-28 h-28 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+                            className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
                             style={{
                               background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                               backdropFilter: 'blur(10px)',
@@ -957,23 +897,12 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
                             }}
                           >
-                            {conversation.participantAvatar ? (
-                              <img 
-                                src={conversation.participantAvatar} 
-                                alt={conversation.participantName}
-                                className="w-full h-full object-cover"
-                                style={{
-                                  filter: 'brightness(1.1) contrast(1.05)'
-                                }}
-                              />
-                            ) : (
-                              <User className="w-6 h-6 text-slate-400" />
-                            )}
+                            {conversation.participantAvatar}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
                               <span 
-                                className="font-medium text-white text-2xl"
+                                className="font-medium text-white"
                                 style={{
                                   textShadow: '0 1px 2px rgba(0,0,0,0.8)',
                                   filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
@@ -996,7 +925,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               )}
                             </div>
                             <p 
-                              className="text-xl text-slate-300 mb-4 leading-relaxed"
+                              className="text-sm text-slate-300 mb-1 leading-relaxed"
                               style={{
                                 textShadow: '0 1px 2px rgba(0,0,0,0.8)',
                                 display: '-webkit-box',
@@ -1009,7 +938,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               {conversation.lastMessage.content}
                             </p>
                             <span 
-                              className="text-lg text-slate-400"
+                              className="text-xs text-slate-400"
                               style={{
                                 textShadow: '0 1px 1px rgba(0,0,0,0.8)'
                               }}
@@ -1045,7 +974,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                   <>
                     {/* Enhanced Chat Header */}
                     <div 
-                      className="p-4 md:p-6"
+                      className="p-6"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
                         backdropFilter: 'blur(15px)',
@@ -1055,7 +984,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                     >
                       <div className="flex items-center gap-4">
                         <div 
-                          className="w-14 h-14 rounded-full flex items-center justify-center overflow-hidden"
+                          className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
                           style={{
                             background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                             backdropFilter: 'blur(10px)',
@@ -1063,18 +992,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
                           }}
                         >
-                          {selectedConversationData.participantAvatar ? (
-                            <img 
-                              src={selectedConversationData.participantAvatar} 
-                              alt={selectedConversationData.participantName}
-                              className="w-full h-full object-cover"
-                              style={{
-                                filter: 'brightness(1.1) contrast(1.05)'
-                              }}
-                            />
-                          ) : (
-                            <User className="w-8 h-8 text-slate-400" />
-                          )}
+                          {selectedConversationData.participantAvatar}
                         </div>
                         <div>
                           <h4 
@@ -1120,7 +1038,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                     {/* Enhanced Messages with Liquid Glassmorphism */}
                     <div 
                       ref={chatContainerRef} 
-                      className="flex-1 overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-6 relative"
+                      className="flex-1 overflow-y-auto p-6 space-y-6 relative"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01), rgba(255,255,255,0.02))',
                         backdropFilter: 'blur(50px) saturate(180%) contrast(120%)',
@@ -1134,8 +1052,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           0 4px 16px rgba(0,0,0,0.1)
                         `,
                         position: 'relative',
-                        overflow: 'hidden',
-                        WebkitOverflowScrolling: 'touch'
+                        overflow: 'hidden'
                       }}
                     >
                       {/* Liquid glassmorphism shimmering inner border */}
@@ -1260,41 +1177,6 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                 >
                                   {message.content}
                                 </p>
-                                
-                                {/* Enhanced Photo Display with Premium Frosted Glass */}
-                                {message.photoUrl && (
-                                  <div 
-                                    className="mt-4 rounded-2xl overflow-hidden relative"
-                                    style={{
-                                      background: `
-                                        linear-gradient(135deg, 
-                                          rgba(255, 255, 255, 0.08) 0%,
-                                          rgba(255, 255, 255, 0.05) 25%,
-                                          rgba(255, 255, 255, 0.06) 50%,
-                                          rgba(255, 255, 255, 0.04) 75%,
-                                          rgba(255, 255, 255, 0.07) 100%
-                                        )
-                                      `,
-                                      backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
-                                      WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
-                                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                                      maxWidth: '300px'
-                                    }}
-                                  >
-                                    <img 
-                                      src={message.photoUrl} 
-                                      alt="Shared photo"
-                                      className="w-full h-auto object-cover"
-                                      style={{
-                                        filter: 'brightness(1.05) contrast(1.1) saturate(1.1)'
-                                      }}
-                                    />
-                                    <div 
-                                      className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
-                                    />
-                                  </div>
-                                )}
                                 <span 
                                   className="text-xs text-slate-400 mt-2 block"
                                   style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
@@ -1366,7 +1248,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
 
                     {/* Enhanced Message Input */}
                     <div 
-                      className="p-4 md:p-6 relative z-20"
+                      className="p-6 relative z-20"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
                         backdropFilter: 'blur(15px)',
@@ -1400,7 +1282,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             value={currentInput}
                             onChange={(e) => setCurrentInput(e.target.value)}
                             placeholder={canSendMessages ? "Type your message..." : "Select a conversation to start messaging"}
-                            className="flex-1 min-h-[52px] max-h-32 text-white placeholder-slate-400 border-0 resize-none text-base"
+                            className="flex-1 min-h-[50px] max-h-32 text-white placeholder-slate-400 border-0 resize-none"
                             disabled={!canSendMessages}
                             style={{
                               background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
@@ -1409,9 +1291,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               borderRadius: '16px',
                               padding: '16px',
                               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.1)',
-                              textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-                              WebkitUserSelect: 'text',
-                              userSelect: 'text'
+                              textShadow: '0 1px 2px rgba(0,0,0,0.8)'
                             }}
                             onKeyPress={(e) => {
                               if (e.key === 'Enter' && !e.shiftKey) {
@@ -1423,7 +1303,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           <Button
                             onClick={handleSendMessage}
                             disabled={!currentInput.trim() || !canSendMessages}
-                            className="px-4 py-3 text-white transition-all duration-200 min-h-[48px] min-w-[48px] flex items-center justify-center"
+                            className="px-4 py-3 text-white transition-all duration-200"
                             style={{
                               background: currentInput.trim() && canSendMessages
                                 ? 'linear-gradient(135deg, rgba(59,130,246,0.8), rgba(37,99,235,0.9))'

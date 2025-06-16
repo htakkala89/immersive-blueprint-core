@@ -29,13 +29,12 @@ import { TalkOnBalconyModal } from '@/components/TalkOnBalconyModal';
 import { MyeongdongDinnerModal } from '@/components/MyeongdongDinnerModal';
 import { DevToolsPanel } from '@/components/DevToolsPanel';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
-import { HunterCommunicatorMobile } from '@/components/HunterCommunicatorMobile';
+import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
 import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
-import { EnhancedCombatSystemFixed } from '@/components/EnhancedCombatSystemFixed';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
@@ -248,25 +247,6 @@ export default function SoloLevelingSpatial() {
   const [emotionalImage, setEmotionalImage] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
-  
-  // Enhanced Combat System State
-  const [enhancedCombatVisible, setEnhancedCombatVisible] = useState(false);
-  const [combatEnemies, setCombatEnemies] = useState<Array<{
-    id: string;
-    name: string;
-    type: string;
-    level: number;
-    hp: number;
-    maxHp: number;
-    attack: number;
-    defense: number;
-    position: { x: number; y: number };
-    aggro: number;
-    status: string[];
-    attackCooldown: number;
-    isElite: boolean;
-    isBoss: boolean;
-  }>>([]);
   const [scheduledActivities, setScheduledActivities] = useState<any[]>([]);
   const [showActivityNotification, setShowActivityNotification] = useState(false);
   const [showActivityScheduled, setShowActivityScheduled] = useState(false);
@@ -348,13 +328,6 @@ export default function SoloLevelingSpatial() {
   const [storyFlags, setStoryFlags] = useState<string[]>(['beginning_journey', 'gate_clearance_quest_active']);
   const [visitHistory, setVisitHistory] = useState<Record<string, number>>({});
   const [chaHaeInPresent, setChaHaeInPresent] = useState(true);
-  
-  // Cross-system photo sharing state
-  const [pendingPhotoDelivery, setPendingPhotoDelivery] = useState<{
-    type: 'intimate';
-    context: string;
-    imageUrl?: string;
-  } | null>(null);
 
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
@@ -689,33 +662,24 @@ export default function SoloLevelingSpatial() {
 
   const getChaHaeInLocation = (): string | null => {
     const currentTime = timeOfDay; // Use the timeOfDay state which can be overridden by dev menu
-    const affection = gameState.affection || 0;
+    const affection = gameState.affection;
     
-    // Enhanced movement system - Cha Hae-In moves more frequently with lower requirements
+    // Deterministic location system - Cha Hae-In has a predictable schedule
     if (currentTime === 'morning') {
       if (affection >= 80) return 'player_apartment'; // Very intimate - stays overnight
-      if (affection >= 60) return 'chahaein_apartment'; // High affection - at her place
-      if (affection >= 30) return 'hongdae_cafe'; // Morning coffee meeting
+      if (affection >= 70) return 'chahaein_apartment'; // High affection - at her place
       return 'hunter_association'; // Always at work in mornings
     } else if (currentTime === 'afternoon') {
-      if (affection >= 50) {
-        // Rotates between locations during afternoon breaks
-        const locations = ['hunter_association', 'training_facility', 'hunter_market'];
-        return locations[Math.floor(Date.now() / (1000 * 60 * 30)) % locations.length]; // Changes every 30 min
-      }
       return 'hunter_association'; // Always at Hunter Association during work hours
     } else if (currentTime === 'evening') {
-      if (affection >= 70) return 'luxury_realtor'; // Looking at properties together
-      if (affection >= 50) return 'myeongdong_restaurant'; // Dinner together
-      if (affection >= 25) return 'hongdae_cafe'; // Casual evening meetup
-      if (affection >= 10) return 'training_facility'; // Late training session
+      if (affection >= 60) return 'myeongdong_restaurant'; // Dinner together if close
+      if (affection >= 40) return 'hongdae_cafe'; // Casual meetup
+      if (Math.random() > 0.7 && affection >= 70) return 'luxury_realtor'; // Looking at properties together
       return 'hunter_association'; // Still working late
     } else { // night
       if (affection >= 80) return 'player_apartment'; // Very intimate - spends night together
-      if (affection >= 60) return 'chahaein_apartment'; // High affection - at her place
-      if (affection >= 40) return 'training_facility'; // Late night training
-      if (affection >= 20) return 'hongdae_cafe'; // Night cafe study session
-      return null; // Not available at night unless some connection
+      if (affection >= 70) return 'chahaein_apartment'; // High affection - at her place
+      return null; // Not available at night unless very close
     }
   };
 
@@ -1474,19 +1438,18 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-scroll behavior: smooth scroll to bottom for new messages
+  // Auto-scroll behavior: scroll to top for new AI responses, bottom for user messages
   useEffect(() => {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
-      // Always scroll to bottom to show the latest message
-      const scrollContainer = conversationScrollRef.current;
+      const lastMessage = conversationHistory[conversationHistory.length - 1];
       
-      // Smooth scroll to bottom
-      setTimeout(() => {
-        scrollContainer.scrollTo({
-          top: scrollContainer.scrollHeight,
-          behavior: 'smooth'
-        });
-      }, 100);
+      if (lastMessage.type === 'cha_hae_in') {
+        // For Cha Hae-In's responses, scroll to top so users see the beginning
+        conversationScrollRef.current.scrollTop = 0;
+      } else {
+        // For user messages, scroll to bottom to see their own input
+        conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+      }
     }
   }, [conversationHistory]);
 
@@ -1524,116 +1487,6 @@ export default function SoloLevelingSpatial() {
       console.error('Failed to generate avatar expression:', error);
     } finally {
       setIsGeneratingAvatar(false);
-    }
-  };
-
-  // Enhanced Combat System Functions
-  const initiateCombat = (battleType: 'dungeon' | 'boss' | 'pvp' | 'training' = 'dungeon', includeChaeHaein = false) => {
-    // Generate appropriate enemies based on battle type
-    const enemies = [];
-    
-    if (battleType === 'boss') {
-      enemies.push({
-        id: 'shadow_beast_alpha',
-        name: 'Shadow Beast Alpha',
-        type: 'boss',
-        level: gameState.level + 3,
-        hp: 300,
-        maxHp: 300,
-        attack: 45,
-        defense: 20,
-        position: { x: 600, y: 250 },
-        aggro: 0,
-        status: [],
-        attackCooldown: 0,
-        isElite: false,
-        isBoss: true
-      });
-    } else if (battleType === 'training') {
-      enemies.push({
-        id: 'training_dummy',
-        name: 'Training Dummy',
-        type: 'construct',
-        level: gameState.level,
-        hp: 100,
-        maxHp: 100,
-        attack: 20,
-        defense: 5,
-        position: { x: 500, y: 300 },
-        aggro: 0,
-        status: [],
-        attackCooldown: 0,
-        isElite: false,
-        isBoss: false
-      });
-    } else {
-      // Standard dungeon enemies
-      enemies.push(
-        {
-          id: 'shadow_wolf_1',
-          name: 'Shadow Wolf',
-          type: 'beast',
-          level: gameState.level,
-          hp: 80,
-          maxHp: 80,
-          attack: 25,
-          defense: 10,
-          position: { x: 500, y: 250 },
-          aggro: 0,
-          status: [],
-          attackCooldown: 0,
-          isElite: false,
-          isBoss: false
-        },
-        {
-          id: 'shadow_archer_1',
-          name: 'Shadow Archer',
-          type: 'humanoid',
-          level: gameState.level + 1,
-          hp: 60,
-          maxHp: 60,
-          attack: 30,
-          defense: 8,
-          position: { x: 650, y: 200 },
-          aggro: 0,
-          status: [],
-          attackCooldown: 0,
-          isElite: true,
-          isBoss: false
-        }
-      );
-    }
-    
-    setCombatEnemies(enemies);
-    setEnhancedCombatVisible(true);
-  };
-
-  const handleCombatComplete = (result: { victory: boolean; rewards: any; experience: number }) => {
-    setEnhancedCombatVisible(false);
-    
-    if (result.victory) {
-      // Award experience and rewards
-      setGameState(prev => ({
-        ...prev,
-        experience: (prev.experience || 0) + result.experience,
-        gold: (prev.gold || 0) + (result.rewards.gold || 0)
-      }));
-      
-      setNotifications(prev => [...prev, {
-        id: `combat_victory_${Date.now()}`,
-        type: 'success' as const,
-        title: 'Victory!',
-        content: `Gained ${result.experience} XP and ${result.rewards.gold || 0} gold`,
-        timestamp: new Date()
-      }]);
-    } else {
-      setNotifications(prev => [...prev, {
-        id: `combat_defeat_${Date.now()}`,
-        type: 'warning' as const,
-        title: 'Defeated',
-        content: 'You were defeated in battle. Train harder!',
-        timestamp: new Date()
-      }]);
     }
   };
 
@@ -2266,8 +2119,7 @@ export default function SoloLevelingSpatial() {
       const { profile, gameState: loadedGameState } = await response.json();
       
       // Update current game state with loaded data
-      setGameState(prev => ({
-        ...prev,
+      setGameState({
         level: loadedGameState.level || 1,
         health: loadedGameState.health || 100,
         maxHealth: loadedGameState.maxHealth || 100,
@@ -2287,22 +2139,15 @@ export default function SoloLevelingSpatial() {
         playerId: loadedGameState.sessionId,
         activeQuests: loadedGameState.activeQuests || [],
         completedQuests: loadedGameState.completedQuests || [],
-        stats: loadedGameState.stats && Object.keys(loadedGameState.stats).length > 0 
-          ? loadedGameState.stats 
-          : {
-              strength: 25,
-              agility: 20,
-              vitality: 18,
-              intelligence: 15,
-              sense: 12
-            },
-        unspentStatPoints: loadedGameState.statPoints || 5,
-        unspentSkillPoints: loadedGameState.skillPoints || 3,
-        hunterRank: loadedGameState.hunterRank || 'E-Rank',
+        intelligence: loadedGameState.stats?.intelligence || 10,
         storyFlags: loadedGameState.storyFlags || {},
+        stats: loadedGameState.stats || { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
+        unspentStatPoints: loadedGameState.statPoints || 0,
+        unspentSkillPoints: loadedGameState.skillPoints || 0,
+        storyProgress: loadedGameState.storyProgress || 0,
         unlockedActivities: loadedGameState.unlockedActivities || [],
         sharedMemories: loadedGameState.sharedMemories || []
-      }));
+      });
 
       console.log('Profile loaded successfully:', profile.profileName);
     } catch (error) {
@@ -4100,23 +3945,21 @@ export default function SoloLevelingSpatial() {
               height: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
               maxHeight: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
               paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
-              backdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
-              WebkitBackdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
+              backdropFilter: 'blur(20px) saturate(180%)',
               background: `
                 linear-gradient(135deg, 
-                  rgba(30, 41, 59, 0.15) 0%, 
-                  rgba(51, 65, 85, 0.12) 25%,
-                  rgba(30, 41, 59, 0.14) 50%,
-                  rgba(15, 23, 42, 0.18) 75%,
-                  rgba(30, 41, 59, 0.12) 100%
+                  rgba(30, 41, 59, 0.3) 0%, 
+                  rgba(51, 65, 85, 0.25) 25%,
+                  rgba(30, 41, 59, 0.28) 50%,
+                  rgba(15, 23, 42, 0.35) 75%,
+                  rgba(30, 41, 59, 0.25) 100%
                 ),
-                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.04) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.03) 0%, transparent 50%)
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.04) 0%, transparent 50%)
               `,
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderBottom: 'none',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              borderBottom: 'none'
             }}
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -4129,11 +3972,9 @@ export default function SoloLevelingSpatial() {
               <motion.button
                 className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-colors z-[10000]"
                 style={{
-                  backdropFilter: 'blur(20px) saturate(180%) brightness(1.2)',
-                  WebkitBackdropFilter: 'blur(20px) saturate(180%) brightness(1.2)',
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                  backdropFilter: 'blur(12px) saturate(150%)',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)'
                 }}
                 onClick={exitFocusMode}
                 whileHover={{ 
@@ -4152,16 +3993,8 @@ export default function SoloLevelingSpatial() {
               <motion.div
                 className="rounded-lg p-4 flex-1 mb-3 flex flex-col"
                 style={{
-                  backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
-                  WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
+                  backdropFilter: 'blur(16px) saturate(180%)',
                   background: `
-                    linear-gradient(135deg, 
-                      rgba(255, 255, 255, 0.08) 0%,
-                      rgba(255, 255, 255, 0.05) 25%,
-                      rgba(255, 255, 255, 0.06) 50%,
-                      rgba(255, 255, 255, 0.04) 75%,
-                      rgba(255, 255, 255, 0.07) 100%
-                    ),
                     linear-gradient(135deg, 
                       rgba(30, 41, 59, 0.65) 0%, 
                       rgba(51, 65, 85, 0.6) 25%,
@@ -4170,8 +4003,7 @@ export default function SoloLevelingSpatial() {
                       rgba(30, 41, 59, 0.65) 100%
                     )
                   `,
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.1)'
+                  border: '1px solid rgba(139, 92, 246, 0.3)'
                 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -4272,15 +4104,12 @@ export default function SoloLevelingSpatial() {
                     </div>
                   </motion.div>
                   
-                  <div className="flex-1 flex flex-col min-h-0">
+                  <div className="flex-1">
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
-                      style={{ 
-                        maxHeight: '265px',
-                        height: '265px'
-                      }}
+                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area"
+                      style={{ height: '200px', maxHeight: '200px' }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
@@ -4299,8 +4128,8 @@ export default function SoloLevelingSpatial() {
                             </div>
                           ) : (
                             // Cha Hae-In messages: Left-aligned, bright white, script-like
-                            <div className="max-w-[85%]">
-                              <p className="text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap text-sm">
+                            <div className="max-w-[75%]">
+                              <p className="text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap">
                                 {entry.text}
                               </p>
                             </div>
@@ -4330,8 +4159,8 @@ export default function SoloLevelingSpatial() {
                 </div>
               </motion.div>
               
-              {/* Fixed Input Controls Section */}
-              <div className="flex-shrink-0 space-y-2 pt-3 border-t border-white/10" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
+              {/* Bottom Section - Always Visible */}
+              <div className="space-y-3" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
                 {/* Thought Prompts */}
                 {thoughtPrompts.length > 0 && (
                   <motion.div
@@ -4345,46 +4174,29 @@ export default function SoloLevelingSpatial() {
                         key={index}
                         className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
                         style={{
-                          backdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
-                          WebkitBackdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
+                          backdropFilter: 'blur(12px) saturate(150%)',
                           background: `
                             linear-gradient(135deg, 
-                              rgba(255, 255, 255, 0.1) 0%,
-                              rgba(255, 255, 255, 0.08) 25%,
-                              rgba(255, 255, 255, 0.09) 50%,
-                              rgba(255, 255, 255, 0.07) 75%,
-                              rgba(255, 255, 255, 0.1) 100%
-                            ),
-                            linear-gradient(135deg, 
-                              rgba(139, 92, 246, 0.12) 0%, 
-                              rgba(168, 85, 247, 0.1) 25%,
-                              rgba(139, 92, 246, 0.11) 50%,
-                              rgba(124, 58, 237, 0.12) 75%,
-                              rgba(139, 92, 246, 0.1) 100%
+                              rgba(139, 92, 246, 0.15) 0%, 
+                              rgba(168, 85, 247, 0.12) 25%,
+                              rgba(139, 92, 246, 0.13) 50%,
+                              rgba(124, 58, 237, 0.15) 75%,
+                              rgba(139, 92, 246, 0.12) 100%
                             )
                           `,
-                          border: '1px solid rgba(255, 255, 255, 0.2)',
-                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                          border: '1px solid rgba(139, 92, 246, 0.25)'
                         }}
                         whileHover={{ 
                           scale: 1.05,
                           background: `
                             linear-gradient(135deg, 
-                              rgba(255, 255, 255, 0.15) 0%,
-                              rgba(255, 255, 255, 0.12) 25%,
-                              rgba(255, 255, 255, 0.14) 50%,
-                              rgba(255, 255, 255, 0.11) 75%,
-                              rgba(255, 255, 255, 0.15) 100%
-                            ),
-                            linear-gradient(135deg, 
-                              rgba(139, 92, 246, 0.25) 0%, 
-                              rgba(168, 85, 247, 0.22) 25%,
-                              rgba(139, 92, 246, 0.24) 50%,
-                              rgba(124, 58, 237, 0.25) 75%,
-                              rgba(139, 92, 246, 0.22) 100%
+                              rgba(139, 92, 246, 0.4) 0%, 
+                              rgba(168, 85, 247, 0.35) 25%,
+                              rgba(139, 92, 246, 0.37) 50%,
+                              rgba(124, 58, 237, 0.4) 75%,
+                              rgba(139, 92, 246, 0.35) 100%
                             )
-                          `,
-                          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
+                          `
                         }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handlePlayerResponse(prompt)}
@@ -4485,10 +4297,6 @@ export default function SoloLevelingSpatial() {
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
-            { icon: Zap, label: 'Test Combat', color: 'text-red-400', onClick: () => { 
-              initiateCombat('dungeon', true);
-              setMonarchAuraVisible(false);
-            }},
             { icon: Power, label: 'Exit Game', color: 'text-red-300', onClick: () => { 
               if (confirm('Are you sure you want to exit the game?')) {
                 window.location.href = '/';
@@ -4966,12 +4774,12 @@ export default function SoloLevelingSpatial() {
           maxHealth: gameState.maxHealth,
           mana: gameState.mana,
           maxMana: gameState.maxMana,
-          stats: gameState.stats && Object.keys(gameState.stats).length > 0 ? gameState.stats : {
-            strength: 25,
-            agility: 20,
-            vitality: 18,
-            intelligence: 15,
-            sense: 12
+          stats: gameState.stats || {
+            strength: 10,
+            agility: 10,
+            vitality: 10,
+            intelligence: 10,
+            sense: 10
           },
           unspentStatPoints: gameState.unspentStatPoints || 0,
           unspentSkillPoints: gameState.unspentSkillPoints || 0
@@ -5029,10 +4837,6 @@ export default function SoloLevelingSpatial() {
         playerAffection={gameState.affection}
         storyProgress={gameState.storyProgress || gameState.level || 0}
         activeQuests={activeQuests}
-        onCommunicatorOpen={() => {
-          setShowWorldMap(false);
-          setShowCommunicator(true);
-        }}
       />
 
       {/* Economic System Interfaces */}
@@ -5399,7 +5203,7 @@ export default function SoloLevelingSpatial() {
       />
 
       {/* System 15: Hunter's Communicator */}
-      <HunterCommunicatorMobile
+      <HunterCommunicatorSystem15
         isVisible={showCommunicator}
         onClose={() => setShowCommunicator(false)}
         onQuestAccept={handleQuestAccept}
@@ -5407,7 +5211,6 @@ export default function SoloLevelingSpatial() {
         playerLocation={gameState.currentScene}
         timeOfDay={timeOfDay}
         activeQuests={gameState.activeQuests || []}
-        chaHaeInAvatar={avatarImage || undefined}
       />
 
       {/* System 3: Quest Log - Accessed via Monarch's Aura */}
@@ -5857,16 +5660,6 @@ export default function SoloLevelingSpatial() {
           affection: gameState.affection,
           money: gameState.gold || 0,
           energy: gameState.energy || 80
-        }}
-      />
-
-      {/* Enhanced Combat System - Solo Leveling Experience */}
-      <EnhancedCombatSystemFixed
-        isVisible={enhancedCombatVisible}
-        onClose={() => setEnhancedCombatVisible(false)}
-        playerStats={{
-          maxHp: gameState.maxHealth,
-          maxMp: gameState.maxMana
         }}
       />
 

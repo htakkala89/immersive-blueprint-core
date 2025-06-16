@@ -32,7 +32,6 @@ interface WorldMapSystem8Props {
   playerAffection: number;
   storyProgress: number;
   activeQuests?: string[];
-  onCommunicatorOpen?: () => void;
 }
 
 export function WorldMapSystem8({
@@ -43,8 +42,7 @@ export function WorldMapSystem8({
   chaHaeInLocation,
   playerAffection,
   storyProgress,
-  activeQuests = [],
-  onCommunicatorOpen
+  activeQuests = []
 }: WorldMapSystem8Props) {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [focusedZone, setFocusedZone] = useState<string | null>(null);
@@ -60,10 +58,9 @@ export function WorldMapSystem8({
     if (screenWidth < 640) { // Mobile Portrait
       return {
         grid: { cols: 2, rows: 3 },
-        zoneSize: { width: 49, height: 32 },
+        zoneSize: { width: 49, height: 30 },
         gap: 1,
-        touchTarget: { min: 56, optimal: 64 },
-        nodeSize: { width: 64, height: 64 },
+        touchTarget: { min: 48, optimal: 56 },
         isMobile: true
       };
     } else if (screenWidth < 1024) { // Tablet
@@ -71,16 +68,14 @@ export function WorldMapSystem8({
         grid: { cols: 2, rows: 3 },
         zoneSize: { width: 46, height: 30 },
         gap: 4,
-        touchTarget: { min: 48, optimal: 56 },
-        nodeSize: { width: 48, height: 48 }
+        touchTarget: { min: 44, optimal: 52 }
       };
     } else { // Desktop
       return {
         grid: { cols: 2, rows: 3 },
         zoneSize: { width: 42, height: 38 },
         gap: 6,
-        touchTarget: { min: 40, optimal: 48 },
-        nodeSize: { width: 40, height: 40 }
+        touchTarget: { min: 40, optimal: 48 }
       };
     }
   };
@@ -148,7 +143,7 @@ export function WorldMapSystem8({
             name: 'Cozy Hongdae Cafe',
             description: 'Perfect spot for intimate conversations',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'hongdae_cafe' ? 'presence' : getLocationState('hongdae_cafe'),
+            state: getLocationState('hongdae_cafe'),
             atmosphere: 'Warm and romantic ambiance'
           },
           {
@@ -156,7 +151,7 @@ export function WorldMapSystem8({
             name: 'Hangang River Park',
             description: 'Scenic riverside walks and picnics',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'hangang_park' ? 'presence' : getLocationState('hangang_park'),
+            state: getLocationState('hangang_park'),
             atmosphere: 'Peaceful evening breeze'
           }
         ])
@@ -173,7 +168,7 @@ export function WorldMapSystem8({
             name: 'Luxury Department Store',
             description: 'High-end fashion and premium gifts',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'luxury_department_store' ? 'presence' : getLocationState('luxury_department_store'),
+            state: getLocationState('luxury_department_store'),
             atmosphere: 'Bustling with sophisticated shoppers'
           },
           {
@@ -181,7 +176,7 @@ export function WorldMapSystem8({
             name: 'Gangnam Furnishings',
             description: 'Premium home decoration specialists',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'gangnam_furnishings' ? 'presence' : getLocationState('gangnam_furnishings'),
+            state: getLocationState('gangnam_furnishings'),
             atmosphere: 'Elegant showroom atmosphere'
           },
           {
@@ -189,7 +184,7 @@ export function WorldMapSystem8({
             name: 'Luxury Realtor',
             description: 'Exclusive property investments',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'luxury_realtor' ? 'presence' : (storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked'),
+            state: storyProgress >= 3 ? getLocationState('luxury_realtor') : 'locked',
             unlockCondition: 'Reach level 3 relationship',
             atmosphere: 'Professional and exclusive'
           }
@@ -207,7 +202,7 @@ export function WorldMapSystem8({
             name: 'Myeongdong Restaurant',
             description: 'Traditional Korean fine dining',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'myeongdong_restaurant' ? 'presence' : getLocationState('myeongdong_restaurant'),
+            state: getLocationState('myeongdong_restaurant'),
             atmosphere: 'Elegant traditional setting'
           },
           {
@@ -215,7 +210,7 @@ export function WorldMapSystem8({
             name: 'N Seoul Tower',
             description: 'Romantic city views and love locks',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'namsan_tower' ? 'presence' : (playerAffection >= 5 ? getLocationState('namsan_tower') : 'locked'),
+            state: playerAffection >= 5 ? getLocationState('namsan_tower') : 'locked',
             unlockCondition: 'Build deeper affection with Cha Hae-In',
             atmosphere: 'Breathtaking panoramic views'
           }
@@ -233,7 +228,7 @@ export function WorldMapSystem8({
             name: 'Hunter Association HQ',
             description: 'Official hunter business and meetings',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'hunter_association' ? 'presence' : getLocationState('hunter_association'),
+            state: getLocationState('hunter_association'),
             atmosphere: 'Professional and bustling with activity'
           },
           {
@@ -241,7 +236,7 @@ export function WorldMapSystem8({
             name: 'Elite Training Center',
             description: 'Advanced combat training with Cha Hae-In',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'training_facility' ? 'presence' : (isLocationAccessible('training_facility') ? getLocationState('training_facility') : 'locked'),
+            state: playerAffection >= 3 ? getLocationState('training_facility') : 'locked',
             unlockCondition: 'Gain Cha Hae-In\'s trust through missions',
             atmosphere: 'Intense training environment'
           },
@@ -250,7 +245,7 @@ export function WorldMapSystem8({
             name: 'Hunter Market',
             description: 'Trading hub for monster materials and equipment',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'hunter_market' ? 'presence' : getLocationState('hunter_market'),
+            state: getLocationState('hunter_market'),
             atmosphere: 'Bustling marketplace with rare treasures'
           }
         ])
@@ -267,7 +262,7 @@ export function WorldMapSystem8({
             name: 'Your Apartment',
             description: 'Your private sanctuary',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'player_apartment' ? 'presence' : getLocationState('player_apartment'),
+            state: getLocationState('player_apartment'),
             atmosphere: 'Comfortable and personal'
           },
           {
@@ -275,7 +270,7 @@ export function WorldMapSystem8({
             name: 'Cha Hae-In\'s Apartment',
             description: 'Her intimate private space',
             position: { x: 0, y: 0 },
-            state: chaHaeInLocation === 'chahaein_apartment' ? 'presence' : (isLocationAccessible('chahaein_apartment') ? getLocationState('chahaein_apartment') : 'locked'),
+            state: playerAffection >= 7 ? getLocationState('chahaein_apartment') : 'locked',
             unlockCondition: 'Develop deep intimacy with Cha Hae-In',
             atmosphere: 'Warm and inviting sanctuary'
           }
@@ -287,8 +282,8 @@ export function WorldMapSystem8({
   // Use responsive zones
   const zones = generateResponsiveZones();
 
-  function getLocationState(locationId: string): 'default' | 'presence' | 'quest' | 'gate' | 'locked' {
-    // Always check for Cha Hae-In's presence first, even if location is locked
+  function getLocationState(locationId: string): 'default' | 'presence' | 'quest' | 'gate' {
+    // Check if Cha Hae-In is present
     if (chaHaeInLocation === locationId) return 'presence';
     
     // Check for active quests
@@ -299,44 +294,8 @@ export function WorldMapSystem8({
     
     return 'default';
   }
-  
-  // Enhanced location click handler with communicator fallback
-  const handleLocationClick = (location: LocationNode) => {
-    // If location has Cha Hae-In but is locked, open communicator instead
-    if (location.state === 'locked' && chaHaeInLocation === location.id && onCommunicatorOpen) {
-      onCommunicatorOpen();
-      return;
-    }
-    
-    // If location is accessible or has special states, proceed normally
-    if (location.state !== 'locked') {
-      onLocationSelect(location.id);
-      onClose();
-    }
-    
-    // For locked locations without Cha Hae-In, show lock indicator (no action)
-  };
 
-  // Separate function to check if location is accessible (not locked)
-  function isLocationAccessible(locationId: string): boolean {
-    // Check affection requirements
-    const affectionRequirements: Record<string, number> = {
-      'namsan_tower': 5,
-      'training_facility': 3,
-      'chahaein_apartment': 7
-    };
-    
-    if (affectionRequirements[locationId] && playerAffection < affectionRequirements[locationId]) {
-      return false;
-    }
-    
-    return true;
-  }
-
-  const getLocationIcon = (state: string, gateRank?: string, locationId?: string) => {
-    // Special case: Cha Hae-In is at a locked location - show presence aura with communication hint
-    const isLockedWithChaHaeIn = !isLocationAccessible(locationId || '') && chaHaeInLocation === locationId;
-    
+  const getLocationIcon = (state: string, gateRank?: string) => {
     switch (state) {
       case 'presence':
         return (
@@ -344,15 +303,9 @@ export function WorldMapSystem8({
             className="absolute inset-0 rounded-full"
             animate={{ 
               boxShadow: [
-                isLockedWithChaHaeIn 
-                  ? '0 0 15px rgba(59, 130, 246, 0.8), 0 0 25px rgba(255, 215, 0, 0.6)'
-                  : '0 0 10px rgba(255, 215, 0, 0.6)',
-                isLockedWithChaHaeIn
-                  ? '0 0 25px rgba(59, 130, 246, 1), 0 0 35px rgba(255, 215, 0, 0.8)'
-                  : '0 0 20px rgba(255, 215, 0, 0.8)',
-                isLockedWithChaHaeIn
-                  ? '0 0 15px rgba(59, 130, 246, 0.8), 0 0 25px rgba(255, 215, 0, 0.6)'
-                  : '0 0 10px rgba(255, 215, 0, 0.6)'
+                '0 0 10px rgba(255, 215, 0, 0.6)',
+                '0 0 20px rgba(255, 215, 0, 0.8)',
+                '0 0 10px rgba(255, 215, 0, 0.6)'
               ]
             }}
             transition={{ duration: 2, repeat: Infinity }}
@@ -412,17 +365,7 @@ export function WorldMapSystem8({
   };
 
   const handleLocationSelect = (location: LocationNode) => {
-    // Check if this is a locked location where Cha Hae-In is present - open communicator
-    if (!isLocationAccessible(location.id) && chaHaeInLocation === location.id) {
-      if (onCommunicatorOpen) {
-        onCommunicatorOpen();
-        onClose(); // Close world map to show communicator
-      }
-      return;
-    }
-    
-    // Block access to other locked locations
-    if (!isLocationAccessible(location.id)) return;
+    if (location.state === 'locked') return;
     
     // If this is a quest location, navigate directly without confirmation for streamlined quest flow
     if (location.state === 'quest' && activeQuests.includes(location.id)) {
@@ -485,30 +428,16 @@ export function WorldMapSystem8({
           </div>
         </motion.div>
 
-        {/* Legend Panel - Mobile optimized to avoid overlay */}
+        {/* Legend Panel */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="hidden md:block absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4 z-10 max-w-[320px]"
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4"
         >
           <h3 className="text-white text-sm font-medium mb-3">Legend</h3>
-          
-          {/* Cha Hae-In Status Debug */}
-          <div className="mb-4 p-2 bg-yellow-500/10 border border-yellow-400/30 rounded-lg">
-            <div className="text-yellow-300 text-xs font-bold mb-1">Cha Hae-In Status:</div>
-            <div className="text-white text-xs">
-              Location: {chaHaeInLocation || 'Not Available'}
-            </div>
-            <div className="text-white text-xs">
-              Time: {currentTime} | Affection: {playerAffection}
-            </div>
-          </div>
-
           <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200 relative">
-                <div className="absolute inset-0 flex items-center justify-center text-[8px]">✨</div>
-              </div>
+              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200"></div>
               <span className="text-white/80">Cha Hae-In Present</span>
             </div>
             <div className="flex items-center gap-2">
@@ -520,33 +449,8 @@ export function WorldMapSystem8({
               <span className="text-white/80">Quest Available</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gray-600 border border-gray-500 relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Lock className="w-2 h-2 text-white/70" />
-                </div>
-                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full opacity-60"></div>
-              </div>
-              <span className="text-white/80">Locked (Cha Hae-In present)</span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Mobile Status Bar - Compact, positioned at bottom above carousel */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="md:hidden absolute bottom-[200px] left-4 right-4 z-20"
-        >
-          <div className="bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-3">
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <span className="text-yellow-300 font-bold">Cha Hae-In:</span>
-                <span className="text-white">{chaHaeInLocation || 'Not Available'}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-white/70">{currentTime}</span>
-                <span className="text-purple-300">💖 {playerAffection}</span>
-              </div>
+              <div className="w-4 h-4 rounded-full bg-gray-600 border border-gray-500"></div>
+              <span className="text-white/80">Locked</span>
             </div>
           </div>
         </motion.div>
@@ -585,83 +489,21 @@ export function WorldMapSystem8({
           <X className="w-6 h-6" />
         </Button>
 
-        {/* Mobile Carousel - Bottom positioned */}
-        <div className="md:hidden absolute bottom-20 left-0 right-0 z-20">
-          <div className="px-4">
-            <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {zones.map((zone) => (
-                <motion.div
-                  key={zone.id}
-                  className="flex-none w-72 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4"
-                  initial={{ x: 50, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                >
-                  <h3 className="text-white text-sm font-medium mb-3">{zone.name}</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {zone.locations.map((location) => (
-                      <motion.div
-                        key={location.id}
-                        className="cursor-pointer"
-                        onClick={() => handleLocationClick(location)}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <div className={`w-16 h-16 rounded-full relative border-2 min-w-[64px] min-h-[64px] ${
-                          location.state === 'locked' 
-                            ? 'bg-gray-600 border-gray-500' :
-                          location.state === 'presence' 
-                            ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 border-yellow-200' :
-                          location.state === 'quest' 
-                            ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300' :
-                          location.state === 'gate' 
-                            ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-300' 
-                            : 'bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300'
-                        }`}>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            {getLocationIcon(location.state, location.gateRank)}
-                            
-                            {/* Cha Hae-In presence indicator */}
-                            {location.state === 'presence' && (
-                              <motion.div
-                                animate={{ 
-                                  rotate: 360,
-                                  scale: [1, 1.2, 1]
-                                }}
-                                transition={{ 
-                                  rotate: { duration: 3, repeat: Infinity, ease: "linear" },
-                                  scale: { duration: 1.5, repeat: Infinity }
-                                }}
-                                className="absolute -top-1 -right-1 w-5 h-5 text-yellow-100"
-                              >
-                                ✨
-                              </motion.div>
-                            )}
-                          </div>
-                        </div>
-                        <p className="text-white text-xs mt-1 text-center truncate">{location.name}</p>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop Map Container */}
+        {/* Responsive Map Container */}
         <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-6 md:p-12 lg:p-20">
           <motion.div
             className="relative w-full h-full max-w-7xl max-h-5xl"
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            
-            {/* Desktop Zone Panels - Hidden on mobile */}
-            <div className="hidden md:block absolute inset-0">
-              {zones.map((zone) => (
-                <motion.div
-                  key={zone.id}
-                  className={`absolute bg-black/30 backdrop-blur-sm border border-white/20 rounded-3xl p-6 transition-all duration-300 cursor-pointer ${
-                    focusedZone === zone.id ? 'bg-black/50 border-white/40 shadow-2xl' : ''
-                  }`}
+
+
+            {/* Zone Panels */}
+            {zones.map((zone) => (
+              <motion.div
+                key={zone.id}
+                className={`absolute bg-black/30 backdrop-blur-sm border border-white/20 rounded-3xl p-6 transition-all duration-300 cursor-pointer ${
+                  focusedZone === zone.id ? 'bg-black/50 border-white/40 shadow-2xl' : ''
+                }`}
                 style={{
                   left: `${zone.position.x}%`,
                   top: `${zone.position.y}%`,
@@ -698,7 +540,7 @@ export function WorldMapSystem8({
                       left: `${location.position.x}%`,
                       top: `${location.position.y}%`
                     }}
-                    onClick={() => handleLocationClick(location)}
+                    onClick={() => handleLocationSelect(location)}
                     onMouseEnter={() => setHoveredLocation(location.id)}
                     onMouseLeave={() => setHoveredLocation(null)}
                     whileHover={{ scale: 1.1 }}
@@ -707,16 +549,16 @@ export function WorldMapSystem8({
                     {/* Enhanced Location Orb */}
                     <div className="relative">
                       <motion.div
-                        className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full relative border-3 min-w-[48px] min-h-[48px] mobile-location-node ${
+                        className={`w-9 h-9 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full relative border-2 min-w-[36px] min-h-[36px] mobile-location-node ${
                           location.state === 'locked' 
                             ? 'bg-gray-600 border-gray-500' :
                           location.state === 'presence' 
-                            ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 border-yellow-200 shadow-lg shadow-yellow-400/50' :
+                            ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 border-yellow-200' :
                           location.state === 'quest' 
-                            ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300 shadow-lg shadow-blue-400/50' :
+                            ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300' :
                           location.state === 'gate' 
-                            ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-300 shadow-lg shadow-red-400/50' 
-                            : 'bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300 shadow-lg shadow-purple-400/30'
+                            ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-300' 
+                            : 'bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300'
                         }`}
                         animate={
                           location.state === 'presence' ? {
@@ -739,47 +581,7 @@ export function WorldMapSystem8({
                       >
                         {getLocationIcon(location.state, location.gateRank)}
                         
-                        {/* Special Cha Hae-In presence indicator */}
-                        {location.state === 'presence' && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <motion.div
-                              animate={{ 
-                                rotate: 360,
-                                scale: [1, 1.2, 1]
-                              }}
-                              transition={{ 
-                                rotate: { duration: 3, repeat: Infinity, ease: "linear" },
-                                scale: { duration: 1.5, repeat: Infinity }
-                              }}
-                              className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 text-yellow-100 drop-shadow-lg"
-                              style={{ 
-                                textShadow: '0 0 8px rgba(255, 215, 0, 0.8), 0 0 16px rgba(255, 215, 0, 0.6)',
-                                filter: 'brightness(1.2)'
-                              }}
-                            >
-                              ✨
-                            </motion.div>
-                          </div>
-                        )}
-                        
-                        {/* Locked with Cha Hae-In special indicator */}
-                        {location.state === 'locked' && chaHaeInLocation === location.id && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="relative">
-                              <Lock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/70" />
-                              <motion.div
-                                animate={{ 
-                                  opacity: [0.5, 1, 0.5],
-                                  scale: [0.8, 1.2, 0.8]
-                                }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                                className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-yellow-200"
-                              />
-                            </div>
-                          </div>
-                        )}
-                        
-                        {location.state === 'locked' && chaHaeInLocation !== location.id && (
+                        {location.state === 'locked' && (
                           <div className="absolute inset-0 flex items-center justify-center">
                             <Lock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/70" />
                           </div>
@@ -806,15 +608,10 @@ export function WorldMapSystem8({
                               <div className="text-xs opacity-80 mt-1">{location.description}</div>
                               {location.state === 'presence' && (
                                 <div className="text-yellow-300 text-xs mt-1 flex items-center gap-1">
-                                  <span className="animate-pulse">✨</span> Cha Hae-In is here - Tap to visit
+                                  <span className="animate-pulse">✨</span> Cha Hae-In is here
                                 </div>
                               )}
-                              {location.state === 'locked' && chaHaeInLocation === location.id && (
-                                <div className="text-yellow-400 text-xs mt-1 flex items-center gap-1">
-                                  <span className="animate-pulse">💬</span> Cha Hae-In is here - Tap to message
-                                </div>
-                              )}
-                              {location.state === 'locked' && chaHaeInLocation !== location.id && (
+                              {location.state === 'locked' && (
                                 <div className="text-gray-400 text-xs mt-1">{location.unlockCondition}</div>
                               )}
                             </div>
@@ -826,7 +623,6 @@ export function WorldMapSystem8({
                 ))}
               </motion.div>
             ))}
-            </div>
           </motion.div>
         </div>
 
