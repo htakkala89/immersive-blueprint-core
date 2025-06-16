@@ -732,23 +732,27 @@ export default function SoloLevelingSpatial() {
           if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
             return;
           }
-          const data = JSON.parse(responseText);
-          const scheduledDates = data.dates || [];
+          try {
+            const data = JSON.parse(responseText);
+            const scheduledDates = data.dates || [];
           
-          // Check if any date should trigger now
-          const now = new Date();
-          const currentDate = scheduledDates.find((date: any) => {
-            const scheduledTime = new Date(date.scheduledTime);
-            const timeDiff = Math.abs(now.getTime() - scheduledTime.getTime());
-            const minutesDiff = timeDiff / (1000 * 60);
+            // Check if any date should trigger now
+            const now = new Date();
+            const currentDate = scheduledDates.find((date: any) => {
+              const scheduledTime = new Date(date.scheduledTime);
+              const timeDiff = Math.abs(now.getTime() - scheduledTime.getTime());
+              const minutesDiff = timeDiff / (1000 * 60);
+              
+              // Trigger if within 5 minutes of scheduled time and status is 'scheduled'
+              return minutesDiff <= 5 && date.status === 'scheduled';
+            });
             
-            // Trigger if within 5 minutes of scheduled time and status is 'scheduled'
-            return minutesDiff <= 5 && date.status === 'scheduled';
-          });
-          
-          if (currentDate && !activeDate) {
-            // Trigger automatic date scene
-            triggerDateScene(currentDate);
+            if (currentDate && !activeDate) {
+              // Trigger automatic date scene
+              triggerDateScene(currentDate);
+            }
+          } catch (parseError) {
+            console.log('Failed to parse scheduled dates response');
           }
         }
       } catch (error) {
