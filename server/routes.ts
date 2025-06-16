@@ -1400,23 +1400,45 @@ async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🎭 Generating emotional scene for Cha Hae-In: ${emotion} at ${location} during ${timeOfDay}`);
 
-      // Create emotional prompt for Cha Hae-In
-      const emotionalPrompt = createChaHaeInEmotionalPrompt(emotion as string, location as string, timeOfDay as string);
+      // Validate parameters are strings and not undefined
+      const emotionStr = String(emotion || 'professional_focused');
+      const locationStr = String(location || 'hunter_association');
+      const timeOfDayStr = String(timeOfDay || 'afternoon');
+
+      // Create emotional prompt for Cha Hae-In with error handling
+      let emotionalPrompt: string;
+      try {
+        emotionalPrompt = createChaHaeInEmotionalPrompt(emotionStr, locationStr, timeOfDayStr);
+        
+        if (!emotionalPrompt || emotionalPrompt.trim().length === 0) {
+          throw new Error('Empty prompt generated');
+        }
+      } catch (promptError) {
+        console.error('Error creating emotional prompt:', promptError);
+        // Fallback to simple prompt
+        emotionalPrompt = `Cha Hae-In from Solo Leveling, beautiful Korean S-rank hunter with blonde hair, violet eyes, red and white armor, ${emotionStr} expression, anime art style`;
+      }
       
-      // Use Google Imagen for character generation
-      const { generateChatSceneImage } = await import("./imageGenerator");
-      const imageUrl = await generateChatSceneImage(emotionalPrompt, "character_portrait");
-      
-      if (imageUrl) {
-        console.log(`✅ Generated emotional scene successfully`);
-        res.json({ imageUrl });
-      } else {
-        console.error("No image URL returned from Google Imagen");
+      // Use Google Imagen for character generation with comprehensive error handling
+      try {
+        const { generateChatSceneImage } = await import("./imageGenerator");
+        const imageUrl = await generateChatSceneImage(emotionalPrompt, "character_portrait");
+        
+        if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim().length > 0) {
+          console.log(`✅ Generated emotional scene successfully`);
+          res.json({ imageUrl });
+        } else {
+          console.log("No image URL returned from image generator");
+          res.status(500).json({ error: "Failed to generate emotional scene" });
+        }
+      } catch (generationError) {
+        console.error("Image generation error:", generationError);
         res.status(500).json({ error: "Failed to generate emotional scene" });
       }
+      
     } catch (error: any) {
-      console.error("Google Imagen API error:", error.message);
-      res.status(500).json({ error: "Image generation failed" });
+      console.error("Chat scene image endpoint error:", error.message || error);
+      res.status(500).json({ error: "Failed to generate emotional scene" });
     }
   });
 

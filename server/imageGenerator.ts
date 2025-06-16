@@ -212,13 +212,27 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     });
 
     if (response.ok) {
-      const data = await response.json();
-      const prediction = data.predictions?.[0];
-      const imageData = prediction?.bytesBase64Encoded;
-      
-      if (imageData) {
-        console.log('✅ Google Imagen generated image successfully');
-        return `data:image/png;base64,${imageData}`;
+      try {
+        const responseText = await response.text();
+        if (!responseText || responseText.trim().length === 0) {
+          console.log('Empty response from Google Imagen');
+          return null;
+        }
+        
+        const data = JSON.parse(responseText);
+        const prediction = data.predictions?.[0];
+        const imageData = prediction?.bytesBase64Encoded;
+        
+        if (imageData && typeof imageData === 'string') {
+          console.log('✅ Google Imagen generated image successfully');
+          return `data:image/png;base64,${imageData}`;
+        } else {
+          console.log('No valid image data in Google Imagen response');
+          return null;
+        }
+      } catch (parseError) {
+        console.log('Error parsing Google Imagen response:', parseError);
+        return null;
       }
     } else {
       const errorText = await response.text();
