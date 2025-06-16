@@ -37,6 +37,7 @@ import { RelationshipConstellationSystem6 } from '@/components/RelationshipConst
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
 import { EnhancedCombatSystemFixed } from '@/components/EnhancedCombatSystemFixed';
 import { UltimateCombatSystem } from '@/components/UltimateCombatSystem';
+import { EquipmentTestPanel } from '@/components/EquipmentTestPanel';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
