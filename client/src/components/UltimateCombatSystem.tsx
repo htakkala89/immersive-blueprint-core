@@ -241,12 +241,18 @@ export function UltimateCombatSystem({
             const equipmentText = await equipmentResponse.text();
             console.log('USEEFFECT - Raw equipment response:', equipmentText);
             
-            if (equipmentText && equipmentText.trim()) {
-              const equipment = JSON.parse(equipmentText);
-              console.log('USEEFFECT - Parsed equipment:', equipment);
-              if (equipment.weapon) purchasedItems.push(equipment.weapon);
-              if (equipment.armor) purchasedItems.push(equipment.armor);
-              if (equipment.accessory) purchasedItems.push(equipment.accessory);
+            if (equipmentText && equipmentText.trim() && equipmentText !== 'undefined') {
+              try {
+                const equipment = JSON.parse(equipmentText);
+                console.log('USEEFFECT - Parsed equipment:', equipment);
+                if (equipment && typeof equipment === 'object') {
+                  if (equipment.weapon) purchasedItems.push(equipment.weapon);
+                  if (equipment.armor) purchasedItems.push(equipment.armor);
+                  if (equipment.accessory) purchasedItems.push(equipment.accessory);
+                }
+              } catch (equipmentParseError) {
+                console.error('USEEFFECT - Equipment JSON parse failed for:', equipmentText, equipmentParseError);
+              }
             }
           } catch (parseError) {
             console.error('USEEFFECT - Equipment JSON parse error:', parseError);
@@ -258,11 +264,15 @@ export function UltimateCombatSystem({
             const inventoryText = await inventoryResponse.text();
             console.log('USEEFFECT - Raw inventory response:', inventoryText);
             
-            if (inventoryText && inventoryText.trim()) {
-              const inventory = JSON.parse(inventoryText);
-              console.log('USEEFFECT - Parsed inventory:', inventory);
-              if (inventory.items) {
-                purchasedItems = [...purchasedItems, ...inventory.items];
+            if (inventoryText && inventoryText.trim() && inventoryText !== 'undefined') {
+              try {
+                const inventory = JSON.parse(inventoryText);
+                console.log('USEEFFECT - Parsed inventory:', inventory);
+                if (inventory && typeof inventory === 'object' && inventory.items) {
+                  purchasedItems = [...purchasedItems, ...inventory.items];
+                }
+              } catch (inventoryParseError) {
+                console.error('USEEFFECT - Inventory JSON parse failed for:', inventoryText, inventoryParseError);
               }
             }
           } catch (parseError) {
