@@ -2854,13 +2854,54 @@ export default function SoloLevelingSpatial() {
       
 
 
-      {/* Monarch's Aura - Shadow Crown */}
+      {/* Mobile-Optimized Location Info Panel */}
+      <div className="md:hidden absolute top-4 left-4 right-16 z-40">
+        <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-2xl p-4">
+          <h2 className="text-white font-bold text-lg mb-1">{currentLocationData.name}</h2>
+          <p className="text-white/80 text-sm mb-2 line-clamp-2">{currentLocationData.description}</p>
+          <div className="flex items-center gap-4 text-xs text-white/60">
+            <span className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
+              {timeOfDay.charAt(0).toUpperCase() + timeOfDay.slice(1)}
+            </span>
+            <span className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+              {weather.charAt(0).toUpperCase() + weather.slice(1)}
+            </span>
+            {chaHaeInCurrentLocation === playerLocation && (
+              <span className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-pink-400 animate-pulse"></div>
+                Present
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile-Optimized Episode Objective */}
+      {activeEpisode && (
+        <div className="md:hidden absolute top-28 left-4 right-4 z-30">
+          <div className="bg-purple-600/90 backdrop-blur-md border border-white/30 rounded-2xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <span className="text-white text-lg">📖</span>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-sm">{activeEpisode.title}</h3>
+                <p className="text-white/90 text-xs italic line-clamp-2">{activeEpisode.description}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Monarch's Aura - Shadow Crown - Enhanced for Mobile */}
       <motion.button
-        className="fixed top-6 right-6 w-11 h-11 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden"
+        className="fixed top-6 right-4 w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden touch-target"
         style={{ 
           position: 'fixed',
           top: '24px',
-          right: '24px',
+          right: '16px',
           zIndex: 9999,
           pointerEvents: 'auto',
           background: 'radial-gradient(circle at 30% 30%, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.8) 30%, rgba(30, 27, 75, 0.9) 70%, rgba(0, 0, 0, 0.95) 100%)',
@@ -4908,15 +4949,15 @@ export default function SoloLevelingSpatial() {
       
 
 
-      {/* Monarch's Aura - Compact Clean Menu */}
+      {/* Monarch's Aura - Mobile-Optimized Menu */}
       {monarchAuraVisible && (
-        <div className="fixed top-20 right-6 w-40 bg-black/20 backdrop-blur-xl border border-white/30 rounded-lg p-2 z-[9998] shadow-2xl" 
+        <div className="fixed top-20 right-4 w-48 md:w-40 bg-black/20 backdrop-blur-xl border border-white/30 rounded-lg p-3 md:p-2 z-[9998] shadow-2xl" 
              style={{ 
                background: 'rgba(255, 255, 255, 0.08)', 
                backdropFilter: 'blur(40px) saturate(180%)', 
                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
              }}>
-          <div className="text-white text-sm mb-2 font-medium text-center opacity-80">Monarch's Aura</div>
+          <div className="text-white text-base md:text-sm mb-3 md:mb-2 font-medium text-center opacity-80">Monarch's Aura</div>
           {[
             { icon: Package, label: 'Inventory', color: 'text-purple-300', onClick: () => { setShowInventory(true); setMonarchAuraVisible(false); } },
             { icon: Crown, label: 'Armory', color: 'text-amber-300', onClick: () => { setShowMonarchArmory(true); setMonarchAuraVisible(false); } },
@@ -4949,11 +4990,11 @@ export default function SoloLevelingSpatial() {
           ].map((item, index) => (
             <button
               key={item.label}
-              className="w-full flex items-center gap-2 p-2 rounded text-white hover:bg-white/10 transition-all mb-1"
+              className="w-full flex items-center gap-3 md:gap-2 p-3 md:p-2 rounded text-white hover:bg-white/10 transition-all mb-2 md:mb-1 touch-target"
               onClick={item.onClick}
             >
-              <item.icon className={`w-4 h-4 ${item.color}`} />
-              <span className="text-xs font-medium">{item.label}</span>
+              <item.icon className={`w-5 h-5 md:w-4 md:h-4 ${item.color}`} />
+              <span className="text-sm md:text-xs font-medium">{item.label}</span>
             </button>
           ))}
         </div>
