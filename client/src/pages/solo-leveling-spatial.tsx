@@ -720,7 +720,76 @@ export default function SoloLevelingSpatial() {
     return 'night';
   };
 
-  // Automatic Date Scene Triggering System
+  // Helper function to get location display name
+  const getLocationName = (locationId: string): string => {
+    const locationNames: { [key: string]: string } = {
+      'hongdae_cafe': 'Cozy Hongdae Cafe',
+      'myeongdong_restaurant': 'Myeongdong Restaurant',
+      'hangang_park': 'Hangang River Park',
+      'hunter_association': 'Hunter Association',
+      'training_facility': 'Training Facility',
+      'hunter_market': 'Hunter Market',
+      'chahaein_apartment': 'Cha Hae-In\'s Apartment',
+      'player_apartment': 'Your Apartment'
+    };
+    return locationNames[locationId] || locationId;
+  };
+
+  // Date scheduling system
+  const triggerDateScene = (dateData: any) => {
+    setPlayerLocation(dateData.location);
+    
+    // Update active date
+    setActiveDate(dateData);
+    setShowDateScene(true);
+    setDateScenePhase('preparation');
+    
+    // Create notification
+    const timeOfDay = getCurrentTimeOfDay();
+    const locationName = getLocationName(dateData.location);
+    
+    const notification = {
+      id: Date.now().toString(),
+      message: `Your scheduled date with Cha Hae-In at ${locationName} is starting now!`,
+      timestamp: Date.now(),
+      type: 'date'
+    };
+    
+    setNotifications(prev => [...(prev || []), notification]);
+    
+    // Mark date as completed in database
+    if (activeDate && loadedProfileId) {
+      fetch(`/api/scheduled-dates/${loadedProfileId}/${activeDate.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed' })
+      }).catch(error => {
+        console.log('Date status update error:', error);
+      });
+    }
+    
+    // Update game state affection
+    setGameState(prev => ({
+      ...prev,
+      affection: (prev.affection || 0) + (Math.floor(Math.random() * 6) + 3) // +3 to +8
+    }));
+    
+    setNotifications(prev => [...(prev || []), {
+      id: Date.now().toString(),
+      message: `You kept your promise! Cha Hae-In's affection increased.`,
+      timestamp: Date.now(),
+      type: 'affection'
+    }]);
+    
+    // Close date scene after 5 seconds
+    setTimeout(() => {
+      setShowDateScene(false);
+      setActiveDate(null);
+      setDateScenePhase('preparation');
+    }, 5000);
+  };
+
+  // Date scheduling system check
   useEffect(() => {
     const checkScheduledDates = async () => {
       if (!loadedProfileId) return;
@@ -732,6 +801,7 @@ export default function SoloLevelingSpatial() {
           if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
             return;
           }
+          
           try {
             const data = JSON.parse(responseText);
             const scheduledDates = data.dates || [];
@@ -748,7 +818,6 @@ export default function SoloLevelingSpatial() {
             });
             
             if (currentDate && !activeDate) {
-              // Trigger automatic date scene
               triggerDateScene(currentDate);
             }
           } catch (parseError) {
@@ -760,31 +829,31 @@ export default function SoloLevelingSpatial() {
       }
     };
     
-    // Check every minute for scheduled dates
     const dateCheckInterval = setInterval(checkScheduledDates, 60000);
-    checkScheduledDates(); // Initial check
+    checkScheduledDates();
     
     return () => clearInterval(dateCheckInterval);
   }, [loadedProfileId, activeDate]);
 
-  // Helper function to get location display name
-  const getLocationName = (locationId: string): string => {
-    const locationNames: { [key: string]: string } = {
-      'hongdae_cafe': 'Cozy Hongdae Cafe',
-      'myeongdong_restaurant': 'Myeongdong Restaurant',
-      'hangang_park': 'Hangang River Park',
-      'hunter_association': 'Hunter Association',
-      'training_facility': 'Training Facility',
-      'hunter_market': 'Hunter Market',
-      'chahaein_apartment': 'Cha Hae-In\'s Apartment',
-      'player_apartment': 'Your Apartment'
-    };
-    return locationNames[locationId] || locationId;
+  // Elevator floor selection system
+  const handleFloorSelection = (floor: number) => {
+    setShowFloorSelect(false);
+    setElevatorTransition(true);
+    
+    // Show transition animation
+    setTimeout(() => {
+      if (floor === 1) {
+        setPlayerLocation('hunter_association');
+      } else if (floor === 15) {
+        setPlayerLocation('training_facility');
+      }
+      
+      setElevatorTransition(false);
+      
+      // Update game state
+      setGameState(prev => ({ ...prev, currentScene: 'world_map' }));
+    }, 1500);
   };
-
-  // Trigger automatic date scene
-  const triggerDateScene = (dateInfo: any) => {
-    console.log('🌟 Triggering automatic date scene:', dateInfo);
     
     // Force player to the date location
     setPlayerLocation(dateInfo.location);
