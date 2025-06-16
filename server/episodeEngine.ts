@@ -236,17 +236,6 @@ export class EpisodeEngine {
     }
   }
 
-  async removeEpisode(episodeId: string): Promise<void> {
-    try {
-      // Remove from in-memory cache
-      this.episodes.delete(episodeId);
-      
-      console.log(`🗑️ Removed episode ${episodeId} from episodeEngine cache`);
-    } catch (error) {
-      console.error(`Failed to remove episode ${episodeId} from cache:`, error);
-    }
-  }
-
   async executeEpisodeAction(episodeId: string, beatId: number, actionIndex: number): Promise<void> {
     const episode = await this.getEpisode(episodeId);
     if (!episode) return;

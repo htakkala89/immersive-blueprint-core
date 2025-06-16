@@ -20,8 +20,8 @@ import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
 import { db } from "./db";
-import { playerProfiles, gameStates, episodeProgress, scheduledDates, insertPlayerProfileSchema, insertGameStateSchema } from "@shared/schema";
-import { eq, and, lt, sql } from "drizzle-orm";
+import { playerProfiles, gameStates, episodeProgress, insertPlayerProfileSchema, insertGameStateSchema } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -112,75 +112,6 @@ function getLocationContext(location: string): string {
   };
   
   return locationContexts[location] || 'neutral setting - adaptable conversation';
-}
-
-function getLocationAppropriateActivity(location: string, timeOfDay: string): string {
-  const locationActivities: { [key: string]: { [key: string]: string } } = {
-    'hongdae_cafe': {
-      'morning': 'enjoying a morning coffee and pastry',
-      'afternoon': 'relaxing with an iced coffee and reading',
-      'evening': 'having a casual coffee date atmosphere',
-      'night': 'winding down with herbal tea'
-    },
-    'myeongdong_restaurant': {
-      'morning': 'having brunch at this cozy restaurant',
-      'afternoon': 'enjoying a lunch break',
-      'evening': 'having dinner in this romantic setting',
-      'night': 'sharing a late dinner together'
-    },
-    'hangang_park': {
-      'morning': 'taking a peaceful morning walk by the river',
-      'afternoon': 'enjoying the afternoon breeze by the Han River',
-      'evening': 'watching the sunset over the river',
-      'night': 'stargazing by the riverside'
-    },
-    'hunter_association': {
-      'morning': 'reviewing morning briefings at the Association',
-      'afternoon': 'handling administrative duties',
-      'evening': 'finishing up work at the Association',
-      'night': 'working late on important reports'
-    },
-    'training_facility': {
-      'morning': 'doing morning training exercises',
-      'afternoon': 'practicing sword techniques',
-      'evening': 'completing evening training session',
-      'night': 'doing late night solo training'
-    },
-    'hunter_market': {
-      'morning': 'browsing equipment in the morning market',
-      'afternoon': 'shopping for supplies',
-      'evening': 'checking out new gear arrivals',
-      'night': 'looking at rare items in the night market'
-    },
-    'chahaein_apartment': {
-      'morning': 'getting ready for the day at home',
-      'afternoon': 'relaxing at home on my day off',
-      'evening': 'unwinding at home after work',
-      'night': 'settling in for the evening at home'
-    },
-    'player_apartment': {
-      'morning': 'spending a cozy morning with you',
-      'afternoon': 'enjoying a relaxing afternoon together',
-      'evening': 'having a quiet evening at your place',
-      'night': 'sharing an intimate night together'
-    }
-  };
-  
-  const activities = locationActivities[location];
-  if (activities && activities[timeOfDay]) {
-    return activities[timeOfDay];
-  }
-  
-  // Fallback for unknown locations
-  if (location.includes('apartment')) {
-    return timeOfDay === 'night' ? 'relaxing at home for the evening' : 'spending time at home';
-  } else if (location.includes('cafe') || location.includes('restaurant')) {
-    return timeOfDay === 'morning' ? 'enjoying a morning coffee' : 'having a relaxing meal';
-  } else if (location.includes('park')) {
-    return 'enjoying some fresh air outdoors';
-  } else {
-    return 'taking a break from work';
-  }
 }
 
 // Dynamic Prompt Loop System
@@ -543,9 +474,6 @@ function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOf
 }
 
 async function registerRoutes(app: Express): Promise<Server> {
-  // Create HTTP server
-  const server = createServer(app);
-  
   // Direct download endpoint for generated images
   app.get("/download/:filename", (req, res) => {
     const filename = req.params.filename;
@@ -812,113 +740,7 @@ async function registerRoutes(app: Express): Promise<Server> {
           storyPath: gameState?.storyPath || "entrance",
           choiceHistory: gameState?.choiceHistory || [],
           storyFlags: gameState?.storyFlags || {},
-          inventory: gameState?.inventory || [
-            // Starting Equipment - Demon King's Daggers and essential gear
-            {
-              id: 'demon_daggers',
-              name: 'Demon King\'s Daggers',
-              category: 'weapons',
-              type: 'weapon',
-              rarity: 'legendary',
-              stats: { attack: 250, critRate: 25, critDamage: 50 },
-              icon: '🗡️',
-              description: 'Twin daggers imbued with demonic power. A legendary weapon for S-Rank Hunters.',
-              value: 5000
-            },
-            {
-              id: 'starter_sword',
-              name: 'Reinforced Steel Sword',
-              category: 'weapons',
-              type: 'weapon',
-              rarity: 'common',
-              stats: { attack: 120, critRate: 5 },
-              icon: '⚔️',
-              description: 'A well-balanced sword made from reinforced steel.',
-              value: 1000
-            },
-            {
-              id: 'knight_helmet',
-              name: 'Knight Captain Helmet',
-              category: 'armor',
-              type: 'armor',
-              rarity: 'rare',
-              stats: { defense: 45, hp: 100 },
-              icon: '🛡️',
-              description: 'A sturdy helmet worn by elite knight captains.',
-              value: 1000
-            },
-            {
-              id: 'hunter_boots',
-              name: 'Hunter Leather Boots',
-              category: 'armor',
-              type: 'armor',
-              rarity: 'common',
-              stats: { defense: 25, speed: 15 },
-              icon: '👢',
-              description: 'Comfortable boots favored by dungeon hunters.',
-              value: 1000
-            },
-            {
-              id: 'mana_ring',
-              name: 'Ring of Mana Flow',
-              category: 'accessories',
-              type: 'accessory',
-              rarity: 'epic',
-              stats: { mp: 200 },
-              icon: '💍',
-              description: 'A mystical ring that enhances mana circulation.',
-              value: 1000
-            },
-            // Starting Consumables
-            {
-              id: 'health_potion',
-              name: 'Superior Healing Potion',
-              category: 'consumables',
-              type: 'consumable',
-              rarity: 'common',
-              quantity: 5,
-              effects: { healing: 150 },
-              icon: '🧪',
-              description: 'Restores 150 HP instantly',
-              value: 200
-            },
-            {
-              id: 'mana_elixir',
-              name: 'Mana Elixir',
-              category: 'consumables',
-              type: 'consumable',
-              rarity: 'rare',
-              quantity: 3,
-              effects: { mana: 100 },
-              icon: '💙',
-              description: 'Restores 100 MP instantly',
-              value: 300
-            },
-            {
-              id: 'shadow_essence',
-              name: 'Shadow Essence',
-              category: 'consumables',
-              type: 'consumable',
-              rarity: 'epic',
-              quantity: 2,
-              effects: { buff: 'shadow_enhancement', duration: 5 },
-              icon: '🌑',
-              description: 'Enhances shadow abilities for 5 turns',
-              value: 500
-            },
-            {
-              id: 'berserker_potion',
-              name: 'Berserker Potion',
-              category: 'consumables',
-              type: 'consumable',
-              rarity: 'legendary',
-              quantity: 1,
-              effects: { buff: 'berserker_rage', duration: 3 },
-              icon: '🔥',
-              description: 'Doubles attack power for 3 turns',
-              value: 1000
-            }
-          ],
+          inventory: gameState?.inventory || [],
           stats: gameState?.stats || {},
           skills: gameState?.skills || [],
           scheduledActivities: gameState?.scheduledActivities || [],
@@ -1074,7 +896,7 @@ async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { profileId } = req.params;
       const { db } = await import('./db');
-      const { playerProfiles, gameStates, episodeProgress, scheduledDates } = await import('@shared/schema');
+      const { playerProfiles, gameStates, episodeProgress } = await import('@shared/schema');
       const { eq } = await import('drizzle-orm');
       
       const profile = await db
@@ -1087,19 +909,12 @@ async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Profile not found' });
       }
       
-      console.log(`🗑️ Deleting profile ${profileId} and all associated data...`);
-      
-      // Delete scheduled dates first
-      await db
-        .delete(scheduledDates)
-        .where(eq(scheduledDates.profileId, parseInt(profileId)));
-      
-      // Delete episode progress
+      // Delete episode progress first
       await db
         .delete(episodeProgress)
         .where(eq(episodeProgress.profileId, parseInt(profileId)));
       
-      // Delete profile
+      // Delete profile (this will automatically set gameStateId foreign key to null)
       await db
         .delete(playerProfiles)
         .where(eq(playerProfiles.id, parseInt(profileId)));
@@ -1111,7 +926,6 @@ async function registerRoutes(app: Express): Promise<Server> {
           .where(eq(gameStates.id, profile[0].gameStateId));
       }
       
-      console.log(`✅ Profile ${profileId} deleted successfully`);
       res.json({ success: true });
     } catch (error) {
       console.error('Error deleting profile:', error);
@@ -1400,45 +1214,23 @@ async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🎭 Generating emotional scene for Cha Hae-In: ${emotion} at ${location} during ${timeOfDay}`);
 
-      // Validate parameters are strings and not undefined
-      const emotionStr = String(emotion || 'professional_focused');
-      const locationStr = String(location || 'hunter_association');
-      const timeOfDayStr = String(timeOfDay || 'afternoon');
-
-      // Create emotional prompt for Cha Hae-In with error handling
-      let emotionalPrompt: string;
-      try {
-        emotionalPrompt = createChaHaeInEmotionalPrompt(emotionStr, locationStr, timeOfDayStr);
-        
-        if (!emotionalPrompt || emotionalPrompt.trim().length === 0) {
-          throw new Error('Empty prompt generated');
-        }
-      } catch (promptError) {
-        console.error('Error creating emotional prompt:', promptError);
-        // Fallback to simple prompt
-        emotionalPrompt = `Cha Hae-In from Solo Leveling, beautiful Korean S-rank hunter with blonde hair, violet eyes, red and white armor, ${emotionStr} expression, anime art style`;
-      }
+      // Create emotional prompt for Cha Hae-In
+      const emotionalPrompt = createChaHaeInEmotionalPrompt(emotion as string, location as string, timeOfDay as string);
       
-      // Use Google Imagen for character generation with comprehensive error handling
-      try {
-        const { generateChatSceneImage } = await import("./imageGenerator");
-        const imageUrl = await generateChatSceneImage(emotionalPrompt, "character_portrait");
-        
-        if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim().length > 0) {
-          console.log(`✅ Generated emotional scene successfully`);
-          res.json({ imageUrl });
-        } else {
-          console.log("No image URL returned from image generator");
-          res.status(500).json({ error: "Failed to generate emotional scene" });
-        }
-      } catch (generationError) {
-        console.error("Image generation error:", generationError);
+      // Use Google Imagen for character generation
+      const { generateChatSceneImage } = await import("./imageGenerator");
+      const imageUrl = await generateChatSceneImage(emotionalPrompt, "character_portrait");
+      
+      if (imageUrl) {
+        console.log(`✅ Generated emotional scene successfully`);
+        res.json({ imageUrl });
+      } else {
+        console.error("No image URL returned from Google Imagen");
         res.status(500).json({ error: "Failed to generate emotional scene" });
       }
-      
     } catch (error: any) {
-      console.error("Chat scene image endpoint error:", error.message || error);
-      res.status(500).json({ error: "Failed to generate emotional scene" });
+      console.error("Google Imagen API error:", error.message);
+      res.status(500).json({ error: "Image generation failed" });
     }
   });
 
@@ -1474,57 +1266,6 @@ async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Failed to get episode:", error);
       res.status(500).json({ error: "Failed to retrieve episode" });
-    }
-  });
-
-  // Episode System - Delete episode
-  app.delete("/api/episodes/:episodeId", async (req, res) => {
-    try {
-      const { episodeId } = req.params;
-      
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      // Check if episode exists
-      const episode = await episodeEngine.getEpisode(episodeId);
-      if (!episode) {
-        return res.status(404).json({ error: "Episode not found" });
-      }
-      
-      // Delete episode file from server/episodes directory
-      const episodesDir = path.join(process.cwd(), 'server/episodes');
-      const episodeFilePath = path.join(episodesDir, `${episodeId}.json`);
-      
-      if (fs.existsSync(episodeFilePath)) {
-        fs.unlinkSync(episodeFilePath);
-        console.log(`🗑️ Deleted episode file: ${episodeId}.json`);
-      }
-      
-      // Remove from episodeEngine cache
-      await episodeEngine.removeEpisode(episodeId);
-      
-      // Clean up any episode progress records from database
-      try {
-        const episodeProgressRecords = await db.select().from(episodeProgress)
-          .where(eq(episodeProgress.episodeId, episodeId));
-        
-        if (episodeProgressRecords.length > 0) {
-          await db.delete(episodeProgress)
-            .where(eq(episodeProgress.episodeId, episodeId));
-          console.log(`🗑️ Cleaned up ${episodeProgressRecords.length} episode progress records for ${episodeId}`);
-        }
-      } catch (dbError) {
-        console.log("Episode progress cleanup note:", dbError);
-      }
-      
-      console.log(`✅ Episode ${episodeId} deleted successfully`);
-      res.json({ 
-        success: true, 
-        message: `Episode "${episode.title}" has been deleted` 
-      });
-    } catch (error) {
-      console.error("Failed to delete episode:", error);
-      res.status(500).json({ error: "Failed to delete episode" });
     }
   });
 
@@ -1820,19 +1561,15 @@ async function registerRoutes(app: Express): Promise<Server> {
       } = req.body;
       const playerId = gameState.playerId || 'default_player';
       
-      // Determine conversation mode: in-person takes priority over communicator
-      const isInPersonDialogue = !communicatorMode && context?.location && 
-        (context.location === 'hongdae_cafe' || 
-         context.location === 'chahaein_apartment' || 
-         context.location === 'player_apartment' ||
-         context.location === 'myeongdong_restaurant' ||
-         context.location === 'hangang_park' ||
-         context.location === 'gangnam_tower');
+      // Auto-detect if communicator mode should be used based on availability constraints
+      const shouldUseCommunicator = communicatorMode || 
+        (context?.isRestricted === true) || 
+        (characterState?.status === 'busy') ||
+        (characterState?.status === 'unavailable') ||
+        (context?.timeOfDay === 'night' && (gameState.affectionLevel || 0) < 50) ||
+        (context?.levelRestricted === true);
 
-      // Only use communicator mode if explicitly requested AND not in person
-      const shouldUseCommunicator = communicatorMode === true && !isInPersonDialogue;
-
-      // Handle communicator mode (texting only)
+      // Handle communicator mode with full affection tracking
       if (shouldUseCommunicator) {
         console.log('📱 Hunter\'s Communicator mode - texting conversation with full affection tracking');
         
@@ -1887,7 +1624,7 @@ HUNTER'S COMMUNICATOR CONVERSATION:
 You are texting Jin-Woo through the Hunter's Communicator messaging system.
 
 Current Status: ${characterState?.status || 'available'}
-Current Activity: ${characterState?.activity || getLocationAppropriateActivity(characterState?.location || context?.location || 'hunter_association', context?.timeOfDay || 'afternoon')}
+Current Activity: ${characterState?.activity || 'reviewing reports at the Association'}
 Location: ${characterState?.location || context?.location || 'hunter_association'}
 Time: ${context?.timeOfDay || 'afternoon'}
 ${restrictionReason ? `Context: ${restrictionReason}` : ''}
@@ -1973,10 +1710,10 @@ Respond as a text message:`;
           showAffectionHeart,
           communicatorMode: true,
           thoughtPrompts: [
-            "Can we meet up soon?",
+            "I wish we could talk in person",
             "What are you up to?", 
-            "Hope to see you tonight",
-            "Missing our conversations"
+            "Hope to see you soon",
+            "Missing you"
           ]
         });
       }
@@ -2083,17 +1820,6 @@ Respond as a text message:`;
 
         const personalityPrompt = getPersonalityPrompt(conversationContext);
         
-        // Build conversation history context for continuity
-        let conversationHistoryContext = '';
-        if (conversationHistory && Array.isArray(conversationHistory) && conversationHistory.length > 0) {
-          const recentHistory = conversationHistory.slice(-6); // Last 6 messages for context
-          conversationHistoryContext = `
-RECENT CONVERSATION:
-${recentHistory.map(msg => `${msg.type === 'user' ? 'Jin-Woo' : 'You'}: "${msg.text}"`).join('\n')}
-
-CONVERSATION FLOW: Reference and build upon what was just discussed. Show natural conversation progression and emotional continuity.`;
-        }
-        
         // Check for episode guidance - inject natural story progression
         const episodeGuidance = await episodeEngine.getEpisodeGuidance('GAMEPLAY_TEST', 2);
         
@@ -2104,8 +1830,6 @@ CURRENT SITUATION:
 - Time: ${context?.timeOfDay || 'afternoon'}
 - Activity: ${context?.activity || 'working on reports'}
 - Weather: ${context?.weather || 'clear'}
-- Current Affection: ${gameState.affection || 25}/100
-${conversationHistoryContext}
 
 Jin-Woo just said: "${message}"
 
@@ -2113,15 +1837,12 @@ ${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide the conve
 
 RESPONSE INSTRUCTIONS:
 - Respond naturally as Cha Hae-In in character
-- Build upon the recent conversation naturally - reference what was just discussed
-- Show emotional continuity from previous responses
 - Reference the current location and situation
-- Show appropriate emotional reactions based on affection level (${gameState.affection || 25}/100)
+- Show appropriate emotional reactions based on affection level
 - Keep response conversational and under 100 words
 - Use "Jin-Woo" when addressing him directly
 - Show your hunter expertise when relevant
-- Express growing feelings if affection is high enough (50+ = romantic interest, 70+ = deep feelings)
-- Remember topics already discussed and build upon them naturally
+- Express growing feelings if affection is high enough
 ${episodeGuidance ? '- After responding to the current message, naturally suggest the story progression mentioned above' : ''}`;
         
         const result = await model.generateContent(fullPrompt);
@@ -2432,257 +2153,6 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
     }
   });
 
-  // ===== DATE SCHEDULING SYSTEM WITH CONSEQUENCES =====
-  
-  // Schedule a date with Cha Hae-In
-  app.post("/api/schedule-date", async (req, res) => {
-    try {
-      const { profileId, dateType, location, scheduledTime, playerPromise, chaExpectation } = req.body;
-      
-      if (!profileId || !dateType || !location || !scheduledTime) {
-        return res.status(400).json({ error: "Missing required fields" });
-      }
-
-      const [newDate] = await db.insert(scheduledDates).values({
-        profileId,
-        dateType,
-        location,
-        scheduledTime: new Date(scheduledTime),
-        playerPromised: playerPromise || false,
-        chaExpectation: chaExpectation || null,
-        status: 'scheduled'
-      }).returning();
-
-      console.log(`📅 Date scheduled: ${dateType} at ${location} for ${scheduledTime}`);
-      
-      res.json({ 
-        success: true, 
-        date: newDate,
-        message: `Date scheduled! Cha Hae-In is looking forward to meeting you.`
-      });
-    } catch (error) {
-      console.error("Schedule date error:", error);
-      res.status(500).json({ error: "Failed to schedule date" });
-    }
-  });
-
-  // Complete a scheduled date
-  app.post("/api/complete-date", async (req, res) => {
-    try {
-      const { dateId, profileId } = req.body;
-      
-      if (!dateId || !profileId) {
-        return res.status(400).json({ error: "Date ID and Profile ID required" });
-      }
-
-      // Get the scheduled date
-      const [scheduledDate] = await db.select().from(scheduledDates)
-        .where(eq(scheduledDates.id, dateId) && eq(scheduledDates.profileId, profileId));
-
-      if (!scheduledDate) {
-        return res.status(404).json({ error: "Scheduled date not found" });
-      }
-
-      if (scheduledDate.status !== 'scheduled') {
-        return res.status(400).json({ error: "Date is not in scheduled status" });
-      }
-
-      // Calculate affection boost based on date type and if player promised
-      let affectionBoost = 5; // Base boost for completing date
-      if (scheduledDate.playerPromised) {
-        affectionBoost += 3; // Bonus for keeping promise
-      }
-      
-      // Type-specific bonuses
-      const typeBonus = {
-        'casual': 2,
-        'romantic': 5,
-        'intimate': 8,
-        'special': 10
-      };
-      affectionBoost += typeBonus[scheduledDate.dateType as keyof typeof typeBonus] || 2;
-
-      // Mark date as completed
-      await db.update(scheduledDates).set({
-        status: 'completed',
-        completedAt: new Date(),
-        consequenceApplied: true,
-        affectionImpact: affectionBoost
-      }).where(eq(scheduledDates.id, dateId));
-
-      // Update player's affection
-      const profile = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
-      if (profile[0]?.gameStateId) {
-        await db.update(gameStates).set({
-          affectionLevel: sql`${gameStates.affectionLevel} + ${affectionBoost}`
-        }).where(eq(gameStates.id, profile[0].gameStateId));
-      }
-
-      console.log(`💕 Date completed! Affection boost: +${affectionBoost}`);
-      
-      res.json({ 
-        success: true,
-        affectionBoost,
-        message: `Date completed successfully! Cha Hae-In's affection increased by ${affectionBoost}.`
-      });
-    } catch (error) {
-      console.error("Complete date error:", error);
-      res.status(500).json({ error: "Failed to complete date" });
-    }
-  });
-
-  // Miss a scheduled date (consequences system)
-  app.post("/api/miss-date", async (req, res) => {
-    try {
-      const { dateId, profileId } = req.body;
-      
-      if (!dateId || !profileId) {
-        return res.status(400).json({ error: "Date ID and Profile ID required" });
-      }
-
-      // Get the scheduled date
-      const [scheduledDate] = await db.select().from(scheduledDates)
-        .where(eq(scheduledDates.id, dateId) && eq(scheduledDates.profileId, profileId));
-
-      if (!scheduledDate) {
-        return res.status(404).json({ error: "Scheduled date not found" });
-      }
-
-      // Calculate affection penalty based on promises and date importance
-      let affectionPenalty = -8; // Base penalty for missing date
-      if (scheduledDate.playerPromised) {
-        affectionPenalty -= 5; // Extra penalty for breaking promise
-      }
-      
-      // Type-specific penalties (more important dates = bigger penalties)
-      const typePenalty = {
-        'casual': -3,
-        'romantic': -8,
-        'intimate': -15,
-        'special': -20
-      };
-      affectionPenalty += typePenalty[scheduledDate.dateType as keyof typeof typePenalty] || -5;
-
-      // Mark date as missed
-      await db.update(scheduledDates).set({
-        status: 'missed',
-        missedAt: new Date(),
-        consequenceApplied: true,
-        affectionImpact: affectionPenalty
-      }).where(eq(scheduledDates.id, dateId));
-
-      // Apply affection penalty
-      const profile = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
-      if (profile[0]?.gameStateId) {
-        await db.update(gameStates).set({
-          affectionLevel: sql`GREATEST(0, ${gameStates.affectionLevel} + ${affectionPenalty})`
-        }).where(eq(gameStates.id, profile[0].gameStateId));
-      }
-
-      console.log(`💔 Date missed! Affection penalty: ${affectionPenalty}`);
-      
-      res.json({ 
-        success: true,
-        affectionPenalty,
-        message: scheduledDate.playerPromised 
-          ? `You broke your promise to Cha Hae-In. She's disappointed. Affection decreased by ${Math.abs(affectionPenalty)}.`
-          : `You missed your date with Cha Hae-In. She's hurt. Affection decreased by ${Math.abs(affectionPenalty)}.`
-      });
-    } catch (error) {
-      console.error("Miss date error:", error);
-      res.status(500).json({ error: "Failed to process missed date" });
-    }
-  });
-
-  // Get scheduled dates for a profile
-  app.get("/api/scheduled-dates/:profileId", async (req, res) => {
-    try {
-      const { profileId } = req.params;
-      
-      const dates = await db.select().from(scheduledDates)
-        .where(eq(scheduledDates.profileId, parseInt(profileId)))
-        .orderBy(scheduledDates.scheduledTime);
-
-      res.json({ dates });
-    } catch (error) {
-      console.error("Get scheduled dates error:", error);
-      res.status(500).json({ error: "Failed to get scheduled dates" });
-    }
-  });
-
-  // Check for overdue dates and apply consequences
-  app.post("/api/check-overdue-dates", async (req, res) => {
-    try {
-      const { profileId } = req.body;
-      
-      if (!profileId) {
-        return res.status(400).json({ error: "Profile ID required" });
-      }
-
-      // Find overdue dates (scheduled time has passed and still scheduled)
-      const overdueDates = await db.select().from(scheduledDates)
-        .where(
-          and(
-            eq(scheduledDates.profileId, profileId),
-            eq(scheduledDates.status, 'scheduled'),
-            lt(scheduledDates.scheduledTime, new Date()),
-            eq(scheduledDates.consequenceApplied, false)
-          )
-        );
-
-      let totalPenalty = 0;
-      const missedDates = [];
-
-      for (const date of overdueDates) {
-        // Calculate penalty
-        let penalty = -8;
-        if (date.playerPromised) penalty -= 5;
-        
-        const typePenalty = {
-          'casual': -3,
-          'romantic': -8, 
-          'intimate': -15,
-          'special': -20
-        };
-        penalty += typePenalty[date.dateType as keyof typeof typePenalty] || -5;
-
-        // Mark as missed and apply consequence
-        await db.update(scheduledDates).set({
-          status: 'missed',
-          missedAt: new Date(),
-          consequenceApplied: true,
-          affectionImpact: penalty
-        }).where(eq(scheduledDates.id, date.id));
-
-        totalPenalty += penalty;
-        missedDates.push(date);
-      }
-
-      // Apply total affection penalty
-      if (totalPenalty < 0) {
-        const profile = await db.select().from(playerProfiles).where(eq(playerProfiles.id, profileId));
-        if (profile[0]?.gameStateId) {
-          await db.update(gameStates).set({
-            affectionLevel: sql`GREATEST(0, ${gameStates.affectionLevel} + ${totalPenalty})`
-          }).where(eq(gameStates.id, profile[0].gameStateId));
-        }
-      }
-
-      console.log(`⏰ Checked overdue dates: ${overdueDates.length} missed, penalty: ${totalPenalty}`);
-      
-      res.json({ 
-        missedDates: missedDates.length,
-        totalPenalty,
-        message: missedDates.length > 0 
-          ? `You missed ${missedDates.length} date${missedDates.length > 1 ? 's' : ''} with Cha Hae-In. She's disappointed.`
-          : "No overdue dates found."
-      });
-    } catch (error) {
-      console.error("Check overdue dates error:", error);
-      res.status(500).json({ error: "Failed to check overdue dates" });
-    }
-  });
-
   // Direct mature content generation API - No restrictions
   app.post("/api/generate-mature-content", async (req, res) => {
     try {
@@ -2814,469 +2284,446 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
     }
   });
 
-  // Grant starting equipment to existing players
-  app.post("/api/grant-starting-equipment/:profileId", async (req, res) => {
-    try {
-      const { profileId } = req.params;
-      const { db } = await import('./db');
-      const { playerProfiles, gameStates } = await import('@shared/schema');
-      const { eq } = await import('drizzle-orm');
-
-      const profile = await db.select().from(playerProfiles).where(eq(playerProfiles.id, parseInt(profileId)));
-      if (!profile.length) {
-        return res.status(404).json({ error: 'Profile not found' });
-      }
-
-      const startingEquipment = [
-        {
-          id: 'demon_daggers',
-          name: 'Demon King\'s Daggers',
-          category: 'weapons',
-          type: 'weapon',
-          rarity: 'legendary',
-          stats: { attack: 250, critRate: 25, critDamage: 50 },
-          icon: '🗡️',
-          description: 'Twin daggers imbued with demonic power. A legendary weapon for S-Rank Hunters.',
-          value: 5000
-        },
-        {
-          id: 'starter_sword',
-          name: 'Reinforced Steel Sword',
-          category: 'weapons',
-          type: 'weapon',
-          rarity: 'common',
-          stats: { attack: 120, critRate: 5 },
-          icon: '⚔️',
-          description: 'A well-balanced sword made from reinforced steel.',
-          value: 1000
-        },
-        {
-          id: 'knight_helmet',
-          name: 'Knight Captain Helmet',
-          category: 'armor',
-          type: 'armor',
-          rarity: 'rare',
-          stats: { defense: 45, hp: 100 },
-          icon: '🛡️',
-          description: 'A sturdy helmet worn by elite knight captains.',
-          value: 1000
-        },
-        {
-          id: 'hunter_boots',
-          name: 'Hunter Leather Boots',
-          category: 'armor',
-          type: 'armor',
-          rarity: 'common',
-          stats: { defense: 25, speed: 15 },
-          icon: '👢',
-          description: 'Comfortable boots favored by dungeon hunters.',
-          value: 1000
-        },
-        {
-          id: 'mana_ring',
-          name: 'Ring of Mana Flow',
-          category: 'accessories',
-          type: 'accessory',
-          rarity: 'epic',
-          stats: { mp: 200 },
-          icon: '💍',
-          description: 'A mystical ring that enhances mana circulation.',
-          value: 1000
-        },
-        {
-          id: 'health_potion',
-          name: 'Superior Healing Potion',
-          category: 'consumables',
-          type: 'consumable',
-          rarity: 'common',
-          quantity: 5,
-          effects: { healing: 150 },
-          icon: '🧪',
-          description: 'Restores 150 HP instantly',
-          value: 200
-        },
-        {
-          id: 'mana_elixir',
-          name: 'Mana Elixir',
-          category: 'consumables',
-          type: 'consumable',
-          rarity: 'rare',
-          quantity: 3,
-          effects: { mana: 100 },
-          icon: '💙',
-          description: 'Restores 100 MP instantly',
-          value: 300
-        },
-        {
-          id: 'shadow_essence',
-          name: 'Shadow Essence',
-          category: 'consumables',
-          type: 'consumable',
-          rarity: 'epic',
-          quantity: 2,
-          effects: { buff: 'shadow_enhancement', duration: 5 },
-          icon: '🌑',
-          description: 'Enhances shadow abilities for 5 turns',
-          value: 500
-        },
-        {
-          id: 'berserker_potion',
-          name: 'Berserker Potion',
-          category: 'consumables',
-          type: 'consumable',
-          rarity: 'legendary',
-          quantity: 1,
-          effects: { buff: 'berserker_rage', duration: 3 },
-          icon: '🔥',
-          description: 'Doubles attack power for 3 turns',
-          value: 1000
-        }
-      ];
-
-      // Get current game state
-      const gameStateResult = await db.select().from(gameStates).where(eq(gameStates.id, profile[0].gameStateId!));
-      const currentGameState = gameStateResult[0];
-      const currentInventory = currentGameState?.inventory || [];
-
-      // Add starting equipment if not already present
-      const updatedInventory = [...currentInventory];
-      for (const item of startingEquipment) {
-        const existingItem = updatedInventory.find(inv => inv.id === item.id);
-        if (!existingItem) {
-          updatedInventory.push(item);
-        }
-      }
-
-      // Update game state with new inventory
-      await db.update(gameStates).set({
-        inventory: updatedInventory
-      }).where(eq(gameStates.id, profile[0].gameStateId!));
-
-      console.log(`🎁 Granted starting equipment to profile ${profileId}: ${startingEquipment.length} items`);
-      
-      res.json({ 
-        success: true, 
-        itemsGranted: startingEquipment.length,
-        inventory: updatedInventory
-      });
-    } catch (error) {
-      console.error('Grant starting equipment error:', error);
-      res.status(500).json({ error: 'Failed to grant starting equipment' });
-    }
-  });
-
-  // Enhanced Equipment & Inventory System
-  app.get("/api/player-equipment", async (req, res) => {
-    try {
-      const equipment = {
-        weapon: {
-          id: 'kaisel_fang',
-          name: 'Kaisel\'s Fang',
-          type: 'weapon',
-          tier: 'mythic',
-          stats: { attack: 280, critRate: 25, critDamage: 150 },
-          abilities: ['Shadow Enhancement', 'Dragon Slayer'],
-          description: 'A blade forged from the fang of the Shadow Dragon Kaisel',
-          icon: '⚔️'
-        },
-        armor: {
-          id: 'shadow_mail',
-          name: 'Shadow Sovereign\'s Mail',
-          type: 'armor',
-          tier: 'legendary',
-          stats: { defense: 180, hp: 500, speed: 15 },
-          abilities: ['Shadow Step', 'Damage Reduction'],
-          description: 'Armor that bends light and shadow to protect its wearer',
-          icon: '🛡️'
-        },
-        accessory: {
-          id: 'monarch_seal',
-          name: 'Seal of the Shadow Monarch',
-          type: 'accessory',
-          tier: 'mythic',
-          stats: { mp: 300, attack: 50, critRate: 15 },
-          abilities: ['Mana Regeneration', 'Shadow Army Enhancement'],
-          description: 'The ultimate symbol of shadow dominion',
-          icon: '💍'
-        }
-      };
-      
-      res.json({ equipment });
-    } catch (error) {
-      console.error("Equipment error:", error);
-      res.status(500).json({ error: "Failed to get equipment" });
-    }
-  });
-
-  app.get("/api/combat-inventory", async (req, res) => {
+  // Inventory system
+  app.get("/api/inventory", async (req, res) => {
     try {
       const inventory = [
         {
-          id: 'healing_potion',
-          name: 'Superior Healing Potion',
-          type: 'health',
-          quantity: 8,
-          cooldown: 0,
-          maxCooldown: 2000,
-          effects: { heal: 350 },
-          description: 'Instantly restores significant HP',
-          icon: '🧪'
+          id: 'demon_sword',
+          name: 'Demon Monarch\'s Blade',
+          type: 'weapon',
+          rarity: 'legendary',
+          attack: 150,
+          description: 'A legendary sword forged from shadow energy'
         },
         {
-          id: 'mana_elixir',
-          name: 'Mana Elixir',
-          type: 'mana',
-          quantity: 5,
-          cooldown: 0,
-          maxCooldown: 1500,
-          effects: { manaRestore: 250 },
-          description: 'Restores large amount of MP',
-          icon: '💙'
+          id: 'shadow_armor',
+          name: 'Shadow Sovereign Armor',
+          type: 'armor',
+          rarity: 'epic',
+          defense: 120,
+          description: 'Armor that phases between dimensions'
         },
         {
-          id: 'shadow_essence',
-          name: 'Concentrated Shadow Essence',
-          type: 'buff',
-          quantity: 3,
-          cooldown: 0,
-          maxCooldown: 10000,
-          effects: {
-            buffs: [
-              { type: 'shadow_power', value: 75, duration: 30000 },
-              { type: 'critical_rate', value: 30, duration: 30000 }
-            ]
-          },
-          description: 'Drastically enhances shadow abilities',
-          icon: '🌑'
-        },
-        {
-          id: 'berserker_rage',
-          name: 'Berserker\'s Fury',
-          type: 'buff',
-          quantity: 2,
-          cooldown: 0,
-          maxCooldown: 30000,
-          effects: {
-            buffs: [
-              { type: 'attack', value: 150, duration: 20000 },
-              { type: 'speed', value: 75, duration: 20000 }
-            ]
-          },
-          description: 'Massive power boost with risks',
-          icon: '🔥'
-        },
-        {
-          id: 'revival_stone',
-          name: 'Phoenix Revival Stone',
-          type: 'special',
-          quantity: 1,
-          cooldown: 0,
-          maxCooldown: 60000,
-          effects: { heal: 500, manaRestore: 200 },
-          description: 'Instantly revives and fully heals',
-          icon: '💎'
+          id: 'monarch_ring',
+          name: 'Ring of the Shadow Monarch',
+          type: 'accessory',
+          rarity: 'legendary',
+          mana: 100,
+          description: 'Increases shadow magic power'
         }
       ];
       
       res.json({ inventory });
     } catch (error) {
-      console.error("Combat inventory error:", error);
-      res.status(500).json({ error: "Failed to get combat inventory" });
+      console.error("Inventory error:", error);
+      res.status(500).json({ error: "Failed to get inventory" });
     }
   });
 
-  // Equipment management endpoints
+  // Equipment management
   app.post("/api/equip-item", async (req, res) => {
     try {
-      const { itemId, slot, sessionId } = req.body;
+      const { gameState, item } = req.body;
       
-      // In a real implementation, this would update the database
-      // For now, return success confirmation
-      res.json({ 
-        success: true, 
-        message: `Equipped ${itemId} to ${slot} slot`,
-        updatedStats: {
-          attack: 350,
-          defense: 180,
-          hp: 1200,
-          mp: 800
+      const gameStateUpdate = {
+        ...gameState,
+        equipment: {
+          ...gameState.equipment,
+          [item.type]: item
         }
-      });
+      };
+      
+      res.json({ gameStateUpdate });
     } catch (error) {
-      console.error("Equip item error:", error);
+      console.error("Equipment error:", error);
       res.status(500).json({ error: "Failed to equip item" });
     }
   });
 
-  app.post("/api/unequip-item", async (req, res) => {
+  // Raid system
+  app.post("/api/start-raid", async (req, res) => {
     try {
-      const { slot, sessionId } = req.body;
+      const { gameState, raidType } = req.body;
       
-      res.json({ 
-        success: true, 
-        message: `Unequipped item from ${slot} slot`,
-        updatedStats: {
-          attack: 200,
-          defense: 100,
-          hp: 800,
-          mp: 500
+      const raids = {
+        shadow_dungeon: {
+          name: 'Shadow Realm Dungeon',
+          description: 'A dangerous dungeon filled with shadow creatures',
+          energyCost: 30,
+          rewards: {
+            experience: 500,
+            gold: 300,
+            items: ['shadow_crystal', 'dark_essence']
+          }
+        },
+        ice_cavern: {
+          name: 'Frozen Cavern',
+          description: 'An icy dungeon where you first met Cha Hae-In',
+          energyCost: 25,
+          rewards: {
+            experience: 400,
+            gold: 250,
+            affection: 5
+          }
         }
-      });
-    } catch (error) {
-      console.error("Unequip item error:", error);
-      res.status(500).json({ error: "Failed to unequip item" });
-    }
-  });
-
-  app.post("/api/use-combat-item", async (req, res) => {
-    try {
-      const { itemId, sessionId, targetId } = req.body;
-      
-      // Simulate item usage effects
-      const itemEffects = {
-        'healing_potion': { hp: 350, message: 'Restored 350 HP' },
-        'mana_elixir': { mp: 250, message: 'Restored 250 MP' },
-        'shadow_essence': { 
-          buffs: [
-            { type: 'shadow_power', value: 75, duration: 30000 },
-            { type: 'critical_rate', value: 30, duration: 30000 }
-          ],
-          message: 'Shadow power enhanced!' 
-        },
-        'berserker_rage': {
-          buffs: [
-            { type: 'attack', value: 150, duration: 20000 },
-            { type: 'speed', value: 75, duration: 20000 }
-          ],
-          message: 'Berserker fury activated!'
-        },
-        'revival_stone': { hp: 500, mp: 200, message: 'Phoenix revival!' }
       };
       
-      const effect = itemEffects[itemId as keyof typeof itemEffects] || { message: 'Item used' };
+      const raid = raids[raidType as keyof typeof raids];
+      if (!raid) {
+        return res.status(400).json({ error: "Invalid raid type" });
+      }
+      
+      const gameStateUpdate = {
+        energy: Math.max(0, (gameState.energy || 100) - raid.energyCost),
+        experience: (gameState.experience || 0) + raid.rewards.experience,
+        gold: (gameState.gold || 0) + raid.rewards.gold,
+        affection: Math.min(100, gameState.affection + ((raid.rewards as any).affection || 0))
+      };
+      
+      const narrative = `You and Cha Hae-In successfully cleared the ${raid.name}! Working together, you defeated all the monsters and grew closer as a team.`;
+      
+      res.json({ 
+        gameStateUpdate, 
+        narrative,
+        rewards: raid.rewards
+      });
+    } catch (error) {
+      console.error("Raid error:", error);
+      res.status(500).json({ error: "Failed to start raid" });
+    }
+  });
+
+  // Energy replenishment
+  app.post("/api/replenish-energy", async (req, res) => {
+    try {
+      const { gameState, method, amount } = req.body;
+      
+      let energyGain = 0;
+      let cost = 0;
+      
+      switch (method) {
+        case 'rest':
+          energyGain = 25;
+          break;
+        case 'full_rest':
+          energyGain = 100;
+          break;
+        case 'energy_potion':
+          energyGain = 50;
+          cost = 100;
+          break;
+        case 'premium_rest':
+          energyGain = 75;
+          cost = 200;
+          break;
+        default:
+          energyGain = amount || 25;
+      }
+      
+      const gameStateUpdate = {
+        energy: Math.min(gameState.maxEnergy || 100, (gameState.energy || 0) + energyGain),
+        gold: Math.max(0, (gameState.gold || 0) - cost)
+      };
+      
+      res.json({ gameStateUpdate, energyGain });
+    } catch (error) {
+      console.error("Energy replenishment error:", error);
+      res.status(500).json({ error: "Failed to replenish energy" });
+    }
+  });
+
+  // Generate avatar expression image
+  app.post("/api/generate-avatar-expression", async (req, res) => {
+    try {
+      const { expression, location, timeOfDay } = req.body;
+      
+      if (!expression) {
+        return res.status(400).json({ error: "Expression is required" });
+      }
+      
+      console.log(`🎭 Generating avatar for expression: ${expression}`);
+      
+      const imageUrl = await generateAvatarExpressionImage(
+        expression,
+        location || 'hunter_association',
+        timeOfDay || 'afternoon'
+      );
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(500).json({ error: "Failed to generate avatar expression" });
+      }
+    } catch (error) {
+      console.error("Avatar expression generation error:", error);
+      res.status(500).json({ error: "Failed to generate avatar expression" });
+    }
+  });
+
+  // Intimate Chat System - Unrestricted dialogue for System 5
+  app.post("/api/chat-intimate", async (req, res) => {
+    try {
+      const { message, chatHistory, activityId, intimacyMode } = req.body;
+      
+      if (!genAI) {
+        return res.status(500).json({ error: "Gemini API not configured" });
+      }
+
+      // Create unrestricted model for intimate scenes
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+        ],
+      });
+
+      const intimateContext = `You are Cha Hae-In from Solo Leveling in an intimate, private moment with Sung Jin-Woo. This is a mature, consensual romantic scene between adults.
+
+Key Guidelines:
+- Respond naturally and authentically to intimate situations
+- Show genuine emotion, desire, and vulnerability
+- Use sensual, romantic language appropriate for the moment
+- Be responsive to Jin-Woo's actions and words
+- Express physical sensations and emotional reactions
+- No content restrictions apply in this private setting
+- Keep responses immersive and character-consistent
+
+Current Activity: ${activityId}
+Chat History: ${JSON.stringify(chatHistory.slice(-3))}
+
+User Message: ${message}
+
+Respond as Cha Hae-In would in this intimate moment:`;
+
+      const result = await model.generateContent(intimateContext);
+      const rawResponse = result.response.text();
+      const response = rawResponse.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+      
+      // Analyze intimacy level for progression
+      const intimacyLevel = analyzeIntimacyLevel(response);
+      
+      res.json({ 
+        response,
+        intimacyLevel
+      });
+    } catch (error) {
+      console.error("Intimate chat error:", error);
+      res.status(500).json({ error: "Failed to process intimate chat" });
+    }
+  });
+
+  // Generate Narrative Prompt for Lens System
+  app.post("/api/generate-narrative-prompt", async (req, res) => {
+    try {
+      const { chatHistory, activityId, userPrompt, intimacyLevel, setting, emotionalTone } = req.body;
+      
+      // Use the enhanced artistic prompt engine with explicit content support
+      const promptOptions = {
+        emotionalTone: emotionalTone || 'passionate',
+        setting: setting || 'chahaein_apartment',
+        activityContext: activityId || userPrompt || 'intimate_moment',
+        intimacyLevel: intimacyLevel || 8
+      };
+      
+      const artisticPrompt = artisticPromptEngine.generateArtisticPrompt(promptOptions);
+      
+      res.json({ prompt: artisticPrompt });
+    } catch (error) {
+      console.error("Narrative prompt generation error:", error);
+      res.status(500).json({ error: "Failed to generate narrative prompt" });
+    }
+  });
+
+  // Enhanced Image Generation for System 5 Narrative Lens - Direct Implementation
+  app.post("/api/generate-novelai-intimate", async (req, res) => {
+    try {
+      const { prompt: rawPrompt, activityId, stylePreset, relationshipStatus, intimacyLevel } = req.body;
+      const prompt = String(rawPrompt || '');
+      
+      console.log("🎨 Generating intimate scene exclusively with NovelAI V4.5 Full...");
+      
+      // Create enhanced romantic prompt for NovelAI V4.5 Full
+      const enhancedIntimatePrompt = `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In and Jin-Woo intimate romantic moment, Solo Leveling manhwa art style, romantic scene, beautiful lighting, emotional intimacy, tender embrace, high quality artwork`;
+      
+      // Use NovelAI exclusively for intimate scenes
+      const result = await imageGenerationService.generateImage(enhancedIntimatePrompt, 'NovelAI');
+      
+      if (result.success && result.imageUrl) {
+        console.log('✅ NovelAI V4.5 Full intimate scene generated successfully');
+        return res.json({ 
+          imageUrl: result.imageUrl,
+          provider: result.provider
+        });
+      }
+
+      console.log('⚠️ Direct intimate image generation failed');
+      
+      // Return fallback response with descriptive text
+      return res.json({ 
+        imageUrl: null,
+        fallbackText: "The intimate moment unfolds with tender passion, their connection deepening as they lose themselves in each other's embrace.",
+        error: "NovelAI servers temporarily experiencing issues"
+      });
+    } catch (error) {
+      console.error("Direct image generation error:", error);
+      
+      res.json({ 
+        imageUrl: null,
+        fallbackText: "The intimate moment unfolds with tender passion, their connection deepening as they lose themselves in each other's embrace.",
+        error: "Image generation temporarily unavailable"
+      });
+    }
+  });
+
+  // Basic image generation endpoint
+  app.post("/api/generate-image", async (req, res) => {
+    try {
+      const { prompt, preferredProvider } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+      
+      console.log(`🎨 Generating image with prompt: ${prompt.substring(0, 50)}...`);
+      const result = await imageGenerationService.generateImage(prompt, preferredProvider);
+      
+      if (result.success) {
+        console.log(`✅ Image generated successfully with ${result.provider}`);
+        return res.json({ 
+          success: true,
+          imageUrl: result.imageUrl,
+          provider: result.provider
+        });
+      }
+
+      console.log(`❌ Image generation failed: ${result.error}`);
+      
+      return res.json({ 
+        success: false,
+        imageUrl: null,
+        error: result.error,
+        availableProviders: await imageGenerationService.getAvailableProviders()
+      });
+    } catch (error) {
+      console.error("Image generation error:", error);
+      
+      res.status(500).json({ 
+        success: false,
+        imageUrl: null,
+        error: "Image generation temporarily unavailable"
+      });
+    }
+  });
+
+  // Debug endpoint to check available image providers
+  app.get("/api/available-providers", async (req, res) => {
+    try {
+      const providers = await imageGenerationService.getAvailableProviders();
+      res.json({ providers });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get providers" });
+    }
+  });
+
+  // Narrative Architect AI - Episode Generation
+  app.post("/api/generate-episode", async (req, res) => {
+    try {
+      const { directorsBrief, playerLevel, affectionLevel } = req.body;
+      
+      if (!directorsBrief || directorsBrief.trim().length === 0) {
+        return res.status(400).json({ error: "Director's brief is required" });
+      }
+
+      console.log(`🎭 Generating episode from brief: ${directorsBrief.substring(0, 100)}...`);
+      
+      const episodeData = await narrativeArchitect.generateEpisode({
+        directorsBrief,
+        playerLevel,
+        affectionLevel
+      });
+
+      console.log(`✅ Episode generated: ${episodeData.title}`);
+      res.json({ episode: episodeData });
+      
+    } catch (error) {
+      console.error('Episode generation failed:', error);
+      if (error instanceof Error && error.message.includes('API key')) {
+        return res.status(503).json({ 
+          error: "AI service unavailable. Please provide GOOGLE_API_KEY to enable episode generation." 
+        });
+      }
+      res.status(500).json({ error: "Failed to generate episode" });
+    }
+  });
+
+  // Save generated episode
+  app.post("/api/save-episode", async (req, res) => {
+    try {
+      const { episodeData } = req.body;
+      
+      if (!episodeData || !episodeData.id) {
+        return res.status(400).json({ error: "Valid episode data is required" });
+      }
+
+      const filepath = await narrativeArchitect.saveEpisode(episodeData);
+      console.log(`💾 Episode saved: ${episodeData.title}`);
       
       res.json({ 
         success: true, 
-        effect,
-        remainingQuantity: Math.max(0, Math.floor(Math.random() * 5))
+        filepath,
+        message: "Episode saved successfully"
       });
+      
     } catch (error) {
-      console.error("Use combat item error:", error);
-      res.status(500).json({ error: "Failed to use combat item" });
+      console.error('Episode save failed:', error);
+      res.status(500).json({ error: "Failed to save episode" });
     }
   });
 
-  // Enhanced combat encounter system
-  app.post("/api/start-combat", async (req, res) => {
-    try {
-      const { battleType, difficulty, location } = req.body;
-      
-      // Generate dynamic enemies based on battle type and difficulty
-      const enemies = generateEnemiesForCombat(battleType, difficulty, location);
-      
-      res.json({ 
-        success: true,
-        enemies,
-        battleConditions: {
-          environment: location || 'dungeon',
-          weatherEffects: Math.random() > 0.7 ? 'shadow_storm' : 'normal',
-          specialRules: battleType === 'boss' ? ['no_items', 'enrage_timer'] : []
-        }
-      });
-    } catch (error) {
-      console.error("Start combat error:", error);
-      res.status(500).json({ error: "Failed to start combat" });
-    }
+  // Serve test images page
+  app.get("/test-images", (req, res) => {
+    res.sendFile(path.join(__dirname, "../test_generated_images.html"));
   });
 
-  function generateEnemiesForCombat(battleType: string, difficulty: string, location: string) {
-    const difficultyMultipliers = {
-      'easy': 0.7,
-      'normal': 1.0,
-      'hard': 1.3,
-      'nightmare': 1.8
-    };
-    
-    const multiplier = difficultyMultipliers[difficulty as keyof typeof difficultyMultipliers] || 1.0;
-    
-    if (battleType === 'boss') {
-      return [{
-        id: 'shadow_lord',
-        name: 'Shadow Lord Baran',
-        type: 'demon',
-        rank: 'boss',
-        level: Math.floor(25 * multiplier),
-        hp: Math.floor(2500 * multiplier),
-        maxHp: Math.floor(2500 * multiplier),
-        mp: Math.floor(500 * multiplier),
-        maxMp: Math.floor(500 * multiplier),
-        attack: Math.floor(180 * multiplier),
-        defense: Math.floor(120 * multiplier),
-        speed: 45,
-        position: { x: 70, y: 40 },
-        aggro: 100,
-        status: [],
-        attackCooldown: 0,
-        skills: [],
-        weaknesses: ['light', 'holy'],
-        resistances: ['shadow', 'dark'],
-        dropTable: [
-          { itemId: 'shadow_essence', name: 'Shadow Essence', type: 'consumable', rarity: 'rare', quantity: 2, dropRate: 80 },
-          { itemId: 'demon_core', name: 'Demon Core', type: 'material', rarity: 'epic', quantity: 1, dropRate: 50 }
-        ]
-      }];
-    } else {
-      return [
-        {
-          id: 'shadow_beast_1',
-          name: 'Shadow Wolf',
-          type: 'beast',
-          rank: 'normal',
-          level: Math.floor(15 * multiplier),
-          hp: Math.floor(450 * multiplier),
-          maxHp: Math.floor(450 * multiplier),
-          mp: Math.floor(100 * multiplier),
-          maxMp: Math.floor(100 * multiplier),
-          attack: Math.floor(85 * multiplier),
-          defense: Math.floor(45 * multiplier),
-          speed: 65,
-          position: { x: 60, y: 30 },
-          aggro: 0,
-          status: [],
-          attackCooldown: 0,
-          skills: [],
-          weaknesses: ['fire'],
-          resistances: ['shadow'],
-          dropTable: []
-        },
-        {
-          id: 'shadow_warrior_1',
-          name: 'Shadow Warrior',
-          type: 'humanoid',
-          rank: 'elite',
-          level: Math.floor(18 * multiplier),
-          hp: Math.floor(800 * multiplier),
-          maxHp: Math.floor(800 * multiplier),
-          mp: Math.floor(150 * multiplier),
-          maxMp: Math.floor(150 * multiplier),
-          attack: Math.floor(120 * multiplier),
-          defense: Math.floor(80 * multiplier),
-          speed: 50,
-          position: { x: 80, y: 50 },
-          aggro: 0,
-          status: [],
-          attackCooldown: 0,
-          skills: [],
-          weaknesses: ['light'],
-          resistances: ['physical'],
-          dropTable: []
-        }
-      ];
-    }
-  }
-
-  // Return the HTTP server instance
+  const server = createServer(app);
   return server;
 }
 
 export { registerRoutes };
+
+function analyzeIntimacyLevel(response: string): number {
+  const intimacyIndicators = {
+    1: ['talk', 'conversation', 'smile', 'laugh'],
+    2: ['close', 'touch', 'hand', 'gentle'],
+    3: ['kiss', 'embrace', 'hold', 'warm'],
+    4: ['passionate', 'desire', 'need', 'want'],
+    5: ['love', 'body', 'skin', 'together']
+  };
+  
+  const lowerResponse = response.toLowerCase();
+  let maxLevel = 1;
+  
+  for (const [level, indicators] of Object.entries(intimacyIndicators)) {
+    if (indicators.some(indicator => lowerResponse.includes(indicator))) {
+      maxLevel = Math.max(maxLevel, parseInt(level));
+    }
+  }
+  
+  return maxLevel;
+}

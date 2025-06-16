@@ -746,15 +746,9 @@ export function DeepTFTRaidSystem({
     const source = e.dataTransfer.getData('source') as 'board' | 'bench';
     const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'));
     
-    if (!unitData || unitData === 'undefined') return;
+    if (!unitData) return;
     
-    let unit: Character;
-    try {
-      unit = JSON.parse(unitData) as Character;
-    } catch (parseError) {
-      console.error('Failed to parse unit data in handleBoardDrop:', unitData, parseError);
-      return;
-    }
+    const unit = JSON.parse(unitData) as Character;
     
     // Check team size limit for bench to board moves
     if (source === 'bench') {
@@ -803,15 +797,9 @@ export function DeepTFTRaidSystem({
     const source = e.dataTransfer.getData('source') as 'board' | 'bench';
     const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'));
     
-    if (!unitData || unitData === 'undefined') return;
+    if (!unitData) return;
     
-    let unit: Character;
-    try {
-      unit = JSON.parse(unitData) as Character;
-    } catch (parseError) {
-      console.error('Failed to parse unit data in handleBenchDrop:', unitData, parseError);
-      return;
-    }
+    const unit = JSON.parse(unitData) as Character;
     
     // Update bench
     setBench(prev => {

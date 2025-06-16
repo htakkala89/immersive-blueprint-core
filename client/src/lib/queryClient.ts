@@ -38,25 +38,7 @@ export const getQueryFn: <T>(options: {
     }
 
     await throwIfResNotOk(res);
-    
-    // Handle empty responses safely
-    const text = await res.text();
-    if (!text || text.trim().length === 0) {
-      return null;
-    }
-    
-    // Check if response is HTML (error page) instead of JSON
-    if (text.trim().startsWith('<!DOCTYPE html>') || text.trim().startsWith('<html')) {
-      console.warn('Received HTML response instead of JSON, likely an error page');
-      return null;
-    }
-    
-    try {
-      return JSON.parse(text);
-    } catch (parseError) {
-      console.warn('JSON parse error in queryClient, returning null instead of throwing');
-      return null;
-    }
+    return await res.json();
   };
 
 export const queryClient = new QueryClient({

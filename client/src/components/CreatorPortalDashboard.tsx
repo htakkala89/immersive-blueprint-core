@@ -61,26 +61,9 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
     setViewingEpisode(episode);
   };
 
-  const handleDeleteEpisode = async (episodeId: string) => {
+  const handleDeleteEpisode = (episodeId: string) => {
     if (confirm('Are you sure you want to delete this episode? This action cannot be undone.')) {
-      try {
-        const response = await fetch(`/api/episodes/${episodeId}`, {
-          method: 'DELETE'
-        });
-        
-        if (response.ok) {
-          // Remove from local state after successful deletion
-          setEpisodes(prev => prev.filter(ep => ep.id !== episodeId));
-          console.log('Episode deleted successfully');
-        } else {
-          const error = await response.json();
-          console.error('Failed to delete episode:', error);
-          alert('Failed to delete episode. Please try again.');
-        }
-      } catch (error) {
-        console.error('Delete episode error:', error);
-        alert('Failed to delete episode. Please try again.');
-      }
+      setEpisodes(prev => prev.filter(ep => ep.id !== episodeId));
     }
   };
 
@@ -204,33 +187,32 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-3 sm:p-6">
-      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        {/* Header - Mobile Optimized */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center justify-between"
         >
           <div>
-            <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
               Creator Portal
             </h1>
-            <p className="text-slate-400 mt-1 sm:mt-2 text-sm sm:text-base">Build immersive Solo Leveling episodes with AI</p>
+            <p className="text-slate-400 mt-2">Build immersive Solo Leveling episodes with AI</p>
           </div>
           <Button
             onClick={onLogout}
             variant="ghost"
-            className="text-slate-400 hover:text-white text-xs sm:text-sm px-2 sm:px-3 h-8 sm:h-10"
+            className="text-slate-400 hover:text-white"
           >
-            <LogOut className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Back to Game</span>
-            <span className="sm:hidden">Back</span>
+            <LogOut className="w-4 h-4 mr-2" />
+            Back to Game
           </Button>
         </motion.div>
 
-        {/* Stats Overview - Mobile Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -297,14 +279,13 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
           {/* Episodes List */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Your Episodes</h2>
+              <h2 className="text-2xl font-bold text-white">Your Episodes</h2>
               <Button
                 onClick={() => setShowEpisodeBuilder(true)}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-xs sm:text-sm px-3 sm:px-4 h-9 sm:h-10"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
               >
-                <Plus className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Create New Episode</span>
-                <span className="sm:hidden">Create</span>
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Episode
               </Button>
             </div>
             
@@ -326,47 +307,40 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                 </Button>
               </div>
             ) : (
-              <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-4">
                 {episodes.map((episode, index) => (
                   <motion.div
                     key={episode.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 hover:bg-white/10 transition-colors cursor-pointer"
-                    onClick={() => handleViewEpisode(episode)}
+                    className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors"
                   >
                     <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0 pr-3">
-                        <div className="flex items-center space-x-2 sm:space-x-3 mb-1 sm:mb-2">
-                          <h3 className="text-base sm:text-lg font-semibold text-white truncate">{episode.title}</h3>
-                          <span className={`px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium shrink-0 ${getStatusColor(episode.status)}`}>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-lg font-semibold text-white">{episode.title}</h3>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(episode.status)}`}>
                             {episode.status}
                           </span>
                         </div>
-                        <p className="text-slate-400 text-sm mb-2 sm:mb-4 line-clamp-2">{episode.description}</p>
+                        <p className="text-slate-400 text-sm mb-4">{episode.description}</p>
                         
-                        {/* Mobile Stats - Condensed */}
-                        <div className="flex items-center space-x-3 sm:space-x-6 text-xs text-slate-500">
-                          <span className="hidden sm:inline">Created: {episode.created.toLocaleDateString()}</span>
-                          <span className="sm:hidden">6/15/2025</span>
+                        <div className="flex items-center space-x-6 text-xs text-slate-500">
+                          <span>Created: {episode.created.toLocaleDateString()}</span>
                           <span>•</span>
                           <span>Plays: {episode.plays}</span>
                           <span>•</span>
-                          <span>{episode.completionRate}%</span>
+                          <span>Completion: {episode.completionRate}%</span>
                         </div>
                       </div>
                       
-                      {/* Mobile-Optimized Action Buttons */}
-                      <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
+                      <div className="flex items-center space-x-2">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewEpisode(episode);
-                          }}
-                          className="text-slate-400 hover:text-white h-8 w-8 sm:h-9 sm:w-9 p-0"
+                          onClick={() => handleViewEpisode(episode)}
+                          className="text-slate-400 hover:text-white"
                           title="View Episode"
                         >
                           <Eye className="w-4 h-4" />
@@ -374,11 +348,8 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditEpisode(episode);
-                          }}
-                          className="text-slate-400 hover:text-white h-8 w-8 sm:h-9 sm:w-9 p-0"
+                          onClick={() => handleEditEpisode(episode)}
+                          className="text-slate-400 hover:text-white"
                           title="Edit Episode"
                         >
                           <Edit className="w-4 h-4" />
@@ -386,11 +357,8 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteEpisode(episode.id);
-                          }}
-                          className="text-slate-400 hover:text-red-400 h-8 w-8 sm:h-9 sm:w-9 p-0"
+                          onClick={() => handleDeleteEpisode(episode.id)}
+                          className="text-slate-400 hover:text-red-400"
                           title="Delete Episode"
                         >
                           <Trash2 className="w-4 h-4" />
