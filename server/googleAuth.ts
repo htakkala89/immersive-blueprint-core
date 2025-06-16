@@ -71,15 +71,28 @@ export async function getGoogleAccessToken(): Promise<string | null> {
       }
 
       const serviceAccountString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-      if (serviceAccountString === 'undefined' || serviceAccountString.trim() === '') {
+      if (serviceAccountString === 'undefined' || !serviceAccountString || serviceAccountString.trim() === '') {
         console.log('Google service account key is undefined or empty');
         return null;
       }
 
       try {
-        serviceAccount = JSON.parse(serviceAccountString);
+        // Additional validation for common JSON issues
+        const cleanedString = serviceAccountString.trim();
+        if (!cleanedString.startsWith('{') || !cleanedString.endsWith('}')) {
+          console.log('Google service account key does not appear to be valid JSON');
+          return null;
+        }
+        
+        serviceAccount = JSON.parse(cleanedString);
+        
+        // Validate required fields
+        if (!serviceAccount.private_key || !serviceAccount.client_email) {
+          console.log('Google service account missing required fields');
+          return null;
+        }
       } catch (parseError) {
-        console.log('Invalid Google service account JSON format');
+        console.log('Invalid Google service account JSON format:', parseError instanceof Error ? parseError.message : 'Unknown error');
         return null;
       }
     }

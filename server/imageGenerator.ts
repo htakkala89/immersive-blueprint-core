@@ -212,13 +212,24 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     });
 
     if (response.ok) {
-      const data = await response.json();
-      const prediction = data.predictions?.[0];
-      const imageData = prediction?.bytesBase64Encoded;
-      
-      if (imageData) {
-        console.log('✅ Google Imagen generated image successfully');
-        return `data:image/png;base64,${imageData}`;
+      try {
+        const responseText = await response.text();
+        if (!responseText || responseText.trim() === '') {
+          console.log('Empty response from Google Imagen');
+          return null;
+        }
+        
+        const data = JSON.parse(responseText);
+        const prediction = data.predictions?.[0];
+        const imageData = prediction?.bytesBase64Encoded;
+        
+        if (imageData) {
+          console.log('✅ Google Imagen generated image successfully');
+          return `data:image/png;base64,${imageData}`;
+        }
+      } catch (jsonError) {
+        console.log('Failed to parse Google Imagen response:', jsonError.message);
+        return null;
       }
     } else {
       const errorText = await response.text();
@@ -246,13 +257,24 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       });
 
       if (altResponse.ok) {
-        const altData = await altResponse.json();
-        const altPrediction = altData.predictions?.[0];
-        const altImageData = altPrediction?.bytesBase64Encoded;
-        
-        if (altImageData) {
-          console.log('✅ Google Imagen (alternative model) generated image successfully');
-          return `data:image/png;base64,${altImageData}`;
+        try {
+          const altResponseText = await altResponse.text();
+          if (!altResponseText || altResponseText.trim() === '') {
+            console.log('Empty response from alternative Google Imagen');
+            return null;
+          }
+          
+          const altData = JSON.parse(altResponseText);
+          const altPrediction = altData.predictions?.[0];
+          const altImageData = altPrediction?.bytesBase64Encoded;
+          
+          if (altImageData) {
+            console.log('✅ Google Imagen (alternative model) generated image successfully');
+            return `data:image/png;base64,${altImageData}`;
+          }
+        } catch (altJsonError) {
+          console.log('Failed to parse alternative Google Imagen response:', altJsonError.message);
+          return null;
         }
       } else {
         const altErrorText = await altResponse.text();
