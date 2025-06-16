@@ -151,7 +151,7 @@ export default function SoloLevelingSpatial() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <RoleSelectionScreen 
-          onRoleSelect={(role) => setSelectedRole(role)}
+          onRoleSelect={setSelectedRole}
         />
       </div>
     );
@@ -161,7 +161,7 @@ export default function SoloLevelingSpatial() {
   if (selectedRole === 'creator') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <CreatorPortalDashboard />
+        <CreatorPortalDashboard onLogout={() => setSelectedRole('none')} />
       </div>
     );
   }
@@ -290,12 +290,10 @@ export default function SoloLevelingSpatial() {
             exit={{ opacity: 0, scale: 0.9 }}
           >
             <DailyLifeHubComplete
-              gameState={gameState}
-              onActivityComplete={(activity) => {
-                // Handle activity completion
-                setShowDailyLifeHub(false);
-              }}
-              onClose={() => setShowDailyLifeHub(false)}
+              isVisible={true}
+              onActivitySelect={(activity) => setShowDailyLifeHub(false)}
+              playerStats={gameState.stats || { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 }}
+              timeOfDay={timeOfDay}
             />
           </motion.div>
         )}
@@ -308,8 +306,9 @@ export default function SoloLevelingSpatial() {
             exit={{ opacity: 0, scale: 0.9 }}
           >
             <HunterCommunicatorMobile
-              gameState={gameState}
-              onClose={() => setShowCommunicator(false)}
+              isVisible={true}
+              onQuestAccept={(quest) => console.log('Quest accepted:', quest)}
+              onNewMessage={(message) => console.log('New message:', message)}
             />
           </motion.div>
         )}
