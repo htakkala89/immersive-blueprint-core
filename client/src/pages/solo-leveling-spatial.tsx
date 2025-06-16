@@ -5283,10 +5283,17 @@ export default function SoloLevelingSpatial() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt, activityId: activeActivity })
           })
-          .then(res => res.json())
-          .then(data => {
-            if (data.imageUrl) {
-              setSceneImage(data.imageUrl);
+          .then(res => res.text())
+          .then(responseText => {
+            if (responseText && responseText.trim() !== '' && responseText !== 'undefined') {
+              try {
+                const data = JSON.parse(responseText);
+                if (data.imageUrl) {
+                  setSceneImage(data.imageUrl);
+                }
+              } catch (parseError) {
+                console.log('Failed to parse intimate activity response');
+              }
             }
           });
         }}
