@@ -45,11 +45,17 @@ export const getQueryFn: <T>(options: {
       return null;
     }
     
+    // Check if response is HTML (error page) instead of JSON
+    if (text.trim().startsWith('<!DOCTYPE html>') || text.trim().startsWith('<html')) {
+      console.warn('Received HTML response instead of JSON, likely an error page');
+      return null;
+    }
+    
     try {
       return JSON.parse(text);
     } catch (parseError) {
-      console.error('JSON parse error in queryClient:', parseError, 'Response text:', text);
-      throw new Error(`Invalid JSON response: ${text}`);
+      console.warn('JSON parse error in queryClient, returning null instead of throwing');
+      return null;
     }
   };
 

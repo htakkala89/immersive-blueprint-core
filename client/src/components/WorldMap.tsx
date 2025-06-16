@@ -137,13 +137,11 @@ interface Location {
 }
 
 interface WorldMapProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onLocationSelect: (location: Location) => void;
-  currentTime: 'morning' | 'afternoon' | 'evening' | 'night';
-  chaHaeInLocation: string | null;
-  playerAffection: number;
-  storyProgress: number;
+  gameState: any;
+  playerLocation: string;
+  onLocationSelect: (locationId: string) => void;
+  timeOfDay: string;
+  gameTime: Date;
 }
 
 const LOCATIONS: Location[] = [
@@ -354,13 +352,11 @@ const LOCATIONS: Location[] = [
 ];
 
 export default function WorldMap({ 
-  isVisible, 
-  onClose, 
+  gameState, 
+  playerLocation, 
   onLocationSelect, 
-  currentTime, 
-  chaHaeInLocation, 
-  playerAffection, 
-  storyProgress 
+  timeOfDay, 
+  gameTime 
 }: WorldMapProps) {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
@@ -370,6 +366,8 @@ export default function WorldMap({
   const mapRef = useRef<HTMLDivElement>(null);
 
   const getLocationState = (location: Location) => {
+    const playerAffection = gameState?.affection || 0;
+    const storyProgress = gameState?.storyProgress || 0;
     if (location.requiredAffection && playerAffection < location.requiredAffection) return 'locked';
     if (location.requiredStoryProgress && storyProgress < location.requiredStoryProgress) return 'locked';
     return location.unlocked ? 'unlocked' : 'locked';
@@ -410,14 +408,18 @@ export default function WorldMap({
     setZoom(newZoom);
   };
 
-  if (!isVisible) return null;
-
   return (
-    <div className="fixed inset-0 z-[9999] flex">
-      {/* Complete Opacity Background - Maximum Coverage */}
-      <div 
-        className="absolute inset-0 cursor-pointer"
-        onClick={onClose}
+    <div className="w-full max-w-4xl mx-auto">
+      {/* Map Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">Seoul World Map</h2>
+        <div className="text-purple-200 text-sm">
+          Current Time: {timeOfDay} • Current Location: {playerLocation}
+        </div>
+      </div>
+      
+      {/* Map Container */}
+      <div className="relative bg-gradient-to-br from-slate-800/50 to-purple-900/30 rounded-2xl p-6 border border-purple-500/20"
         style={{
           backdropFilter: 'blur(120px) saturate(300%)',
           background: `
