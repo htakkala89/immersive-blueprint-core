@@ -237,18 +237,36 @@ export function UltimateCombatSystem({
         let purchasedItems: any[] = [];
         
         if (equipmentResponse.ok) {
-          const equipment = await equipmentResponse.json();
-          console.log('USEEFFECT - Equipment response:', equipment);
-          if (equipment.weapon) purchasedItems.push(equipment.weapon);
-          if (equipment.armor) purchasedItems.push(equipment.armor);
-          if (equipment.accessory) purchasedItems.push(equipment.accessory);
+          try {
+            const equipmentText = await equipmentResponse.text();
+            console.log('USEEFFECT - Raw equipment response:', equipmentText);
+            
+            if (equipmentText && equipmentText.trim()) {
+              const equipment = JSON.parse(equipmentText);
+              console.log('USEEFFECT - Parsed equipment:', equipment);
+              if (equipment.weapon) purchasedItems.push(equipment.weapon);
+              if (equipment.armor) purchasedItems.push(equipment.armor);
+              if (equipment.accessory) purchasedItems.push(equipment.accessory);
+            }
+          } catch (parseError) {
+            console.error('USEEFFECT - Equipment JSON parse error:', parseError);
+          }
         }
         
         if (inventoryResponse.ok) {
-          const inventory = await inventoryResponse.json();
-          console.log('USEEFFECT - Inventory response:', inventory);
-          if (inventory.items) {
-            purchasedItems = [...purchasedItems, ...inventory.items];
+          try {
+            const inventoryText = await inventoryResponse.text();
+            console.log('USEEFFECT - Raw inventory response:', inventoryText);
+            
+            if (inventoryText && inventoryText.trim()) {
+              const inventory = JSON.parse(inventoryText);
+              console.log('USEEFFECT - Parsed inventory:', inventory);
+              if (inventory.items) {
+                purchasedItems = [...purchasedItems, ...inventory.items];
+              }
+            }
+          } catch (parseError) {
+            console.error('USEEFFECT - Inventory JSON parse error:', parseError);
           }
         }
         

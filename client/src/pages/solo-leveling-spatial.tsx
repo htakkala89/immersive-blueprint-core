@@ -4778,8 +4778,8 @@ export default function SoloLevelingSpatial() {
                       setPlayerInput(e.target.value);
                       updateExpressionBasedOnInput(e.target.value);
                     }}
-                    placeholder="Speak from the heart..."
-                    className="flex-1 text-white placeholder:text-slate-300/70 rounded-lg px-3 py-2 text-sm border-0 outline-none"
+                    placeholder={window.innerWidth <= 240 ? "Type..." : "Speak from the heart..."}
+                    className={`flex-1 text-white placeholder:text-slate-300/70 rounded-lg border-0 outline-none ${window.innerWidth <= 240 ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-sm'}`}
                     style={{
                       backdropFilter: 'blur(16px) saturate(180%)',
                       background: `
@@ -4797,7 +4797,7 @@ export default function SoloLevelingSpatial() {
                   />
                   <motion.button
                     onClick={() => handlePlayerResponse(playerInput)}
-                    className="rounded-lg px-4 py-2 text-white disabled:opacity-50"
+                    className={`rounded-lg text-white disabled:opacity-50 ${window.innerWidth <= 240 ? 'px-2 py-1 text-xs' : 'px-4 py-2 text-sm'}`}
                     style={{
                       backdropFilter: 'blur(16px) saturate(180%)',
                       background: `
