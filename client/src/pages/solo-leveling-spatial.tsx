@@ -1638,7 +1638,11 @@ export default function SoloLevelingSpatial() {
         })
       });
       
-      const data = await response.json();
+      const responseText = await response.text();
+      if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
+        throw new Error('Invalid response from chat API');
+      }
+      const data = JSON.parse(responseText);
       setCurrentDialogue(data.response);
       
       // Track episode event for player chatting with Cha Hae-In
@@ -1765,12 +1769,19 @@ export default function SoloLevelingSpatial() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        if (data.imageUrl) {
-          setAvatarImage(data.imageUrl);
-          console.log(`Generated new avatar for expression: ${expression}`);
-        } else {
-          console.log(`Avatar generation returned no image for expression: ${expression}`);
+        const responseText = await response.text();
+        if (responseText && responseText.trim() !== '' && responseText !== 'undefined') {
+          try {
+            const data = JSON.parse(responseText);
+            if (data.imageUrl) {
+              setAvatarImage(data.imageUrl);
+              console.log(`Generated new avatar for expression: ${expression}`);
+            } else {
+              console.log(`Avatar generation returned no image for expression: ${expression}`);
+            }
+          } catch (parseError) {
+            console.log('Failed to parse avatar image response:', parseError);
+          }
         }
       } else {
         console.log(`Avatar generation failed with status: ${response.status}`);
@@ -1781,6 +1792,8 @@ export default function SoloLevelingSpatial() {
       setIsGeneratingAvatar(false);
     }
   };
+
+
 
   // Enhanced Combat System Functions
   const initiateCombat = (battleType: 'dungeon' | 'boss' | 'pvp' | 'training' = 'dungeon', includeChaeHaein = false) => {
