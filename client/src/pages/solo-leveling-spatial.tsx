@@ -311,6 +311,9 @@ export default function SoloLevelingSpatial() {
   // Date Scheduling System state
   const [showDateScheduling, setShowDateScheduling] = useState(false);
 
+  // Equipment Test Panel state
+  const [showEquipmentTest, setShowEquipmentTest] = useState(false);
+
   // System 18: Episodic Story Engine state
   const [showStoryEngine, setShowStoryEngine] = useState(false);
 
@@ -3087,6 +3090,22 @@ export default function SoloLevelingSpatial() {
             </button>
             <div className="text-xs text-gray-400 mt-1 text-center">
               Equipment Loading Fix Test
+            </div>
+          </div>
+
+          {/* Equipment Test Panel */}
+          <div className="mb-3">
+            <button 
+              onClick={() => {
+                setShowEquipmentTest(true);
+                console.log('🔧 EQUIPMENT TEST - Opening Equipment Test Panel');
+              }}
+              className="w-full px-3 py-2 rounded bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-medium text-xs transition-all"
+            >
+              🔧 Test Equipment APIs
+            </button>
+            <div className="text-xs text-gray-400 mt-1 text-center">
+              Direct API Testing Panel
             </div>
           </div>
 
@@ -6401,6 +6420,21 @@ export default function SoloLevelingSpatial() {
         currentAffection={gameState.affection}
         onDateScheduled={handleDateScheduled}
       />
+
+      {/* Equipment Test Panel */}
+      {showEquipmentTest && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="relative">
+            <Button
+              onClick={() => setShowEquipmentTest(false)}
+              className="absolute -top-4 -right-4 z-10 bg-red-600 hover:bg-red-700 rounded-full w-8 h-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <EquipmentTestPanel />
+          </div>
+        </div>
+      )}
 
     </div>
   );
