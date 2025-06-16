@@ -14,8 +14,13 @@ const LocationSceneImage = ({ locationId, timeOfDay }: { locationId: string; tim
     const checkCacheStatus = async () => {
       try {
         const response = await fetch('/api/cache-status');
-        const status = await response.json();
-        setCacheStatus(status);
+        if (response.ok) {
+          const responseText = await response.text();
+          if (responseText && responseText.trim() !== '' && responseText !== 'undefined') {
+            const status = JSON.parse(responseText);
+            setCacheStatus(status);
+          }
+        }
       } catch (error) {
         console.log('Failed to check cache status');
       }
