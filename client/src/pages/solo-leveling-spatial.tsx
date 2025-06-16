@@ -429,9 +429,16 @@ export default function SoloLevelingSpatial() {
         });
         
         if (response.ok) {
-          const data = await response.json();
-          if (data.imageUrl) {
-            setEmotionalImage(data.imageUrl);
+          const responseText = await response.text();
+          if (responseText && responseText.trim() !== '' && responseText !== 'undefined') {
+            try {
+              const data = JSON.parse(responseText);
+              if (data.imageUrl) {
+                setEmotionalImage(data.imageUrl);
+              }
+            } catch (parseError) {
+              console.log('Failed to parse emotional image response:', parseError);
+            }
           }
         }
       } catch (error) {
@@ -721,7 +728,11 @@ export default function SoloLevelingSpatial() {
       try {
         const response = await fetch(`/api/scheduled-dates/${loadedProfileId}`);
         if (response.ok) {
-          const data = await response.json();
+          const responseText = await response.text();
+          if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
+            return;
+          }
+          const data = JSON.parse(responseText);
           const scheduledDates = data.dates || [];
           
           // Check if any date should trigger now
@@ -812,7 +823,11 @@ export default function SoloLevelingSpatial() {
       });
       
       if (response.ok) {
-        const result = await response.json();
+        const responseText = await response.text();
+        if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
+          return;
+        }
+        const result = JSON.parse(responseText);
         
         // Apply affection reward
         setGameState(prev => ({
@@ -1034,7 +1049,11 @@ export default function SoloLevelingSpatial() {
   const checkAvailableEpisodes = async () => {
     try {
       const response = await fetch('/api/episodes');
-      const data = await response.json();
+      const responseText = await response.text();
+      if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
+        return;
+      }
+      const data = JSON.parse(responseText);
       
       // Filter episodes based on current game state
       const validEpisodes = data.episodes?.filter((episode: any) => {
@@ -2595,7 +2614,12 @@ export default function SoloLevelingSpatial() {
       const response = await fetch(`/api/profiles/${profileId}/load`);
       if (!response.ok) throw new Error('Failed to load profile');
       
-      const { profile, gameState: loadedGameState } = await response.json();
+      const responseText = await response.text();
+      if (!responseText || responseText.trim() === '' || responseText === 'undefined') {
+        throw new Error('Invalid response from server');
+      }
+      
+      const { profile, gameState: loadedGameState } = JSON.parse(responseText);
       
       // Update current game state with loaded data
       setGameState(prev => ({
