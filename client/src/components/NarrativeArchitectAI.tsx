@@ -156,7 +156,7 @@ export function NarrativeArchitectAI({ isVisible, onClose, editingEpisode }: Nar
   };
 
   const downloadEpisode = () => {
-    if (!generatedBlueprint) return;
+    if (!generatedBlueprint || generatedBlueprint === 'undefined') return;
     
     try {
       const episode = JSON.parse(generatedBlueprint);
