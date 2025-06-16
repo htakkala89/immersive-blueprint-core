@@ -4464,9 +4464,9 @@ export default function SoloLevelingSpatial() {
           <motion.div
             className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-[9999] flex flex-col mobile-chat-container"
             style={{ 
-              height: 'calc(45vh - max(20px, env(safe-area-inset-bottom)))',
-              maxHeight: 'calc(45vh - max(20px, env(safe-area-inset-bottom)))',
-              paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+              height: window.innerWidth <= 240 ? '50vh' : 'calc(45vh - max(20px, env(safe-area-inset-bottom)))',
+              maxHeight: window.innerWidth <= 240 ? '50vh' : 'calc(45vh - max(20px, env(safe-area-inset-bottom)))',
+              paddingBottom: window.innerWidth <= 240 ? '10px' : 'max(20px, env(safe-area-inset-bottom))',
               backdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
               WebkitBackdropFilter: 'blur(32px) saturate(200%) brightness(1.1)',
               background: `
@@ -4517,10 +4517,11 @@ export default function SoloLevelingSpatial() {
               
               {/* Dialogue Text - Enhanced Glassmorphism */}
               <motion.div
-                className="rounded-lg p-4 mb-3 flex flex-col"
+                className="rounded-lg mb-3 flex flex-col"
                 style={{
-                  height: '220px',
-                  maxHeight: '220px',
+                  height: window.innerWidth <= 240 ? '140px' : '220px',
+                  maxHeight: window.innerWidth <= 240 ? '140px' : '220px',
+                  padding: window.innerWidth <= 240 ? '8px' : '16px',
                   backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
                   WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
                   background: `
@@ -4546,7 +4547,7 @@ export default function SoloLevelingSpatial() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="flex items-start gap-4">
+                <div className={`flex items-start ${window.innerWidth <= 240 ? 'gap-2' : 'gap-4'}`}>
                   {/* Cha Hae-In Emotional Avatar */}
                   <motion.div 
                     className="shrink-0"
@@ -4554,7 +4555,7 @@ export default function SoloLevelingSpatial() {
                     animate={{ opacity: showLivingPortrait ? 1 : 0, x: showLivingPortrait ? 0 : -20 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
-                    <div className="w-20 h-24 relative">
+                    <div className={`relative ${window.innerWidth <= 240 ? 'w-12 h-14' : 'w-20 h-24'}`}>
                       {/* Emotional Portrait Image - Enhanced with Expression-Based Animations */}
                       <motion.div 
                         className="absolute inset-0 rounded-xl overflow-hidden border-2 shadow-2xl"
@@ -4647,8 +4648,8 @@ export default function SoloLevelingSpatial() {
                       ref={conversationScrollRef}
                       className="space-y-2 overflow-y-auto scroll-smooth mobile-conversation-area"
                       style={{ 
-                        maxHeight: '180px',
-                        height: '180px'
+                        maxHeight: window.innerWidth <= 240 ? '100px' : '180px',
+                        height: window.innerWidth <= 240 ? '100px' : '180px'
                       }}
                     >
                       {conversationHistory.map((entry, index) => (
@@ -4661,15 +4662,15 @@ export default function SoloLevelingSpatial() {
                         >
                           {entry.type === 'user' ? (
                             // User messages: Right-aligned, italic, no bubble, ethereal color
-                            <div className="max-w-[75%] text-right">
-                              <p className="text-slate-300/80 italic leading-relaxed text-sm break-words hyphens-auto">
+                            <div className={`text-right ${window.innerWidth <= 240 ? 'max-w-[80%]' : 'max-w-[75%]'}`}>
+                              <p className={`text-slate-300/80 italic leading-relaxed break-words hyphens-auto ${window.innerWidth <= 240 ? 'text-xs' : 'text-sm'}`}>
                                 {entry.text}
                               </p>
                             </div>
                           ) : (
                             // Cha Hae-In messages: Left-aligned, bright white, script-like
-                            <div className="max-w-[85%]">
-                              <p className="text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap text-sm">
+                            <div className={`${window.innerWidth <= 240 ? 'max-w-[90%]' : 'max-w-[85%]'}`}>
+                              <p className={`text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap ${window.innerWidth <= 240 ? 'text-xs' : 'text-sm'}`}>
                                 {entry.text}
                               </p>
                             </div>
@@ -4712,7 +4713,7 @@ export default function SoloLevelingSpatial() {
                     {thoughtPrompts.map((prompt, index) => (
                       <motion.button
                         key={index}
-                        className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
+                        className={`text-white rounded-lg whitespace-nowrap transition-colors ${window.innerWidth <= 240 ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-sm'}`}
                         style={{
                           backdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
                           WebkitBackdropFilter: 'blur(20px) saturate(180%) brightness(1.1)',
