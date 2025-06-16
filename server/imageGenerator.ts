@@ -228,7 +228,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
           return `data:image/png;base64,${imageData}`;
         }
       } catch (jsonError) {
-        console.log('Failed to parse Google Imagen response:', jsonError.message);
+        console.log('Failed to parse Google Imagen response:', jsonError instanceof Error ? jsonError.message : 'Unknown error');
         return null;
       }
     } else {
@@ -273,7 +273,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
             return `data:image/png;base64,${altImageData}`;
           }
         } catch (altJsonError) {
-          console.log('Failed to parse alternative Google Imagen response:', altJsonError.message);
+          console.log('Failed to parse alternative Google Imagen response:', altJsonError instanceof Error ? altJsonError.message : 'Unknown error');
           return null;
         }
       } else {
