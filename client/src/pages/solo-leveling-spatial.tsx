@@ -1,9 +1,24 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import WorldMap from '@/components/WorldMap';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Heart, Crown, Zap, Coins, User, Sword, Star, 
+  Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
+  MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
+  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target, BookOpen, Wand2, Power, Bell
+} from 'lucide-react';
+
+import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
+import { HunterCommunicatorMobile } from '@/components/HunterCommunicatorMobile';
+import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
+import { UnifiedShop } from '@/components/UnifiedShop';
+import { UltimateCombatSystem } from '@/components/UltimateCombatSystem';
+import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
+import WorldMap from '@/components/WorldMapSimple';
 import { CreatorPortalDashboard } from '@/components/CreatorPortalDashboard';
 import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
 
@@ -96,11 +111,20 @@ export default function SoloLevelingSpatial() {
     }
   });
   
-  // UI state
-  const [showWorldMap, setShowWorldMap] = useState(true);
+  // UI state management
+  const [showWorldMap, setShowWorldMap] = useState(false);
+  const [showDailyLifeHub, setShowDailyLifeHub] = useState(false);
+  const [showCommunicator, setShowCommunicator] = useState(false);
+  const [showUnifiedShop, setShowUnifiedShop] = useState(false);
+  const [showUltimateCombat, setShowUltimateCombat] = useState(false);
+  const [showCharacterProgression, setShowCharacterProgression] = useState(false);
+  const [monarchAuraVisible, setMonarchAuraVisible] = useState(true);
+  
   const [playerLocation, setPlayerLocation] = useState('player_apartment');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [gameTime, setGameTime] = useState(new Date());
+  const [timeOfDay, setTimeOfDay] = useState('morning');
+  const [weather, setWeather] = useState('clear');
   
   // Load game state
   const { data: loadedGameState, isLoading: gameStateLoading } = useQuery({
