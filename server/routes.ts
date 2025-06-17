@@ -1694,6 +1694,22 @@ RESPONSE INSTRUCTIONS:
     }
   });
 
+  // Test Google Imagen authentication
+  app.get("/api/test-google-auth", async (req, res) => {
+    try {
+      const { getGoogleAccessToken } = await import('./googleAuth');
+      const token = await getGoogleAccessToken();
+      res.json({ 
+        success: !!token, 
+        message: token ? "Google authentication successful" : "Google authentication failed",
+        hasToken: !!token
+      });
+    } catch (error) {
+      console.error("Google auth test error:", error);
+      res.status(500).json({ error: "Failed to test Google authentication" });
+    }
+  });
+
   // Economic System - Sell Items
   app.post("/api/sell-item", async (req, res) => {
     try {

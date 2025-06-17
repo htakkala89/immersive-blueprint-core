@@ -31,26 +31,39 @@ function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string 
   // Ensure private key has proper line breaks and format
   let privateKey = serviceAccount.private_key;
   
-  // Handle escaped newlines from JSON
+  // Handle escaped newlines from JSON - more robust approach
   if (privateKey.includes('\\n')) {
     privateKey = privateKey.replace(/\\n/g, '\n');
   }
   
-  // Ensure proper formatting
-  if (!privateKey.includes('\n')) {
-    // If no line breaks, add them at standard positions
-    privateKey = privateKey.replace(/-----BEGIN PRIVATE KEY-----/, '-----BEGIN PRIVATE KEY-----\n')
-                           .replace(/-----END PRIVATE KEY-----/, '\n-----END PRIVATE KEY-----');
-    
-    // Add line breaks every 64 characters for the key content
-    const keyContent = privateKey.replace('-----BEGIN PRIVATE KEY-----\n', '')
-                                 .replace('\n-----END PRIVATE KEY-----', '');
-    const formattedContent = keyContent.match(/.{1,64}/g)?.join('\n') || keyContent;
-    privateKey = `-----BEGIN PRIVATE KEY-----\n${formattedContent}\n-----END PRIVATE KEY-----`;
+  // Clean and reformat the private key properly
+  // Remove any existing formatting and extract just the key content
+  let keyContent = privateKey
+    .replace(/-----BEGIN PRIVATE KEY-----/g, '')
+    .replace(/-----END PRIVATE KEY-----/g, '')
+    .replace(/\s+/g, ''); // Remove all whitespace
+  
+  // Add proper line breaks every 64 characters
+  const formattedKeyLines = [];
+  for (let i = 0; i < keyContent.length; i += 64) {
+    formattedKeyLines.push(keyContent.slice(i, i + 64));
   }
   
+  // Reconstruct the properly formatted private key
+  privateKey = `-----BEGIN PRIVATE KEY-----\n${formattedKeyLines.join('\n')}\n-----END PRIVATE KEY-----`;
+  
   console.log('🔑 Using formatted private key for JWT signing');
-  return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+  
+  // Debug the private key format
+  console.log('Private key length:', privateKey.length);
+  console.log('Private key preview:', privateKey.substring(0, 100) + '...');
+  
+  try {
+    return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+  } catch (jwtError) {
+    console.error('JWT signing error:', jwtError);
+    throw jwtError;
+  }
 }
 
 // Get OAuth access token from Google
