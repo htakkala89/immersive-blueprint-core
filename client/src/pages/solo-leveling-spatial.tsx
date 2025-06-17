@@ -1438,18 +1438,14 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-scroll behavior: scroll to top for new AI responses, bottom for user messages
+  // Auto-scroll behavior: always scroll to bottom to show newest messages
   useEffect(() => {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
-      const lastMessage = conversationHistory[conversationHistory.length - 1];
-      
-      if (lastMessage.type === 'cha_hae_in') {
-        // For Cha Hae-In's responses, scroll to top so users see the beginning
-        conversationScrollRef.current.scrollTop = 0;
-      } else {
-        // For user messages, scroll to bottom to see their own input
-        conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
-      }
+      // Smooth scroll to bottom to show the latest message
+      conversationScrollRef.current.scrollTo({
+        top: conversationScrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [conversationHistory]);
 
