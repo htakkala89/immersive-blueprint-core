@@ -12,6 +12,7 @@ import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
+import { narratorSystem } from "./narratorSystem";
 import { artisticPromptEngine } from "./artisticPromptEngine";
 import { qualityEnhancer } from "./qualityEnhancer";
 import { narrativeArchitect } from "./narrative-architect-api";
@@ -1633,6 +1634,63 @@ RESPONSE INSTRUCTIONS:
     } catch (error) {
       console.error("Narrative context error:", error);
       res.status(500).json({ error: "Failed to retrieve narrative context" });
+    }
+  });
+
+  // Narrator System API Routes
+  app.post("/api/narrator/generate", async (req, res) => {
+    try {
+      const context = req.body;
+      const narration = await narratorSystem.generateNarration(context);
+      res.json(narration);
+    } catch (error) {
+      console.error("Narrator generation error:", error);
+      res.status(500).json({ error: "Failed to generate narration" });
+    }
+  });
+
+  app.post("/api/narrator/episode", async (req, res) => {
+    try {
+      const { episodeTitle, chapterNumber, context } = req.body;
+      const narration = await narratorSystem.generateEpisodeNarration(episodeTitle, chapterNumber, context);
+      res.json(narration);
+    } catch (error) {
+      console.error("Episode narration error:", error);
+      res.status(500).json({ error: "Failed to generate episode narration" });
+    }
+  });
+
+  app.post("/api/narrator/choice", async (req, res) => {
+    try {
+      const { choice, context } = req.body;
+      const narration = await narratorSystem.narratePlayerChoice(choice, context);
+      res.json({ narration });
+    } catch (error) {
+      console.error("Choice narration error:", error);
+      res.status(500).json({ error: "Failed to narrate player choice" });
+    }
+  });
+
+  app.get("/api/narrator/summary/:playerId", async (req, res) => {
+    try {
+      const { playerId } = req.params;
+      const context = req.query as any;
+      const summary = await narratorSystem.getRelationshipSummary(playerId, context);
+      res.json({ summary });
+    } catch (error) {
+      console.error("Relationship summary error:", error);
+      res.status(500).json({ error: "Failed to generate relationship summary" });
+    }
+  });
+
+  app.delete("/api/narrator/memory/:playerId", async (req, res) => {
+    try {
+      const { playerId } = req.params;
+      narratorSystem.clearNarratorMemory(playerId);
+      res.json({ success: true, message: "Narrator memory cleared" });
+    } catch (error) {
+      console.error("Clear memory error:", error);
+      res.status(500).json({ error: "Failed to clear narrator memory" });
     }
   });
 

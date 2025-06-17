@@ -61,6 +61,8 @@ import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSy
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
 import { AutoWeatherSystem, DynamicWeatherSystem } from '@/components/DynamicWeatherSystem';
+import { NarratorSystem } from '@/components/NarratorSystem';
+import { CalendarSystem, type GameDate } from '@/components/CalendarSystem';
 
 interface CoreStats {
   strength: number;
