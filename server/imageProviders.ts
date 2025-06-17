@@ -153,7 +153,7 @@ class GoogleImagenProvider implements ImageProvider {
     if (!projectId || !accessToken) {
       return {
         success: false,
-        error: 'Google Imagen credentials not available',
+        error: 'Google Imagen OAuth2 credentials not available',
         provider: this.name
       };
     }

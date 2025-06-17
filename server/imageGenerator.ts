@@ -167,40 +167,26 @@ async function getGoogleAccessToken(): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Check if we have Google API key available
+    // Get OAuth2 access token and project ID
+    const { getGoogleAccessToken, getProjectId } = await import('./googleAuth');
     const accessToken = await getGoogleAccessToken();
-    if (!accessToken) {
-      console.log('Google API key not available - cannot use Imagen');
-      return null;
-    }
-
-    // Get project ID from credentials
-    const credentialsPath = join(process.cwd(), 'google-credentials-fixed.json');
-    let projectId: string;
+    const projectId = getProjectId();
     
-    try {
-      const credentialsData = readFileSync(credentialsPath, 'utf8');
-      const serviceAccount = JSON.parse(credentialsData);
-      projectId = serviceAccount.project_id;
-    } catch (error) {
-      console.log('Could not read Google credentials file');
-      return null;
-    }
-
-    if (!projectId) {
-      console.log('Google Cloud project ID not available');
+    if (!accessToken || !projectId) {
+      console.log('Google OAuth2 credentials not available - cannot use Imagen');
       return null;
     }
 
     const location = 'us-central1';
-    // Using Imagen 3.0 Fast model with API key authentication
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict?key=${accessToken}`;
+    // Using Imagen 3.0 Fast model with OAuth2 authentication
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
     
     console.log('🎨 Attempting Google Imagen generation...');
     
     const response = await fetch(vertexEndpoint, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
