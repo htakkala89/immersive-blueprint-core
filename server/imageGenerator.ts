@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import type { GameState } from "@shared/schema";
 import AdmZip from 'adm-zip';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 import { GoogleAuth } from 'google-auth-library';
 
@@ -147,25 +147,17 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   return null;
 }
 
-// Google Cloud authentication using service account
+// Google Cloud authentication using service account with direct API key approach
 async function getGoogleAccessToken(): Promise<string | null> {
   try {
-    const credentialsPath = join(process.cwd(), 'google-service-account.json');
-    
-    if (!existsSync(credentialsPath)) {
-      console.log('Google service account file not found');
-      return null;
+    // Use Google API key directly for Vertex AI if available
+    if (process.env.GOOGLE_API_KEY) {
+      console.log('Using Google API key for authentication');
+      return process.env.GOOGLE_API_KEY;
     }
-
-    const credentialsData = readFileSync(credentialsPath, 'utf8');
-    const serviceAccount = JSON.parse(credentialsData);
     
-    // Create JWT for authentication
-    const { createJWT, exchangeJWTForAccessToken } = await import('./googleAuth');
-    const jwt = createJWT(serviceAccount, ['https://www.googleapis.com/auth/cloud-platform']);
-    const accessToken = await exchangeJWTForAccessToken(jwt, serviceAccount.token_uri);
-    
-    return accessToken;
+    console.log('Google API key not available');
+    return null;
   } catch (error) {
     console.error('Error getting Google access token:', error);
     return null;
@@ -174,34 +166,45 @@ async function getGoogleAccessToken(): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Get authentication and project details
+    // Check if we have Google API key available
     const accessToken = await getGoogleAccessToken();
     if (!accessToken) {
-      console.log('Google access token not available - cannot use Imagen');
+      console.log('Google API key not available - cannot use Imagen');
       return null;
     }
 
-    const credentialsPath = join(process.cwd(), 'google-service-account.json');
-    const credentialsData = readFileSync(credentialsPath, 'utf8');
-    const serviceAccount = JSON.parse(credentialsData);
-    const projectId = serviceAccount.project_id;
+    // Get project ID from credentials
+    const credentialsPath = join(process.cwd(), 'google-credentials-fixed.json');
+    let projectId: string;
+    
+    try {
+      const credentialsData = readFileSync(credentialsPath, 'utf8');
+      const serviceAccount = JSON.parse(credentialsData);
+      projectId = serviceAccount.project_id;
+    } catch (error) {
+      console.log('Could not read Google credentials file');
+      return null;
+    }
 
-    console.log('🎨 Attempting Vertex AI Imagen generation...');
-    
-    const enhancedPrompt = prompt + ". Solo Leveling manhwa art style by DUBU (Redice Studio), vibrant neon lighting (purple, blue, gold accents), sharp clean lineart, detailed character designs, Korean webtoon aesthetic, cinematic composition, high contrast shadows, professional digital art, hunter association technology, futuristic Seoul cityscape elements";
-    
+    if (!projectId) {
+      console.log('Google Cloud project ID not available');
+      return null;
+    }
+
     const location = 'us-central1';
-    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
+    // Using Imagen 3.0 Fast model with API key authentication
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict?key=${accessToken}`;
     
-    const response = await fetch(endpoint, {
+    console.log('🎨 Attempting Google Imagen generation...');
+    
+    const response = await fetch(vertexEndpoint, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         instances: [{
-          prompt: enhancedPrompt
+          prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, character design errors"
         }],
         parameters: {
           sampleCount: 1,
@@ -212,24 +215,13 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
     });
 
     if (response.ok) {
-      try {
-        const responseText = await response.text();
-        if (!responseText || responseText.trim() === '') {
-          console.log('Empty response from Google Imagen');
-          return null;
-        }
-        
-        const data = JSON.parse(responseText);
-        const prediction = data.predictions?.[0];
-        const imageData = prediction?.bytesBase64Encoded;
-        
-        if (imageData) {
-          console.log('✅ Google Imagen generated image successfully');
-          return `data:image/png;base64,${imageData}`;
-        }
-      } catch (jsonError) {
-        console.log('Failed to parse Google Imagen response:', jsonError instanceof Error ? jsonError.message : 'Unknown error');
-        return null;
+      const data = await response.json();
+      const prediction = data.predictions?.[0];
+      const imageData = prediction?.bytesBase64Encoded;
+      
+      if (imageData) {
+        console.log('✅ Google Imagen generated image successfully');
+        return `data:image/png;base64,${imageData}`;
       }
     } else {
       const errorText = await response.text();
@@ -257,24 +249,13 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       });
 
       if (altResponse.ok) {
-        try {
-          const altResponseText = await altResponse.text();
-          if (!altResponseText || altResponseText.trim() === '') {
-            console.log('Empty response from alternative Google Imagen');
-            return null;
-          }
-          
-          const altData = JSON.parse(altResponseText);
-          const altPrediction = altData.predictions?.[0];
-          const altImageData = altPrediction?.bytesBase64Encoded;
-          
-          if (altImageData) {
-            console.log('✅ Google Imagen (alternative model) generated image successfully');
-            return `data:image/png;base64,${altImageData}`;
-          }
-        } catch (altJsonError) {
-          console.log('Failed to parse alternative Google Imagen response:', altJsonError instanceof Error ? altJsonError.message : 'Unknown error');
-          return null;
+        const altData = await altResponse.json();
+        const altPrediction = altData.predictions?.[0];
+        const altImageData = altPrediction?.bytesBase64Encoded;
+        
+        if (altImageData) {
+          console.log('✅ Google Imagen (alternative model) generated image successfully');
+          return `data:image/png;base64,${altImageData}`;
         }
       } else {
         const altErrorText = await altResponse.text();

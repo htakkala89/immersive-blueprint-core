@@ -48,30 +48,16 @@ export const playerProfiles = pgTable("player_profiles", {
   currentEpisode: text("current_episode"),
   currentEpisodeBeat: integer("current_episode_beat").default(0),
   episodeProgress: jsonb("episode_progress").notNull().default({}).$type<Record<string, any>>(),
-  availableEpisodes: jsonb("available_episodes").notNull().default([]).$type<string[]>(),
-  focusedEpisode: text("focused_episode"), // Only this episode drives AI narrative
-  activeEpisodes: jsonb("active_episodes").notNull().default([]).$type<Array<{episodeId: string; priority: 'primary' | 'secondary' | 'background'; weight: number}>>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   lastPlayed: timestamp("last_played").defaultNow().notNull(),
   isActive: boolean("is_active").default(false).notNull(),
-});
-
-// Episodes Storage
-export const episodes = pgTable("episodes", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  prerequisite: jsonb("prerequisite").notNull().$type<{ player_level: number; relationship_level: number }>(),
-  beats: jsonb("beats").notNull().$type<StoryBeat[]>(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
 });
 
 // Episode Progress Tracking
 export const episodeProgress = pgTable("episode_progress", {
   id: serial("id").primaryKey(),
   profileId: integer("profile_id").references(() => playerProfiles.id).notNull(),
-  episodeId: text("episode_id").references(() => episodes.id).notNull(),
+  episodeId: text("episode_id").notNull(),
   currentBeat: integer("current_beat").default(0).notNull(),
   isCompleted: boolean("is_completed").default(false).notNull(),
   playerChoices: jsonb("player_choices").notNull().default({}).$type<Record<string, any>>(),
@@ -89,32 +75,21 @@ export const playerProfilesRelations = relations(playerProfiles, ({ one, many })
   episodeProgress: many(episodeProgress)
 }));
 
-export const episodesRelations = relations(episodes, ({ many }) => ({
-  progress: many(episodeProgress)
-}));
-
 export const episodeProgressRelations = relations(episodeProgress, ({ one }) => ({
   profile: one(playerProfiles, {
     fields: [episodeProgress.profileId],
     references: [playerProfiles.id]
-  }),
-  episode: one(episodes, {
-    fields: [episodeProgress.episodeId],
-    references: [episodes.id]
   })
 }));
 
 // Schema types for TypeScript
 export type PlayerProfile = typeof playerProfiles.$inferSelect;
 export type InsertPlayerProfile = typeof playerProfiles.$inferInsert;
-export type Episode = typeof episodes.$inferSelect;
-export type InsertEpisode = typeof episodes.$inferInsert;
 export type EpisodeProgress = typeof episodeProgress.$inferSelect;
 export type InsertEpisodeProgress = typeof episodeProgress.$inferInsert;
 
 // Zod schemas for validation
 export const insertPlayerProfileSchema = createInsertSchema(playerProfiles).omit({ id: true, createdAt: true, lastPlayed: true });
-export const insertEpisodeSchema = createInsertSchema(episodes).omit({ createdAt: true, updatedAt: true });
 export const insertEpisodeProgressSchema = createInsertSchema(episodeProgress).omit({ id: true, startedAt: true, lastPlayedAt: true });
 
 export const Choice = z.object({
@@ -223,48 +198,11 @@ export const Quest = z.object({
   status: z.enum(['received', 'accepted', 'in_progress', 'completed', 'failed', 'expired']),
   acceptedAt: z.string().optional(), // ISO date string
   completedAt: z.string().optional(), // ISO date string
-});
-
-// Episode System Data Types
-export const EpisodeAction = z.object({
-  command: z.enum([
-    "DELIVER_MESSAGE",
-    "ACTIVATE_QUEST", 
-    "SET_CHA_MOOD",
-    "FORCE_CHA_LOCATION",
-    "START_DIALOGUE_SCENE",
-    "SET_QUEST_OBJECTIVE",
-    "SPAWN_LOCATION",
-    "REMOVE_CHA_LOCATION_OVERRIDE",
-    "COMPLETE_QUEST",
-    "REWARD_PLAYER",
-    "CREATE_MEMORY_STAR",
-    "UNLOCK_ACTIVITY"
-  ]),
-  params: z.record(z.any()),
-});
-
-export const StoryBeat = z.object({
-  beat_id: z.number(),
-  title: z.string(),
-  trigger: z.string(),
-  actions: z.array(EpisodeAction),
-  completion_condition: z.object({
-    event: z.string(),
-    params: z.record(z.any()),
-  }),
-});
-
-export const EpisodeData = z.object({
-  id: z.string(),
-  title: z.string(),
-  prerequisite: z.object({
-    player_level: z.number().optional(),
-    relationship_level: z.number().optional(),
-    completed_quests: z.array(z.string()).optional(),
-    flags: z.record(z.boolean()).optional(),
-  }),
-  beats: z.array(StoryBeat),
+  receivedAt: z.string(), // ISO date string
+  estimatedDuration: z.number(), // hours
+  prerequisites: z.array(z.string()).optional(),
+  isUrgent: z.boolean().default(false),
+  guildSupport: z.boolean().default(false)
 });
 
 export const MarketItem = z.object({
@@ -311,6 +249,3 @@ export type MarketItem = z.infer<typeof MarketItem>;
 export type WealthTransaction = z.infer<typeof WealthTransaction>;
 export type InsertGameState = z.infer<typeof insertGameStateSchema>;
 export type GameState = typeof gameStates.$inferSelect;
-export type EpisodeAction = z.infer<typeof EpisodeAction>;
-export type StoryBeat = z.infer<typeof StoryBeat>;
-export type EpisodeData = z.infer<typeof EpisodeData>;

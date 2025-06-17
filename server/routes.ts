@@ -15,13 +15,9 @@ import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
 import { artisticPromptEngine } from "./artisticPromptEngine";
 import { qualityEnhancer } from "./qualityEnhancer";
 import { narrativeArchitect } from "./narrative-architect-api";
-import { episodeEngine } from "./episodeEngine";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
-import { db } from "./db";
-import { playerProfiles, gameStates, episodeProgress, insertPlayerProfileSchema, insertGameStateSchema } from "@shared/schema";
-import { eq } from "drizzle-orm";
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -229,44 +225,6 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
   const location = context?.location || 'hunter_association';
   const affectionLevel = context?.affectionLevel || 0;
   const timeOfDay = context?.timeOfDay || 'day';
-  const completedEpisodes = context?.completedEpisodes || [];
-  const sharedMemories = context?.sharedMemories || [];
-
-  // Episode-driven conversation priorities
-  // Check for episode-specific memory callbacks first
-  if (completedEpisodes.includes('EP_TEST_CAFE_DATE') && location === 'hongdae_cafe') {
-    return [
-      "Remember our last conversation here? I still think about what you said.",
-      "This place holds special memories for us now.",
-      "I'm glad we can share quiet moments like this together."
-    ];
-  }
-
-  // Episode availability hints based on progression
-  if (location === 'hongdae_cafe' && affectionLevel >= 0 && !completedEpisodes.includes('EP_TEST_CAFE_DATE')) {
-    return [
-      "I was hoping we could sit and talk properly sometime.",
-      "There's something peaceful about this place, don't you think?",
-      "Coffee dates like this... they matter more than you might realize."
-    ];
-  }
-
-  // Story progression hints based on relationship level
-  if (affectionLevel >= 20 && affectionLevel < 40) {
-    return [
-      "I've been thinking about how much we've grown closer lately.",
-      "There are things I want to share with you... when the time is right.",
-      "Do you ever wonder where this path we're on will lead us?"
-    ];
-  }
-
-  if (affectionLevel >= 40 && affectionLevel < 70) {
-    return [
-      "I trust you more than anyone else, Jin-Woo.",
-      "Sometimes I catch myself thinking about our future together.",
-      "You've become so important to me... more than I expected."
-    ];
-  }
   
   // Player Apartment - Intimate, romantic setting
   if (location === 'player_apartment') {
@@ -473,7 +431,7 @@ function createChaHaeInEmotionalPrompt(emotion: string, location: string, timeOf
   return `${baseCharacterDescription} ${emotionDesc}, positioned ${locationDesc} ${timeDesc}. High quality anime art style, detailed facial features, atmospheric lighting, cinematic composition, masterpiece quality. Focus on her emotional expression and the romantic atmosphere of the scene.`;
 }
 
-async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<Server> {
   // Direct download endpoint for generated images
   app.get("/download/:filename", (req, res) => {
     const filename = req.params.filename;
@@ -491,19 +449,19 @@ async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to test both models and return results
   app.get("/api/test-models", async (req, res) => {
     try {
-      const results: { novelai: any, imagen: any, errors: string[] } = { novelai: null, imagen: null, errors: [] };
+      const results = { novelai: null, imagen: null, errors: [] };
       
-      // Test NovelAI V4 using generic image generation
+      // Test NovelAI V4
       try {
         console.log('Testing NovelAI V4 Curated Preview...');
-        const novelaiResult = await imageGenerationService.generateImage(
-          "A cozy bedroom scene with intimate lighting, soft warm colors",
-          "NovelAI"
-        );
+        const novelaiResult = await imageGenerationService.generateNovelAI({
+          activityId: 'bedroom_intimacy',
+          relationshipStatus: 'deeply_connected', 
+          intimacyLevel: 8
+        });
         results.novelai = novelaiResult;
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        (results.errors as string[]).push(`NovelAI V4 failed: ${errorMessage}`);
+        results.errors.push(`NovelAI V4 failed: ${error.message}`);
       }
       
       // Test Google Imagen 4.0
@@ -512,14 +470,12 @@ async function registerRoutes(app: Express): Promise<Server> {
         const imagenResult = await generateLocationSceneImage('chahaein_apartment', 'evening');
         results.imagen = imagenResult;
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        (results.errors as string[]).push(`Google Imagen 4.0 failed: ${errorMessage}`);
+        results.errors.push(`Google Imagen 4.0 failed: ${error.message}`);
       }
       
       res.json(results);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      res.status(500).json({ error: errorMessage });
+      res.status(500).json({ error: error.message });
     }
   });
 
@@ -663,18 +619,67 @@ async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Episode System - Get all episodes (database version)
-  app.get("/api/episodes", async (req, res) => {
+  // System 18: Episode Management - Get Available Episodes
+  app.get('/api/episodes', async (req, res) => {
     try {
-      const episodes = await episodeEngine.getAvailableEpisodes();
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const episodesDir = path.join(process.cwd(), 'server/episodes');
+      
+      if (!fs.existsSync(episodesDir)) {
+        return res.json({ episodes: [] });
+      }
+      
+      const files = fs.readdirSync(episodesDir).filter(file => file.endsWith('.json'));
+      const episodes = [];
+      
+      for (const file of files) {
+        try {
+          const filePath = path.join(episodesDir, file);
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const episode = JSON.parse(content);
+          episodes.push({
+            id: episode.id,
+            title: episode.title,
+            description: episode.description,
+            prerequisite: episode.prerequisite,
+            status: episode.status || 'available'
+          });
+        } catch (error) {
+          console.warn(`Failed to parse episode file ${file}:`, error);
+        }
+      }
+      
       res.json({ episodes });
     } catch (error) {
-      console.error("Failed to fetch episodes:", error);
-      res.status(500).json({ error: "Failed to fetch episodes" });
+      console.error('Error fetching episodes:', error);
+      res.status(500).json({ error: 'Failed to fetch episodes' });
     }
   });
 
-
+  // System 18: Episode Management - Get Specific Episode
+  app.get('/api/episodes/:episodeId', async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const episodePath = path.join(process.cwd(), 'server/episodes', `${episodeId}.json`);
+      
+      if (!fs.existsSync(episodePath)) {
+        return res.status(404).json({ error: 'Episode not found' });
+      }
+      
+      const content = fs.readFileSync(episodePath, 'utf-8');
+      const episode = JSON.parse(content);
+      
+      res.json({ episode });
+    } catch (error) {
+      console.error('Error fetching episode:', error);
+      res.status(500).json({ error: 'Failed to fetch episode' });
+    }
+  });
 
   // Profile Management - Get all profiles
   app.get('/api/profiles', async (req, res) => {
@@ -822,8 +827,7 @@ async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/profiles/:profileId/save', async (req, res) => {
     try {
       const { profileId } = req.params;
-      const { gameData, gameState } = req.body;
-      const dataToUpdate = gameState || gameData;
+      const { gameState } = req.body;
       const { db } = await import('./db');
       const { playerProfiles, gameStates } = await import('@shared/schema');
       const { eq } = await import('drizzle-orm');
@@ -843,37 +847,37 @@ async function registerRoutes(app: Express): Promise<Server> {
         await db
           .update(gameStates)
           .set({
-            narration: dataToUpdate.narration || "Your adventure continues...",
-            health: dataToUpdate.health || 100,
-            maxHealth: dataToUpdate.maxHealth || 100,
-            mana: dataToUpdate.mana || 50,
-            maxMana: dataToUpdate.maxMana || 50,
-            level: dataToUpdate.level || 1,
-            experience: dataToUpdate.experience || 0,
-            statPoints: dataToUpdate.statPoints || 0,
-            skillPoints: dataToUpdate.skillPoints || 0,
-            gold: dataToUpdate.gold || 100,
-            affectionLevel: dataToUpdate.affectionLevel || 0,
-            energy: dataToUpdate.energy || 100,
-            maxEnergy: dataToUpdate.maxEnergy || 100,
-            relationshipStatus: dataToUpdate.relationshipStatus || "dating",
-            intimacyLevel: dataToUpdate.intimacyLevel || 1,
-            sharedMemories: dataToUpdate.sharedMemories || 0,
-            livingTogether: dataToUpdate.livingTogether || 0,
-            daysTogether: dataToUpdate.daysTogether || 1,
-            apartmentTier: dataToUpdate.apartmentTier || 1,
-            currentScene: dataToUpdate.currentScene || "entrance",
-            choices: dataToUpdate.choices || [],
-            sceneData: dataToUpdate.sceneData || null,
-            storyPath: dataToUpdate.storyPath || "entrance",
-            choiceHistory: dataToUpdate.choiceHistory || [],
-            storyFlags: dataToUpdate.storyFlags || {},
-            inventory: dataToUpdate.inventory || [],
-            stats: dataToUpdate.stats || {},
-            skills: dataToUpdate.skills || [],
-            scheduledActivities: dataToUpdate.scheduledActivities || [],
-            activeQuests: dataToUpdate.activeQuests || [],
-            completedQuests: dataToUpdate.completedQuests || []
+            narration: gameState.narration,
+            health: gameState.health,
+            maxHealth: gameState.maxHealth,
+            mana: gameState.mana,
+            maxMana: gameState.maxMana,
+            level: gameState.level,
+            experience: gameState.experience,
+            statPoints: gameState.statPoints,
+            skillPoints: gameState.skillPoints,
+            gold: gameState.gold,
+            affectionLevel: gameState.affectionLevel,
+            energy: gameState.energy,
+            maxEnergy: gameState.maxEnergy,
+            relationshipStatus: gameState.relationshipStatus,
+            intimacyLevel: gameState.intimacyLevel,
+            sharedMemories: gameState.sharedMemories,
+            livingTogether: gameState.livingTogether,
+            daysTogether: gameState.daysTogether,
+            apartmentTier: gameState.apartmentTier,
+            currentScene: gameState.currentScene,
+            choices: gameState.choices,
+            sceneData: gameState.sceneData,
+            storyPath: gameState.storyPath,
+            choiceHistory: gameState.choiceHistory,
+            storyFlags: gameState.storyFlags,
+            inventory: gameState.inventory,
+            stats: gameState.stats,
+            skills: gameState.skills,
+            scheduledActivities: gameState.scheduledActivities,
+            activeQuests: gameState.activeQuests,
+            completedQuests: gameState.completedQuests
           })
           .where(eq(gameStates.id, profile[0].gameStateId));
       }
@@ -909,22 +913,22 @@ async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Profile not found' });
       }
       
-      // Delete episode progress first
+      // Delete episode progress
       await db
         .delete(episodeProgress)
         .where(eq(episodeProgress.profileId, parseInt(profileId)));
       
-      // Delete profile (this will automatically set gameStateId foreign key to null)
-      await db
-        .delete(playerProfiles)
-        .where(eq(playerProfiles.id, parseInt(profileId)));
-      
-      // Delete game state last
+      // Delete game state
       if (profile[0].gameStateId) {
         await db
           .delete(gameStates)
           .where(eq(gameStates.id, profile[0].gameStateId));
       }
+      
+      // Delete profile
+      await db
+        .delete(playerProfiles)
+        .where(eq(playerProfiles.id, parseInt(profileId)));
       
       res.json({ success: true });
     } catch (error) {
@@ -1234,289 +1238,6 @@ async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Episode System - Get available episodes
-  app.get("/api/episodes", (req, res) => {
-    try {
-      const episodes = episodeEngine.getAvailableEpisodes();
-      res.json({ episodes });
-    } catch (error) {
-      console.error("Failed to get episodes:", error);
-      res.status(500).json({ error: "Failed to retrieve episodes" });
-    }
-  });
-
-  // Episode System - Get specific episode details
-  app.get("/api/episodes/:episodeId", async (req, res) => {
-    try {
-      const { episodeId } = req.params;
-      const episode = await episodeEngine.getEpisode(episodeId);
-      
-      if (!episode) {
-        return res.status(404).json({ error: "Episode not found" });
-      }
-      
-      // Add status and progress tracking for frontend compatibility
-      const episodeWithStatus = {
-        ...episode,
-        status: 'available',
-        currentBeatIndex: 0
-      };
-      
-      res.json({ episode: episodeWithStatus });
-    } catch (error) {
-      console.error("Failed to get episode:", error);
-      res.status(500).json({ error: "Failed to retrieve episode" });
-    }
-  });
-
-  // Episode System - Execute episode action
-  app.post("/api/episodes/:episodeId/execute", async (req, res) => {
-    try {
-      const { episodeId } = req.params;
-      const { beatId, actionIndex } = req.body;
-      
-      if (beatId === undefined || actionIndex === undefined) {
-        return res.status(400).json({ error: "Missing beatId or actionIndex" });
-      }
-      
-      await episodeEngine.executeEpisodeAction(episodeId, beatId, actionIndex);
-      
-      res.json({ success: true, message: "Episode action executed" });
-    } catch (error) {
-      console.error("Failed to execute episode action:", error);
-      res.status(500).json({ error: "Failed to execute episode action" });
-    }
-  });
-
-  // Episode System - Track gameplay events for episode progression
-  app.post("/api/episode-events", async (req, res) => {
-    try {
-      const { event, data, profileId } = req.body;
-      
-      if (!event || !profileId) {
-        return res.status(400).json({ error: "Missing event or profileId" });
-      }
-      
-      console.log(`🎮 Episode event: ${event}`, data);
-      
-      // Track the event with the episode engine for automatic progression
-      await episodeEngine.trackGameplayEvent(event, data, profileId);
-      
-      res.json({ 
-        success: true, 
-        message: `Event ${event} tracked for episode progression`
-      });
-    } catch (error) {
-      console.error("Episode event tracking error:", error);
-      res.status(500).json({ error: "Failed to track episode event" });
-    }
-  });
-
-  // Episode System - Trigger beat completion
-  app.post("/api/episodes/:episodeId/complete-beat", async (req, res) => {
-    try {
-      const { episodeId } = req.params;
-      const { beatId, eventData } = req.body;
-      
-      if (beatId === undefined) {
-        return res.status(400).json({ error: "Missing beatId" });
-      }
-      
-      const completed = await episodeEngine.triggerBeatCompletion(episodeId, beatId, eventData);
-      
-      res.json({ completed, message: completed ? "Beat completed" : "Beat completion conditions not met" });
-    } catch (error) {
-      console.error("Failed to complete beat:", error);
-      res.status(500).json({ error: "Failed to complete beat" });
-    }
-  });
-
-  // Episode System - Set focused episode
-  app.post("/api/episodes/:episodeId/focus/:profileId", async (req, res) => {
-    try {
-      const { episodeId, profileId } = req.params;
-      
-      await episodeEngine.setFocusedEpisode(Number(profileId), episodeId);
-      
-      res.json({
-        success: true,
-        focusedEpisode: episodeId,
-        message: `Episode ${episodeId} is now focused`
-      });
-    } catch (error) {
-      console.error("Failed to set focused episode:", error);
-      res.status(500).json({ error: "Failed to set focused episode" });
-    }
-  });
-
-  // Episode System - Clear focused episode
-  app.delete("/api/episodes/focus/:profileId", async (req, res) => {
-    try {
-      const { profileId } = req.params;
-      
-      await episodeEngine.setFocusedEpisode(Number(profileId), null);
-      
-      res.json({
-        success: true,
-        focusedEpisode: null,
-        message: "No episode is focused"
-      });
-    } catch (error) {
-      console.error("Failed to clear focused episode:", error);
-      res.status(500).json({ error: "Failed to clear focused episode" });
-    }
-  });
-
-  // Episode System - Set multiple active episodes with priority weighting
-  app.post("/api/episodes/active/:profileId", async (req, res) => {
-    try {
-      const { profileId } = req.params;
-      const { episodes } = req.body;
-      
-      if (!Array.isArray(episodes)) {
-        return res.status(400).json({ error: "Episodes must be an array" });
-      }
-      
-      await episodeEngine.setActiveEpisodes(Number(profileId), episodes);
-      
-      res.json({
-        success: true,
-        activeEpisodes: episodes,
-        message: `Set ${episodes.length} active episodes with priority weighting`
-      });
-    } catch (error) {
-      console.error("Failed to set active episodes:", error);
-      res.status(500).json({ error: "Failed to set active episodes" });
-    }
-  });
-
-  // Episode System - Get active episodes with priorities
-  app.get("/api/episodes/active/:profileId", async (req, res) => {
-    try {
-      const { profileId } = req.params;
-      
-      const activeEpisodes = await episodeEngine.getActiveEpisodes(Number(profileId));
-      
-      res.json({
-        activeEpisodes,
-        count: activeEpisodes.length,
-        message: `Found ${activeEpisodes.length} active episodes`
-      });
-    } catch (error) {
-      console.error("Failed to get active episodes:", error);
-      res.status(500).json({ error: "Failed to get active episodes" });
-    }
-  });
-
-  // Episode System - Get focused episode (backwards compatibility)
-  app.get("/api/episodes/focus/:profileId", async (req, res) => {
-    try {
-      const { profileId } = req.params;
-      
-      const focusedEpisode = await episodeEngine.getFocusedEpisode(Number(profileId));
-      
-      res.json({
-        focusedEpisode,
-        message: focusedEpisode ? `Episode ${focusedEpisode} is focused` : "No episode is focused"
-      });
-    } catch (error) {
-      console.error("Failed to get focused episode:", error);
-      res.status(500).json({ error: "Failed to get focused episode" });
-    }
-  });
-
-  // Episode System - Load episode progress
-  app.get("/api/episodes/:episodeId/progress/:profileId", async (req, res) => {
-    try {
-      const { episodeId, profileId } = req.params;
-      
-      const progress = await episodeEngine.loadEpisodeProgress(Number(profileId), episodeId);
-      
-      if (progress) {
-        res.json({
-          hasProgress: true,
-          currentBeat: progress.currentBeat,
-          playerChoices: progress.playerChoices,
-          message: `Continue from beat ${progress.currentBeat}`
-        });
-      } else {
-        res.json({
-          hasProgress: false,
-          currentBeat: 0,
-          playerChoices: {},
-          message: "Starting from beginning"
-        });
-      }
-    } catch (error) {
-      console.error("Failed to load episode progress:", error);
-      res.status(500).json({ error: "Failed to load episode progress" });
-    }
-  });
-
-  // Episode System - Trigger episode start (creates communicator message)
-  app.post("/api/episodes/:episodeId/trigger", async (req, res) => {
-    try {
-      const { episodeId } = req.params;
-      const { profileId } = req.body;
-      
-      if (!profileId) {
-        return res.status(400).json({ error: "Missing profileId" });
-      }
-      
-      const episode = await episodeEngine.getEpisode(episodeId);
-      if (!episode) {
-        return res.status(404).json({ error: "Episode not found" });
-      }
-
-      // Set this episode as focused to prevent narrative confusion
-      await episodeEngine.setFocusedEpisode(Number(profileId), episodeId);
-
-      // Load existing progress if available
-      const progress = await episodeEngine.loadEpisodeProgress(Number(profileId), episodeId);
-      const startBeat = progress ? progress.currentBeat : 0;
-
-      // Create the episode alert message for the Hunter Communicator
-      const episodeAlert = {
-        id: `episode_${episodeId}`,
-        title: episode.title,
-        sender: "Hunter Association",
-        content: "A new critical mission has been detected. This appears to be related to unusual gate activity in the area. Your expertise is required for this investigation.",
-        timestamp: new Date(),
-        type: "quest" as const,
-        read: false,
-        questData: {
-          rank: "A",
-          type: "investigation",
-          reward: 50000000,
-          location: "hunter_association",
-          description: "Investigate the A-Rank Gate Alert",
-          longDescription: "A powerful magical anomaly has been detected. Work with Cha Hae-In to investigate and eliminate the threat.",
-          objectives: [
-            {
-              id: "investigate_gate",
-              description: "Meet with Cha Hae-In at the Hunter Association",
-              completed: false
-            }
-          ],
-          timeLimit: 24,
-          difficulty: 8,
-          estimatedDuration: 2,
-          isUrgent: true,
-          guildSupport: false
-        }
-      };
-
-      res.json({ 
-        success: true, 
-        message: "Episode triggered successfully",
-        episodeAlert
-      });
-    } catch (error) {
-      console.error("Failed to trigger episode:", error);
-      res.status(500).json({ error: "Failed to trigger episode" });
-    }
-  });
-
   // Additional core gameplay endpoints
   
   // Mature content detection and generation system
@@ -1561,17 +1282,9 @@ async function registerRoutes(app: Express): Promise<Server> {
       } = req.body;
       const playerId = gameState.playerId || 'default_player';
       
-      // Auto-detect if communicator mode should be used based on availability constraints
-      const shouldUseCommunicator = communicatorMode || 
-        (context?.isRestricted === true) || 
-        (characterState?.status === 'busy') ||
-        (characterState?.status === 'unavailable') ||
-        (context?.timeOfDay === 'night' && (gameState.affectionLevel || 0) < 50) ||
-        (context?.levelRestricted === true);
-
-      // Handle communicator mode with full affection tracking
-      if (shouldUseCommunicator) {
-        console.log('📱 Hunter\'s Communicator mode - texting conversation with full affection tracking');
+      // Handle communicator mode with conversation continuity
+      if (communicatorMode && conversationHistory) {
+        console.log('📱 Hunter\'s Communicator mode - maintaining conversation continuity');
         
         const { getPersonalityPrompt } = await import('./chaHaeInPersonality.js');
         
@@ -1587,8 +1300,8 @@ async function registerRoutes(app: Express): Promise<Server> {
 
         // Build conversation context for continuity
         const conversationContext = {
-          affectionLevel: Math.floor((gameState.affectionLevel || gameState.affection || 25) / 20),
-          currentScene: characterState?.location || context?.location || 'hunter_association',
+          affectionLevel: Math.floor((characterState?.affectionLevel || 25) / 20),
+          currentScene: characterState?.location || 'hunter_association',
           timeOfDay: (context?.timeOfDay || 'afternoon') as 'morning' | 'afternoon' | 'evening' | 'night',
           recentActivity: characterState?.activity,
           mood: 'focused' as 'focused' | 'romantic' | 'playful' | 'confident' | 'vulnerable' | 'disappointed' | 'hurt' | 'defensive',
@@ -1598,123 +1311,41 @@ async function registerRoutes(app: Express): Promise<Server> {
         const personalityPrompt = getPersonalityPrompt(conversationContext);
         
         // Build conversation history for context
-        const historyContext = conversationHistory ? conversationHistory.slice(-6).map((msg: any) => 
+        const historyContext = conversationHistory.slice(-6).map((msg: any) => 
           `${msg.senderName}: ${msg.content}`
-        ).join('\n') : '';
+        ).join('\n');
 
-        // Get contextual episode guidance
-        const profileId = gameState?.profileId || context?.profileId || 1;
-        const location = characterState?.location || context?.location || 'hunter_association';
-        const timeOfDay = context?.timeOfDay || 'afternoon';
-        const episodeGuidance = await episodeEngine.getContextualEpisodeGuidance(profileId, location, timeOfDay);
-        
-        // Create reason for texting based on restriction type
-        let restrictionReason = '';
-        if (context?.timeOfDay === 'night') {
-          restrictionReason = 'It\'s quite late, so I\'m texting instead of calling.';
-        } else if (characterState?.status === 'busy') {
-          restrictionReason = 'I\'m in the middle of something but wanted to respond quickly.';
-        } else if (context?.levelRestricted) {
-          restrictionReason = 'I\'m at the Association handling some sensitive matters, so texting is better right now.';
-        }
-        
         const fullPrompt = `${personalityPrompt}
 
 HUNTER'S COMMUNICATOR CONVERSATION:
-You are texting Jin-Woo through the Hunter's Communicator messaging system.
+You are continuing an ongoing conversation with Jin-Woo through the Hunter's Communicator messaging system.
 
 Current Status: ${characterState?.status || 'available'}
 Current Activity: ${characterState?.activity || 'reviewing reports at the Association'}
-Location: ${characterState?.location || context?.location || 'hunter_association'}
+Location: ${characterState?.location || 'hunter_association'}
 Time: ${context?.timeOfDay || 'afternoon'}
-${restrictionReason ? `Context: ${restrictionReason}` : ''}
 
-${historyContext ? `Recent conversation history:\n${historyContext}\n` : ''}
+Recent conversation history:
+${historyContext}
 
 Jin-Woo just sent: "${message}"
 
 ${isUrgent ? 'This message seems urgent - respond accordingly.' : ''}
 ${proposedActivity ? `Jin-Woo proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
-${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide toward: "${episodeGuidance}"` : ''}
 
-IMPORTANT: Respond as if you're texting. Keep it conversational and natural to Cha Hae-In's character. Show the same warmth and personality as in-person, but with the brevity and style of texting. Use her typical speech patterns and emotional reactions.
+IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses. Keep your response conversational and authentic to Cha Hae-In's character - professional but warm, strong but caring. Vary your responses based on the conversation history.
 
-Respond as a text message:`;
+Respond naturally as if you're texting Jin-Woo back:`;
 
         const result = await model.generateContent(fullPrompt);
         const rawResponse = result.response.text();
-        const response = rawResponse.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
-
-        // Apply same affection tracking system as regular dialogue
-        let showAffectionHeart = false;
-        let affectionBonus = 0;
-        
-        // Heart trigger detection (same as regular chat)
-        const heartTriggers = [
-          /heart.*(?:pound|hammer|beat|skip|flutter)|pulse.*(?:quick|race)/i,
-          /\*blush.*deeply|\*trembl|shiver|breath.*catch|\*gasp/i,
-          /feelings?.*(?:you|jin-woo)|love.*(?:you|jin-woo)|care.*deeply/i,
-          /special.*(?:you|moment)|never.*forget|always.*remember|treasure/i,
-          /trust.*completely|vulnerable|safe.*(?:with|around).*you/i,
-          /together.*always|future.*(?:us|together)|always.*(?:you|jin-woo)/i,
-          /close.*(?:you|jin-woo)|touch|embrace|hold.*(?:me|close)/i
-        ];
-        
-        if (heartTriggers.some(trigger => trigger.test(response))) {
-          showAffectionHeart = true;
-          affectionBonus = 3;
-          console.log(`💕 Affection Heart triggered via Communicator!`);
-        }
-        
-        // Calculate affection gain
-        const currentAffection = gameState.affectionLevel || gameState.affection || 25;
-        const newAffectionLevel = Math.min(100, currentAffection + 1 + affectionBonus);
-        
-        const finalGameState = {
-          ...gameState,
-          affection: newAffectionLevel,
-          affectionLevel: newAffectionLevel
-        };
-
-        // Persist to database
-        if (gameState.profileId || context?.profileId) {
-          try {
-            const { db } = await import('./db');
-            const { gameStates, playerProfiles } = await import('@shared/schema');
-            const { eq } = await import('drizzle-orm');
-            
-            const profileId = gameState.profileId || context?.profileId;
-            const profileData = await db
-              .select()
-              .from(playerProfiles)
-              .where(eq(playerProfiles.id, profileId))
-              .limit(1);
-
-            if (profileData.length > 0 && profileData[0].gameStateId) {
-              await db
-                .update(gameStates)
-                .set({ affectionLevel: newAffectionLevel })
-                .where(eq(gameStates.id, profileData[0].gameStateId));
-                
-              console.log(`💕 Communicator affection updated: ${currentAffection} → ${newAffectionLevel} (+${1 + affectionBonus})`);
-            }
-          } catch (error) {
-            console.error('Failed to persist communicator affection:', error);
-          }
-        }
+        const sanitizedResponse = rawResponse.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+        const updatedGameState = { ...gameState };
 
         return res.json({
-          response,
-          gameState: finalGameState,
-          expression: 'focused',
-          showAffectionHeart,
-          communicatorMode: true,
-          thoughtPrompts: [
-            "I wish we could talk in person",
-            "What are you up to?", 
-            "Hope to see you soon",
-            "Missing you"
-          ]
+          response: sanitizedResponse,
+          gameState: updatedGameState,
+          expression: 'focused'
         });
       }
       
@@ -1820,9 +1451,6 @@ Respond as a text message:`;
 
         const personalityPrompt = getPersonalityPrompt(conversationContext);
         
-        // Check for episode guidance - inject natural story progression
-        const episodeGuidance = await episodeEngine.getEpisodeGuidance('GAMEPLAY_TEST', 2);
-        
         const fullPrompt = `${personalityPrompt}
 
 CURRENT SITUATION:
@@ -1833,8 +1461,6 @@ CURRENT SITUATION:
 
 Jin-Woo just said: "${message}"
 
-${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide the conversation toward: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
-
 RESPONSE INSTRUCTIONS:
 - Respond naturally as Cha Hae-In in character
 - Reference the current location and situation
@@ -1842,8 +1468,7 @@ RESPONSE INSTRUCTIONS:
 - Keep response conversational and under 100 words
 - Use "Jin-Woo" when addressing him directly
 - Show your hunter expertise when relevant
-- Express growing feelings if affection is high enough
-${episodeGuidance ? '- After responding to the current message, naturally suggest the story progression mentioned above' : ''}`;
+- Express growing feelings if affection is high enough`;
         
         const result = await model.generateContent(fullPrompt);
         response = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
@@ -1967,65 +1592,19 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
         dynamicPrompts = generateFallbackPrompts(response, message, context).slice(0, 4);
       }
       
-      // Calculate final affection value - use affectionLevel if available, fallback to affection
-      const currentAffection = gameState.affectionLevel || gameState.affection || 25;
-      const newAffectionLevel = Math.min(100, currentAffection + 1 + affectionBonus);
-      
-      // Create final updated game state
-      const finalGameState = updatedGameState.scheduledActivities ? {
-        ...updatedGameState,
-        affection: newAffectionLevel,
-        affectionLevel: newAffectionLevel
-      } : {
-        ...gameState,
-        affection: newAffectionLevel,
-        affectionLevel: newAffectionLevel
-      };
-
-      // Persist affection gain to database if profileId is available
-      if (gameState.profileId || context?.profileId) {
-        try {
-          const { db } = await import('./db');
-          const { gameStates } = await import('@shared/schema');
-          const { eq } = await import('drizzle-orm');
-          
-          const profileId = gameState.profileId || context?.profileId;
-          
-          // Get the current game state from database to find the gameStateId
-          const { playerProfiles } = await import('@shared/schema');
-          const profileData = await db
-            .select()
-            .from(playerProfiles)
-            .where(eq(playerProfiles.id, profileId))
-            .limit(1);
-
-          if (profileData.length > 0 && profileData[0].gameStateId) {
-            // Update the game state in database with new affection level
-            await db
-              .update(gameStates)
-              .set({ 
-                affectionLevel: newAffectionLevel,
-                // Also update scheduled activities if they changed
-                ...(finalGameState.scheduledActivities && {
-                  scheduledActivities: finalGameState.scheduledActivities
-                })
-              })
-              .where(eq(gameStates.id, profileData[0].gameStateId));
-              
-            console.log(`💕 Affection updated in database: ${gameState.affection || 25} → ${newAffectionLevel} (+${1 + affectionBonus})`);
-          }
-        } catch (error) {
-          console.error('Failed to persist affection gain to database:', error);
-        }
-      }
-
       res.json({ 
         response, 
         audioUrl,
         expression: expressionUpdate,
         thoughtPrompts: dynamicPrompts,
         showAffectionHeart,
-        gameState: finalGameState
+        gameState: updatedGameState.scheduledActivities ? {
+          ...updatedGameState,
+          affection: Math.min(100, (gameState.affection || 25) + 1 + affectionBonus)
+        } : {
+          ...gameState,
+          affection: Math.min(100, (gameState.affection || 25) + 1 + affectionBonus)
+        }
       });
     } catch (error) {
       console.error("Chat error:", error);
@@ -2704,8 +2283,6 @@ Respond as Cha Hae-In would in this intimate moment:`;
   const server = createServer(app);
   return server;
 }
-
-export { registerRoutes };
 
 function analyzeIntimacyLevel(response: string): number {
   const intimacyIndicators = {

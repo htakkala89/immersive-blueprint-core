@@ -89,7 +89,6 @@ interface HunterCommunicatorSystem15Props {
   timeOfDay?: string;
   chaHaeInState?: CharacterState;
   activeQuests?: any[];
-  episodeAlerts?: SystemAlert[];
 }
 
 export function HunterCommunicatorSystem15({

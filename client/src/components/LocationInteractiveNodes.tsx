@@ -448,7 +448,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'vanity_table',
       label: 'Vanity Table',
       icon: Eye,
-      position: { x: 20, y: 65 },
+      position: { x: 20, y: 25 },
       thoughtPrompt: 'Look at her personal items.',
       outcome: 'Observe Cha Hae-In\'s elegant makeup collection and personal accessories, gaining insight into her private life.',
       gameLogic: 'intimacy_insight_system_6'
@@ -457,7 +457,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bookshelf',
       label: 'Bookshelf',
       icon: Building,
-      position: { x: 80, y: 60 },
+      position: { x: 80, y: 20 },
       thoughtPrompt: 'Browse her book collection.',
       outcome: 'Discover her reading preferences - hunter manuals, poetry, and romantic novels that reveal her softer side.',
       gameLogic: 'character_depth_system_6'
@@ -466,7 +466,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bed',
       label: 'Bed',
       icon: Bed,
-      position: { x: 50, y: 90 },
+      position: { x: 50, y: 50 },
       thoughtPrompt: 'Notice the carefully made bed.',
       outcome: 'Admire her attention to detail and disciplined lifestyle. Unlocks deeper understanding of her character.',
       gameLogic: 'intimacy_progression_system_5'
@@ -475,7 +475,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'window_view',
       label: 'Window View',
       icon: Eye,
-      position: { x: 80, y: 95 },
+      position: { x: 80, y: 75 },
       thoughtPrompt: 'Look out her window.',
       outcome: 'Enjoy the view she wakes up to every morning - the Seoul skyline with hunter gates visible in distance.',
       gameLogic: 'atmospheric_immersion'
@@ -484,7 +484,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'tea_station',
       label: 'Tea Station',
       icon: Coffee,
-      position: { x: 20, y: 95 },
+      position: { x: 20, y: 80 },
       thoughtPrompt: 'Notice her tea collection.',
       outcome: 'Discover she enjoys traditional Korean teas. Option to prepare tea together for affection boost.',
       gameLogic: 'system_6_affection_activity'
@@ -560,120 +560,23 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
   ]
 };
 
-interface LocationNodesPropsWithQuests extends LocationNodesProps {
-  activeQuests?: Array<{
-    id: string;
-    title: string;
-    targetLocation: string;
-    objectives: Array<{
-      id: string;
-      description: string;
-      completed: boolean;
-    }>;
-  }>;
-}
-
 export function LocationInteractiveNodes({ 
   locationId, 
   onNodeInteraction, 
   playerStats, 
-  environmentalContext,
-  activeQuests 
-}: LocationNodesPropsWithQuests) {
+  environmentalContext 
+}: LocationNodesProps) {
   const [selectedNode, setSelectedNode] = useState<InteractiveNode | null>(null);
   const [showThoughtPrompt, setShowThoughtPrompt] = useState(false);
   const [nearbyNodes, setNearbyNodes] = useState<string[]>([]);
 
   const baseNodes = LOCATION_NODES[locationId] || [];
   
-  // Generate quest-specific nodes for active quests at this location
-  const getQuestNodes = (): InteractiveNode[] => {
-    if (!activeQuests) return [];
-    
-    const questsAtLocation = activeQuests.filter(quest => 
-      quest.targetLocation === locationId && 
-      quest.objectives.some(obj => !obj.completed)
-    );
-    
-    return questsAtLocation.flatMap(quest => {
-      const questNodes: InteractiveNode[] = [];
-      
-      // Generate gate entrance for gate clearance quests
-      if (quest.title.toLowerCase().includes('gate') || 
-          quest.objectives.some(obj => obj.description.toLowerCase().includes('gate'))) {
-        questNodes.push({
-          id: 'quest_gate_entrance',
-          label: 'Gate Entrance',
-          icon: Shield,
-          position: { x: 50, y: 30 },
-          thoughtPrompt: 'Enter the dimensional gate to complete the quest',
-          outcome: 'Opens dungeon raid interface for quest completion',
-          gameLogic: 'quest_gate_completion',
-          requirements: []
-        });
-      }
-      
-      // Generate monster hunt nodes for hunting quests
-      if (quest.title.toLowerCase().includes('hunt') || 
-          quest.objectives.some(obj => obj.description.toLowerCase().includes('monster'))) {
-        questNodes.push({
-          id: 'quest_monster_spawn',
-          label: 'Monster Activity',
-          icon: Zap,
-          position: { x: 70, y: 70 },
-          thoughtPrompt: 'Investigate the monster sighting',
-          outcome: 'Initiates combat encounter for quest progression',
-          gameLogic: 'quest_monster_hunt',
-          requirements: []
-        });
-      }
-      
-      // Generate investigation nodes for mystery quests
-      if (quest.title.toLowerCase().includes('investigate') || 
-          quest.objectives.some(obj => obj.description.toLowerCase().includes('investigate'))) {
-        questNodes.push({
-          id: 'quest_investigation_point',
-          label: 'Investigation Point',
-          icon: Eye,
-          position: { x: 30, y: 60 },
-          thoughtPrompt: 'Examine the area for clues',
-          outcome: 'Reveals quest information and advances objectives',
-          gameLogic: 'quest_investigation',
-          requirements: []
-        });
-      }
-      
-      // Generate delivery nodes for courier quests
-      if (quest.title.toLowerCase().includes('deliver') || 
-          quest.objectives.some(obj => obj.description.toLowerCase().includes('deliver'))) {
-        questNodes.push({
-          id: 'quest_delivery_target',
-          label: 'Delivery Target',
-          icon: Users,
-          position: { x: 80, y: 40 },
-          thoughtPrompt: 'Complete the delivery objective',
-          outcome: 'Delivers quest item and completes objective',
-          gameLogic: 'quest_delivery_completion',
-          requirements: []
-        });
-      }
-      
-      return questNodes;
-    });
-  };
-  
   // System 3: Environmental State Management - Filter nodes based on context
   const getEnvironmentallyAvailableNodes = (): InteractiveNode[] => {
-    // Combine base nodes with quest-generated nodes
-    const questNodes = getQuestNodes();
-    const allNodes = [...baseNodes, ...questNodes];
+    if (!environmentalContext) return baseNodes;
     
-    if (!environmentalContext) return allNodes;
-    
-    return allNodes.filter(node => {
-      // Quest nodes are always available if quest is active
-      if (node.id.startsWith('quest_')) return true;
-      
+    return baseNodes.filter(node => {
       // Weather-based availability
       if (node.environmentalStates?.weather && 
           !node.environmentalStates.weather.includes(environmentalContext.weather)) {
@@ -697,63 +600,43 @@ export function LocationInteractiveNodes({
     });
   };
 
-  // Mobile-optimized grid system with responsive positioning
+  // ABSOLUTE NO-OVERLAP RULE: Force nodes into a strict grid system
   const adjustNodePositions = (rawNodes: InteractiveNode[]): InteractiveNode[] => {
     if (rawNodes.length === 0) return rawNodes;
     
-    // Mobile-first responsive grid positioning
-    const getResponsiveGridPosition = (index: number, total: number): { x: number; y: number } => {
-      // Single node - center position
+    // Calculate grid positions based on screen quadrants with massive spacing
+    const getGridPosition = (index: number, total: number): { x: number; y: number } => {
       if (total === 1) return { x: 50, y: 50 };
-      
-      // Two nodes - left and right with safe margins
-      if (total === 2) return index === 0 ? { x: 25, y: 50 } : { x: 75, y: 50 };
-      
-      // Three nodes - triangle formation optimized for mobile
+      if (total === 2) return index === 0 ? { x: 20, y: 30 } : { x: 80, y: 70 };
       if (total === 3) return [
-        { x: 50, y: 25 },   // Top center
-        { x: 25, y: 75 },   // Bottom left
-        { x: 75, y: 75 }    // Bottom right
-      ][index];
-      
-      // Four nodes - corners with mobile-safe margins
-      if (total === 4) return [
-        { x: 20, y: 25 },   // Top left
-        { x: 80, y: 25 },   // Top right
-        { x: 20, y: 75 },   // Bottom left
-        { x: 80, y: 75 }    // Bottom right
-      ][index];
-      
-      // Five or more nodes - organized grid pattern
-      const mobileOptimizedPositions = [
-        { x: 20, y: 20 },   // Top row
-        { x: 50, y: 20 },
+        { x: 20, y: 20 },
         { x: 80, y: 20 },
-        { x: 20, y: 50 },   // Middle row
-        { x: 80, y: 50 },
-        { x: 20, y: 80 },   // Bottom row
-        { x: 50, y: 80 },
-        { x: 80, y: 80 },
-        { x: 35, y: 35 },   // Secondary positions if needed
-        { x: 65, y: 35 },
-        { x: 35, y: 65 },
-        { x: 65, y: 65 }
+        { x: 50, y: 80 }
+      ][index];
+      
+      // For 4+ nodes, use corners and edges with extreme spacing
+      const positions = [
+        { x: 10, y: 10 },   // Top left corner
+        { x: 90, y: 10 },   // Top right corner  
+        { x: 10, y: 90 },   // Bottom left corner
+        { x: 90, y: 90 },   // Bottom right corner
+        { x: 50, y: 10 },   // Top center
+        { x: 50, y: 90 },   // Bottom center
+        { x: 10, y: 50 },   // Left center
+        { x: 90, y: 50 },   // Right center
+        { x: 25, y: 25 },   // Inner ring
+        { x: 75, y: 25 },
+        { x: 25, y: 75 },
+        { x: 75, y: 75 }
       ];
       
-      return mobileOptimizedPositions[index % mobileOptimizedPositions.length];
+      return positions[index % positions.length];
     };
     
-    return rawNodes.map((node, index) => {
-      // Preserve manual positions for bottom-positioned nodes (y >= 90)
-      if (node.position.y >= 90) {
-        return node; // Keep original position
-      }
-      // Use responsive grid for other nodes
-      return {
-        ...node,
-        position: getResponsiveGridPosition(index, rawNodes.length)
-      };
-    });
+    return rawNodes.map((node, index) => ({
+      ...node,
+      position: getGridPosition(index, rawNodes.length)
+    }));
   };
 
   const rawNodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
@@ -895,14 +778,10 @@ export function LocationInteractiveNodes({
   };
 
   const handleThoughtPromptClick = () => {
-    console.log('🎯 Act on Thought clicked!', { selectedNode });
-    
     if (selectedNode) {
-      console.log('🎯 Processing node interaction:', selectedNode.id, selectedNode.gameLogic);
-      
       // Special handling for movie night activity
       if (selectedNode.gameLogic === 'movie_night_activity') {
-        console.log('🎯 Movie night activity detected');
+        // Trigger movie night modal directly
         onNodeInteraction('movie_night_setup', 'Watch a movie together', 'Opening movie night activity');
         setShowThoughtPrompt(false);
         setSelectedNode(null);
@@ -911,14 +790,9 @@ export function LocationInteractiveNodes({
       
       // Use memory-enhanced prompts and outcomes
       const memoryState = getNodeMemoryState(selectedNode);
-      console.log('🎯 Memory state:', memoryState);
-      console.log('🎯 Calling onNodeInteraction with:', selectedNode.id, memoryState.thoughtPrompt, memoryState.outcome);
-      
       onNodeInteraction(selectedNode.id, memoryState.thoughtPrompt, memoryState.outcome);
       setShowThoughtPrompt(false);
       setSelectedNode(null);
-    } else {
-      console.log('🚨 No selectedNode found!');
     }
   };
 
@@ -965,13 +839,12 @@ export function LocationInteractiveNodes({
         return (
           <motion.div
             key={node.id}
-            className="absolute pointer-events-auto cursor-pointer z-40"
+            className="absolute pointer-events-auto cursor-pointer z-40 opacity-100"
             style={{
               left: `${node.position.x}%`,
               top: `${node.position.y}%`,
-              transform: 'translate(-50%, -50%)', // Center the node on its position
-              minWidth: '100px',
-              minHeight: '100px'
+              minWidth: '80px',
+              minHeight: '80px'
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -979,39 +852,41 @@ export function LocationInteractiveNodes({
               console.log('🎯 NODE CLICKED:', node.id);
               handleNodeClick(node);
             }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            {/* Mobile-optimized node container */}
-            <div className="flex flex-col items-center justify-center">
-              {/* Node orb with proper touch target */}
-              <motion.div
-                className={`w-14 h-14 rounded-full flex items-center justify-center border-2 mb-2 ${
-                  available 
-                    ? 'bg-purple-500/90 border-purple-300 shadow-lg' 
-                    : 'bg-gray-600/70 border-gray-400'
-                }`}
-                animate={available ? {
-                  boxShadow: [
-                    '0 0 8px rgba(147, 51, 234, 0.6)',
-                    '0 0 20px rgba(147, 51, 234, 0.8)',
-                    '0 0 8px rgba(147, 51, 234, 0.6)'
-                  ]
-                } : {}}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <IconComponent className="w-7 h-7 text-white" />
-              </motion.div>
+            {/* Mobile-friendly large node */}
+            <motion.div
+              className="w-12 h-12 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
+              style={{
+                minWidth: '48px',
+                minHeight: '48px',
+                padding: '8px',
+                margin: '16px'
+              }}
+              animate={available ? {
+                boxShadow: [
+                  '0 0 5px rgba(147, 51, 234, 0.6)',
+                  '0 0 15px rgba(147, 51, 234, 0.8)',
+                  '0 0 5px rgba(147, 51, 234, 0.6)'
+                ]
+              } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <IconComponent className="w-6 h-6 text-white" />
+            </motion.div>
 
-              {/* Node label positioned below orb */}
-              <div className="text-center">
-                <div className={`px-3 py-1 rounded-lg text-xs font-medium border backdrop-blur-sm ${
-                  available 
-                    ? 'bg-black/85 border-purple-400/60 text-purple-100' 
-                    : 'bg-black/70 border-gray-500/50 text-gray-300'
-                }`}>
-                  {node.label}
-                </div>
+            {/* Node Label with 8px spacing from orb */}
+            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+              <div className={`backdrop-blur-sm rounded-md text-sm border ${
+                available 
+                  ? 'bg-black/80 border-purple-400/50 text-purple-200'
+                  : 'bg-black/60 border-gray-500/50 text-gray-400'
+              }`}
+              style={{
+                padding: '4px 8px' // 4px micro spacing vertical, 8px standard horizontal
+              }}>
+                {node.label}
               </div>
             </div>
           </motion.div>

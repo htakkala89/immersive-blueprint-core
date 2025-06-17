@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Settings, User, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProfileManager from '@/components/ProfileManager';
-import { FirstTimeProfileCreation } from '@/components/FirstTimeProfileCreation';
 
 interface RoleSelectionScreenProps {
   onSelectRole: (role: 'player' | 'creator', profileId?: number) => void;
@@ -12,137 +11,12 @@ interface RoleSelectionScreenProps {
 export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) {
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
-  const [showFirstTimeCreation, setShowFirstTimeCreation] = useState(false);
-  const [isCreatingProfile, setIsCreatingProfile] = useState(false);
-  const [existingProfiles, setExistingProfiles] = useState<any[]>([]);
-
-  // Check for existing profiles on component mount
-  useEffect(() => {
-    const checkExistingProfiles = async () => {
-      try {
-        const response = await fetch('/api/profiles');
-        if (response.ok) {
-          const data = await response.json();
-          setExistingProfiles(data.profiles || []);
-        }
-      } catch (error) {
-        console.error('Failed to check existing profiles:', error);
-      }
-    };
-    checkExistingProfiles();
-  }, []);
 
   const handleLoadProfile = (profileId: number) => {
     setSelectedProfileId(profileId);
     setShowProfileManager(false);
+    // Automatically enter player mode with loaded profile
     onSelectRole('player', profileId);
-  };
-
-  const handleJoinWorld = () => {
-    if (existingProfiles.length === 0) {
-      // First time user - show profile creation
-      setShowFirstTimeCreation(true);
-    } else {
-      // Existing user - show profile manager
-      setShowProfileManager(true);
-    }
-  };
-
-  const handleCreateFirstProfile = async (profileName: string) => {
-    setIsCreatingProfile(true);
-    try {
-      const response = await fetch('/api/profiles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profileName,
-          description: 'Beginning your journey as an S-Rank Hunter',
-          gameData: {
-            level: 1,
-            health: 100,
-            maxHealth: 100,
-            mana: 50,
-            maxMana: 50,
-            affectionLevel: 0,
-            intimacyLevel: 1,
-            gold: 100,
-            currentScene: "hunter_association",
-            energy: 100,
-            maxEnergy: 100,
-            experience: 0,
-            apartmentTier: 1,
-            stats: { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
-            statPoints: 0,
-            skillPoints: 0,
-            inventory: [],
-            skills: [],
-            activeQuests: [],
-            completedQuests: [],
-            storyFlags: {},
-            choiceHistory: []
-          }
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to create profile');
-      
-      const newProfile = await response.json();
-      setShowFirstTimeCreation(false);
-      onSelectRole('player', newProfile.id);
-    } catch (error) {
-      console.error('Failed to create profile:', error);
-    } finally {
-      setIsCreatingProfile(false);
-    }
-  };
-
-  const handleNewGame = async () => {
-    try {
-      // Create a new profile with default starting values
-      const response = await fetch('/api/profiles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profileName: `Hunter Life ${new Date().toLocaleDateString()}`,
-          description: 'Beginning your journey as an S-Rank Hunter',
-          gameData: {
-            level: 1,
-            health: 100,
-            maxHealth: 100,
-            mana: 50,
-            maxMana: 50,
-            affectionLevel: 0,
-            intimacyLevel: 1,
-            gold: 100,
-            currentScene: "hunter_association",
-            energy: 100,
-            maxEnergy: 100,
-            experience: 0,
-            maxExperience: 100,
-            apartmentTier: 1,
-            stats: { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
-            statPoints: 0,
-            skillPoints: 0,
-            storyProgress: 0,
-            inventory: [],
-            activeQuests: [],
-            completedQuests: [],
-            unlockedActivities: [],
-            sharedMemories: [],
-            storyFlags: {}
-          }
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to create new game');
-      
-      const { profile } = await response.json();
-      
-      // Automatically load the new profile and enter player mode
-      onSelectRole('player', profile.id);
-    } catch (error) {
-      console.error('Error creating new game:', error);
-    }
   };
 
   return (
@@ -204,56 +78,28 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
 
         {/* Role Selection Buttons */}
         <div className="space-y-6">
-          {/* New Game Button */}
-          <motion.div
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-          >
-            <Button
-              onClick={handleJoinWorld}
-              className="w-full h-20 bg-gradient-to-r from-green-600/80 to-emerald-600/80 hover:from-green-500/90 hover:to-emerald-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
-              style={{
-                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(16, 185, 129, 0.8) 100%)',
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              <div className="flex items-center justify-center space-x-4">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                  <User className="w-5 h-5 text-white" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-lg font-bold text-white">Join World</h3>
-                  <p className="text-xs text-slate-200 opacity-90">
-                    Enter your life as a new S-Rank Hunter
-                  </p>
-                </div>
-              </div>
-            </Button>
-          </motion.div>
-
-          {/* Continue Game Button */}
+          {/* Player Experience Button */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
             <Button
-              onClick={() => setShowProfileManager(true)}
-              className="w-full h-20 bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
+              onClick={() => onSelectRole('player')}
+              className="w-full h-24 bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
               style={{
                 background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(59, 130, 246, 0.8) 100%)',
                 backdropFilter: 'blur(10px)'
               }}
             >
               <div className="flex items-center justify-center space-x-4">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                  <Database className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <Crown className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-lg font-bold text-white">Continue World</h3>
-                  <p className="text-xs text-slate-200 opacity-90">
-                    Return to your ongoing Hunter life
+                  <h3 className="text-xl font-bold text-white">Enter Player Experience</h3>
+                  <p className="text-sm text-slate-200 opacity-90">
+                    Immerse yourself in the spatial romance adventure
                   </p>
                 </div>
               </div>
@@ -288,7 +134,31 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
             </Button>
           </motion.div>
 
-
+          {/* Profile Manager Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="pt-4 border-t border-white/10"
+          >
+            <Button
+              onClick={() => setShowProfileManager(true)}
+              variant="outline"
+              className="w-full h-16 bg-white/5 hover:bg-white/10 border-white/20 hover:border-white/30 backdrop-blur-sm transition-all duration-300 group"
+            >
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <Database className="w-4 h-4 text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-white">Manage Save Profiles</h3>
+                  <p className="text-xs text-slate-300 opacity-80">
+                    Load saved games for team testing
+                  </p>
+                </div>
+              </div>
+            </Button>
+          </motion.div>
         </div>
 
         {/* Footer */}
@@ -334,14 +204,6 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
         onLoadProfile={handleLoadProfile}
         currentGameState={{}} // Empty state for role selection screen
       />
-
-      {/* First Time Profile Creation */}
-      {showFirstTimeCreation && (
-        <FirstTimeProfileCreation
-          onCreateProfile={handleCreateFirstProfile}
-          isCreating={isCreatingProfile}
-        />
-      )}
     </div>
   );
 }

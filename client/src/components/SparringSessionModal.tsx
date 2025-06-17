@@ -265,17 +265,6 @@ export function SparringSessionModal({
       affection: affectionGain
     });
 
-    // Track episode event for sparring session completion
-    fetch('/api/episode-events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event: 'activity_completed',
-        data: { activity_id: 'sparring_session' },
-        profileId: 10 // TODO: Get from actual profile context
-      })
-    }).catch(console.error);
-
     // Generate aftermath conversation if not already shown
     if (conversationHistory.length === 0) {
       generateAftermathConversation();

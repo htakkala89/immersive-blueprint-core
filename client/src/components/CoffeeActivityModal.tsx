@@ -95,18 +95,6 @@ export function CoffeeActivityModal({
         choiceMade: selectedChoice.id,
         conversationCompleted: true
       };
-      
-      // Track episode event for coffee activity completion
-      fetch('/api/episode-events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'activity_completed',
-          data: { activity_id: 'coffee_date' },
-          profileId: 10 // TODO: Get from actual profile context
-        })
-      }).catch(console.error);
-      
       onActivityComplete(results);
     }
     onClose();
