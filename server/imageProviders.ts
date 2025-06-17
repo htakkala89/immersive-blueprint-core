@@ -41,13 +41,13 @@ class NovelAIProvider implements ImageProvider {
 
     const requestBody = {
       input: optimizedPrompt,
-      model: 'nai-diffusion-3',
+      model: 'nai-diffusion-4-curated-preview',
       parameters: {
         width: 832,
         height: 1216,
         scale: 5.5,
-        sampler: 'k_euler_ancestral',
-        steps: 35,
+        sampler: 'k_dpmpp_2s_ancestral',
+        steps: 50,
         seed: Math.floor(Math.random() * 4294967295),
         n_samples: 1,
         ucPreset: 0,
@@ -56,7 +56,8 @@ class NovelAIProvider implements ImageProvider {
         sm: true,
         sm_dyn: true,
         cfg_rescale: 0.7,
-        noise_schedule: "native"
+        noise_schedule: "native",
+        dynamic_thresholding: true
       }
     };
 

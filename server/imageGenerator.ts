@@ -86,7 +86,7 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
 
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
-    model: 'nai-diffusion-4',
+    model: 'nai-diffusion-4-curated-preview',
     parameters: {
       width: 832,
       height: 1216,
