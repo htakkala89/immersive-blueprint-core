@@ -109,7 +109,7 @@ This is a comprehensive romantic RPG based on the Solo Leveling manhwa, featurin
 
 ## Changelog
 
-- June 17, 2025. Chat Interface Improvements - Fixed dialogue box height to consistent 240px and implemented proper autoscroll functionality that smoothly scrolls new messages into view at the bottom of the conversation area.
+- June 17, 2025. Chat Interface Improvements - Fixed dialogue box height to consistent 250px and implemented proper autoscroll functionality that smoothly scrolls new messages into view at the bottom of the conversation area.
 - June 13, 2025. Affection Tracking Fix - Resolved critical issue where dialogue system wasn't persisting affection gains to database. Fixed database connection problems by switching from WebSocket to HTTP connection, corrected field mapping between frontend (affection) and database (affectionLevel), and implemented proper persistence logic. Affection now properly tracks with +1 base gain per conversation and +2-3 bonus for romantic moments that trigger the Affection Heart system.
 - June 13, 2025. UI Position Fix - Moved episode eye (MysticalEye) from top-right to top-left to prevent overlap with Monarch's Aura button. Improved UI accessibility and visual clarity.
 - June 13, 2025. UI Cleanup - Removed redundant "Start Episode 1" menu item from Monarch's Aura interface. Streamlined episode access through the proper Episodes selector system, reducing menu clutter and user confusion.
