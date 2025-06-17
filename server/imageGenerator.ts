@@ -168,9 +168,9 @@ async function getGoogleAccessToken(): Promise<string | null> {
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
     // Get OAuth2 access token and project ID
-    const { getGoogleAccessToken, getProjectId } = await import('./googleAuth');
+    const { getGoogleAccessToken } = await import('./googleAuthFixed');
     const accessToken = await getGoogleAccessToken();
-    const projectId = getProjectId();
+    const projectId = 'blitz-esports'; // Using the project ID from the service account
     
     if (!accessToken || !projectId) {
       console.log('Google OAuth2 credentials not available - cannot use Imagen');

@@ -1,5 +1,6 @@
 // Google Cloud authentication utility
 import jwt from 'jsonwebtoken';
+import { GoogleAuth } from 'google-auth-library';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
