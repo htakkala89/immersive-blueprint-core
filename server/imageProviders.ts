@@ -39,64 +39,70 @@ class NovelAIProvider implements ImageProvider {
     
     const optimizedPrompt = `${prompt}, Cha Hae-In with blonde hair, Jin-Woo with dark hair, Solo Leveling manhwa art style, explicit mature content, uncensored, high quality erotic artwork, Korean webtoon aesthetic, NSFW content, adult content`;
 
-    const requestBody = {
-      input: optimizedPrompt,
-      model: 'nai-diffusion-3',
-      parameters: {
-        width: 832,
-        height: 1216,
-        scale: 5.5,
-        sampler: 'k_euler_ancestral',
-        steps: 35,
-        seed: Math.floor(Math.random() * 4294967295),
-        n_samples: 1,
-        ucPreset: 0,
-        uc: negativePrompt,
-        qualityToggle: true,
-        sm: true,
-        sm_dyn: true,
-        cfg_rescale: 0.7,
-        noise_schedule: "native"
-      }
-    };
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestBody)
-        });
-
-        if (response.ok) {
-          const buffer = await response.arrayBuffer();
-          
-          // NovelAI returns images in ZIP format, extract the first image
-          try {
-            const zip = new AdmZip(Buffer.from(buffer));
-            const zipEntries = zip.getEntries();
-            
-            if (zipEntries.length > 0) {
-              const imageBuffer = zipEntries[0].getData();
-              const base64Image = imageBuffer.toString('base64');
-              return {
-                success: true,
-                imageUrl: `data:image/png;base64,${base64Image}`,
-                provider: this.name
-              };
-            }
-          } catch (zipError) {
-            console.log('Failed to extract ZIP from NovelAI response:', zipError);
-          }
-        } else {
-          const errorText = await response.text();
-          console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
+    // Try latest models first, fallback to V3 if unavailable
+    const models = ['nai-diffusion-4', 'nai-diffusion-3'];
+    
+    for (const model of models) {
+      const requestBody = {
+        input: optimizedPrompt,
+        model: model,
+        parameters: {
+          width: 832,
+          height: 1216,
+          scale: 5.5,
+          sampler: 'k_euler_ancestral',
+          steps: 35,
+          seed: Math.floor(Math.random() * 4294967295),
+          n_samples: 1,
+          ucPreset: 0,
+          uc: negativePrompt,
+          qualityToggle: true,
+          sm: true,
+          sm_dyn: true,
+          cfg_rescale: 0.7,
+          noise_schedule: "native"
         }
-      } catch (error) {
-        console.log(`NovelAI endpoint ${endpoint} failed:`, error);
+      };
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+          });
+
+          if (response.ok) {
+            const buffer = await response.arrayBuffer();
+            
+            // NovelAI returns images in ZIP format, extract the first image
+            try {
+              const zip = new AdmZip(Buffer.from(buffer));
+              const zipEntries = zip.getEntries();
+              
+              if (zipEntries.length > 0) {
+                const imageBuffer = zipEntries[0].getData();
+                const base64Image = imageBuffer.toString('base64');
+                console.log(`✅ NovelAI ${model} generated image successfully`);
+                return {
+                  success: true,
+                  imageUrl: `data:image/png;base64,${base64Image}`,
+                  provider: `${this.name} ${model}`
+                };
+              }
+            } catch (zipError) {
+              console.log('Failed to extract ZIP from NovelAI response:', zipError);
+            }
+          } else {
+            const errorText = await response.text();
+            console.log(`NovelAI ${model} at ${endpoint} failed with status ${response.status}:`, errorText);
+          }
+        } catch (error) {
+          console.log(`NovelAI ${model} endpoint ${endpoint} failed:`, error);
+        }
       }
     }
 
