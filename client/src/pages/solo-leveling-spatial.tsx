@@ -310,6 +310,21 @@ export default function SoloLevelingSpatial() {
     timestamp: Date;
   }>>([]);
 
+  // Narrator System state
+  const [showNarrator, setShowNarrator] = useState(true);
+  const [narratorAutoMode, setNarratorAutoMode] = useState(true);
+
+  // Calendar System state (using existing timeOfDay and weather)
+  const [currentGameDate, setCurrentGameDate] = useState<GameDate>({
+    year: 2024,
+    month: 6,
+    day: 15,
+    dayOfWeek: 6, // Saturday
+    season: 'summer',
+    weekOfMonth: 3
+  });
+  const [showCalendar, setShowCalendar] = useState(false);
+
 
 
   // System 8: World Map state - activeQuests defined below with other quest states
