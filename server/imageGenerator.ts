@@ -4,6 +4,7 @@ import AdmZip from 'adm-zip';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { GoogleAuth } from 'google-auth-library';
+import { getGoogleAccessToken } from './googleAuthFixed.js';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -148,45 +149,31 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   return null;
 }
 
-// Google Cloud authentication using service account with direct API key approach
-async function getGoogleAccessToken(): Promise<string | null> {
-  try {
-    // Use Google API key directly for Vertex AI if available
-    if (process.env.GOOGLE_API_KEY) {
-      console.log('Using Google API key for authentication');
-      return process.env.GOOGLE_API_KEY;
-    }
-    
-    console.log('Google API key not available');
-    return null;
-  } catch (error) {
-    console.error('Error getting Google access token:', error);
-    return null;
-  }
-}
+// Google authentication is handled by the imported googleAuthFixed module
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Use Google API key directly for Imagen
-    const apiKey = process.env.GOOGLE_API_KEY;
+    // Use OAuth2 service account for Imagen
+    const accessToken = await getGoogleAccessToken();
     const projectId = 'blitz-esports';
     
-    if (!apiKey || !projectId) {
-      console.log('Google API key not available - cannot use Imagen');
+    if (!accessToken) {
+      console.log('❌ Failed to get Google access token');
       return null;
     }
     
-    console.log('🎨 Using Google API key for Imagen generation...');
+    console.log('🎨 Using Google OAuth2 for Imagen generation...');
 
     const location = 'us-central1';
-    // Using Imagen 3.0 Fast model with API key authentication
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict?key=${apiKey}`;
+    // Using Imagen 3.0 Fast model with OAuth2 authentication
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
     
     console.log('🎨 Attempting Google Imagen generation...');
     
     const response = await fetch(vertexEndpoint, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -215,11 +202,12 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       console.log('Vertex AI Imagen failed:', response.status, errorText);
       
       // Try alternative Imagen model
-      const altEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict?key=${apiKey}`;
+      const altEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
       
       const altResponse = await fetch(altEndpoint, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
