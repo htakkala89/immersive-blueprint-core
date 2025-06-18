@@ -61,43 +61,71 @@ class NovelAIProvider implements ImageProvider {
       }
     };
 
+    const maxRetries = 3;
+    const retryDelay = 2000;
+    
     for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestBody)
-        });
-
-        if (response.ok) {
-          const buffer = await response.arrayBuffer();
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          console.log(`🎨 NovelAI V4.5 generation attempt ${attempt}/${maxRetries}...`);
           
-          // NovelAI returns images in ZIP format, extract the first image
-          try {
-            const zip = new AdmZip(Buffer.from(buffer));
-            const zipEntries = zip.getEntries();
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+              'Content-Type': 'application/json',
+              'Accept': '*/*'
+            },
+            body: JSON.stringify(requestBody)
+          });
+
+          console.log(`NovelAI response status: ${response.status}`);
+
+          if (response.ok) {
+            const buffer = await response.arrayBuffer();
+            console.log(`NovelAI response size: ${buffer.byteLength} bytes`);
             
-            if (zipEntries.length > 0) {
-              const imageBuffer = zipEntries[0].getData();
-              const base64Image = imageBuffer.toString('base64');
-              return {
-                success: true,
-                imageUrl: `data:image/png;base64,${base64Image}`,
-                provider: this.name
-              };
+            try {
+              const zip = new AdmZip(Buffer.from(buffer));
+              const zipEntries = zip.getEntries();
+              
+              if (zipEntries.length > 0) {
+                const imageBuffer = zipEntries[0].getData();
+                const base64Image = imageBuffer.toString('base64');
+                console.log(`✅ NovelAI V4.5 generated successfully - Size: ${imageBuffer.length} bytes`);
+                return {
+                  success: true,
+                  imageUrl: `data:image/png;base64,${base64Image}`,
+                  provider: this.name
+                };
+              }
+            } catch (zipError: any) {
+              console.log('❌ ZIP extraction failed:', zipError.message);
             }
-          } catch (zipError) {
-            console.log('Failed to extract ZIP from NovelAI response:', zipError);
+          } else {
+            const errorText = await response.text();
+            console.log(`❌ NovelAI failed with status ${response.status}:`, errorText);
+            
+            // Retry on server errors
+            if (response.status >= 500 && attempt < maxRetries) {
+              console.log(`⏳ Retrying in ${retryDelay}ms...`);
+              await new Promise(resolve => setTimeout(resolve, retryDelay));
+              continue;
+            }
           }
-        } else {
-          const errorText = await response.text();
-          console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
+        } catch (error: any) {
+          console.log(`❌ NovelAI request failed (attempt ${attempt}):`, error.message);
+          
+          // Retry on network errors
+          if (attempt < maxRetries) {
+            console.log(`⏳ Retrying in ${retryDelay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            continue;
+          }
         }
-      } catch (error) {
-        console.log(`NovelAI endpoint ${endpoint} failed:`, error);
+        
+        // Break out of retry loop if we reach here without success
+        break;
       }
     }
 

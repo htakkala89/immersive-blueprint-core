@@ -174,6 +174,8 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   return null;
 }
 
+export { generateWithNovelAI };
+
 // Google authentication is handled by the imported googleAuthFixed module
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {

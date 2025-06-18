@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage, generateAvatarExpressionImage } from "./imageGenerator";
+import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage, generateAvatarExpressionImage, generateWithNovelAI } from "./imageGenerator";
 import { imageGenerationService } from "./imageProviders";
 import { ActivityProposalSystem } from "./activityProposalSystem";
 import { getCachedLocationImage, cacheLocationImage, preloadLocationImages, getCacheStats } from "./imagePreloader";
@@ -2209,19 +2209,19 @@ Respond as Cha Hae-In would in this intimate moment:`;
       const { prompt: rawPrompt, activityId, stylePreset, relationshipStatus, intimacyLevel } = req.body;
       const prompt = String(rawPrompt || '');
       
-      console.log("🎨 Generating intimate scene exclusively with NovelAI V4.5 Full...");
+      console.log("🎨 Generating intimate scene with NovelAI V4.5 Full...");
       
       // Create enhanced romantic prompt for NovelAI V4.5 Full
       const enhancedIntimatePrompt = `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In and Jin-Woo intimate romantic moment, Solo Leveling manhwa art style, romantic scene, beautiful lighting, emotional intimacy, tender embrace, high quality artwork`;
       
-      // Use NovelAI exclusively for intimate scenes
-      const result = await imageGenerationService.generateImage(enhancedIntimatePrompt, 'NovelAI');
+      // Direct NovelAI generation with retry logic
+      const result = await generateWithNovelAI(enhancedIntimatePrompt);
       
-      if (result.success && result.imageUrl) {
-        console.log('✅ NovelAI V4.5 Full intimate scene generated successfully');
+      if (result) {
+        console.log('✅ NovelAI V4.5 intimate scene generated successfully');
         return res.json({ 
-          imageUrl: result.imageUrl,
-          provider: result.provider
+          imageUrl: result,
+          provider: 'NovelAI V4.5 Full'
         });
       }
 
