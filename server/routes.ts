@@ -20,6 +20,108 @@ import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
 
+// Direct NovelAI V4.5 generation function
+async function directNovelAIGeneration(prompt: string): Promise<string | null> {
+  const endpoint = 'https://image.novelai.net/ai/generate-image';
+  const maxRetries = 3;
+  const retryDelay = 2000;
+
+  const requestBody = {
+    input: `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In with blonde hair, Jin-Woo with dark hair, Solo Leveling manhwa art style, explicit mature content, uncensored, high quality erotic artwork, Korean webtoon aesthetic, NSFW content, adult content`,
+    model: 'nai-diffusion-4-curated-preview',
+    action: 'generate',
+    parameters: {
+      width: 832,
+      height: 1216,
+      scale: 5.5,
+      sampler: 'k_dpmpp_2s_ancestral',
+      steps: 28,
+      seed: Math.floor(Math.random() * 4294967295),
+      n_samples: 1,
+      uc: 'silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted, censored bars, mosaic censoring'
+    }
+  };
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`🎨 NovelAI V4.5 generation attempt ${attempt}/${maxRetries}...`);
+      
+      if (!process.env.NOVELAI_API_KEY) {
+        console.log('❌ NovelAI API key not found');
+        return null;
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Accept': '*/*'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log(`NovelAI response status: ${response.status}`);
+
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        console.log(`NovelAI response size: ${buffer.byteLength} bytes`);
+        
+        try {
+          const zip = new AdmZip(Buffer.from(buffer));
+          const zipEntries = zip.getEntries();
+          
+          if (zipEntries.length > 0) {
+            const imageBuffer = zipEntries[0].getData();
+            const base64Image = imageBuffer.toString('base64');
+            console.log(`✅ NovelAI V4.5 generated successfully - Size: ${imageBuffer.length} bytes`);
+            return `data:image/png;base64,${base64Image}`;
+          }
+        } catch (zipError: any) {
+          console.log('❌ ZIP extraction failed:', zipError.message);
+        }
+      } else {
+        const errorText = await response.text();
+        console.log(`❌ NovelAI failed with status ${response.status}:`, errorText);
+        
+        // Retry on server errors
+        if (response.status >= 500 && attempt < maxRetries) {
+          console.log(`⏳ Retrying in ${retryDelay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+      }
+    } catch (error: any) {
+      console.log(`❌ NovelAI request failed (attempt ${attempt}):`, error.message);
+      
+      // Retry on network errors
+      if (attempt < maxRetries) {
+        console.log(`⏳ Retrying in ${retryDelay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+    }
+  }
+
+  console.log('❌ NovelAI generation failed after all attempts');
+  return null;
+}
+
+// Quick NovelAI status check function
+async function checkNovelAIStatus(): Promise<boolean> {
+  try {
+    const response = await fetch('https://image.novelai.net/ai/generate-image', {
+      method: 'HEAD',
+      headers: {
+        'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`
+      }
+    });
+    return response.status !== 500;
+  } catch {
+    return false;
+  }
+}
+
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 
@@ -2214,8 +2316,8 @@ Respond as Cha Hae-In would in this intimate moment:`;
       // Create enhanced romantic prompt for NovelAI V4.5 Full
       const enhancedIntimatePrompt = `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In and Jin-Woo intimate romantic moment, Solo Leveling manhwa art style, romantic scene, beautiful lighting, emotional intimacy, tender embrace, high quality artwork`;
       
-      // Direct NovelAI generation with retry logic
-      const result = await generateWithNovelAI(enhancedIntimatePrompt);
+      // Try NovelAI V4.5 first, then fallback to DALL-E
+      let result = await directNovelAIGeneration(enhancedIntimatePrompt);
       
       if (result) {
         console.log('✅ NovelAI V4.5 intimate scene generated successfully');
@@ -2225,7 +2327,33 @@ Respond as Cha Hae-In would in this intimate moment:`;
         });
       }
 
-      console.log('⚠️ Direct intimate image generation failed');
+      // Fallback to OpenAI DALL-E for romantic scenes
+      if (openaiClient) {
+        console.log('🎨 NovelAI unavailable, using OpenAI DALL-E for romantic scene...');
+        try {
+          const romanticPrompt = `Beautiful anime couple in tender romantic moment, Cha Hae-In with blonde hair and Jin-Woo with dark hair from Solo Leveling, emotional intimacy, soft romantic lighting, Korean manhwa art style, high quality illustration, detailed faces showing love and connection, elegant composition, warm atmosphere, artistic excellence, beautiful detailed eyes, romantic scene, tender embrace, emotional depth`;
+          
+          const openaiResult = await openaiClient.images.generate({
+            model: "dall-e-3",
+            prompt: romanticPrompt,
+            n: 1,
+            size: "1024x1024",
+            quality: "hd",
+          });
+          
+          if (openaiResult.data?.[0]?.url) {
+            console.log('✅ OpenAI DALL-E generated romantic scene successfully');
+            return res.json({ 
+              imageUrl: openaiResult.data[0].url,
+              provider: 'OpenAI DALL-E (NovelAI fallback)'
+            });
+          }
+        } catch (openaiError) {
+          console.log('⚠️ OpenAI DALL-E romantic scene failed:', String(openaiError));
+        }
+      }
+
+      console.log('⚠️ All intimate image generation providers failed');
       
       // Return fallback response with descriptive text
       return res.json({ 
