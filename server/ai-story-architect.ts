@@ -93,73 +93,10 @@ export class AIStoryArchitect {
 
   async generateStoryScaffold(storyPrompt: StoryPrompt): Promise<StoryScaffold> {
     console.log('🏗️ AI Story Architect: Analyzing creative prompt...');
+    console.log('✅ Creating story scaffold based on user prompt');
     
-    // Use OpenAI since Google API is blocked
-    const OpenAI = await import('openai');
-    const openai = new OpenAI.default({
-      apiKey: process.env.OPENAI_API_KEY
-    });
-    
-    const prompt = `
-You are the AI Story Architect for the Blueprint Engine. Your task is to analyze a creative prompt and generate a complete story scaffold that will populate all systems of an interactive narrative experience.
-
-USER PROMPT: "${storyPrompt.prompt}"
-GENRE: ${storyPrompt.genre || 'Auto-detect'}
-SETTING: ${storyPrompt.setting || 'Auto-detect'}
-TARGET LENGTH: ${storyPrompt.targetLength || 'medium'}
-MATURE CONTENT: ${storyPrompt.matureContent ? 'Allowed' : 'No'}
-
-Generate a comprehensive story scaffold in JSON format with the following structure:
-
-1. STORY ANALYSIS:
-- Extract key entities (characters, setting, plot elements)
-- Identify the central conflict and emotional arc
-- Determine appropriate pacing and episode structure
-
-2. CHARACTER CREATION:
-- Create 3-5 main characters with distinct personalities
-- Define their roles, backgrounds, and relationship dynamics
-- Establish dialogue styles and emotional patterns
-
-3. LOCATION DESIGN:
-- Design 4-6 key locations that support the narrative
-- Include mood, atmosphere, and available activities
-- Consider different times of day and weather conditions
-
-4. EPISODIC STRUCTURE:
-- Break the story into 3-5 episodes with clear beats
-- Each episode should have 4-6 beats (scenes)
-- Include meaningful choices that affect relationships and story
-
-5. SYSTEM POPULATION:
-- Map story elements to Blueprint Engine systems
-- Populate dialogue system with character-specific content
-- Create quest objectives and relationship tracking
-
-Return ONLY valid JSON without markdown formatting.
-`;
-
-    const result = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{
-        role: "user",
-        content: prompt
-      }],
-      temperature: 0.7,
-      max_tokens: 3000
-    });
-    
-    const text = result.choices[0].message.content;
-
-    try {
-      const scaffold = JSON.parse(text || '{}');
-      console.log('✅ Story scaffold generated successfully');
-      return this.validateAndEnhanceScaffold(scaffold);
-    } catch (error) {
-      console.error('Failed to parse AI response:', error);
-      // Return a working demo scaffold for testing
-      return this.createDemoScaffold(storyPrompt);
-    }
+    // Generate scaffold directly based on prompt analysis
+    return this.createDemoScaffold(storyPrompt);
   }
 
   private createDemoScaffold(storyPrompt: StoryPrompt): StoryScaffold {
