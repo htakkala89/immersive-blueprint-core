@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, BookOpen, Palette, Users, Zap } from 'lucide-react';
+import { Loader2, BookOpen, Palette, Users, Zap, Eye, Package, Wand2 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
+import { MangaReader } from '@/components/MangaReader';
 
 interface MangaResult {
   success: boolean;
@@ -22,6 +23,9 @@ export default function MangaCreator() {
   const [targetLength, setTargetLength] = useState('medium');
   const [matureContent, setMatureContent] = useState(false);
   const [result, setResult] = useState<MangaResult | null>(null);
+  const [isGeneratingAssets, setIsGeneratingAssets] = useState(false);
+  const [generatedAssets, setGeneratedAssets] = useState<string[]>([]);
+  const [showReader, setShowReader] = useState(false);
 
   const createManga = useMutation({
     mutationFn: async (data: any) => {
@@ -51,6 +55,58 @@ export default function MangaCreator() {
     });
   };
 
+  const generateVisualAssets = async () => {
+    if (!result?.scaffold) return;
+    
+    setIsGeneratingAssets(true);
+    const assets = [];
+    
+    try {
+      // Generate character reference sheets
+      for (const character of result.scaffold.characters) {
+        const response = await fetch('/api/generate-novelai-intimate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            activityId: 'manga_character_sheet',
+            relationshipStatus: 'character_design',
+            intimacyLevel: 1,
+            customPrompt: `manga character reference sheet, ${character.background}, ${character.appearance}, multiple expressions and poses, clean line art style`
+          })
+        });
+        
+        const data = await response.json();
+        if (data.imageUrl) {
+          assets.push(data.imageUrl);
+        }
+      }
+      
+      // Generate key scene illustrations
+      const scenePrompt = `manga panel layout, ${result.scaffold.title} key scene, ${result.scaffold.characters[0]?.name} and ${result.scaffold.characters[1]?.name}, detailed manga art style`;
+      const sceneResponse = await fetch('/api/generate-novelai-intimate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          activityId: 'manga_scene',
+          relationshipStatus: 'story_illustration',
+          intimacyLevel: 1,
+          customPrompt: scenePrompt
+        })
+      });
+      
+      const sceneData = await sceneResponse.json();
+      if (sceneData.imageUrl) {
+        assets.push(sceneData.imageUrl);
+      }
+      
+      setGeneratedAssets(assets);
+    } catch (error) {
+      console.error('Error generating assets:', error);
+    } finally {
+      setIsGeneratingAssets(false);
+    }
+  };
+
   const downloadManga = () => {
     if (!result?.scaffold) return;
     
@@ -58,6 +114,7 @@ export default function MangaCreator() {
       title: result.scaffold.title,
       characters: result.scaffold.characters,
       episodes: result.scaffold.episodes,
+      visualAssets: generatedAssets,
       generatedAt: new Date().toISOString()
     };
     
@@ -71,6 +128,15 @@ export default function MangaCreator() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  if (showReader && result?.scaffold) {
+    return (
+      <MangaReader 
+        mangaData={result.scaffold}
+        onClose={() => setShowReader(false)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-6">
@@ -225,19 +291,76 @@ export default function MangaCreator() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={downloadManga}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Download Manga Data
-                    </Button>
+                  {/* Visual Assets Section */}
+                  {generatedAssets.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2">Generated Visual Assets</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {generatedAssets.map((asset, index) => (
+                          <img
+                            key={index}
+                            src={asset}
+                            alt={`Generated asset ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg border"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button 
+                        onClick={generateVisualAssets}
+                        disabled={isGeneratingAssets}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                      >
+                        {isGeneratingAssets ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Palette className="w-4 h-4 mr-2" />
+                            Generate Art
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        onClick={() => setShowReader(true)}
+                        className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Preview Reader
+                      </Button>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button 
+                        onClick={downloadManga}
+                        variant="outline"
+                      >
+                        <Package className="w-4 h-4 mr-2" />
+                        Download Files
+                      </Button>
+                      <Button
+                        onClick={() => setResult(null)}
+                        variant="outline"
+                      >
+                        Create Another
+                      </Button>
+                    </div>
+                    
                     <Button
-                      onClick={() => setResult(null)}
-                      variant="outline"
+                      className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
+                      onClick={() => {
+                        alert(`${result.scaffold.title} is ready for publication! You can now:\n\n• Share with readers\n• Submit to manga platforms\n• Continue developing chapters\n• Export for print production`);
+                      }}
                     >
-                      Create Another
+                      <Wand2 className="w-4 h-4 mr-2" />
+                      Publish Manga
                     </Button>
                   </div>
                 </div>
