@@ -80,14 +80,11 @@ function isMatureContent(prompt: string, activityId?: string): boolean {
 async function generateWithNovelAI(prompt: string): Promise<string | null> {
   const negativePrompt = "silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
   
-  const endpoints = [
-    'https://image.novelai.net/ai/generate-image',
-    'https://api.novelai.net/ai/generate-image'
-  ];
+  const endpoint = 'https://api.novelai.net/ai/generate-image';
 
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
-    model: 'nai-diffusion-4-curated-preview',
+    model: 'safe-diffusion',
     parameters: {
       width: 832,
       height: 1216,
@@ -107,45 +104,43 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
     }
   };
 
-  for (const endpoint of endpoints) {
-    try {
-      console.log(`🎨 Attempting NovelAI generation via ${endpoint}...`);
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      });
+  try {
+    console.log(`🎨 Attempting NovelAI generation via ${endpoint}...`);
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
 
-      if (response.ok) {
-        const buffer = await response.arrayBuffer();
+    if (response.ok) {
+      const buffer = await response.arrayBuffer();
+      
+      // NovelAI returns images in ZIP format, extract the first image
+      try {
+        const zip = new AdmZip(Buffer.from(buffer));
+        const zipEntries = zip.getEntries();
         
-        // NovelAI returns images in ZIP format, extract the first image
-        try {
-          const zip = new AdmZip(Buffer.from(buffer));
-          const zipEntries = zip.getEntries();
-          
-          if (zipEntries.length > 0) {
-            const imageBuffer = zipEntries[0].getData();
-            const base64Image = imageBuffer.toString('base64');
-            console.log('✅ NovelAI generated image successfully');
-            return `data:image/png;base64,${base64Image}`;
-          }
-        } catch (zipError) {
-          console.log('Failed to extract ZIP from NovelAI response:', zipError);
+        if (zipEntries.length > 0) {
+          const imageBuffer = zipEntries[0].getData();
+          const base64Image = imageBuffer.toString('base64');
+          console.log('✅ NovelAI generated image successfully');
+          return `data:image/png;base64,${base64Image}`;
         }
-      } else {
-        const errorText = await response.text();
-        console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
+      } catch (zipError) {
+        console.log('Failed to extract ZIP from NovelAI response:', zipError);
       }
-    } catch (error) {
-      console.log(`NovelAI endpoint ${endpoint} failed:`, error);
+    } else {
+      const errorText = await response.text();
+      console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
     }
+  } catch (error) {
+    console.log(`NovelAI endpoint ${endpoint} failed:`, error);
   }
 
-  console.log('❌ All NovelAI endpoints failed');
+  console.log('❌ NovelAI generation failed');
   return null;
 }
 
