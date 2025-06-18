@@ -51,6 +51,7 @@ import GangnamFurnishings from '@/components/GangnamFurnishings';
 import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
 import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
 import { CreatorPortalDashboard } from '@/components/CreatorPortalDashboard';
+import MangaLibrary from '@/pages/MangaLibrary';
 import EpisodeSelector from '@/components/EpisodeSelector';
 import EpisodePlayer from '@/components/EpisodePlayer';
 import ProfileManager from '@/components/ProfileManager';
@@ -291,7 +292,7 @@ export default function SoloLevelingSpatial() {
   const [showProfileManager, setShowProfileManager] = useState(false);
 
   // Role Selection System - Start with selection screen
-  const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>('none');
+  const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator' | 'manga-reader'>('none');
   const [loadedProfileId, setLoadedProfileId] = useState<number | null>(null);
 
   // Sommelier Dialog state

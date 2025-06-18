@@ -9,6 +9,7 @@ import ChapterSelect from "@/pages/chapter-select";
 import DailyLifeHub from "@/pages/daily-life-hub";
 import Marketplace from "@/pages/marketplace";
 import MangaCreator from "@/pages/MangaCreator";
+import MangaLibrary from "@/pages/MangaLibrary";
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/daily-life-hub" component={DailyLifeHub} />
       <Route path="/marketplace" component={Marketplace} />
       <Route path="/manga-creator" component={MangaCreator} />
+      <Route path="/manga-library" component={MangaLibrary} />
       <Route path="/rpg" component={Game} />
       <Route component={SoloLevelingSpatial} />
     </Switch>

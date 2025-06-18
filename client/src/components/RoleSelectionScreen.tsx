@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import ProfileManager from '@/components/ProfileManager';
 
 interface RoleSelectionScreenProps {
-  onSelectRole: (role: 'player' | 'creator', profileId?: number) => void;
+  onSelectRole: (role: 'player' | 'creator' | 'manga-reader', profileId?: number) => void;
 }
 
 export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) {
@@ -113,7 +113,7 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
             transition={{ delay: 0.9, duration: 0.6 }}
           >
             <Button
-              onClick={() => window.location.href = '/manga-creator'}
+              onClick={() => onSelectRole('manga-reader')}
               className="w-full h-20 bg-gradient-to-r from-pink-600/80 to-purple-600/80 hover:from-pink-500/90 hover:to-purple-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
               style={{
                 background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%)',
