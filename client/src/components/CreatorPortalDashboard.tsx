@@ -10,10 +10,13 @@ import {
   Users,
   Eye,
   Edit3,
-  Trash2
+  Trash2,
+  Palette,
+  Wand2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NarrativeArchitectAI } from './NarrativeArchitectAI';
+import MangaCreator from '@/pages/MangaCreator';
 
 interface Episode {
   id: string;
@@ -32,6 +35,7 @@ interface CreatorPortalDashboardProps {
 
 export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps) {
   const [showEpisodeBuilder, setShowEpisodeBuilder] = useState(false);
+  const [showMangaCreator, setShowMangaCreator] = useState(false);
   const [episodes, setEpisodes] = useState<Episode[]>([
     {
       id: 'EP01_Red_Echo',
@@ -82,6 +86,23 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
         isVisible={true}
         onClose={() => setShowEpisodeBuilder(false)}
       />
+    );
+  }
+
+  if (showMangaCreator) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
+        <div className="p-6">
+          <Button
+            onClick={() => setShowMangaCreator(false)}
+            variant="outline"
+            className="mb-4"
+          >
+            ← Back to Creator Portal
+          </Button>
+          <MangaCreator />
+        </div>
+      </div>
     );
   }
 
@@ -272,6 +293,13 @@ export function CreatorPortalDashboard({ onLogout }: CreatorPortalDashboardProps
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   New Episode
+                </Button>
+                <Button
+                  onClick={() => setShowMangaCreator(true)}
+                  className="w-full justify-start bg-gradient-to-r from-pink-600/80 to-purple-600/80 hover:from-pink-600 hover:to-purple-600"
+                >
+                  <Palette className="w-4 h-4 mr-2" />
+                  Create Manga
                 </Button>
                 <Button
                   variant="outline"

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Settings, User, Database } from 'lucide-react';
+import { Crown, Settings, User, Database, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProfileManager from '@/components/ProfileManager';
 
@@ -100,6 +100,34 @@ export function RoleSelectionScreen({ onSelectRole }: RoleSelectionScreenProps) 
                   <h3 className="text-xl font-bold text-white">Enter Player Experience</h3>
                   <p className="text-sm text-slate-200 opacity-90">
                     Immerse yourself in the spatial romance adventure
+                  </p>
+                </div>
+              </div>
+            </Button>
+          </motion.div>
+
+          {/* Manga Experience Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.6 }}
+          >
+            <Button
+              onClick={() => window.location.href = '/manga-creator'}
+              className="w-full h-20 bg-gradient-to-r from-pink-600/80 to-purple-600/80 hover:from-pink-500/90 hover:to-purple-500/90 border border-white/20 backdrop-blur-sm transition-all duration-300 group"
+              style={{
+                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%)',
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              <div className="flex items-center justify-center space-x-4">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <BookOpen className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-bold text-white">Experience Created Manga</h3>
+                  <p className="text-sm text-slate-200 opacity-90">
+                    Read interactive manga stories created by the community
                   </p>
                 </div>
               </div>
