@@ -1919,6 +1919,15 @@ export default function SoloLevelingSpatial() {
     );
   }
 
+  // Manga Library Experience
+  if (selectedRole === 'manga-reader') {
+    return (
+      <MangaLibrary 
+        onBack={() => setSelectedRole('none')}
+      />
+    );
+  }
+
   // System 18: Episode Selection and Player - Early Returns
   if (showEpisodeSelector) {
     return (

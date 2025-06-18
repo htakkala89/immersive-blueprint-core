@@ -20,7 +20,7 @@ function Router() {
       <Route path="/daily-life-hub" component={DailyLifeHub} />
       <Route path="/marketplace" component={Marketplace} />
       <Route path="/manga-creator" component={MangaCreator} />
-      <Route path="/manga-library" component={MangaLibrary} />
+      <Route path="/manga-library" component={() => <MangaLibrary />} />
       <Route path="/rpg" component={Game} />
       <Route component={SoloLevelingSpatial} />
     </Switch>

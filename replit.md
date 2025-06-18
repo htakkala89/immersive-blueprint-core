@@ -128,6 +128,10 @@ Monarch's Shadow serves as the proof-of-concept, demonstrating how all 18+ syste
 - **Database Indexing**: Optimized queries for game state retrieval
 
 ## Changelog
+- June 18, 2025. Complete manga creation and reading ecosystem implemented - creators generate interactive manga through AI Story Architect, users access published works through immersive Manga Library with panel-by-panel navigation, character dialogue, and choice-driven progression
+- June 18, 2025. Enhanced post-creation workflow with visual asset generation using NovelAI V4.5 for character reference sheets and scene illustrations
+- June 18, 2025. MangaReader component with full reading experience - animated panel transitions, dialogue boxes, interactive choices affecting story progression, and affection point tracking
+- June 18, 2025. Integrated manga access into role selection flow - users can choose between Player Experience, Created Manga Library, or Creator Portal from unified entry point
 - June 18, 2025. Blueprint Engine dual creation pathways fully operational - AI Story Architect generates complete interactive experiences from prompts, Ingestion & Adaptation Engine transforms existing content into playable experiences
 - June 18, 2025. Blueprint Engine API endpoints implemented with comprehensive system mappings - 20 active systems ready for content generation
 - June 18, 2025. NovelAI integration fixed - corrected model name from nai-diffusion-4-curated-preview to nai-diffusion-3, intimate content generation now working properly producing 1.4MB images in 3.7 seconds
