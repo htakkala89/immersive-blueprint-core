@@ -1951,6 +1951,17 @@ export default function SoloLevelingSpatial() {
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
       
+      {/* Manga Creator Quick Access */}
+      <motion.a
+        href="/manga-creator"
+        className="fixed top-6 left-6 px-4 py-2 rounded-full flex items-center gap-2 z-[9999] cursor-pointer shadow-2xl overflow-hidden bg-gradient-to-r from-pink-600 to-purple-600 text-white"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <BookOpen className="w-4 h-4" />
+        <span className="text-sm font-medium">Create Manga</span>
+      </motion.a>
+
       {/* Monarch's Aura - Shadow Crown */}
       <motion.button
         className="fixed top-6 right-6 w-11 h-11 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden"
