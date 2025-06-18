@@ -167,26 +167,26 @@ async function getGoogleAccessToken(): Promise<string | null> {
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Get OAuth2 access token and project ID
-    const { getGoogleAccessToken } = await import('./googleAuthFixed');
-    const accessToken = await getGoogleAccessToken();
-    const projectId = 'blitz-esports'; // Using the project ID from the service account
+    // Use Google API key directly for Imagen
+    const apiKey = process.env.GOOGLE_API_KEY;
+    const projectId = 'blitz-esports';
     
-    if (!accessToken || !projectId) {
-      console.log('Google OAuth2 credentials not available - cannot use Imagen');
+    if (!apiKey || !projectId) {
+      console.log('Google API key not available - cannot use Imagen');
       return null;
     }
+    
+    console.log('🎨 Using Google API key for Imagen generation...');
 
     const location = 'us-central1';
-    // Using Imagen 3.0 Fast model with OAuth2 authentication
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
+    // Using Imagen 3.0 Fast model with API key authentication
+    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict?key=${apiKey}`;
     
     console.log('🎨 Attempting Google Imagen generation...');
     
     const response = await fetch(vertexEndpoint, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -215,12 +215,11 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       console.log('Vertex AI Imagen failed:', response.status, errorText);
       
       // Try alternative Imagen model
-      const altEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
+      const altEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict?key=${apiKey}`;
       
       const altResponse = await fetch(altEndpoint, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
