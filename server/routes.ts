@@ -2528,6 +2528,9 @@ Respond as Cha Hae-In would in this intimate moment:`;
     res.sendFile(path.join(__dirname, "../test_generated_images.html"));
   });
 
+  // Register Blueprint Engine routes
+  await addBlueprintEngineRoutes(app);
+
   const server = createServer(app);
   return server;
 }
