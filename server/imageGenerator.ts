@@ -85,7 +85,7 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   // Simplified NovelAI API request matching working curl format
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
-    model: 'nai-diffusion-4-curated-preview',
+    model: 'nai-diffusion-3',
     action: 'generate',
     parameters: {
       width: 832,
@@ -139,6 +139,7 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
     } else {
       const errorText = await response.text();
       console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
+      return null;
     }
   } catch (error) {
     console.log(`NovelAI endpoint ${endpoint} failed:`, error);
