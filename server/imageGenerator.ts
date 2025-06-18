@@ -82,7 +82,7 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   
   const endpoint = 'https://image.novelai.net/ai/generate-image';
 
-  // Correct NovelAI API structure based on working authentication
+  // Simplified NovelAI API request matching working curl format
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
     model: 'nai-diffusion-3',
@@ -92,22 +92,23 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
       height: 1216,
       scale: 5.5,
       sampler: 'k_dpmpp_2s_ancestral',
-      steps: 50,
+      steps: 28,
       seed: Math.floor(Math.random() * 4294967295),
       n_samples: 1,
-      ucPreset: 0,
-      uc: negativePrompt,
-      qualityToggle: true,
-      sm: true,
-      sm_dyn: true,
-      cfg_rescale: 0.7,
-      noise_schedule: "native",
-      dynamic_thresholding: true
+      uc: negativePrompt
     }
   };
 
   try {
     console.log(`🎨 Attempting NovelAI generation via ${endpoint}...`);
+    
+    if (!process.env.NOVELAI_API_KEY) {
+      console.log('❌ NovelAI API key not found in environment');
+      return null;
+    }
+    
+    console.log(`🔑 Using NovelAI API key: ${process.env.NOVELAI_API_KEY.substring(0, 10)}...`);
+    
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
