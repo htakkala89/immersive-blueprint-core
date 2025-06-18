@@ -1,0 +1,233 @@
+{
+  "projectOverview": {
+    "title": "Coffee Shop Romance",
+    "format": "Digital-First Interactive Manga",
+    "technicalSpecs": {
+      "pageSize": "B5 (182 × 257 mm)",
+      "resolution": "600 DPI for print, 72 DPI for digital",
+      "colorMode": "Grayscale with spot color highlights",
+      "fileFormat": "PSD source files, PNG exports"
+    },
+    "productionSchedule": {
+      "preProduction": "2 weeks - Character finalization and scene boarding",
+      "chapter1": "3 weeks - 20 pages with interactive elements",
+      "chapter2": "3 weeks - 20 pages with choice sequences",
+      "chapter3": "3 weeks - 20 pages with conclusion paths",
+      "postProduction": "1 week - Digital platform integration"
+    },
+    "interactiveFeatures": {
+      "choicePoints": {
+        "mechanism": "QR codes in print, tap zones in digital",
+        "saveSystem": "Cloud-based progress tracking",
+        "consequences": "Relationship meters and story branching",
+        "validation": "Choice availability based on previous decisions"
+      },
+      "characterRelationships": [
+        {
+          "character": "Alex",
+          "relationshipLevels": [
+            "Stranger",
+            "Acquaintance",
+            "Friend",
+            "Close Friend",
+            "Romance"
+          ],
+          "unlockConditions": "Specific choice combinations",
+          "visualIndicators": "Heart meter in UI, character expression changes"
+        },
+        {
+          "character": "Jordan",
+          "relationshipLevels": [
+            "Stranger",
+            "Acquaintance",
+            "Friend",
+            "Close Friend",
+            "Romance"
+          ],
+          "unlockConditions": "Specific choice combinations",
+          "visualIndicators": "Heart meter in UI, character expression changes"
+        }
+      ],
+      "memorySystem": {
+        "system": "Touch-activated flashback sequences",
+        "triggers": "Specific panel interactions",
+        "rewards": "Character backstory reveals",
+        "collection": "Memory gallery with replay functionality"
+      },
+      "achievementSystem": [
+        "First Meeting - Complete the initial encounter",
+        "Coffee Connoisseur - Explore all coffee shop dialogue options",
+        "Heart Reader - Unlock all character expressions",
+        "Multiple Paths - Experience different story branches",
+        "True Connection - Achieve maximum relationship level"
+      ]
+    },
+    "distributionPlatform": {
+      "primaryPlatform": "Digital manga readers with interactive support",
+      "webVersion": "Browser-based with choice tracking",
+      "mobileApp": "Dedicated app with save/load functionality",
+      "printVersion": "QR codes linking to digital choice sequences"
+    },
+    "monetization": {
+      "freeChapters": "First chapter free",
+      "premiumContent": "Full story with all interactive paths",
+      "merchandise": "Character art prints and collectibles",
+      "serialization": "Weekly chapter releases"
+    }
+  },
+  "characterProduction": [
+    {
+      "name": "Alex",
+      "role": "protagonist",
+      "visualReference": "Short black hair, expressive dark eyes, school uniform with slightly loosened tie, carries vintage leather satchel",
+      "expressions": [
+        "neutral",
+        "surprised",
+        "determined",
+        "confused",
+        "happy",
+        "sad",
+        "angry",
+        "embarrassed",
+        "mysterious",
+        "concerned"
+      ],
+      "outfits": [
+        "school_uniform",
+        "casual_clothes",
+        "formal_wear",
+        "sports_uniform",
+        "festival_yukata",
+        "winter_coat"
+      ],
+      "personalityNotes": "shy, observant, kind",
+      "dialogueStyle": "Thoughtful and measured speech",
+      "colorPalette": [
+        "Warm browns",
+        "Soft blues",
+        "Cream whites"
+      ],
+      "keyPoses": [
+        "Standing neutral pose",
+        "Sitting at table pose",
+        "Walking motion",
+        "Surprised reaction",
+        "Happy expression",
+        "Contemplative mood"
+      ]
+    },
+    {
+      "name": "Jordan",
+      "role": "love_interest",
+      "visualReference": "Elegant long silver hair, piercing blue eyes, perfect student council uniform, carries ornate fountain pen",
+      "expressions": [
+        "neutral",
+        "surprised",
+        "determined",
+        "confused",
+        "happy",
+        "sad",
+        "angry",
+        "embarrassed",
+        "mysterious",
+        "concerned"
+      ],
+      "outfits": [
+        "school_uniform",
+        "casual_clothes",
+        "formal_wear",
+        "sports_uniform",
+        "festival_yukata",
+        "winter_coat"
+      ],
+      "personalityNotes": "mysterious, artistic, patient",
+      "dialogueStyle": "Poetic undertones, meaningful pauses",
+      "colorPalette": [
+        "Cool silvers",
+        "Deep purples",
+        "Elegant grays"
+      ],
+      "keyPoses": [
+        "Standing neutral pose",
+        "Sitting at table pose",
+        "Walking motion",
+        "Surprised reaction",
+        "Happy expression",
+        "Contemplative mood"
+      ]
+    }
+  ],
+  "chapterProduction": [
+    {
+      "number": 1,
+      "title": "Morning Routine",
+      "pageBreakdown": {
+        "pages1to4": "Opening scene establishment",
+        "pages5to8": "Character introduction and interaction",
+        "pages9to12": "Main story development",
+        "pages13to16": "Emotional climax or revelation",
+        "pages17to19": "Resolution and transition setup",
+        "page20": "Cliffhanger or chapter conclusion"
+      },
+      "panelLayouts": [
+        {
+          "type": "establishing_shot",
+          "description": "Wide view of loc_1"
+        },
+        {
+          "type": "character_introduction",
+          "description": "Close-up of main characters"
+        },
+        {
+          "type": "dialogue_sequence",
+          "description": "Multi-panel conversation"
+        },
+        {
+          "type": "action_moment",
+          "description": "Key story beat visualization"
+        },
+        {
+          "type": "emotional_reaction",
+          "description": "Character expression focus"
+        },
+        {
+          "type": "transition",
+          "description": "Scene or chapter transition"
+        }
+      ],
+      "interactiveElements": [
+        {
+          "id": "choice_1",
+          "text": "Strike up a conversation",
+          "consequence": "Relationship deepens",
+          "affectionChange": 5
+        }
+      ],
+      "pacing": {
+        "opening": "Slow, atmospheric panels for mood setting",
+        "dialogue": "Medium pace with close-up reaction shots",
+        "climax": "Quick succession panels for tension",
+        "resolution": "Return to slower pace for emotional impact"
+      },
+      "emotionalBeats": [
+        "Setup - Establish character emotional state",
+        "Inciting incident - Something changes the dynamic",
+        "Development - Characters react and adapt",
+        "Climax - Peak emotional moment",
+        "Resolution - New emotional equilibrium"
+      ]
+    }
+  ],
+  "visualAssets": {
+    "characterReferenceSheets": "Generated via NovelAI V4.5",
+    "backgroundArt": "Coffee shop and school environments",
+    "panelBorders": "Modern clean lines with selective decorative elements",
+    "fontChoices": "Dialogue: Clean sans-serif, Narration: Serif"
+  },
+  "qualityControl": {
+    "artConsistency": "Character model sheets for reference",
+    "storyFlow": "Interactive choice validation",
+    "userExperience": "Choice consequence tracking",
+    "technicalQA": "Cross-platform compatibility testing"
+  }
+}
