@@ -1,8 +1,14 @@
-# Solo Leveling RPG - Project Monarch's Shadow
+# Blueprint Engine - Project Monarch's Shadow
 
 ## Overview
 
-Solo Leveling RPG is an immersive romantic visual novel and RPG experience based on the popular Solo Leveling universe. Players take on the role of Sung Jin-Woo and develop a romantic relationship with Cha Hae-In while progressing through various storylines, activities, and combat scenarios. The game features AI-powered image generation, voice synthesis, comprehensive character progression, and multiple game systems working in harmony.
+Project Monarch's Shadow represents the flagship demonstration of the Blueprint Engine - a revolutionary generative, transmedia platform that democratizes narrative creation. While Monarch's Shadow showcases a Solo Leveling romantic RPG experience, the true innovation lies in the underlying Blueprint Engine that empowers any user to become a creator of interactive experiences.
+
+The platform supports two powerful creation pathways:
+1. **AI Story Architect**: Generate complete interactive experiences from simple creative prompts
+2. **Ingestion & Adaptation Engine**: Transform existing content (web novels, literature, historical events) into playable experiences
+
+Monarch's Shadow serves as the proof-of-concept, demonstrating how all 18+ systems work in unison to create immersive, AI-powered interactive narratives.
 
 ## System Architecture
 
@@ -27,15 +33,27 @@ Solo Leveling RPG is an immersive romantic visual novel and RPG experience based
 
 ## Key Components
 
-### Game Systems
-1. **Story Engine** - Branching narrative with choice consequences
-2. **Character Progression** - Level, stats, skills, and equipment systems
-3. **Relationship System** - Affection levels, intimacy progression, relationship status
-4. **Daily Life Hub** - 22 interactive activities across 4 categories (Casual, Training, Home, Intimate)
-5. **Combat System** - 2.5D side-scrolling dungeon raids with TFT-style mechanics
-6. **Memory Constellation** - Shared experience tracking system
-7. **Economy System** - Gold management and item purchasing
-8. **Inventory Management** - Equipment and consumable item tracking
+### Blueprint Engine Core Systems
+1. **Spatial View System** - Dynamic 3D environment generation and interaction
+2. **Dialogue System** - Context-aware character conversations with personality modeling
+3. **Quest Log** - Dynamic objective tracking and progression management
+4. **Daily Life Hub** - 22+ interactive activities across multiple categories
+5. **Intimate Activity System** - Mature content generation with relationship progression
+6. **Relationship Constellation** - Multi-dimensional character relationship tracking
+7. **Commerce Progression** - Economic systems and resource management
+8. **World Map Navigation** - Spatial location management and travel systems
+9. **AI Mood Engine** - Dynamic emotional state management for characters
+10. **Combat System** - 2.5D dungeon raids with strategic mechanics
+11. **Gear Management** - Equipment and inventory systems
+12. **Living World** - Persistent environment with time progression
+13. **Hunter's Communicator** - In-world communication systems
+14. **Economy System** - Wealth and resource distribution
+15. **Player Progression** - Skill development and character advancement
+16. **Memory Constellation** - Shared experience and story tracking
+17. **Calendar System** - Temporal progression with seasonal changes
+18. **Episodic Story Engine** - Structured narrative progression and beats
+19. **AI Story Architect** - Generate complete experiences from simple prompts
+20. **Ingestion & Adaptation Engine** - Transform existing content into interactive experiences
 
 ### AI Integration
 - **Image Generation**: Multiple providers (Google Imagen, OpenAI DALL-E, NovelAI)

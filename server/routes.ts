@@ -16,6 +16,8 @@ import { narratorSystem } from "./narratorSystem";
 import { artisticPromptEngine } from "./artisticPromptEngine";
 import { qualityEnhancer } from "./qualityEnhancer";
 import { narrativeArchitect } from "./narrative-architect-api";
+import { aiStoryArchitect } from "./ai-story-architect";
+import { ingestionAdaptationEngine } from "./ingestion-adaptation-engine";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
@@ -2549,4 +2551,136 @@ function analyzeIntimacyLevel(response: string): number {
   }
   
   return maxLevel;
+}
+
+// Blueprint Engine - AI Story Architect endpoints
+export async function addBlueprintEngineRoutes(app: Express) {
+  // Generate story from prompt
+  app.post("/api/blueprint/generate-story", async (req, res) => {
+    try {
+      const { prompt, genre, setting, targetLength, matureContent } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ error: "Story prompt is required" });
+      }
+
+      console.log(`🏗️ Generating story from prompt: ${prompt.substring(0, 50)}...`);
+      
+      const storyPrompt = {
+        prompt,
+        genre,
+        setting,
+        targetLength: targetLength || 'medium',
+        matureContent: matureContent || false
+      };
+
+      const scaffold = await aiStoryArchitect.generateStoryScaffold(storyPrompt);
+      
+      res.json({
+        success: true,
+        scaffold,
+        metadata: {
+          generatedAt: new Date().toISOString(),
+          estimatedSessions: targetLength === 'short' ? '1-2' : targetLength === 'long' ? '5-8' : '3-5',
+          systemsPopulated: Object.keys(scaffold.systemPopulation).length
+        }
+      });
+    } catch (error) {
+      console.error("Story generation error:", error);
+      res.status(500).json({ 
+        error: "Failed to generate story scaffold",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Ingest and adapt existing content
+  app.post("/api/blueprint/ingest-content", async (req, res) => {
+    try {
+      const { sourceUrl, adaptationType, targetAudience, interactivityLevel, preferredLength } = req.body;
+      
+      if (!sourceUrl) {
+        return res.status(400).json({ error: "Source URL is required" });
+      }
+
+      console.log(`🔄 Ingesting content from: ${sourceUrl}`);
+      
+      const ingestionRequest = {
+        sourceUrl,
+        adaptationType: adaptationType || 'narrative',
+        targetAudience: targetAudience || 'general',
+        interactivityLevel: interactivityLevel || 'medium',
+        preferredLength: preferredLength || 'medium'
+      };
+
+      const adaptedExperience = await ingestionAdaptationEngine.ingestAndAdapt(ingestionRequest);
+      
+      res.json({
+        success: true,
+        experience: adaptedExperience,
+        metadata: {
+          adaptedAt: new Date().toISOString(),
+          originalSource: sourceUrl,
+          systemsPopulated: Object.keys(adaptedExperience.systemMappings).length,
+          estimatedPlaytime: adaptedExperience.metadata.estimatedPlaytime
+        }
+      });
+    } catch (error) {
+      console.error("Content ingestion error:", error);
+      res.status(500).json({ 
+        error: "Failed to ingest and adapt content",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Get Blueprint Engine capabilities
+  app.get("/api/blueprint/capabilities", (req, res) => {
+    res.json({
+      blueprintEngine: {
+        version: "1.0.0",
+        systems: [
+          { id: 1, name: "Spatial View System", status: "active" },
+          { id: 2, name: "Dialogue System", status: "active" },
+          { id: 3, name: "Quest Log", status: "active" },
+          { id: 4, name: "Daily Life Hub", status: "active" },
+          { id: 5, name: "Intimate Activity System", status: "active" },
+          { id: 6, name: "Relationship Constellation", status: "active" },
+          { id: 7, name: "Commerce Progression", status: "active" },
+          { id: 8, name: "World Map Navigation", status: "active" },
+          { id: 9, name: "AI Mood Engine", status: "active" },
+          { id: 10, name: "Combat System", status: "active" },
+          { id: 11, name: "Gear Management", status: "active" },
+          { id: 12, name: "Living World", status: "active" },
+          { id: 13, name: "Hunter's Communicator", status: "active" },
+          { id: 14, name: "Economy System", status: "active" },
+          { id: 15, name: "Player Progression", status: "active" },
+          { id: 16, name: "Memory Constellation", status: "active" },
+          { id: 17, name: "Calendar System", status: "active" },
+          { id: 18, name: "Episodic Story Engine", status: "active" },
+          { id: 19, name: "AI Story Architect", status: "active" },
+          { id: 20, name: "Ingestion & Adaptation Engine", status: "active" }
+        ],
+        creationPathways: {
+          aiStoryArchitect: {
+            available: true,
+            description: "Generate complete interactive experiences from simple creative prompts",
+            supportedGenres: ["romance", "adventure", "mystery", "sci-fi", "fantasy", "historical", "contemporary"],
+            supportedLengths: ["short", "medium", "long"]
+          },
+          ingestionAdaptation: {
+            available: true,
+            description: "Transform existing content into interactive experiences",
+            supportedSources: ["web novels", "literature", "historical documents", "educational content"],
+            adaptationTypes: ["narrative", "historical", "educational", "documentary"]
+          }
+        },
+        aiProviders: {
+          novelAI: { available: true, status: "operational" },
+          googleGemini: { available: true, status: "operational" },
+          openAI: { available: true, status: "operational" }
+        }
+      }
+    });
+  });
 }
