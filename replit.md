@@ -110,7 +110,7 @@ Solo Leveling RPG is an immersive romantic visual novel and RPG experience based
 - **Database Indexing**: Optimized queries for game state retrieval
 
 ## Changelog
-- June 18, 2025. NovelAI V4.5 Full model integrated - enhanced image quality and detail for mature content
+- June 18, 2025. NovelAI V4.5 Full model integrated with robust retry logic - enhanced image quality and reliable generation for mature content
 - June 18, 2025. NovelAI integration completed - mature content generation fully operational
 - June 18, 2025. AI narrator/game master system implemented for enhanced storytelling
 - June 18, 2025. Calendar progression system with seasonal weather changes added

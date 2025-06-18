@@ -81,6 +81,10 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   const negativePrompt = "silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
   
   const endpoint = 'https://image.novelai.net/ai/generate-image';
+  
+  // Retry configuration for better reliability
+  const maxRetries = 3;
+  const retryDelay = 2000; // 2 seconds
 
   // Simplified NovelAI API request matching working curl format
   const requestBody = {
@@ -99,55 +103,71 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
     }
   };
 
-  try {
-    console.log(`🎨 Attempting NovelAI generation via ${endpoint}...`);
-    
-    if (!process.env.NOVELAI_API_KEY) {
-      console.log('❌ NovelAI API key not found in environment');
-      return null;
-    }
-    
-    console.log(`🔑 Using NovelAI API key: ${process.env.NOVELAI_API_KEY.substring(0, 10)}...`);
-    
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Accept': '*/*'
-      },
-      body: JSON.stringify(requestBody)
-    });
-
-    console.log(`NovelAI response status: ${response.status}`);
-
-    if (response.ok) {
-      const buffer = await response.arrayBuffer();
-      console.log(`NovelAI response size: ${buffer.byteLength} bytes`);
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`🎨 Attempting NovelAI generation (${attempt}/${maxRetries}) via ${endpoint}...`);
       
-      // NovelAI returns images in ZIP format, extract the first image
-      try {
-        const zip = new AdmZip(Buffer.from(buffer));
-        const zipEntries = zip.getEntries();
-        
-        if (zipEntries.length > 0) {
-          const imageBuffer = zipEntries[0].getData();
-          const base64Image = imageBuffer.toString('base64');
-          console.log(`✅ NovelAI generated image successfully - Size: ${imageBuffer.length} bytes`);
-          return `data:image/png;base64,${base64Image}`;
-        } else {
-          console.log('❌ No images found in NovelAI ZIP response');
-        }
-      } catch (zipError) {
-        console.log('❌ Failed to extract ZIP from NovelAI response:', zipError.message);
+      if (!process.env.NOVELAI_API_KEY) {
+        console.log('❌ NovelAI API key not found in environment');
+        return null;
       }
-    } else {
-      const errorText = await response.text();
-      console.log(`❌ NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
-      return null;
+      
+      console.log(`🔑 Using NovelAI API key: ${process.env.NOVELAI_API_KEY.substring(0, 10)}...`);
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Accept': '*/*'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log(`NovelAI response status: ${response.status}`);
+
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        console.log(`NovelAI response size: ${buffer.byteLength} bytes`);
+        
+        // NovelAI returns images in ZIP format, extract the first image
+        try {
+          const zip = new AdmZip(Buffer.from(buffer));
+          const zipEntries = zip.getEntries();
+          
+          if (zipEntries.length > 0) {
+            const imageBuffer = zipEntries[0].getData();
+            const base64Image = imageBuffer.toString('base64');
+            console.log(`✅ NovelAI V4.5 generated image successfully - Size: ${imageBuffer.length} bytes`);
+            return `data:image/png;base64,${base64Image}`;
+          } else {
+            console.log('❌ No images found in NovelAI ZIP response');
+          }
+        } catch (zipError: any) {
+          console.log('❌ Failed to extract ZIP from NovelAI response:', zipError.message);
+        }
+      } else {
+        const errorText = await response.text();
+        console.log(`❌ NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
+        
+        // If server error (500), retry after delay
+        if (response.status >= 500 && attempt < maxRetries) {
+          console.log(`⏳ Retrying in ${retryDelay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        return null;
+      }
+    } catch (error: any) {
+      console.log(`NovelAI endpoint ${endpoint} failed (attempt ${attempt}):`, error.message);
+      
+      // Retry on network errors
+      if (attempt < maxRetries) {
+        console.log(`⏳ Retrying in ${retryDelay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
     }
-  } catch (error) {
-    console.log(`NovelAI endpoint ${endpoint} failed:`, error);
   }
 
   console.log('❌ NovelAI generation failed');
