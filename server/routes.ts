@@ -27,18 +27,25 @@ async function directNovelAIGeneration(prompt: string): Promise<string | null> {
   const retryDelay = 2000;
 
   const requestBody = {
-    input: `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In with blonde hair, Jin-Woo with dark hair, Solo Leveling manhwa art style, explicit mature content, uncensored, high quality erotic artwork, Korean webtoon aesthetic, NSFW content, adult content`,
-    model: 'nai-diffusion-4-curated-preview',
+    input: `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In with blonde hair, Jin-Woo with dark hair, Solo Leveling manhwa art style, romantic scene, intimate moment, high quality artwork`,
+    model: 'nai-diffusion-3',
     action: 'generate',
     parameters: {
       width: 832,
       height: 1216,
-      scale: 5.5,
+      scale: 7,
       sampler: 'k_dpmpp_2s_ancestral',
-      steps: 28,
+      steps: 50,
       seed: Math.floor(Math.random() * 4294967295),
       n_samples: 1,
-      uc: 'silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted, censored bars, mosaic censoring'
+      ucPreset: 0,
+      uc: 'low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted',
+      qualityToggle: true,
+      sm: true,
+      sm_dyn: true,
+      cfg_rescale: 0.7,
+      noise_schedule: "native",
+      dynamic_thresholding: true
     }
   };
 
@@ -120,6 +127,35 @@ async function checkNovelAIStatus(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+// Optimized romantic content generation with OpenAI
+async function generateRomanticContent(prompt: string): Promise<string | null> {
+  if (!openaiClient) {
+    console.log('OpenAI client not available');
+    return null;
+  }
+
+  try {
+    const romanticPrompt = `Beautiful anime couple in tender romantic moment, Cha Hae-In with blonde hair and Jin-Woo with dark hair from Solo Leveling, ${prompt}, emotional intimacy, soft romantic lighting, Korean manhwa art style, high quality illustration, detailed faces showing love and connection, elegant composition, warm atmosphere, artistic excellence, beautiful detailed eyes, romantic scene, tender embrace, emotional depth`;
+    
+    const response = await openaiClient.images.generate({
+      model: "dall-e-3",
+      prompt: romanticPrompt,
+      n: 1,
+      size: "1024x1024",
+      quality: "hd",
+    });
+    
+    if (response.data?.[0]?.url) {
+      console.log('OpenAI DALL-E romantic content generated successfully');
+      return response.data[0].url;
+    }
+  } catch (error: any) {
+    console.log('OpenAI DALL-E generation failed:', error.message);
+  }
+  
+  return null;
 }
 
 // Initialize OpenAI for cover generation
@@ -2316,20 +2352,28 @@ Respond as Cha Hae-In would in this intimate moment:`;
       // Create enhanced romantic prompt for NovelAI V4.5 Full
       const enhancedIntimatePrompt = `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In and Jin-Woo intimate romantic moment, Solo Leveling manhwa art style, romantic scene, beautiful lighting, emotional intimacy, tender embrace, high quality artwork`;
       
-      // Try NovelAI V4.5 first, then fallback to DALL-E
-      let result = await directNovelAIGeneration(enhancedIntimatePrompt);
+      // Check NovelAI status first to avoid unnecessary delays
+      const novelaiStatus = await checkNovelAIStatus();
+      let result = null;
       
-      if (result) {
-        console.log('✅ NovelAI V4.5 intimate scene generated successfully');
-        return res.json({ 
-          imageUrl: result,
-          provider: 'NovelAI V4.5 Full'
-        });
+      if (novelaiStatus) {
+        console.log('🎨 NovelAI appears available, attempting generation...');
+        result = await directNovelAIGeneration(enhancedIntimatePrompt);
+        
+        if (result) {
+          console.log('✅ NovelAI V4.5 intimate scene generated successfully');
+          return res.json({ 
+            imageUrl: result,
+            provider: 'NovelAI V4.5 Full'
+          });
+        }
+      } else {
+        console.log('🎨 NovelAI servers experiencing issues, using fallback immediately...');
       }
 
-      // Fallback to OpenAI DALL-E for romantic scenes
+      // Immediate fallback to OpenAI DALL-E for romantic scenes
       if (openaiClient) {
-        console.log('🎨 NovelAI unavailable, using OpenAI DALL-E for romantic scene...');
+        console.log('🎨 Using OpenAI DALL-E for romantic scene generation...');
         try {
           const romanticPrompt = `Beautiful anime couple in tender romantic moment, Cha Hae-In with blonde hair and Jin-Woo with dark hair from Solo Leveling, emotional intimacy, soft romantic lighting, Korean manhwa art style, high quality illustration, detailed faces showing love and connection, elegant composition, warm atmosphere, artistic excellence, beautiful detailed eyes, romantic scene, tender embrace, emotional depth`;
           
@@ -2345,11 +2389,11 @@ Respond as Cha Hae-In would in this intimate moment:`;
             console.log('✅ OpenAI DALL-E generated romantic scene successfully');
             return res.json({ 
               imageUrl: openaiResult.data[0].url,
-              provider: 'OpenAI DALL-E (NovelAI fallback)'
+              provider: 'OpenAI DALL-E'
             });
           }
-        } catch (openaiError) {
-          console.log('⚠️ OpenAI DALL-E romantic scene failed:', String(openaiError));
+        } catch (openaiError: any) {
+          console.log('⚠️ OpenAI DALL-E romantic scene failed:', openaiError.message);
         }
       }
 
