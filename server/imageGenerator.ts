@@ -80,8 +80,9 @@ function isMatureContent(prompt: string, activityId?: string): boolean {
 async function generateWithNovelAI(prompt: string): Promise<string | null> {
   const negativePrompt = "silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
   
-  const endpoint = 'https://api.novelai.net/ai/generate-image';
+  const endpoint = 'https://image.novelai.net/ai/generate-image';
 
+  // Correct NovelAI API structure based on working authentication
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
     model: 'nai-diffusion-3',
