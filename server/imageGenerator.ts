@@ -84,7 +84,8 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
 
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
-    model: 'safe-diffusion',
+    model: 'nai-diffusion-3',
+    action: 'generate',
     parameters: {
       width: 832,
       height: 1216,
@@ -110,7 +111,8 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': '*/*'
       },
       body: JSON.stringify(requestBody)
     });
