@@ -119,12 +119,15 @@ export function MangaReader({ mangaData, onClose }: MangaReaderProps) {
   };
 
   const handleChoice = (choice: Choice) => {
+    console.log('handleChoice called with:', choice);
     setUserChoices({ ...userChoices, [choice.id]: choice.text });
     if (choice.consequence.includes('affection')) {
       setAffectionPoints(affectionPoints + 5);
     }
     nextPage();
   };
+
+
 
   return (
     <div className="fixed inset-0 z-50 bg-black">
@@ -241,16 +244,18 @@ export function MangaReader({ mangaData, onClose }: MangaReaderProps) {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1 }}
-                    className="absolute bottom-4 left-4 right-4"
+                    className="absolute bottom-4 left-4 right-4 z-50"
+                    style={{ pointerEvents: 'auto' }}
                   >
-                    <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4">
+                    <div className="bg-black/90 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                       <h4 className="text-white font-semibold mb-3">Choose your path:</h4>
                       <div className="space-y-2">
                         {currentChapterData.choices.map((choice) => (
                           <Button
                             key={choice.id}
                             onClick={() => handleChoice(choice)}
-                            className="w-full justify-start bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                            className="w-full justify-start bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border border-white/30 cursor-pointer"
+                            style={{ pointerEvents: 'auto' }}
                           >
                             {choice.text}
                           </Button>
