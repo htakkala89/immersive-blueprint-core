@@ -85,7 +85,7 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   // Simplified NovelAI API request matching working curl format
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
-    model: 'nai-diffusion-3',
+    model: 'nai-diffusion-4-curated-preview',
     action: 'generate',
     parameters: {
       width: 832,
@@ -119,8 +119,11 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
       body: JSON.stringify(requestBody)
     });
 
+    console.log(`NovelAI response status: ${response.status}`);
+
     if (response.ok) {
       const buffer = await response.arrayBuffer();
+      console.log(`NovelAI response size: ${buffer.byteLength} bytes`);
       
       // NovelAI returns images in ZIP format, extract the first image
       try {
@@ -130,15 +133,17 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
         if (zipEntries.length > 0) {
           const imageBuffer = zipEntries[0].getData();
           const base64Image = imageBuffer.toString('base64');
-          console.log('✅ NovelAI generated image successfully');
+          console.log(`✅ NovelAI generated image successfully - Size: ${imageBuffer.length} bytes`);
           return `data:image/png;base64,${base64Image}`;
+        } else {
+          console.log('❌ No images found in NovelAI ZIP response');
         }
       } catch (zipError) {
-        console.log('Failed to extract ZIP from NovelAI response:', zipError);
+        console.log('❌ Failed to extract ZIP from NovelAI response:', zipError.message);
       }
     } else {
       const errorText = await response.text();
-      console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
+      console.log(`❌ NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
       return null;
     }
   } catch (error) {
