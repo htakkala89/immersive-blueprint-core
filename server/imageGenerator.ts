@@ -85,7 +85,7 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
   // Simplified NovelAI API request matching working curl format
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
-    model: 'nai-diffusion-3',
+    model: 'nai-diffusion-4-curated-preview',
     action: 'generate',
     parameters: {
       width: 832,
