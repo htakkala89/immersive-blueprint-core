@@ -1533,7 +1533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   function generateMatureContentPrompt(userMessage: string, relationshipLevel: number): string {
-    const basePrompt = `Generate intimate content featuring Jin-Woo and Cha Hae-In based on: "${userMessage}"`;
+    const basePrompt = `Generate intimate content featuring Cha Hae-In solo based on: "${userMessage}"`;
     
     if (relationshipLevel >= 8) {
       return `${basePrompt}. Show explicit intimate scene with full nudity, passionate physical intimacy, and detailed romantic interaction. No content restrictions.`;
@@ -1601,7 +1601,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const fullPrompt = `${personalityPrompt}
 
 HUNTER'S COMMUNICATOR CONVERSATION:
-You are continuing an ongoing conversation with Jin-Woo through the Hunter's Communicator messaging system.
+You are continuing an ongoing conversation through the Hunter's Communicator messaging system.
 
 Current Status: ${characterState?.status || 'available'}
 Current Activity: ${characterState?.activity || 'reviewing reports at the Association'}
@@ -1611,17 +1611,17 @@ Time: ${context?.timeOfDay || 'afternoon'}
 Recent conversation history:
 ${historyContext}
 
-Jin-Woo just sent: "${message}"
+Player just sent: "${message}"
 
 ${isUrgent ? 'This message seems urgent - respond accordingly.' : ''}
-${proposedActivity ? `Jin-Woo proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
+${proposedActivity ? `Player proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
 ${episodeGuidance ? `STORY GUIDANCE: After a few exchanges, naturally suggest: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
 
 IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses. Keep your response conversational and authentic to Cha Hae-In's character - professional but warm, strong but caring. Vary your responses based on the conversation history.
 
 ${episodeGuidance ? 'After responding to the current message naturally, guide the conversation toward the story progression mentioned above.' : ''}
 
-Respond naturally as if you're texting Jin-Woo back:`;
+Respond naturally as if you're texting back:`;
 
         const result = await model.generateContent(fullPrompt);
         const rawResponse = result.response.text();
@@ -1697,7 +1697,7 @@ Respond naturally as if you're texting Jin-Woo back:`;
               
               // Return explicit content response with generated image
               return res.json({
-                response: `*Cha Hae-In responds passionately to your request* ${message.includes('show me') || message.includes('picture') ? 'Here, let me show you exactly what you want to see...' : 'Mmm, Jin-Woo... I want that too...'} *her breathing becomes heavier as she fulfills your desire*`,
+                response: `*Cha Hae-In responds passionately to your request* ${message.includes('show me') || message.includes('picture') ? 'Here, let me show you exactly what you want to see...' : 'Mmm... I want that too...'} *her breathing becomes heavier as she fulfills your desire*`,
                 gameState: {
                   ...updatedGameState,
                   intimacyLevel: Math.min(10, (gameState.intimacyLevel || 5) + 1)
@@ -2429,8 +2429,8 @@ Respond as Cha Hae-In would in this intimate moment:`;
       
       console.log("🎨 Generating intimate scene exclusively with NovelAI V4.5 Full...");
       
-      // Create enhanced romantic prompt for NovelAI V4.5 Full
-      const enhancedIntimatePrompt = `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In and Jin-Woo intimate romantic moment, Solo Leveling manhwa art style, romantic scene, beautiful lighting, emotional intimacy, tender embrace, high quality artwork`;
+      // Create enhanced romantic prompt for NovelAI V4.5 Full - Solo Cha Hae-In focus
+      const enhancedIntimatePrompt = `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In solo intimate scene, short bob cut golden blonde hair, violet eyes, Solo Leveling manhwa art style, romantic scene, beautiful lighting, emotional intimacy, explicit content, high quality artwork`;
       
       // Use NovelAI exclusively for intimate scenes
       const result = await imageGenerationService.generateImage(enhancedIntimatePrompt, 'NovelAI');
