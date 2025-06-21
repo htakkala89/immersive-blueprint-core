@@ -1157,9 +1157,9 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           {message.senderId === 'player' ? (
                             // Player messages: Right-aligned, italicized, dimmer
                             <div className="flex justify-end">
-                              <div className="max-w-2xl">
+                              <div className="max-w-2xl sm:max-w-2xl max-w-[85%]">
                                 <p 
-                                  className="text-slate-300 italic text-base leading-relaxed"
+                                  className="text-slate-300 italic text-sm sm:text-base leading-relaxed mobile-message-bubble"
                                   style={{
                                     textShadow: '0 1px 3px rgba(0,0,0,0.8)',
                                     filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.03))'
@@ -1180,9 +1180,9 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             </div>
                           ) : (
                             // NPC messages: Left-aligned with portrait, scene script style
-                            <div className="flex gap-4">
+                            <div className="flex gap-2 sm:gap-4">
                               <div 
-                                className="w-12 h-12 rounded-full flex items-center justify-center text-xl flex-shrink-0"
+                                className="w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-lg sm:text-xl flex-shrink-0"
                                 style={{
                                   background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                                   backdropFilter: 'blur(10px)',
@@ -1192,10 +1192,10 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                               >
                                 {selectedConversationData.participantAvatar}
                               </div>
-                              <div className="flex-1 max-w-2xl">
+                              <div className="flex-1 max-w-[85%] sm:max-w-2xl mobile-message-bubble">
                                 <div className="mb-1">
                                   <span 
-                                    className="text-sm font-medium text-blue-300"
+                                    className="text-xs sm:text-sm font-medium text-blue-300"
                                     style={{
                                       textShadow: '0 0 8px rgba(147,197,253,0.4), 0 1px 2px rgba(0,0,0,0.8)',
                                       filter: 'drop-shadow(0 1px 1px rgba(147,197,253,0.1))'
@@ -1205,7 +1205,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                   </span>
                                 </div>
                                 <p 
-                                  className="text-white text-base leading-relaxed"
+                                  className="text-white text-sm sm:text-base leading-relaxed"
                                   style={{
                                     textShadow: '0 1px 3px rgba(0,0,0,0.8)',
                                     filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
@@ -1282,9 +1282,9 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                       )}
                     </div>
 
-                    {/* Enhanced Message Input */}
+                    {/* Enhanced Message Input - Mobile Optimized */}
                     <div 
-                      className="p-6 relative z-20"
+                      className="p-3 sm:p-6 relative z-20 mobile-input-container"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
                         backdropFilter: 'blur(15px)',
