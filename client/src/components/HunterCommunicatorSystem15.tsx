@@ -1368,7 +1368,11 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                 </div>
                                 <div className="message-block space-y-3">
                                   {(() => {
-                                    const parsedParts = parseMessageContent(message.content);
+                                    // Force test with a known message
+                                    const testContent = `"Hunter Sung Jin-Woo." *She glances up from her reports, a slight smile playing on her lips* "I wasn't expecting a visit." (He's so unexpectedly... charming.) "The reports are rather tedious today."`;
+                                    const parsedParts = parseMessageContent(message.content.includes('Hunter Sung Jin-Woo') ? testContent : message.content);
+                                    console.log('🎭 ORIGINAL CONTENT:', message.content);
+                                    console.log('🎭 USING TEST CONTENT:', message.content.includes('Hunter Sung Jin-Woo'));
                                     console.log('🎭 RENDERING PARTS:', parsedParts);
                                     console.log('🎭 PARTS LENGTH:', parsedParts.length);
                                     return parsedParts;
