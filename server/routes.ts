@@ -1596,7 +1596,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const profileId = gameState?.profileId || context?.profileId || 1;
         const location = characterState?.location || context?.location || 'hunter_association';
         const timeOfDay = context?.timeOfDay || 'afternoon';
-        const episodeGuidance = await episodeEngine.getContextualEpisodeGuidance(profileId, location, timeOfDay);
+        
+        // Only get episode guidance if there are active episodes
+        const activeEpisodes = await episodeEngine.getActiveEpisodes(profileId);
+        const episodeGuidance = activeEpisodes.length > 0 ? 
+          await episodeEngine.getContextualEpisodeGuidance(profileId, location, timeOfDay) : 
+          null;
         
         const fullPrompt = `${personalityPrompt}
 
