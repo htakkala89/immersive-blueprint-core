@@ -42,47 +42,6 @@ const openai = new OpenAI({
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-// Post-processing function to ensure cinematic formatting
-function ensureCinematicFormatting(response: string): string {
-  console.log('🎭 Post-processing response:', response);
-  
-  // If already properly formatted, return as-is
-  if (response.includes('"') && (response.includes('*') || response.includes('('))) {
-    return response;
-  }
-  
-  // Apply intelligent formatting to unformatted responses
-  let formatted = response;
-  
-  // Pattern 1: Convert sentences that start with common dialogue words to quoted dialogue
-  formatted = formatted.replace(
-    /(^|\s)([A-Z][^.!?]*(?:Indeed|Yes|No|Perhaps|Maybe|I |You |We |That |This |The |Have |What |When |Where |Why |How )[^.!?]*[.!?])/g,
-    (match, space, sentence) => {
-      return `${space}"${sentence.trim()}"`;
-    }
-  );
-  
-  // Pattern 2: Convert action descriptions to asterisk format
-  formatted = formatted.replace(
-    /([^"*()]*(?:She|He|Her|His)[^.!?]*(?:taps?|glances?|adjusts?|looks?|moves?|shifts?|leans?|nods?|smiles?|frowns?|blushes?|furrows?)[^.!?]*[.!?])/gi,
-    '*$1*'
-  );
-  
-  // Pattern 3: Convert internal thoughts to parentheses format
-  formatted = formatted.replace(
-    /([^"*()]*(?:This is|I need|more serious|anticipated|prepared|ensure)[^.!?]*[.!?])/gi,
-    (match) => {
-      if (!match.includes('"') && !match.includes('*')) {
-        return `(${match.trim()})`;
-      }
-      return match;
-    }
-  );
-  
-  console.log('🎭 Formatted result:', formatted);
-  return formatted;
-}
-
 // Conversation analytics functions for enhanced contextual understanding
 function analyzeTone(response: string): string {
   const professionalIndicators = ['hunter', 'mission', 'association', 'rank', 'dungeon', 'gate'];
@@ -1588,6 +1547,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat endpoint with activity proposal system integration and mature content handling
   app.post("/api/chat", async (req, res) => {
     try {
+      // Post-processing function to ensure cinematic formatting
+      const ensureCinematicFormatting = (response: string): string => {
+        console.log('🎭 Post-processing response:', response);
+        
+        // If already properly formatted, return as-is
+        if (response.includes('"') && (response.includes('*') || response.includes('('))) {
+          return response;
+        }
+        
+        // Apply intelligent formatting to unformatted responses
+        let formatted = response;
+        
+        // Pattern 1: Convert sentences that start with common dialogue words to quoted dialogue
+        formatted = formatted.replace(
+          /(^|\s)([A-Z][^.!?]*(?:Indeed|Yes|No|Perhaps|Maybe|I |You |We |That |This |The |Have |What |When |Where |Why |How )[^.!?]*[.!?])/g,
+          (match, space, sentence) => {
+            return `${space}"${sentence.trim()}"`;
+          }
+        );
+        
+        // Pattern 2: Convert action descriptions to asterisk format
+        formatted = formatted.replace(
+          /([^"*()]*(?:She|He|Her|His)[^.!?]*(?:taps?|glances?|adjusts?|looks?|moves?|shifts?|leans?|nods?|smiles?|frowns?|blushes?|furrows?)[^.!?]*[.!?])/gi,
+          '*$1*'
+        );
+        
+        // Pattern 3: Convert internal thoughts to parentheses format
+        formatted = formatted.replace(
+          /([^"*()]*(?:This is|I need|more serious|anticipated|prepared|ensure)[^.!?]*[.!?])/gi,
+          (match) => {
+            if (!match.includes('"') && !match.includes('*')) {
+              return `(${match.trim()})`;
+            }
+            return match;
+          }
+        );
+        
+        console.log('🎭 Formatted result:', formatted);
+        return formatted;
+      };
+
       const { 
         message, 
         gameState, 
