@@ -761,8 +761,6 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     // Sort by position
     allMatches.sort((a, b) => a.start - b.start);
     
-    console.log('🎭 All matches found:', allMatches);
-    
     // Build parts array
     let lastEnd = 0;
     
@@ -797,8 +795,6 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         });
       }
     }
-    
-    console.log('🎭 Final parsed parts:', parts);
     
     return parts.length > 0 ? parts : [{ 
       type: 'narrative', 
