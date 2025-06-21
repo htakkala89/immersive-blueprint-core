@@ -695,7 +695,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     };
   }, []);
 
-  // Force test the cinematic formatting with known content
+  // Enhanced cinematic formatting parser
   const parseMessageContent = (content: string) => {
     console.log('🎭 PARSING CONTENT:', JSON.stringify(content));
     
@@ -704,22 +704,13 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       text: string;
     }
     
-    // For testing, force parse a known message pattern if it contains "I see"
-    if (content.includes('I see')) {
-      console.log('🎭 FORCING TEST PARSE FOR "I see" MESSAGE');
-      return [
-        { type: 'dialogue', text: 'I see.' },
-        { type: 'action', text: 'She glances up from her reports, a faint blush rising on her cheeks.' },
-        { type: 'thought', text: "He's so direct... I find it unsettlingly charming." },
-        { type: 'narrative', text: '"The reports are rather… dull today. Few significant anomalies." Perhaps a change of pace would be beneficial? "Let\'s head to the training facility. I want to work on our coordination for the upcoming mission; it\'s always best to practice our synergy."' }
-      ];
-    }
-    
-    // Regular parsing for other messages
-    const regex = /(".*?"|\*.*?\*|\(.*?\))/g;
+    // Improved regex to handle nested quotes and complex patterns
+    const regex = /("(?:[^"\\]|\\.)*"|\*(?:[^*\\]|\\.)*\*|\((?:[^)\\]|\\.)*\))/g;
     const parts: MessagePart[] = [];
     let lastIndex = 0;
     let match;
+    
+    console.log('🎭 STARTING REGEX PARSE...');
     
     while ((match = regex.exec(content)) !== null) {
       console.log('🎭 FOUND MATCH:', match[0]);
@@ -728,6 +719,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       if (match.index > lastIndex) {
         const narrativeText = content.slice(lastIndex, match.index).trim();
         if (narrativeText) {
+          console.log('🎭 ADDING NARRATIVE:', narrativeText);
           parts.push({ type: 'narrative', text: narrativeText });
         }
       }
@@ -736,10 +728,13 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       const innerText = matchedText.slice(1, -1);
       
       if (matchedText.startsWith('"') && matchedText.endsWith('"')) {
+        console.log('🎭 ADDING DIALOGUE:', innerText);
         parts.push({ type: 'dialogue', text: innerText });
       } else if (matchedText.startsWith('*') && matchedText.endsWith('*')) {
+        console.log('🎭 ADDING ACTION:', innerText);
         parts.push({ type: 'action', text: innerText });
       } else if (matchedText.startsWith('(') && matchedText.endsWith(')')) {
+        console.log('🎭 ADDING THOUGHT:', innerText);
         parts.push({ type: 'thought', text: innerText });
       }
       
@@ -750,13 +745,21 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     if (lastIndex < content.length) {
       const remainingText = content.slice(lastIndex).trim();
       if (remainingText) {
+        console.log('🎭 ADDING FINAL NARRATIVE:', remainingText);
         parts.push({ type: 'narrative', text: remainingText });
       }
     }
     
     console.log('🎭 FINAL PARTS:', parts);
+    console.log('🎭 PARTS COUNT:', parts.length);
     
-    return parts.length > 0 ? parts : [{ type: 'narrative', text: content }];
+    // If no parts were found, treat entire content as narrative
+    if (parts.length === 0) {
+      console.log('🎭 NO PARTS FOUND, USING ENTIRE CONTENT AS NARRATIVE');
+      return [{ type: 'narrative', text: content }];
+    }
+    
+    return parts;
   };
 
   const acceptQuest = (questId: string) => {
