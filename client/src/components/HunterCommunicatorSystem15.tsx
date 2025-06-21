@@ -695,106 +695,69 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     };
   }, []);
 
-  // Enhanced cinematic message parsing with premium formatting
+  // Fixed cinematic message parsing with proper pattern matching
   const parseMessageContent = (content: string) => {
     interface MessagePart {
       type: 'dialogue' | 'action' | 'thought' | 'narrative';
       text: string;
-      className: string;
-      isBlockElement?: boolean;
-      start?: number;
-      end?: number;
     }
     
     const parts: MessagePart[] = [];
     
-    // Enhanced regex patterns for cinematic formatting
-    const patterns = [
-      { 
-        type: 'dialogue' as const, 
-        regex: /"([^"]+)"/g, 
-        className: 'text-white font-normal leading-relaxed text-base',
-        isBlockElement: true 
-      },
-      { 
-        type: 'action' as const, 
-        regex: /\*([^*]+)\*/g, 
-        className: 'text-amber-300 italic font-light text-sm opacity-90 leading-relaxed',
-        isBlockElement: true 
-      },
-      { 
-        type: 'thought' as const, 
-        regex: /\(([^)]+)\)/g, 
-        className: 'text-slate-400 italic font-light text-sm opacity-75 leading-relaxed pl-4',
-        isBlockElement: true 
-      }
-    ];
+    // Use a more precise approach - find all special patterns first
+    const dialogueMatches = [...content.matchAll(/"([^"]+)"/g)];
+    const actionMatches = [...content.matchAll(/\*([^*]+)\*/g)];
+    const thoughtMatches = [...content.matchAll(/\(([^)]+)\)/g)];
     
-    // Find all matches
-    const allMatches: (MessagePart & { start: number; end: number; fullMatch: string })[] = [];
-    patterns.forEach(pattern => {
-      let match;
-      while ((match = pattern.regex.exec(content)) !== null) {
-        allMatches.push({
-          type: pattern.type,
-          text: match[1].trim(),
-          fullMatch: match[0],
-          start: match.index,
-          end: match.index + match[0].length,
-          className: pattern.className,
-          isBlockElement: pattern.isBlockElement
-        });
-      }
-    });
+    // Combine all matches with their positions
+    const allMatches = [
+      ...dialogueMatches.map(m => ({ type: 'dialogue' as const, text: m[1], start: m.index!, end: m.index! + m[0].length })),
+      ...actionMatches.map(m => ({ type: 'action' as const, text: m[1], start: m.index!, end: m.index! + m[0].length })),
+      ...thoughtMatches.map(m => ({ type: 'thought' as const, text: m[1], start: m.index!, end: m.index! + m[0].length }))
+    ].sort((a, b) => a.start - b.start);
     
-    // Sort matches by position
-    allMatches.sort((a, b) => a.start - b.start);
+    console.log('🎭 All matches found:', allMatches);
     
-    // Build parsed content with enhanced formatting
+    // Build parts array
     let lastEnd = 0;
     
-    allMatches.forEach((match) => {
-      // Add text before this match (narrative)
+    allMatches.forEach(match => {
+      // Add narrative text before this match
       if (match.start > lastEnd) {
-        const beforeText = content.slice(lastEnd, match.start).trim();
-        if (beforeText) {
+        const narrativeText = content.slice(lastEnd, match.start).trim();
+        if (narrativeText) {
           parts.push({
             type: 'narrative',
-            text: beforeText,
-            className: 'text-slate-300 font-light text-sm leading-relaxed opacity-80',
-            isBlockElement: true
+            text: narrativeText
           });
         }
       }
       
-      // Add the matched content as block element
+      // Add the matched content
       parts.push({
         type: match.type,
-        text: match.text,
-        className: match.className,
-        isBlockElement: match.isBlockElement
+        text: match.text.trim()
       });
+      
       lastEnd = match.end;
     });
     
-    // Add remaining text
+    // Add remaining narrative text
     if (lastEnd < content.length) {
       const remainingText = content.slice(lastEnd).trim();
       if (remainingText) {
         parts.push({
           type: 'narrative',
-          text: remainingText,
-          className: 'text-slate-300 font-light text-sm leading-relaxed opacity-80',
-          isBlockElement: true
+          text: remainingText
         });
       }
     }
     
+    console.log('🎭 Final parsed parts:', parts);
+    
     return parts.length > 0 ? parts : [{ 
       type: 'narrative', 
-      text: content, 
-      className: 'text-white font-normal leading-relaxed',
-      isBlockElement: true 
+      text: content
     }];
   };
 
@@ -1403,30 +1366,37 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                   </span>
                                 </div>
                                 <div className="message-block">
-                                  {parseMessageContent(message.content).map((part, index) => (
-                                    <div key={index}>
-                                      {part.type === 'action' && (
-                                        <div className="cinematic-action">
+                                  {parseMessageContent(message.content).map((part, index) => {
+                                    if (part.type === 'action') {
+                                      return (
+                                        <div key={index} className="cinematic-action">
                                           {part.text}
                                         </div>
-                                      )}
-                                      {part.type === 'dialogue' && (
-                                        <div className="cinematic-dialogue">
+                                      );
+                                    }
+                                    if (part.type === 'dialogue') {
+                                      return (
+                                        <div key={index} className="cinematic-dialogue">
                                           "{part.text}"
                                         </div>
-                                      )}
-                                      {part.type === 'thought' && (
-                                        <div className="cinematic-thought">
+                                      );
+                                    }
+                                    if (part.type === 'thought') {
+                                      return (
+                                        <div key={index} className="cinematic-thought">
                                           <em>({part.text})</em>
                                         </div>
-                                      )}
-                                      {part.type === 'narrative' && (
-                                        <div className="cinematic-narrative">
+                                      );
+                                    }
+                                    if (part.type === 'narrative') {
+                                      return (
+                                        <div key={index} className="cinematic-narrative">
                                           {part.text}
                                         </div>
-                                      )}
-                                    </div>
-                                  ))}
+                                      );
+                                    }
+                                    return null;
+                                  })}
                                 </div>
                                 <span 
                                   className="text-xs text-slate-400 mt-2 block"
