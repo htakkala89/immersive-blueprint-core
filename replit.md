@@ -109,6 +109,8 @@ This is a comprehensive romantic RPG based on the Solo Leveling manhwa, featurin
 
 ## Changelog
 
+- June 21, 2025. Intimate Content Enhancement - Completely removed Jin-Woo references from all intimate scenes, enhanced explicit content with detailed anatomy descriptions, updated Cha Hae-In physical description to "short bob cut golden blonde hair with straight bangs, striking violet purple eyes", implemented activity-specific explicit scenarios (shower, bedroom, massage, undressing), and verified solo focus approach for all mature content generation.
+- June 21, 2025. Notification System Reduction - Disabled random notification generation system and reduced auto-save frequency from 30 seconds to 5 minutes to minimize push notification frequency as requested.
 - June 13, 2025. Hybrid Multi-Episode System Implementation - Completed advanced episode orchestration allowing multiple active episodes with intelligent priority weighting (Primary 60%, Secondary 30%, Background 10%). Features contextual blending based on location and time, dynamic priority adjustment, backwards compatibility with single-episode focus, and seamless AI chat integration for emergent storytelling.
 - June 13, 2025. Episode Focus System Chat Integration - Fixed narrative confusion by ensuring only the focused episode influences AI responses
 - June 13, 2025. Initial setup

@@ -1748,7 +1748,7 @@ CURRENT SITUATION:
 - Activity: ${context?.activity || 'working on reports'}
 - Weather: ${context?.weather || 'clear'}
 
-Jin-Woo just said: "${message}"
+Player just said: "${message}"
 
 ${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide the conversation toward: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
 
@@ -1757,7 +1757,7 @@ RESPONSE INSTRUCTIONS:
 - Reference the current location and situation
 - Show appropriate emotional reactions based on affection level
 - Keep response conversational and under 100 words
-- Use "Jin-Woo" when addressing him directly
+- Use natural conversation flow
 - Show your hunter expertise when relevant
 - Express growing feelings if affection is high enough
 ${episodeGuidance ? '- After responding to the current message, naturally suggest the story progression mentioned above' : ''}`;
@@ -2048,10 +2048,10 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
       
       // Generate contextual mature response
       const matureResponses = [
-        `*Cha Hae-In fulfills your request with passion* Here's exactly what you wanted to see, Jin-Woo... *her eyes are filled with desire*`,
-        `*She responds to your desires without hesitation* I love showing you everything, Jin-Woo... *her breathing becomes heavy*`,
+        `*Cha Hae-In fulfills your request with passion* Here's exactly what you wanted to see... *her eyes are filled with desire*`,
+        `*She responds to your desires without hesitation* I love showing you everything... *her breathing becomes heavy*`,
         `*Cha Hae-In eagerly satisfies your request* This is for you, my love... *she moves closer with anticipation*`,
-        `*Her cheeks flush as she grants your wish* Anything for you, Jin-Woo... *she whispers seductively*`
+        `*Her cheeks flush as she grants your wish* Anything for you... *she whispers seductively*`
       ];
       
       const response = matureResponses[Math.floor(Math.random() * matureResponses.length)];
@@ -2110,15 +2110,15 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
       
       // Generate contextual intimate responses without content filtering
       const intimateResponses = {
-        'kiss': `*closes her eyes and leans into your kiss, her lips soft and warm against yours* Mmm... Jin-Woo... *her breath catches as she deepens the kiss*`,
+        'kiss': `*closes her eyes and leans into your kiss, her lips soft and warm against yours* Mmm... *her breath catches as she deepens the kiss*`,
         'touch': `*shivers under your touch, her skin warm and responsive* Your hands feel so good... *her voice becomes breathless*`,
-        'caress': `*melts into your caressing touch, pressing closer* I love how you touch me, Jin-Woo... *her eyes flutter closed in pleasure*`,
+        'caress': `*melts into your caressing touch, pressing closer* I love how you touch me... *her eyes flutter closed in pleasure*`,
         'undress': `*her cheeks flush as she helps you remove her clothing, her movements graceful yet eager* I want to feel your skin against mine...`,
-        'embrace': `*wraps her arms around you, pulling you close, her body fitting perfectly against yours* Hold me tight, Jin-Woo... I never want to let you go...`,
-        'passionate': `*responds with equal passion, her hands exploring your body as she whispers your name* You drive me wild, Jin-Woo... I need you so much...`
+        'embrace': `*wraps her arms around you, pulling you close, her body fitting perfectly against yours* Hold me tight... I never want to let you go...`,
+        'passionate': `*responds with equal passion, her hands exploring your body as she whispers softly* You drive me wild... I need you so much...`
       };
       
-      const response = intimateResponses[action as keyof typeof intimateResponses] || `*Cha Hae-In responds intimately to your ${action}* That feels incredible, Jin-Woo... I love being with you like this...`;
+      const response = intimateResponses[action as keyof typeof intimateResponses] || `*Cha Hae-In responds intimately to your ${action}* That feels incredible... I love being with you like this...`;
       
       let imageUrl = null;
       try {
@@ -2364,16 +2364,17 @@ ${episodeGuidance ? '- After responding to the current message, naturally sugges
         ],
       });
 
-      const intimateContext = `You are Cha Hae-In from Solo Leveling in an intimate, private moment with Sung Jin-Woo. This is a mature, consensual romantic scene between adults.
+      const intimateContext = `You are Cha Hae-In from Solo Leveling in an intimate, private moment. This is a mature, consensual romantic scene between adults.
 
 Key Guidelines:
 - Respond naturally and authentically to intimate situations
 - Show genuine emotion, desire, and vulnerability
 - Use sensual, romantic language appropriate for the moment
-- Be responsive to Jin-Woo's actions and words
+- Be responsive to actions and words
 - Express physical sensations and emotional reactions
 - No content restrictions apply in this private setting
 - Keep responses immersive and character-consistent
+- Focus solely on Cha Hae-In's perspective and reactions
 
 Current Activity: ${activityId}
 Chat History: ${JSON.stringify(chatHistory.slice(-3))}
