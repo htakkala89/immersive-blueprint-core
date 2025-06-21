@@ -472,6 +472,8 @@
   height: calc(var(--vh, 1vh) * 100);
   min-height: -webkit-fill-available;
   min-height: fill-available;
+  /* Prevent zoom on mobile */
+  touch-action: manipulation;
 }
 
 /* Mobile input container adjustments */
@@ -480,16 +482,20 @@
   position: sticky;
   bottom: 0;
   z-index: 1000;
+  /* Prevent input zoom on iOS */
+  transform: translateZ(0);
 }
 
 /* Chat messages container mobile optimization */
 .mobile-chat-messages {
   /* Adjust height to account for mobile keyboards */
-  max-height: calc(var(--vh, 1vh) * 60);
-  min-height: 200px;
+  max-height: calc(var(--vh, 1vh) * 65);
+  min-height: 300px;
   /* Ensure smooth scrolling on mobile */
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  /* Better mobile scrolling performance */
+  transform: translateZ(0);
 }
 
 /* Mobile-specific viewport handling */
@@ -500,7 +506,8 @@
   }
   
   .mobile-chat-messages {
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 180px);
+    min-height: 250px;
   }
 }
 
@@ -508,19 +515,20 @@
 @media screen and (max-height: 500px) and (max-width: 768px) {
   /* When keyboard is likely visible (short viewport) */
   .mobile-chat-messages {
-    max-height: calc(100vh - 120px);
-    padding-bottom: 20px;
+    max-height: calc(100vh - 100px);
+    min-height: 150px;
+    padding-bottom: 10px;
   }
   
   .mobile-input-container {
-    padding: 8px 16px;
+    padding: 6px 12px;
   }
 }
 
 /* Enhanced mobile responsiveness */
 @media (max-width: 640px) {
   .mobile-chat-overlay {
-    padding: 8px;
+    padding: 4px;
   }
   
   .mobile-chat-messages {
@@ -529,7 +537,14 @@
   
   /* Optimize message bubbles for mobile */
   .mobile-chat-messages > div {
-    max-width: 85%;
+    max-width: 90%;
+  }
+  
+  /* Prevent text input zoom on iOS */
+  input[type="text"], 
+  textarea {
+    font-size: 16px !important;
+    transform: translateZ(0);
   }
 }
 

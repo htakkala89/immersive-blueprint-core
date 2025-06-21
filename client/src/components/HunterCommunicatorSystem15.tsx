@@ -318,6 +318,13 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         : conv
     ));
 
+    // Auto-scroll to bottom after user message
+    setTimeout(() => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
+    }, 50);
+
     // Progress message states
     setTimeout(() => updateMessageState(newMessage.id, 'delivered'), 1000);
     setTimeout(() => updateMessageState(newMessage.id, 'read'), 5000);
@@ -350,6 +357,13 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                 }
               : conv
           ));
+
+          // Force scroll to bottom after AI response
+          setTimeout(() => {
+            if (chatContainerRef.current) {
+              chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
+          }, 100);
 
           // Trigger activity proposal if detected
           if (proposedActivity && onActivityProposed) {
@@ -633,6 +647,17 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       return alert;
     }));
   };
+
+  // Auto-scroll to bottom when conversations change
+  useEffect(() => {
+    if (chatContainerRef.current && selectedConversation) {
+      setTimeout(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+      }, 100);
+    }
+  }, [conversations, selectedConversation]);
 
   // Mobile keyboard handling
   useEffect(() => {
