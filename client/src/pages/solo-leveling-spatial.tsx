@@ -4269,15 +4269,19 @@ export default function SoloLevelingSpatial() {
         />
       )}
 
-      {/* System 15: Notification Banners */}
+      {/* System 15: Notification Banners - Repositioned to avoid Monarch's Aura button */}
       <AnimatePresence>
-        {notifications.map((notification) => (
+        {notifications.map((notification, index) => (
           <motion.div
             key={notification.id}
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            className="fixed top-4 left-1/2 transform -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 left-4 translate-x-0 z-[9999] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4"
+            initial={{ opacity: 0, x: 300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 300 }}
+            className="fixed top-20 right-4 z-[9998] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4 mb-2"
+            style={{ 
+              top: `${80 + (index * 80)}px`,
+              zIndex: 9998 - index 
+            }}
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-start gap-3">
