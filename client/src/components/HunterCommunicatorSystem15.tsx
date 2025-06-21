@@ -1368,42 +1368,338 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                 </div>
                                 <div className="message-block space-y-3">
                                   {(() => {
-                                    // Force test with a known message
-                                    const testContent = `"Hunter Sung Jin-Woo." *She glances up from her reports, a slight smile playing on her lips* "I wasn't expecting a visit." (He's so unexpectedly... charming.) "The reports are rather tedious today."`;
-                                    const parsedParts = parseMessageContent(message.content.includes('Hunter Sung Jin-Woo') ? testContent : message.content);
-                                    console.log('🎭 ORIGINAL CONTENT:', message.content);
-                                    console.log('🎭 USING TEST CONTENT:', message.content.includes('Hunter Sung Jin-Woo'));
-                                    console.log('🎭 RENDERING PARTS:', parsedParts);
-                                    console.log('🎭 PARTS LENGTH:', parsedParts.length);
-                                    return parsedParts;
-                                  })().map((part, index) => (
-                                    <div key={index}>
-                                      {part.type === 'action' && (
-                                        <div 
-                                          className="text-amber-300 italic font-light text-sm opacity-90 leading-relaxed mb-3"
-                                          style={{
-                                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                                            lineHeight: '1.6',
-                                            letterSpacing: '0.005em',
-                                            textShadow: '0 1px 2px rgba(251,191,36,0.3)',
-                                            padding: '0.25rem 0'
-                                          }}
-                                        >
-                                          {part.text}
-                                        </div>
-                                      )}
-                                      {part.type === 'dialogue' && (
-                                        <div 
-                                          className="text-white font-normal leading-relaxed text-base mb-3"
-                                          style={{
-                                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                                            lineHeight: '1.6',
-                                            letterSpacing: '0.01em',
-                                            textShadow: '0 1px 3px rgba(0,0,0,0.8)',
-                                            padding: '0.5rem 0'
-                                          }}
-                                        >
-                                          "{part.text}"
+                                    const content = message.content;
+                                    console.log('🎭 PROCESSING MESSAGE:', content);
+                                    
+                                    // Split by formatting markers and process each segment
+                                    const segments = content.split(/(".*?"|\*.*?\*|\(.*?\))/g).filter(s => s.length > 0);
+                                    console.log('🎭 SEGMENTS:', segments);
+                                    
+                                    return segments.map((segment, index) => {
+                                      const trimmed = segment.trim();
+                                      if (!trimmed) return null;
+                                      
+                                      if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+                                        // Dialogue - white text, larger
+                                        return (
+                                          <div 
+                                            key={index}
+                                            className="text-white font-medium text-base leading-relaxed mb-3"
+                                            style={{
+                                              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                              lineHeight: '1.6',
+                                              letterSpacing: '0.01em',
+                                              textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                                              fontSize: '16px',
+                                              fontWeight: '500'
+                                            }}
+                                          >
+                                            {trimmed.slice(1, -1)}
+                                          </div>
+                                        );
+                                      } else if (trimmed.startsWith('*') && trimmed.endsWith('*')) {
+                                        // Action - amber italics
+                                        return (
+                                          <div 
+                                            key={index}
+                                            className="text-amber-300 italic font-light text-sm opacity-90 leading-relaxed mb-3"
+                                            style={{
+                                              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                              lineHeight: '1.6',
+                                              letterSpacing: '0.005em',
+                                              textShadow: '0 1px 2px rgba(251,191,36,0.3)',
+                                              fontStyle: 'italic'
+                                            }}
+                                          >
+                                            <em>{trimmed.slice(1, -1)}</em>
+                                          </div>
+                                        );
+                                      } else if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
+                                        // Thought - gray italics with border
+                                        return (
+                                          <div 
+                                            key={index}
+                                            className="text-slate-400 italic font-light text-sm opacity-75 leading-relaxed pl-4 mb-3 border-l-2 border-slate-600 border-opacity-30"
+                                            style={{
+                                              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                              lineHeight: '1.6',
+                                              letterSpacing: '0.005em',
+                                              textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                                              padding: '0.5rem 0 0.5rem 1rem',
+                                              fontStyle: 'italic'
+                                            }}
+                                          >
+                                            <em>({trimmed.slice(1, -1)})</em>
+                                          </div>
+                                        );
+                                      } else {
+                                        // Narrative - regular text
+                                        return (
+                                          <div 
+                                            key={index}
+                                            className="text-slate-300 font-light text-sm leading-relaxed opacity-80 mb-2"
+                                            style={{
+                                              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                              lineHeight: '1.6',
+                                              letterSpacing: '0.005em',
+                                              textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                                              padding: '0.25rem 0'
+                                            }}
+                                          >
+                                            {trimmed}
+                                          </div>
+                                        );
+                                      }
+                                    }).filter(Boolean);
+                                  })()}
+                                </div>
+                                <span 
+                                  className="text-xs text-slate-400 mt-2 block"
+                                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                                >
+                                  {formatTimestamp(message.timestamp)}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </motion.div>
+                      ))}
+                      
+                      {/* Enhanced Typing Indicator */}
+                      {isTyping && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex gap-4"
+                        >
+                          <div 
+                            className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+                              backdropFilter: 'blur(10px)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)'
+                            }}
+                          >
+                            {selectedConversationData.participantAvatar}
+                          </div>
+                          <div 
+                            className="px-4 py-3 rounded-2xl"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                              backdropFilter: 'blur(15px)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                            }}
+                          >
+                            <div className="flex space-x-1">
+                              <div 
+                                className="w-2 h-2 rounded-full animate-bounce"
+                                style={{ 
+                                  background: 'rgba(147,197,253,0.6)',
+                                  boxShadow: '0 0 4px rgba(147,197,253,0.4)'
+                                }}
+                              />
+                              <div 
+                                className="w-2 h-2 rounded-full animate-bounce"
+                                style={{ 
+                                  background: 'rgba(147,197,253,0.6)',
+                                  boxShadow: '0 0 4px rgba(147,197,253,0.4)',
+                                  animationDelay: '0.1s'
+                                }}
+                              />
+                              <div 
+                                className="w-2 h-2 rounded-full animate-bounce"
+                                style={{ 
+                                  background: 'rgba(147,197,253,0.6)',
+                                  boxShadow: '0 0 4px rgba(147,197,253,0.4)',
+                                  animationDelay: '0.2s'
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+
+                    {/* Input Area */}
+                    <div className="p-4 border-t border-white/10">
+                      <div className="flex gap-3">
+                        <Textarea
+                          value={currentInput}
+                          onChange={(e) => setCurrentInput(e.target.value)}
+                          placeholder="Speak from the heart..."
+                          className="flex-1 min-h-[44px] bg-black/30 border-white/20 text-white placeholder:text-slate-400 resize-none"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              handleSendMessage();
+                            }
+                          }}
+                        />
+                        <Button 
+                          onClick={handleSendMessage}
+                          disabled={!currentInput.trim() || isTyping}
+                          className="h-11 w-11 p-0 bg-blue-600 hover:bg-blue-700"
+                        >
+                          <Send className="w-5 h-5" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* System Alerts Modal */}
+        <AnimatePresence>
+          {selectedAlert && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+              onClick={() => setSelectedAlert(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(15,15,30,0.95) 0%, rgba(25,25,50,0.95) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '1rem',
+                  boxShadow: '0 25px 50px rgba(0,0,0,0.5)'
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {(() => {
+                  const selectedAlertData = systemAlerts.find(alert => alert.id === selectedAlert);
+                  if (!selectedAlertData) return null;
+
+                  return (
+                    <>
+                      {/* Header */}
+                      <div className="flex items-start justify-between p-6 border-b border-white/10">
+                        <div className="flex-1 mr-4">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div 
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                              style={{
+                                background: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+                              }}
+                            >
+                              {selectedAlertData.sender.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-white">{selectedAlertData.title}</h3>
+                              <p className="text-sm text-slate-300">From: {selectedAlertData.sender}</p>
+                            </div>
+                          </div>
+                          <p className="text-xs text-slate-400">
+                            {formatTimestamp(selectedAlertData.timestamp)}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => setSelectedAlert(null)}
+                          size="sm"
+                          variant="ghost"
+                          className="text-slate-400 hover:text-white hover:bg-white/10 rounded-lg p-2"
+                        >
+                          <XIcon className="w-5 h-5" />
+                        </Button>
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-6">
+                        <div 
+                          className="text-slate-200 leading-relaxed mb-6 whitespace-pre-wrap"
+                          style={{
+                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                            lineHeight: '1.6'
+                          }}
+                        >
+                          {selectedAlertData.content}
+                        </div>
+
+                        {/* Quest Details */}
+                        {selectedAlertData.questData && (
+                          <div className="space-y-4">
+                            <div 
+                              className="p-4 rounded-lg border"
+                              style={{
+                                background: 'linear-gradient(135deg, rgba(59,130,246,0.1), rgba(37,99,235,0.05))',
+                                borderColor: 'rgba(59,130,246,0.2)'
+                              }}
+                            >
+                              <h4 className="text-blue-300 font-medium mb-2">Quest Details</h4>
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <span className="text-slate-400">Rank:</span>
+                                  <span className="text-white ml-2">{selectedAlertData.questData.rank}</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-400">Reward:</span>
+                                  <span className="text-green-400 ml-2">{selectedAlertData.questData.reward.toLocaleString()} G</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-400">Location:</span>
+                                  <span className="text-white ml-2">{selectedAlertData.questData.location}</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-400">Duration:</span>
+                                  <span className="text-white ml-2">{selectedAlertData.questData.estimatedDuration}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {selectedAlertData.questData.objectives && (
+                              <div>
+                                <h4 className="text-white font-medium mb-2">Objectives</h4>
+                                <ul className="space-y-1">
+                                  {selectedAlertData.questData.objectives.map((objective, index) => (
+                                    <li key={index} className="text-slate-300 text-sm flex items-start gap-2">
+                                      <span className="text-blue-400 mt-1">•</span>
+                                      {objective.description}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      {selectedAlertData.questData && (
+                        <div className="flex justify-end gap-3 p-6 border-t border-white/10">
+                          <Button
+                            onClick={() => onQuestAccept(selectedAlertData.questData)}
+                            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium px-6"
+                          >
+                            Accept Quest
+                          </Button>
+                          <Button
+                            onClick={() => setSelectedAlert(null)}
+                            variant="outline"
+                            className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white px-6"
+                          >
+                            Decline
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
                                         </div>
                                       )}
                                       {part.type === 'thought' && (
