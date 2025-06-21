@@ -496,46 +496,51 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
 
   // Enhanced auto-scroll chat to bottom with smooth animation
   useEffect(() => {
-    if (chatContainerRef.current) {
+    if (chatContainerRef.current && selectedConversation) {
       const container = chatContainerRef.current;
       const scrollToBottom = () => {
-        container.scrollTo({
-          top: container.scrollHeight,
-          behavior: 'smooth'
-        });
+        container.scrollTop = container.scrollHeight;
       };
       
       // Immediate scroll for conversation change
-      if (selectedConversation) {
-        scrollToBottom();
-      }
+      scrollToBottom();
       
-      // Delayed scroll to ensure content is rendered
+      // Additional delayed scroll to ensure content is fully rendered
       const timeoutId = setTimeout(scrollToBottom, 100);
       return () => clearTimeout(timeoutId);
     }
-  }, [selectedConversation, conversations]);
+  }, [selectedConversation]);
 
-  // Auto-scroll when new messages are added
+  // Auto-scroll when new messages are added to the current conversation
   useEffect(() => {
     if (chatContainerRef.current && selectedConversation) {
       const container = chatContainerRef.current;
-      const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+      const selectedConv = conversations.find(c => c.id === selectedConversation);
       
-      if (isNearBottom) {
+      if (selectedConv && selectedConv.messages.length > 0) {
+        // Force scroll to bottom when new messages arrive
         setTimeout(() => {
-          container.scrollTo({
-            top: container.scrollHeight,
-            behavior: 'smooth'
-          });
+          container.scrollTop = container.scrollHeight;
         }, 50);
+        
+        // Additional scroll after a longer delay for content that may still be rendering
+        setTimeout(() => {
+          container.scrollTop = container.scrollHeight;
+        }, 200);
       }
     }
-  }, [conversations, selectedConversation]);
+  }, [conversations.find(c => c.id === selectedConversation)?.messages.length, selectedConversation]);
 
   const handleSendMessage = async () => {
     if (!currentInput.trim() || !selectedConversation) return;
     await sendMessage(currentInput);
+    
+    // Force scroll to bottom immediately after sending
+    if (chatContainerRef.current) {
+      setTimeout(() => {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }, 100);
+    }
   };
 
   // Format timestamp for display
