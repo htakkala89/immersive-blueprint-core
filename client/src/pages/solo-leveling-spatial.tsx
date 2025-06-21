@@ -2091,24 +2091,24 @@ export default function SoloLevelingSpatial() {
     }
   }, [gameState.level, gameState.affection, playerLocation, selectedRole, loadedProfileId]);
 
-  // Simulate asynchronous notifications
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (Math.random() > 0.98) {
-        const isQuestNotification = Math.random() > 0.7;
-        const newNotification = {
-          id: `notif_${Date.now()}`,
-          type: isQuestNotification ? 'quest' : 'message' as 'quest' | 'message',
-          title: isQuestNotification ? 'New Quest Available' : 'Message from Cha Hae-In',
-          content: isQuestNotification ? 'A-Rank Gate detected in Gangnam' : 'Just thinking of you. Be safe in there.',
-          timestamp: new Date()
-        };
-        setNotifications(prev => [...prev, newNotification]);
-      }
-    }, 15000);
+  // Disabled automatic notifications to reduce push notification frequency
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (Math.random() > 0.98) {
+  //       const isQuestNotification = Math.random() > 0.7;
+  //       const newNotification = {
+  //         id: `notif_${Date.now()}`,
+  //         type: isQuestNotification ? 'quest' : 'message' as 'quest' | 'message',
+  //         title: isQuestNotification ? 'New Quest Available' : 'Message from Cha Hae-In',
+  //         content: isQuestNotification ? 'A-Rank Gate detected in Gangnam' : 'Just thinking of you. Be safe in there.',
+  //         timestamp: new Date()
+  //       };
+  //       setNotifications(prev => [...prev, newNotification]);
+  //     }
+  //   }, 15000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   // Profile loading functionality
   const loadProfileData = async (profileId: number) => {
@@ -2198,25 +2198,24 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-save every 30 seconds when in player mode
+  // Auto-save every 5 minutes when in player mode (reduced frequency)
   useEffect(() => {
     if (selectedRole === 'player' && loadedProfileId) {
-      const autoSaveInterval = setInterval(autoSaveProgress, 30000);
+      const autoSaveInterval = setInterval(autoSaveProgress, 300000); // 5 minutes
       return () => clearInterval(autoSaveInterval);
     }
   }, [selectedRole, loadedProfileId, gameState]);
 
-  // Save progress when significant events occur
+  // Save progress only on major events (reduced triggers)
   useEffect(() => {
     if (selectedRole === 'player' && loadedProfileId) {
-      autoSaveProgress();
+      // Only save on level up and major milestones to reduce notifications
+      if (gameState.level > 1 || gameState.apartmentTier > 1) {
+        autoSaveProgress();
+      }
     }
   }, [
     gameState.level,
-    gameState.affection,
-    gameState.currentScene,
-    gameState.gold,
-    gameState.intimacyLevel,
     gameState.apartmentTier
   ]);
 
