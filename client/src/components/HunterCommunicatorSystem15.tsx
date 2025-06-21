@@ -634,6 +634,84 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     }));
   };
 
+  // Parse message content to differentiate between dialogue, actions, and thoughts
+  const parseMessageContent = (content: string) => {
+    interface MessagePart {
+      type: 'dialogue' | 'action' | 'thought' | 'narrative';
+      text: string;
+      className: string;
+      start?: number;
+      end?: number;
+    }
+    
+    const parts: MessagePart[] = [];
+    
+    // Regex patterns for different message types
+    const patterns = [
+      { type: 'dialogue' as const, regex: /"([^"]+)"/g, className: 'text-white font-medium' },
+      { type: 'action' as const, regex: /\*([^*]+)\*/g, className: 'text-amber-300 italic text-sm' },
+      { type: 'thought' as const, regex: /\(([^)]+)\)/g, className: 'text-slate-400 italic text-sm opacity-80' }
+    ];
+    
+    // Find all matches
+    const allMatches: (MessagePart & { start: number; end: number; fullMatch: string })[] = [];
+    patterns.forEach(pattern => {
+      let match;
+      while ((match = pattern.regex.exec(content)) !== null) {
+        allMatches.push({
+          type: pattern.type,
+          text: match[1],
+          fullMatch: match[0],
+          start: match.index,
+          end: match.index + match[0].length,
+          className: pattern.className
+        });
+      }
+    });
+    
+    // Sort matches by position
+    allMatches.sort((a, b) => a.start - b.start);
+    
+    // Build parsed content
+    let lastEnd = 0;
+    
+    allMatches.forEach((match) => {
+      // Add text before this match
+      if (match.start > lastEnd) {
+        const beforeText = content.slice(lastEnd, match.start).trim();
+        if (beforeText) {
+          parts.push({
+            type: 'narrative',
+            text: beforeText,
+            className: 'text-slate-300'
+          });
+        }
+      }
+      
+      // Add the matched content
+      parts.push({
+        type: match.type,
+        text: match.text,
+        className: match.className
+      });
+      lastEnd = match.end;
+    });
+    
+    // Add remaining text
+    if (lastEnd < content.length) {
+      const remainingText = content.slice(lastEnd).trim();
+      if (remainingText) {
+        parts.push({
+          type: 'narrative',
+          text: remainingText,
+          className: 'text-slate-300'
+        });
+      }
+    }
+    
+    return parts.length > 0 ? parts : [{ type: 'narrative', text: content, className: 'text-white' }];
+  };
+
   const acceptQuest = (questId: string) => {
     const alert = systemAlerts.find(a => a.id === questId);
     if (alert && alert.questData) {
@@ -1237,15 +1315,32 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                     {selectedConversationData.participantName}
                                   </span>
                                 </div>
-                                <p 
-                                  className="text-white text-sm sm:text-base leading-relaxed"
+                                <div 
+                                  className="text-sm sm:text-base leading-relaxed space-y-1"
                                   style={{
                                     textShadow: '0 1px 3px rgba(0,0,0,0.8)',
                                     filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
                                   }}
                                 >
-                                  {message.content}
-                                </p>
+                                  {parseMessageContent(message.content).map((part, index) => (
+                                    <span
+                                      key={index}
+                                      className={part.className}
+                                      style={{
+                                        display: part.type === 'dialogue' ? 'inline' : 
+                                               part.type === 'action' ? 'inline' :
+                                               part.type === 'thought' ? 'block' : 'inline',
+                                        marginLeft: part.type === 'thought' ? '1rem' : '0',
+                                        textShadow: part.type === 'dialogue' ? '0 1px 3px rgba(0,0,0,0.8)' :
+                                                   part.type === 'action' ? '0 1px 2px rgba(251,191,36,0.3)' :
+                                                   '0 1px 2px rgba(0,0,0,0.6)'
+                                      }}
+                                    >
+                                      {part.text}
+                                      {index < parseMessageContent(message.content).length - 1 && part.type !== 'thought' ? ' ' : ''}
+                                    </span>
+                                  ))}
+                                </div>
                                 <span 
                                   className="text-xs text-slate-400 mt-2 block"
                                   style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
