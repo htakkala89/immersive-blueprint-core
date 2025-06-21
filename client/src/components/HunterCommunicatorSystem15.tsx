@@ -695,81 +695,70 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     };
   }, []);
 
-  // Working cinematic message parsing 
+  // Enhanced cinematic message parsing with debug logging
   const parseMessageContent = (content: string) => {
+    console.log('🎭 PARSING CONTENT:', content);
+    
     interface MessagePart {
       type: 'dialogue' | 'action' | 'thought' | 'narrative';
       text: string;
     }
     
+    // Split the content using regex to capture quoted text, asterisk actions, and parenthetical thoughts
+    const regex = /(".*?"|\*.*?\*|\(.*?\))/g;
     const parts: MessagePart[] = [];
-    let currentIndex = 0;
+    let lastIndex = 0;
+    let match;
     
-    while (currentIndex < content.length) {
-      // Find the next special character
-      let nextQuote = content.indexOf('"', currentIndex);
-      let nextAsterisk = content.indexOf('*', currentIndex);
-      let nextParen = content.indexOf('(', currentIndex);
+    console.log('🎭 REGEX:', regex);
+    
+    while ((match = regex.exec(content)) !== null) {
+      console.log('🎭 FOUND MATCH:', match[0], 'at index', match.index);
       
-      // Find which comes first
-      let nextSpecial = Math.min(
-        nextQuote === -1 ? Infinity : nextQuote,
-        nextAsterisk === -1 ? Infinity : nextAsterisk,
-        nextParen === -1 ? Infinity : nextParen
-      );
-      
-      if (nextSpecial === Infinity) {
-        // No more special characters, add remaining as narrative
-        const remaining = content.slice(currentIndex).trim();
-        if (remaining) {
-          parts.push({ type: 'narrative', text: remaining });
-        }
-        break;
-      }
-      
-      // Add narrative text before the special character
-      if (nextSpecial > currentIndex) {
-        const beforeText = content.slice(currentIndex, nextSpecial).trim();
-        if (beforeText) {
-          parts.push({ type: 'narrative', text: beforeText });
+      // Add any narrative text before this match
+      if (match.index > lastIndex) {
+        const narrativeText = content.slice(lastIndex, match.index).trim();
+        if (narrativeText) {
+          parts.push({ type: 'narrative', text: narrativeText });
+          console.log('🎭 ADDED NARRATIVE:', narrativeText);
         }
       }
       
-      // Handle the special character
-      if (nextSpecial === nextQuote) {
-        // Handle dialogue
-        const endQuote = content.indexOf('"', nextQuote + 1);
-        if (endQuote !== -1) {
-          const dialogueText = content.slice(nextQuote + 1, endQuote);
-          parts.push({ type: 'dialogue', text: dialogueText });
-          currentIndex = endQuote + 1;
-        } else {
-          currentIndex = nextQuote + 1;
-        }
-      } else if (nextSpecial === nextAsterisk) {
-        // Handle action
-        const endAsterisk = content.indexOf('*', nextAsterisk + 1);
-        if (endAsterisk !== -1) {
-          const actionText = content.slice(nextAsterisk + 1, endAsterisk);
-          parts.push({ type: 'action', text: actionText });
-          currentIndex = endAsterisk + 1;
-        } else {
-          currentIndex = nextAsterisk + 1;
-        }
-      } else if (nextSpecial === nextParen) {
-        // Handle thought
-        const endParen = content.indexOf(')', nextParen + 1);
-        if (endParen !== -1) {
-          const thoughtText = content.slice(nextParen + 1, endParen);
-          parts.push({ type: 'thought', text: thoughtText });
-          currentIndex = endParen + 1;
-        } else {
-          currentIndex = nextParen + 1;
-        }
+      const matchedText = match[0];
+      const innerText = matchedText.slice(1, -1); // Remove the delimiters
+      
+      if (matchedText.startsWith('"') && matchedText.endsWith('"')) {
+        parts.push({ type: 'dialogue', text: innerText });
+        console.log('🎭 ADDED DIALOGUE:', innerText);
+      } else if (matchedText.startsWith('*') && matchedText.endsWith('*')) {
+        parts.push({ type: 'action', text: innerText });
+        console.log('🎭 ADDED ACTION:', innerText);
+      } else if (matchedText.startsWith('(') && matchedText.endsWith(')')) {
+        parts.push({ type: 'thought', text: innerText });
+        console.log('🎭 ADDED THOUGHT:', innerText);
+      }
+      
+      lastIndex = regex.lastIndex;
+    }
+    
+    // Add any remaining text as narrative
+    if (lastIndex < content.length) {
+      const remainingText = content.slice(lastIndex).trim();
+      if (remainingText) {
+        parts.push({ type: 'narrative', text: remainingText });
+        console.log('🎭 ADDED REMAINING:', remainingText);
       }
     }
     
-    return parts.length > 0 ? parts : [{ type: 'narrative', text: content }];
+    console.log('🎭 FINAL PARTS:', parts);
+    
+    // If no parts were found, return the entire content as narrative
+    if (parts.length === 0) {
+      console.log('🎭 NO PARTS FOUND, RETURNING AS NARRATIVE');
+      return [{ type: 'narrative', text: content }];
+    }
+    
+    return parts;
   };
 
   const acceptQuest = (questId: string) => {
@@ -1377,18 +1366,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                   </span>
                                 </div>
                                 <div className="message-block space-y-3">
-                                  {(() => {
-                                    // Force a test message with proper formatting
-                                    const testContent = message.content.includes('Good morning') 
-                                      ? '"Good morning! Ready for today\'s training session?" *She adjusts her sword with practiced ease.* (I wonder if he\'s been practicing the techniques I showed him.)'
-                                      : message.content;
-                                    
-                                    const parsed = parseMessageContent(testContent);
-                                    console.log('🎭 Original:', message.content);
-                                    console.log('🎭 Test content:', testContent);
-                                    console.log('🎭 Parsed parts:', parsed);
-                                    return parsed;
-                                  })().map((part, index) => (
+                                  {parseMessageContent(message.content).map((part, index) => (
                                     <div key={index}>
                                       {part.type === 'action' && (
                                         <div 
