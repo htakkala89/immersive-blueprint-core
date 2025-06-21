@@ -519,17 +519,42 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       
       if (selectedConv && selectedConv.messages.length > 0) {
         // Force scroll to bottom when new messages arrive
-        setTimeout(() => {
+        const scrollToBottom = () => {
           container.scrollTop = container.scrollHeight;
-        }, 50);
+        };
         
-        // Additional scroll after a longer delay for content that may still be rendering
-        setTimeout(() => {
-          container.scrollTop = container.scrollHeight;
-        }, 200);
+        // Multiple scroll attempts to handle avatar loading and content changes
+        scrollToBottom(); // Immediate
+        setTimeout(scrollToBottom, 50); // Quick follow-up
+        setTimeout(scrollToBottom, 200); // After content loads
+        setTimeout(scrollToBottom, 500); // After avatars load
+        setTimeout(scrollToBottom, 1000); // Final safety scroll
       }
     }
   }, [conversations.find(c => c.id === selectedConversation)?.messages.length, selectedConversation]);
+
+  // Additional scroll trigger for when avatars or dynamic content loads
+  useEffect(() => {
+    if (chatContainerRef.current && selectedConversation) {
+      const container = chatContainerRef.current;
+      
+      // Set up a MutationObserver to watch for DOM changes (like avatar images loading)
+      const observer = new MutationObserver(() => {
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
+      });
+      
+      observer.observe(container, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['src', 'style']
+      });
+      
+      return () => observer.disconnect();
+    }
+  }, [selectedConversation]);
 
   const handleSendMessage = async () => {
     if (!currentInput.trim() || !selectedConversation) return;
@@ -537,8 +562,11 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     
     // Force scroll to bottom immediately after sending
     if (chatContainerRef.current) {
+      const container = chatContainerRef.current;
       setTimeout(() => {
-        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
       }, 100);
     }
   };
