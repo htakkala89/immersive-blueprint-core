@@ -1626,7 +1626,17 @@ IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and referenc
 
 ${episodeGuidance ? 'After responding to the current message naturally, guide the conversation toward the story progression mentioned above.' : ''}
 
-Respond naturally as if you're texting back:`;
+CRITICAL FORMATTING RULES (MUST FOLLOW EXACTLY):
+- ALL spoken dialogue MUST be enclosed in double quotes: "Like this when I speak"
+- ALL physical actions MUST be enclosed in asterisks: *Like this when I move or gesture*
+- ALL internal thoughts MUST be enclosed in parentheses: (Like this for my private thoughts)
+- Narrative descriptions should be plain text without special formatting
+- NEVER mix these formats - each element should be clearly separated
+
+EXAMPLE RESPONSE FORMAT:
+"I understand your concern." *She adjusts her glasses thoughtfully* (He's always so considerate of others.) The mission briefings are on my desk if you'd like to review them.
+
+Respond naturally as if you're texting back, using the exact formatting rules above:`;
 
         const result = await model.generateContent(fullPrompt);
         const rawResponse = result.response.text();
