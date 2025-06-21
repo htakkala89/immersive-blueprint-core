@@ -695,7 +695,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     };
   }, []);
 
-  // Fixed cinematic message parsing with proper pattern matching
+  // Fixed cinematic message parsing with ES5 compatibility
   const parseMessageContent = (content: string) => {
     interface MessagePart {
       type: 'dialogue' | 'action' | 'thought' | 'narrative';
@@ -704,17 +704,62 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     
     const parts: MessagePart[] = [];
     
-    // Use a more precise approach - find all special patterns first
-    const dialogueMatches = [...content.matchAll(/"([^"]+)"/g)];
-    const actionMatches = [...content.matchAll(/\*([^*]+)\*/g)];
-    const thoughtMatches = [...content.matchAll(/\(([^)]+)\)/g)];
+    // Simple string-based parsing to avoid regex issues
+    const allMatches: Array<{ type: 'dialogue' | 'action' | 'thought', text: string, start: number, end: number }> = [];
     
-    // Combine all matches with their positions
-    const allMatches = [
-      ...dialogueMatches.map(m => ({ type: 'dialogue' as const, text: m[1], start: m.index!, end: m.index! + m[0].length })),
-      ...actionMatches.map(m => ({ type: 'action' as const, text: m[1], start: m.index!, end: m.index! + m[0].length })),
-      ...thoughtMatches.map(m => ({ type: 'thought' as const, text: m[1], start: m.index!, end: m.index! + m[0].length }))
-    ].sort((a, b) => a.start - b.start);
+    // Find dialogue matches with simple string operations
+    let searchIndex = 0;
+    while (true) {
+      const startQuote = content.indexOf('"', searchIndex);
+      if (startQuote === -1) break;
+      const endQuote = content.indexOf('"', startQuote + 1);
+      if (endQuote === -1) break;
+      
+      allMatches.push({
+        type: 'dialogue',
+        text: content.slice(startQuote + 1, endQuote),
+        start: startQuote,
+        end: endQuote + 1
+      });
+      searchIndex = endQuote + 1;
+    }
+    
+    // Find action matches
+    searchIndex = 0;
+    while (true) {
+      const startAsterisk = content.indexOf('*', searchIndex);
+      if (startAsterisk === -1) break;
+      const endAsterisk = content.indexOf('*', startAsterisk + 1);
+      if (endAsterisk === -1) break;
+      
+      allMatches.push({
+        type: 'action',
+        text: content.slice(startAsterisk + 1, endAsterisk),
+        start: startAsterisk,
+        end: endAsterisk + 1
+      });
+      searchIndex = endAsterisk + 1;
+    }
+    
+    // Find thought matches
+    searchIndex = 0;
+    while (true) {
+      const startParen = content.indexOf('(', searchIndex);
+      if (startParen === -1) break;
+      const endParen = content.indexOf(')', startParen + 1);
+      if (endParen === -1) break;
+      
+      allMatches.push({
+        type: 'thought',
+        text: content.slice(startParen + 1, endParen),
+        start: startParen,
+        end: endParen + 1
+      });
+      searchIndex = endParen + 1;
+    }
+    
+    // Sort by position
+    allMatches.sort((a, b) => a.start - b.start);
     
     console.log('🎭 All matches found:', allMatches);
     
@@ -1365,38 +1410,67 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                     {selectedConversationData.participantName}
                                   </span>
                                 </div>
-                                <div className="message-block">
-                                  {parseMessageContent(message.content).map((part, index) => {
-                                    if (part.type === 'action') {
-                                      return (
-                                        <div key={index} className="cinematic-action">
+                                <div className="message-block space-y-3">
+                                  {parseMessageContent(message.content).map((part, index) => (
+                                    <div key={index}>
+                                      {part.type === 'action' && (
+                                        <div 
+                                          className="text-amber-300 italic font-light text-sm opacity-90 leading-relaxed mb-3"
+                                          style={{
+                                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                            lineHeight: '1.6',
+                                            letterSpacing: '0.005em',
+                                            textShadow: '0 1px 2px rgba(251,191,36,0.3)',
+                                            padding: '0.25rem 0'
+                                          }}
+                                        >
                                           {part.text}
                                         </div>
-                                      );
-                                    }
-                                    if (part.type === 'dialogue') {
-                                      return (
-                                        <div key={index} className="cinematic-dialogue">
+                                      )}
+                                      {part.type === 'dialogue' && (
+                                        <div 
+                                          className="text-white font-normal leading-relaxed text-base mb-3"
+                                          style={{
+                                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                            lineHeight: '1.6',
+                                            letterSpacing: '0.01em',
+                                            textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                                            padding: '0.5rem 0'
+                                          }}
+                                        >
                                           "{part.text}"
                                         </div>
-                                      );
-                                    }
-                                    if (part.type === 'thought') {
-                                      return (
-                                        <div key={index} className="cinematic-thought">
+                                      )}
+                                      {part.type === 'thought' && (
+                                        <div 
+                                          className="text-slate-400 italic font-light text-sm opacity-75 leading-relaxed pl-4 mb-3 border-l-2 border-slate-600 border-opacity-30"
+                                          style={{
+                                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                            lineHeight: '1.6',
+                                            letterSpacing: '0.005em',
+                                            textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                                            padding: '0.5rem 0 0.5rem 1rem'
+                                          }}
+                                        >
                                           <em>({part.text})</em>
                                         </div>
-                                      );
-                                    }
-                                    if (part.type === 'narrative') {
-                                      return (
-                                        <div key={index} className="cinematic-narrative">
+                                      )}
+                                      {part.type === 'narrative' && (
+                                        <div 
+                                          className="text-slate-300 font-light text-sm leading-relaxed opacity-80 mb-2"
+                                          style={{
+                                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                            lineHeight: '1.6',
+                                            letterSpacing: '0.005em',
+                                            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                                            padding: '0.25rem 0'
+                                          }}
+                                        >
                                           {part.text}
                                         </div>
-                                      );
-                                    }
-                                    return null;
-                                  })}
+                                      )}
+                                    </div>
+                                  ))}
                                 </div>
                                 <span 
                                   className="text-xs text-slate-400 mt-2 block"
