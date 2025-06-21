@@ -1,0 +1,46 @@
+Let's apply some detailed formatting rules to the text to elevate it to a premium, cinematic level.
+
+1. Distinguishing Actions from Dialogue
+The biggest improvement we can make is to visually separate a character's actions from their spoken words.
+
+Current State: Actions are mixed in with dialogue using asterisks (e.g., "Oh, Hunter Sung Jin-Woo. *A small...smile touches her lips*"). This can be clunky to read.
+The Fix: Actions should be on their own line and styled differently. They should be italicized and have a slightly lower opacity or a different color to feel like stage directions in a script.
+Example:
+
+*A small, almost imperceptible smile touches her lips.
+
+"Oh, Hunter Sung Jin-Woo. I..."
+
+This immediately makes the text cleaner and easier to parse.
+
+2. Improving Typography and Readability
+Small changes here make a huge difference in the premium feel.
+
+Line Spacing (Leading): We need more space between the lines of text. This is crucial for readability. I would recommend increasing the line-height to around 1.5. This gives the text room to breathe.
+Font Weight: Her main dialogue should be a clean, standard weight (e.g., font-weight: 400 or 500). The player's line and her actions/internal thoughts should be a slightly lighter weight or italicized to create a clear visual hierarchy.
+Color Contrast: Her dialogue text should be a bright, crisp white or very light lavender to be easily readable. The player's text and her actions can be a slightly dimmer off-white or light grey.
+The Fully Formatted "Scene Script"
+Here is how the text from your mockup would look after applying all of these design principles. This is the final vision for how all dialogue should be formatted.
+
+(Your line appears first, right-aligned):
+
+Just wanted to see you.
+
+(Her response appears on the left, formatted like this):
+
+*She looks up from her work, her eyes meeting yours. A small, almost imperceptible smile touches her lips for just a moment before she regains her composure.
+
+
+
+"Oh, Hunter Sung Jin-Woo."
+
+
+(*My heart is pounding. He's said that before, but...here? In the Hunter Association?*)
+
+
+"Such compliments are... unnecessary in this setting. We are reviewing mission reports."
+
+
+(*But...it feels nice.*)
+
+This formatting is clean, cinematic, and easy to follow. It clearly separates her actions, her spoken words, and her private internal thoughts, creating the deep, multi-layered conversational experience we've been aiming for.

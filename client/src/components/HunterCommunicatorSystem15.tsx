@@ -695,23 +695,39 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     };
   }, []);
 
-  // Parse message content to differentiate between dialogue, actions, and thoughts
+  // Enhanced cinematic message parsing with premium formatting
   const parseMessageContent = (content: string) => {
     interface MessagePart {
       type: 'dialogue' | 'action' | 'thought' | 'narrative';
       text: string;
       className: string;
+      isBlockElement?: boolean;
       start?: number;
       end?: number;
     }
     
     const parts: MessagePart[] = [];
     
-    // Regex patterns for different message types
+    // Enhanced regex patterns for cinematic formatting
     const patterns = [
-      { type: 'dialogue' as const, regex: /"([^"]+)"/g, className: 'text-white font-medium' },
-      { type: 'action' as const, regex: /\*([^*]+)\*/g, className: 'text-amber-300 italic text-sm' },
-      { type: 'thought' as const, regex: /\(([^)]+)\)/g, className: 'text-slate-400 italic text-sm opacity-80' }
+      { 
+        type: 'dialogue' as const, 
+        regex: /"([^"]+)"/g, 
+        className: 'text-white font-normal leading-relaxed text-base',
+        isBlockElement: true 
+      },
+      { 
+        type: 'action' as const, 
+        regex: /\*([^*]+)\*/g, 
+        className: 'text-amber-300 italic font-light text-sm opacity-90 leading-relaxed',
+        isBlockElement: true 
+      },
+      { 
+        type: 'thought' as const, 
+        regex: /\(([^)]+)\)/g, 
+        className: 'text-slate-400 italic font-light text-sm opacity-75 leading-relaxed pl-4',
+        isBlockElement: true 
+      }
     ];
     
     // Find all matches
@@ -721,11 +737,12 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       while ((match = pattern.regex.exec(content)) !== null) {
         allMatches.push({
           type: pattern.type,
-          text: match[1],
+          text: match[1].trim(),
           fullMatch: match[0],
           start: match.index,
           end: match.index + match[0].length,
-          className: pattern.className
+          className: pattern.className,
+          isBlockElement: pattern.isBlockElement
         });
       }
     });
@@ -733,27 +750,29 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     // Sort matches by position
     allMatches.sort((a, b) => a.start - b.start);
     
-    // Build parsed content
+    // Build parsed content with enhanced formatting
     let lastEnd = 0;
     
     allMatches.forEach((match) => {
-      // Add text before this match
+      // Add text before this match (narrative)
       if (match.start > lastEnd) {
         const beforeText = content.slice(lastEnd, match.start).trim();
         if (beforeText) {
           parts.push({
             type: 'narrative',
             text: beforeText,
-            className: 'text-slate-300'
+            className: 'text-slate-300 font-light text-sm leading-relaxed opacity-80',
+            isBlockElement: true
           });
         }
       }
       
-      // Add the matched content
+      // Add the matched content as block element
       parts.push({
         type: match.type,
         text: match.text,
-        className: match.className
+        className: match.className,
+        isBlockElement: match.isBlockElement
       });
       lastEnd = match.end;
     });
@@ -765,12 +784,18 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         parts.push({
           type: 'narrative',
           text: remainingText,
-          className: 'text-slate-300'
+          className: 'text-slate-300 font-light text-sm leading-relaxed opacity-80',
+          isBlockElement: true
         });
       }
     }
     
-    return parts.length > 0 ? parts : [{ type: 'narrative', text: content, className: 'text-white' }];
+    return parts.length > 0 ? parts : [{ 
+      type: 'narrative', 
+      text: content, 
+      className: 'text-white font-normal leading-relaxed',
+      isBlockElement: true 
+    }];
   };
 
   const acceptQuest = (questId: string) => {
@@ -1377,30 +1402,30 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                     {selectedConversationData.participantName}
                                   </span>
                                 </div>
-                                <div 
-                                  className="text-sm sm:text-base leading-relaxed space-y-1"
-                                  style={{
-                                    textShadow: '0 1px 3px rgba(0,0,0,0.8)',
-                                    filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.05))'
-                                  }}
-                                >
+                                <div className="message-block">
                                   {parseMessageContent(message.content).map((part, index) => (
-                                    <span
-                                      key={index}
-                                      className={part.className}
-                                      style={{
-                                        display: part.type === 'dialogue' ? 'inline' : 
-                                               part.type === 'action' ? 'inline' :
-                                               part.type === 'thought' ? 'block' : 'inline',
-                                        marginLeft: part.type === 'thought' ? '1rem' : '0',
-                                        textShadow: part.type === 'dialogue' ? '0 1px 3px rgba(0,0,0,0.8)' :
-                                                   part.type === 'action' ? '0 1px 2px rgba(251,191,36,0.3)' :
-                                                   '0 1px 2px rgba(0,0,0,0.6)'
-                                      }}
-                                    >
-                                      {part.text}
-                                      {index < parseMessageContent(message.content).length - 1 && part.type !== 'thought' ? ' ' : ''}
-                                    </span>
+                                    <div key={index}>
+                                      {part.type === 'action' && (
+                                        <div className="cinematic-action">
+                                          {part.text}
+                                        </div>
+                                      )}
+                                      {part.type === 'dialogue' && (
+                                        <div className="cinematic-dialogue">
+                                          "{part.text}"
+                                        </div>
+                                      )}
+                                      {part.type === 'thought' && (
+                                        <div className="cinematic-thought">
+                                          <em>({part.text})</em>
+                                        </div>
+                                      )}
+                                      {part.type === 'narrative' && (
+                                        <div className="cinematic-narrative">
+                                          {part.text}
+                                        </div>
+                                      )}
+                                    </div>
                                   ))}
                                 </div>
                                 <span 
