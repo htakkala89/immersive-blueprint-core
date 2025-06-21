@@ -26,13 +26,38 @@
 /* Chat container mobile fixes */
 @media (max-width: 768px) {
   .mobile-chat-container {
-    height: calc(50vh - max(20px, env(safe-area-inset-bottom))) !important;
-    max-height: calc(50vh - max(20px, env(safe-area-inset-bottom))) !important;
+    height: calc(60vh - max(20px, env(safe-area-inset-bottom))) !important;
+    max-height: calc(60vh - max(20px, env(safe-area-inset-bottom))) !important;
+    min-height: 300px !important;
   }
   
   .mobile-conversation-area {
-    height: 120px !important;
-    max-height: 120px !important;
+    height: 150px !important;
+    max-height: 150px !important;
+  }
+  
+  /* Enhanced touch scrolling for mobile */
+  .mobile-chat-container {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+  
+  /* Better message bubble sizing on mobile */
+  .mobile-message-bubble {
+    max-width: 85% !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* Optimized input area for mobile keyboards */
+  .mobile-input-container {
+    padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
   }
 }
 

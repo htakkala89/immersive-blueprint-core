@@ -494,12 +494,44 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     }
   ]);
 
-  // Auto-scroll chat to bottom
+  // Enhanced auto-scroll chat to bottom with smooth animation
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      const container = chatContainerRef.current;
+      const scrollToBottom = () => {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth'
+        });
+      };
+      
+      // Immediate scroll for conversation change
+      if (selectedConversation) {
+        scrollToBottom();
+      }
+      
+      // Delayed scroll to ensure content is rendered
+      const timeoutId = setTimeout(scrollToBottom, 100);
+      return () => clearTimeout(timeoutId);
     }
   }, [selectedConversation, conversations]);
+
+  // Auto-scroll when new messages are added
+  useEffect(() => {
+    if (chatContainerRef.current && selectedConversation) {
+      const container = chatContainerRef.current;
+      const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+      
+      if (isNearBottom) {
+        setTimeout(() => {
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
+          });
+        }, 50);
+      }
+    }
+  }, [conversations, selectedConversation]);
 
   const handleSendMessage = async () => {
     if (!currentInput.trim() || !selectedConversation) return;
@@ -633,13 +665,15 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       <motion.div
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
-        className="w-full max-w-4xl h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative"
+        className="w-full max-w-4xl h-[600px] sm:h-[700px] md:h-[600px] flex flex-col overflow-hidden shadow-2xl liquid-glass-enhanced relative mx-2 sm:mx-4"
         style={{
           background: 'linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,41,59,0.75))',
           backdropFilter: 'blur(40px) saturate(180%)',
           border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: '24px',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8)'
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8)',
+          maxHeight: 'calc(100vh - 2rem)',
+          minHeight: '500px'
         }}
       >
         {/* Noise texture overlay */}
@@ -839,9 +873,9 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
         <div className="flex-1 flex overflow-hidden">
           {activeTab === 'messages' ? (
             <>
-              {/* Enhanced Conversation List with Floating Pills */}
+              {/* Enhanced Conversation List with Floating Pills - Mobile Responsive */}
               <div 
-                className="w-1/3 relative z-10"
+                className="w-full sm:w-1/3 relative z-10 sm:block hidden"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
                   backdropFilter: 'blur(20px)',
@@ -962,9 +996,9 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                 />
               </div>
 
-              {/* Enhanced Chat Area */}
+              {/* Enhanced Chat Area - Mobile First */}
               <div 
-                className="flex-1 flex flex-col relative z-10"
+                className="flex-1 flex flex-col relative z-10 w-full sm:w-2/3"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005))',
                   backdropFilter: 'blur(20px)',
@@ -1035,10 +1069,10 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                       </div>
                     </div>
 
-                    {/* Enhanced Messages with Liquid Glassmorphism */}
+                    {/* Enhanced Messages with Liquid Glassmorphism - Mobile Optimized */}
                     <div 
                       ref={chatContainerRef} 
-                      className="flex-1 overflow-y-auto p-6 space-y-6 relative"
+                      className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-6 relative mobile-chat-container"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01), rgba(255,255,255,0.02))',
                         backdropFilter: 'blur(50px) saturate(180%) contrast(120%)',
@@ -1052,7 +1086,9 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           0 4px 16px rgba(0,0,0,0.1)
                         `,
                         position: 'relative',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        scrollBehavior: 'smooth',
+                        maxHeight: 'calc(50vh - 2rem)'
                       }}
                     >
                       {/* Liquid glassmorphism shimmering inner border */}
@@ -1277,19 +1313,19 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           </div>
                         </div>
                       ) : (
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 sm:gap-3">
                           <Textarea
                             value={currentInput}
                             onChange={(e) => setCurrentInput(e.target.value)}
                             placeholder={canSendMessages ? "Type your message..." : "Select a conversation to start messaging"}
-                            className="flex-1 min-h-[50px] max-h-32 text-white placeholder-slate-400 border-0 resize-none"
+                            className="flex-1 min-h-[40px] sm:min-h-[50px] max-h-24 sm:max-h-32 text-white placeholder-slate-400 border-0 resize-none text-sm sm:text-base"
                             disabled={!canSendMessages}
                             style={{
                               background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
                               backdropFilter: 'blur(15px)',
                               border: '1px solid rgba(255,255,255,0.1)',
-                              borderRadius: '16px',
-                              padding: '16px',
+                              borderRadius: '12px',
+                              padding: '12px',
                               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.1)',
                               textShadow: '0 1px 2px rgba(0,0,0,0.8)'
                             }}
@@ -1303,7 +1339,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                           <Button
                             onClick={handleSendMessage}
                             disabled={!currentInput.trim() || !canSendMessages}
-                            className="px-4 py-3 text-white transition-all duration-200"
+                            className="px-3 sm:px-4 py-2 sm:py-3 text-white transition-all duration-200 min-w-[40px] sm:min-w-[48px]"
                             style={{
                               background: currentInput.trim() && canSendMessages
                                 ? 'linear-gradient(135deg, rgba(59,130,246,0.8), rgba(37,99,235,0.9))'
@@ -1317,7 +1353,7 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                             }}
                           >
                             <Send 
-                              className="w-4 h-4" 
+                              className="w-3 h-3 sm:w-4 sm:h-4" 
                               style={{
                                 filter: currentInput.trim() && canSendMessages
                                   ? 'drop-shadow(0 0 4px rgba(59,130,246,0.4))'
