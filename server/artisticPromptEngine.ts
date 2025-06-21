@@ -74,12 +74,25 @@ export class ArtisticPromptEngine {
 
   private generateExplicitPrompt(options: ArtisticPromptOptions): string {
     const baseQuality = "masterpiece, best quality, ultra detailed, high resolution, Solo Leveling manhwa art style";
-    const characters = "Cha Hae-In (beautiful Korean female, Short golden blonde hair, violet eyes)";
+    const characters = "Cha Hae-In (beautiful Korean S-rank hunter female, short bob cut golden blonde hair with straight bangs, striking violet purple eyes, pale flawless skin, elegant feminine curves, athletic toned body)";
     
-    const activityDesc = 'explicit intimate scene, nude body, mature content, passionate intimacy, erotic encounter, explicit sexual content';
+    const activityDesc = 'explicit intimate nude scene, completely naked body, bare breasts exposed, nude feminine form, sensual erotic pose, explicit sexual content, mature adult content, passionate intimate moment, detailed anatomy, uncensored nudity';
     const setting = this.createSettingDescription(options.setting);
 
-    const explicitPrompt = `${baseQuality}, ${characters}, ${activityDesc}, modern Korean apartment interior, cozy living space, warm home atmosphere, explicit mature content, uncensored, detailed anatomy, high quality erotic art, NSFW content, adult content, explicit sexual art`;
+    // Activity-specific explicit descriptions
+    const explicitContexts = {
+      'shower_together': 'solo nude shower scene, wet naked body glistening with water droplets, steam-filled bathroom, bare breasts and nipples visible, completely nude feminine form, sensual bathing, water cascading over naked skin, intimate solo shower moment, explicit nudity',
+      'shower': 'solo nude shower scene, wet naked body glistening with water droplets, steam-filled bathroom, bare breasts and nipples visible, completely nude feminine form, sensual bathing, water cascading over naked skin, intimate solo shower moment, explicit nudity',
+      'bedroom_intimacy': 'explicit bedroom nude scene, completely naked on bed, bare breasts exposed, nude body sprawled on sheets, intimate bedroom pose, sensual positioning, explicit sexual positioning, nude feminine curves, passionate bedroom moment',
+      'spend_night_together': 'intimate bedroom scene, nude body on silk sheets, bare breasts and curves exposed, sensual bedroom pose, explicit nudity in bed, passionate intimate moment, romantic bedroom setting, completely naked feminine form',
+      'undress': 'intimate undressing scene, removing clothes slowly, revealing naked body gradually, bare breasts becoming visible, explicit nudity reveal, sensual stripping, clothing removal, nude body exposure',
+      'massage': 'nude body massage scene, naked on massage table, bare skin glistening with oil, sensual touching, intimate massage therapy, explicit nudity during massage, erotic massage, nude feminine form',
+      'cuddle': 'intimate nude cuddling, naked bodies embracing, bare skin contact, explicit nudity while cuddling, sensual naked embrace, nude intimate moment'
+    };
+
+    const specificActivityDesc = explicitContexts[options.activityContext as keyof typeof explicitContexts] || activityDesc;
+    
+    const explicitPrompt = `${baseQuality}, ${characters}, ${specificActivityDesc}, modern Korean apartment interior, cozy bedroom setting, warm intimate atmosphere, soft romantic lighting, explicit mature content, uncensored, highly detailed erotic art, NSFW adult content, explicit sexual art, premium quality intimate illustration`;
     
     console.log('EXPLICIT PROMPT GENERATED:', explicitPrompt);
     return explicitPrompt;
