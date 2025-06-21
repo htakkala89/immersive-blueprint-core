@@ -634,6 +634,42 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
     }));
   };
 
+  // Mobile keyboard handling
+  useEffect(() => {
+    const handleViewportChange = () => {
+      // Get the current viewport height
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+      
+      // Force scroll to bottom when keyboard appears/disappears
+      if (chatContainerRef.current) {
+        setTimeout(() => {
+          if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+          }
+        }, 100);
+      }
+    };
+
+    // Set initial viewport height
+    handleViewportChange();
+
+    // Listen for viewport changes (keyboard show/hide)
+    window.addEventListener('resize', handleViewportChange);
+    window.addEventListener('orientationchange', handleViewportChange);
+    
+    // Handle iOS specific keyboard events
+    window.addEventListener('focusin', handleViewportChange);
+    window.addEventListener('focusout', handleViewportChange);
+
+    return () => {
+      window.removeEventListener('resize', handleViewportChange);
+      window.removeEventListener('orientationchange', handleViewportChange);
+      window.removeEventListener('focusin', handleViewportChange);
+      window.removeEventListener('focusout', handleViewportChange);
+    };
+  }, []);
+
   // Parse message content to differentiate between dialogue, actions, and thoughts
   const parseMessageContent = (content: string) => {
     interface MessagePart {
@@ -767,10 +803,11 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 50 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-2xl flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-2xl flex items-center justify-center z-50 p-4 mobile-chat-overlay"
       style={{
         backdropFilter: 'blur(60px) saturate(180%)',
-        background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.4), rgba(0,0,0,0.7))'
+        background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.4), rgba(0,0,0,0.7))',
+        height: 'calc(var(--vh, 1vh) * 100)' // Use CSS variable for mobile viewport
       }}
     >
       <motion.div
@@ -1462,6 +1499,14 @@ Respond as Cha Hae-In would naturally continue this conversation. Keep it authen
                                 e.preventDefault();
                                 handleSendMessage();
                               }
+                            }}
+                            onFocus={() => {
+                              // Scroll to bottom when input is focused (mobile keyboard appears)
+                              setTimeout(() => {
+                                if (chatContainerRef.current) {
+                                  chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+                                }
+                              }, 300); // Wait for keyboard animation
                             }}
                           />
                           <Button

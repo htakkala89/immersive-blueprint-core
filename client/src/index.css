@@ -466,6 +466,73 @@
   }
 }
 
+/* Mobile Chat Overlay Fixes */
+.mobile-chat-overlay {
+  /* Use CSS custom properties for dynamic viewport height */
+  height: calc(var(--vh, 1vh) * 100);
+  min-height: -webkit-fill-available;
+  min-height: fill-available;
+}
+
+/* Mobile input container adjustments */
+.mobile-input-container {
+  /* Ensure input stays visible above mobile keyboard */
+  position: sticky;
+  bottom: 0;
+  z-index: 1000;
+}
+
+/* Chat messages container mobile optimization */
+.mobile-chat-messages {
+  /* Adjust height to account for mobile keyboards */
+  max-height: calc(var(--vh, 1vh) * 60);
+  min-height: 200px;
+  /* Ensure smooth scrolling on mobile */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Mobile-specific viewport handling */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific fixes */
+  .mobile-chat-overlay {
+    height: -webkit-fill-available;
+  }
+  
+  .mobile-chat-messages {
+    max-height: calc(100vh - 200px);
+  }
+}
+
+/* Mobile keyboard detection via viewport changes */
+@media screen and (max-height: 500px) and (max-width: 768px) {
+  /* When keyboard is likely visible (short viewport) */
+  .mobile-chat-messages {
+    max-height: calc(100vh - 120px);
+    padding-bottom: 20px;
+  }
+  
+  .mobile-input-container {
+    padding: 8px 16px;
+  }
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 640px) {
+  .mobile-chat-overlay {
+    padding: 8px;
+  }
+  
+  .mobile-chat-messages {
+    padding: 8px 12px;
+  }
+  
+  /* Optimize message bubbles for mobile */
+  .mobile-chat-messages > div {
+    max-width: 85%;
+  }
+}
+
 @keyframes liquid-shimmer {
   0%, 100% { 
     filter: hue-rotate(0deg) saturate(180%); 
