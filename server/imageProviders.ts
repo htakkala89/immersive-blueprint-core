@@ -41,13 +41,13 @@ class NovelAIProvider implements ImageProvider {
 
     const requestBody = {
       input: optimizedPrompt,
-      model: 'nai-diffusion-4-curated-preview',
+      model: 'nai-diffusion-3',
       parameters: {
         width: 832,
         height: 1216,
         scale: 5.5,
-        sampler: 'k_dpmpp_2s_ancestral',
-        steps: 50,
+        sampler: 'k_euler_ancestral',
+        steps: 35,
         seed: Math.floor(Math.random() * 4294967295),
         n_samples: 1,
         ucPreset: 0,
@@ -56,76 +56,47 @@ class NovelAIProvider implements ImageProvider {
         sm: true,
         sm_dyn: true,
         cfg_rescale: 0.7,
-        noise_schedule: "native",
-        dynamic_thresholding: true
+        noise_schedule: "native"
       }
     };
 
-    const maxRetries = 3;
-    const retryDelay = 2000;
-    
     for (const endpoint of endpoints) {
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          console.log(`🎨 NovelAI V4.5 generation attempt ${attempt}/${maxRetries}...`);
-          
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-              'Content-Type': 'application/json',
-              'Accept': '*/*'
-            },
-            body: JSON.stringify(requestBody)
-          });
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        });
 
-          console.log(`NovelAI response status: ${response.status}`);
-
-          if (response.ok) {
-            const buffer = await response.arrayBuffer();
-            console.log(`NovelAI response size: ${buffer.byteLength} bytes`);
-            
-            try {
-              const zip = new AdmZip(Buffer.from(buffer));
-              const zipEntries = zip.getEntries();
-              
-              if (zipEntries.length > 0) {
-                const imageBuffer = zipEntries[0].getData();
-                const base64Image = imageBuffer.toString('base64');
-                console.log(`✅ NovelAI V4.5 generated successfully - Size: ${imageBuffer.length} bytes`);
-                return {
-                  success: true,
-                  imageUrl: `data:image/png;base64,${base64Image}`,
-                  provider: this.name
-                };
-              }
-            } catch (zipError: any) {
-              console.log('❌ ZIP extraction failed:', zipError.message);
-            }
-          } else {
-            const errorText = await response.text();
-            console.log(`❌ NovelAI failed with status ${response.status}:`, errorText);
-            
-            // Retry on server errors
-            if (response.status >= 500 && attempt < maxRetries) {
-              console.log(`⏳ Retrying in ${retryDelay}ms...`);
-              await new Promise(resolve => setTimeout(resolve, retryDelay));
-              continue;
-            }
-          }
-        } catch (error: any) {
-          console.log(`❌ NovelAI request failed (attempt ${attempt}):`, error.message);
+        if (response.ok) {
+          const buffer = await response.arrayBuffer();
           
-          // Retry on network errors
-          if (attempt < maxRetries) {
-            console.log(`⏳ Retrying in ${retryDelay}ms...`);
-            await new Promise(resolve => setTimeout(resolve, retryDelay));
-            continue;
+          // NovelAI returns images in ZIP format, extract the first image
+          try {
+            const zip = new AdmZip(Buffer.from(buffer));
+            const zipEntries = zip.getEntries();
+            
+            if (zipEntries.length > 0) {
+              const imageBuffer = zipEntries[0].getData();
+              const base64Image = imageBuffer.toString('base64');
+              return {
+                success: true,
+                imageUrl: `data:image/png;base64,${base64Image}`,
+                provider: this.name
+              };
+            }
+          } catch (zipError) {
+            console.log('Failed to extract ZIP from NovelAI response:', zipError);
           }
+        } else {
+          const errorText = await response.text();
+          console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
         }
-        
-        // Break out of retry loop if we reach here without success
-        break;
+      } catch (error) {
+        console.log(`NovelAI endpoint ${endpoint} failed:`, error);
       }
     }
 
@@ -141,13 +112,9 @@ class GoogleImagenProvider implements ImageProvider {
   name = 'Google Imagen';
 
   async isAvailable(): Promise<boolean> {
-    const hasKey = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-    const projectId = this.getProjectId();
-    const hasProject = projectId !== null;
-    
-    console.log(`Google Imagen availability check: hasKey=${hasKey}, projectId=${projectId}, hasProject=${hasProject}`);
-    
-    return hasKey && hasProject;
+    const hasApiKey = !!process.env.GOOGLE_API_KEY;
+    console.log(`Google Imagen availability check: hasApiKey=${hasApiKey}`);
+    return hasApiKey;
   }
 
   private getProjectId(): string | null {
@@ -175,59 +142,54 @@ class GoogleImagenProvider implements ImageProvider {
   }
 
   async generate(prompt: string): Promise<ImageGenerationResult> {
-    const projectId = this.getProjectId();
-    const accessToken = await this.getAccessToken();
+    const apiKey = process.env.GOOGLE_API_KEY;
 
-    if (!projectId || !accessToken) {
+    if (!apiKey) {
       return {
         success: false,
-        error: 'Google Imagen OAuth2 credentials not available',
+        error: 'Google API key not available',
         provider: this.name
       };
     }
 
     try {
-      // Focus exclusively on NovelAI V4.5 Full optimization
+      // Using Google Generative AI API for image generation
       const enhancedPrompt = `${prompt}. Solo Leveling manhwa art style, romantic cinematic lighting, beautiful detailed faces, expressive eyes, tender emotional connection, elegant composition, high quality digital art, Korean webtoon aesthetic, intimate atmosphere, artistic excellence`;
       
       const response = await fetch(
-        `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`,
+        `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${apiKey}`,
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            instances: [{
-              prompt: enhancedPrompt
-            }],
-            parameters: {
-              sampleCount: 1,
-              aspectRatio: "1:1",
-              safetyFilterLevel: "block_only_high"
-            }
+            prompt: enhancedPrompt,
+            safetySettings: [
+              {
+                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                threshold: "BLOCK_ONLY_HIGH"
+              }
+            ]
           })
         }
       );
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Google Imagen response structure:', JSON.stringify(data, null, 2));
+        console.log('Google Generative AI response structure:', JSON.stringify(data, null, 2));
         
-        // Try multiple possible response formats
-        let imageUrl = data.predictions?.[0]?.bytesBase64Encoded ||
-                      data.predictions?.[0]?.image?.bytesBase64Encoded ||
-                      data.predictions?.[0]?.generatedImage?.bytesBase64Encoded;
+        // Google Generative AI response format
+        const imageData = data.generatedImages?.[0]?.bytesBase64Encoded;
         
-        if (imageUrl) {
+        if (imageData) {
           return {
             success: true,
-            imageUrl: `data:image/png;base64,${imageUrl}`,
+            imageUrl: `data:image/png;base64,${imageData}`,
             provider: this.name
           };
         } else {
-          console.log('No image found in Google Imagen response');
+          console.log('No image found in Google Generative AI response');
         }
       }
 

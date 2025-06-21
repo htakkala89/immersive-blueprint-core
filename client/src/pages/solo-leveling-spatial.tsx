@@ -6,7 +6,7 @@ import {
   Heart, Crown, Zap, Coins, User, Sword, Star, 
   Camera, Eye, MapPin, Clock, Sun, Moon, CloudRain,
   MessageCircle, Gift, Coffee, Home, Building, Dumbbell,
-  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target, BookOpen, Wand2
+  ShoppingCart, Calendar, Battery, Award, Package, X, Brain, Target, BookOpen, Wand2, Power, Bell
 } from 'lucide-react';
 
 import { DailyLifeHubComplete } from '@/components/DailyLifeHubComplete';
@@ -51,7 +51,6 @@ import GangnamFurnishings from '@/components/GangnamFurnishings';
 import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
 import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
 import { CreatorPortalDashboard } from '@/components/CreatorPortalDashboard';
-import MangaLibrary from '@/pages/MangaLibrary';
 import EpisodeSelector from '@/components/EpisodeSelector';
 import EpisodePlayer from '@/components/EpisodePlayer';
 import ProfileManager from '@/components/ProfileManager';
@@ -62,8 +61,6 @@ import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSy
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
 import { AutoWeatherSystem, DynamicWeatherSystem } from '@/components/DynamicWeatherSystem';
-import { NarratorSystem } from '@/components/NarratorSystem';
-import { CalendarSystem, type GameDate } from '@/components/CalendarSystem';
 
 interface CoreStats {
   strength: number;
@@ -269,10 +266,11 @@ export default function SoloLevelingSpatial() {
   const [showCommunicator, setShowCommunicator] = useState(false);
   const [notifications, setNotifications] = useState<Array<{
     id: string;
-    type: 'message' | 'quest';
+    type: 'message' | 'quest' | 'episode_available';
     title: string;
     content: string;
     timestamp: Date;
+    action?: () => void;
   }>>([]);
 
   // System 16: Player Progression state
@@ -287,12 +285,16 @@ export default function SoloLevelingSpatial() {
   // System 18: Episode Playback System state
   const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
   const [currentEpisode, setCurrentEpisode] = useState<string | null>(null);
+  const [episodeInProgress, setEpisodeInProgress] = useState(false);
+  const [availableEpisodes, setAvailableEpisodes] = useState<any[]>([]);
+  const [episodeNotifications, setEpisodeNotifications] = useState<any[]>([]);
+  const [episodeHints, setEpisodeHints] = useState<any[]>([]);
 
   // Profile Management System state
   const [showProfileManager, setShowProfileManager] = useState(false);
 
   // Role Selection System - Start with selection screen
-  const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator' | 'manga-reader'>('none');
+  const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>('none');
   const [loadedProfileId, setLoadedProfileId] = useState<number | null>(null);
 
   // Sommelier Dialog state
@@ -310,21 +312,6 @@ export default function SoloLevelingSpatial() {
     emotion: string;
     timestamp: Date;
   }>>([]);
-
-  // Narrator System state
-  const [showNarrator, setShowNarrator] = useState(true);
-  const [narratorAutoMode, setNarratorAutoMode] = useState(true);
-
-  // Calendar System state (using existing timeOfDay and weather)
-  const [currentGameDate, setCurrentGameDate] = useState<GameDate>({
-    year: 2024,
-    month: 6,
-    day: 15,
-    dayOfWeek: 6, // Saturday
-    season: 'summer',
-    weekOfMonth: 3
-  });
-  const [showCalendar, setShowCalendar] = useState(false);
 
 
 
@@ -345,6 +332,23 @@ export default function SoloLevelingSpatial() {
   // Focus Animation for immersive dialogue
   const handleChaHaeInInteraction = async () => {
     console.log('Starting Cha Hae-In interaction...');
+    
+    // Always start with dialogue interface when clicking her golden node
+    // Check for available episodes at current location first
+    const locationEpisodes = getLocationEpisodes();
+    if (locationEpisodes.length > 0) {
+      const episode = locationEpisodes[0];
+      setNotifications(prev => [...prev, {
+        id: `episode_interaction_${Date.now()}`,
+        type: 'episode_available' as const,
+        title: 'Story Episode Available',
+        content: `"${episode.title}" - Begin this story with Cha Hae-In?`,
+        timestamp: new Date(),
+        action: () => triggerEpisode(episode.id)
+      }]);
+      // Continue to dialogue interface instead of opening communicator
+    }
+    
     // Step 1: Focus Animation (300ms)
     setIsFocusMode(true);
     console.log('Focus mode activated');
@@ -388,16 +392,87 @@ export default function SoloLevelingSpatial() {
       setShowLivingPortrait(true);
       setChaHaeInExpression('recognition');
       
-      // Step 4: Generate context-aware dialogue
-      const contextualDialogue = "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?";
-      setCurrentDialogue(contextualDialogue);
+      // Step 4: Generate location-aware dialogue
+      const getLocationSpecificDialogue = () => {
+        const affectionLevel = gameState.affection || 0;
+        
+        switch (playerLocation) {
+          case 'chahaein_apartment':
+            if (affectionLevel >= 70) {
+              return {
+                dialogue: "Jin-Woo... I'm so glad you came over. I was just making some tea. Would you like to stay for a while?",
+                prompts: [
+                  "I'd love to stay with you.",
+                  "Tea sounds perfect.",
+                  "How are you feeling tonight?"
+                ]
+              };
+            } else if (affectionLevel >= 40) {
+              return {
+                dialogue: "Oh, Jin-Woo! I wasn't expecting you. Please, come in. Make yourself comfortable.",
+                prompts: [
+                  "Thanks for inviting me in.",
+                  "Your place is beautiful.",
+                  "I hope I'm not intruding."
+                ]
+              };
+            } else {
+              return {
+                dialogue: "Jin-Woo? What brings you to my apartment? Is everything alright?",
+                prompts: [
+                  "I wanted to check on you.",
+                  "Sorry if this is sudden.",
+                  "We need to talk about something."
+                ]
+              };
+            }
+            
+          case 'hunter_association':
+            return {
+              dialogue: "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?",
+              prompts: [
+                "Just wanted to see you.",
+                "Anything interesting in the report?", 
+                "Ready for a break? I can handle the rest."
+              ]
+            };
+            
+          case 'player_apartment':
+            if (affectionLevel >= 80) {
+              return {
+                dialogue: "Your place feels like home now, Jin-Woo. I love spending time here with you.",
+                prompts: [
+                  "I love having you here.",
+                  "This is our place now.",
+                  "Want to relax together?"
+                ]
+              };
+            } else {
+              return {
+                dialogue: "Your apartment has such a nice atmosphere, Jin-Woo. Thank you for having me over.",
+                prompts: [
+                  "I'm glad you like it.",
+                  "Would you like something to drink?",
+                  "Make yourself at home."
+                ]
+              };
+            }
+            
+          default:
+            return {
+              dialogue: "Jin-Woo, what brings you here? Is there something you need?",
+              prompts: [
+                "Just wanted to see you.",
+                "How are things going?",
+                "Do you have a moment to talk?"
+              ]
+            };
+        }
+      };
       
-      // Step 5: Set thought prompts
-      setThoughtPrompts([
-        "Just wanted to see you.",
-        "Anything interesting in the report?", 
-        "Ready for a break? I can handle the rest."
-      ]);
+      const locationDialogue = getLocationSpecificDialogue();
+      setCurrentDialogue(locationDialogue.dialogue);
+      setThoughtPrompts(locationDialogue.prompts);
       
       setDialogueActive(true);
       console.log('Dialogue activated');
@@ -695,6 +770,117 @@ export default function SoloLevelingSpatial() {
       x: 60,
       y: 50
     });
+  };
+
+  // Episode System Integration Functions
+  const checkAvailableEpisodes = async () => {
+    try {
+      const response = await fetch('/api/episodes');
+      const data = await response.json();
+      
+      // Filter episodes based on current game state
+      const validEpisodes = data.episodes?.filter((episode: any) => {
+        const prereqs = episode.prerequisite;
+        if (!prereqs) return true;
+        
+        return (
+          (gameState.level || 1) >= (prereqs.player_level || 1) &&
+          (gameState.affection || 0) >= (prereqs.affection_level || 0)
+        );
+      }) || [];
+      
+      setAvailableEpisodes(validEpisodes);
+      
+      // Check for new episode notifications
+      const newEpisodeNotifications = validEpisodes
+        .filter((episode: any) => !episodeNotifications.find(n => n.episodeId === episode.id))
+        .map((episode: any) => ({
+          id: `episode_${episode.id}_${Date.now()}`,
+          episodeId: episode.id,
+          type: 'episode_available' as const,
+          title: 'New Story Episode Available',
+          content: `"${episode.title}" is now available to play`,
+          timestamp: new Date(),
+          location: gameState.currentScene
+        }));
+
+      const newUINotifications = newEpisodeNotifications.map((notification: any) => ({
+        id: notification.id,
+        type: 'episode_available' as const,
+        title: notification.title,
+        content: notification.content,
+        timestamp: notification.timestamp,
+        action: () => triggerEpisode(notification.episodeId)
+      }));
+      
+      if (newEpisodeNotifications.length > 0) {
+        setEpisodeNotifications(prev => [...prev, ...newEpisodeNotifications]);
+        setNotifications(prev => [...prev, ...newUINotifications]);
+      }
+    } catch (error) {
+      console.error('Failed to check available episodes:', error);
+    }
+  };
+
+  const triggerEpisode = (episodeId: string) => {
+    setCurrentEpisode(episodeId);
+    setEpisodeInProgress(true);
+    
+    // Close other modals and focus on episode
+    setShowDailyLifeHub(false);
+    setShowCommunicator(false);
+    setMonarchAuraVisible(false);
+  };
+
+  const handleEpisodeComplete = (episodeId: string) => {
+    setEpisodeInProgress(false);
+    setCurrentEpisode(null);
+    
+    // Check for new episodes that might have been unlocked
+    setTimeout(() => {
+      checkAvailableEpisodes();
+    }, 1000);
+  };
+
+  const getLocationEpisodes = () => {
+    return availableEpisodes.filter(episode => {
+      // Episodes that can be triggered from current location
+      return episode.startLocation === gameState.currentScene || !episode.startLocation;
+    });
+  };
+
+  // Episode-Driven UI Hints System
+  const getEpisodeHints = () => {
+    const currentLocation = gameState.currentScene;
+    const hints = [];
+
+    // Check if we're at training facility and "Training Partners" episode is active
+    if (currentLocation === 'training_facility') {
+      hints.push({
+        id: 'sparring_hint',
+        type: 'story_progression',
+        title: 'Episode Objective',
+        message: 'Complete the sparring session with Cha Hae-In',
+        action: 'Click on the Sparring Ring to begin training',
+        interactionPoint: 'training_dummy',
+        priority: 'high'
+      });
+    }
+
+    // Check if we're at hongdae cafe and next objective is coffee
+    if (currentLocation === 'hongdae_cafe') {
+      hints.push({
+        id: 'coffee_hint',
+        type: 'story_progression',
+        title: 'Episode Objective',
+        message: 'Discuss mission details over coffee with Cha Hae-In',
+        action: 'Start a coffee activity to continue the story',
+        interactionPoint: 'menu_board',
+        priority: 'high'
+      });
+    }
+
+    return hints;
   };
 
   // Perspective-based scaling system per design specifications
@@ -1164,6 +1350,21 @@ export default function SoloLevelingSpatial() {
       const data = await response.json();
       setCurrentDialogue(data.response);
       
+      // Track episode event for player chatting with Cha Hae-In
+      fetch('/api/episode-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'player_chats_with_cha',
+          data: { 
+            message: message,
+            location: playerLocation,
+            response: data.response 
+          },
+          profileId: loadedProfileId
+        })
+      }).catch(console.error);
+      
       // Add Cha Hae-In's response to conversation history
       setConversationHistory(prev => [...prev, {
         type: 'cha_hae_in',
@@ -1237,10 +1438,18 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-scroll to bottom when new messages are added
+  // Auto-scroll behavior: scroll to top for new AI responses, bottom for user messages
   useEffect(() => {
-    if (conversationScrollRef.current) {
-      conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+    if (conversationScrollRef.current && conversationHistory.length > 0) {
+      const lastMessage = conversationHistory[conversationHistory.length - 1];
+      
+      if (lastMessage.type === 'cha_hae_in') {
+        // For Cha Hae-In's responses, scroll to top so users see the beginning
+        conversationScrollRef.current.scrollTop = 0;
+      } else {
+        // For user messages, scroll to bottom to see their own input
+        conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+      }
     }
   }, [conversationHistory]);
 
@@ -1337,6 +1546,17 @@ export default function SoloLevelingSpatial() {
     setShowReceptionistDialogue(null);
     setShowFloorSelect(false);
     
+    // Track episode event for location visit
+    fetch('/api/episode-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'player_visits_location',
+        data: { location_id: locationId },
+        profileId: loadedProfileId
+      })
+    }).catch(console.error);
+    
     // Generate scene for new location
     setTimeout(() => {
       generateSceneImage();
@@ -1382,6 +1602,22 @@ export default function SoloLevelingSpatial() {
   };
 
   const handleEnvironmentalInteraction = async (interactionPoint: any) => {
+    // Check for episode triggers at current location
+    const locationEpisodes = getLocationEpisodes();
+    if (locationEpisodes.length > 0 && interactionPoint.id === 'cha_hae_in') {
+      // If there's an available episode and player interacts with Cha Hae-In, offer to start episode
+      const episode = locationEpisodes[0];
+      setNotifications(prev => [...prev, {
+        id: `episode_trigger_${Date.now()}`,
+        type: 'episode_available',
+        title: 'Story Episode Available',
+        content: `"${episode.title}" - Would you like to begin this story?`,
+        timestamp: new Date(),
+        action: () => triggerEpisode(episode.id)
+      }]);
+      // Continue to dialogue interface instead of opening communicator
+    }
+
     // Handle System 7 Commerce Store interactions
     if (playerLocation === 'luxury_department_store') {
       if (interactionPoint.id === 'jewelry_cases' || 
@@ -1423,6 +1659,30 @@ export default function SoloLevelingSpatial() {
     
     // Handle intimate spatial interactions at romantic locations
     if (playerLocation === 'chahaein_apartment') {
+      if (interactionPoint.id === 'bed') {
+        // Bed in Cha Hae-In's apartment - gateway to intimate activities
+        const currentAffection = gameState.affection || 0;
+        const currentIntimacy = gameState.intimacyLevel || 0;
+        let selectedActivity = 'cuddling'; // Safe default
+        
+        // Progressive intimacy based on relationship progress
+        if (currentAffection >= 80 && currentIntimacy >= 70) {
+          selectedActivity = 'make_love';
+        } else if (currentAffection >= 60 && currentIntimacy >= 50) {
+          selectedActivity = 'passionate_night';
+        } else if (currentAffection >= 40 && currentIntimacy >= 30) {
+          selectedActivity = 'bedroom_intimacy';
+        } else if (currentAffection >= 20 && currentIntimacy >= 10) {
+          selectedActivity = 'intimate_massage';
+        } else {
+          selectedActivity = 'cuddling';
+        }
+        
+        setActiveActivity(selectedActivity);
+        setShowIntimateModal(true);
+        console.log(`Cha Hae-In's bed - Opening ${selectedActivity} (Affection: ${currentAffection}, Intimacy: ${currentIntimacy})`);
+        return;
+      }
       if (interactionPoint.id === 'bedroom_door') {
         setActiveActivity('bedroom_intimacy');
         setShowIntimateModal(true);
@@ -1824,6 +2084,13 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+  // Episode system monitoring - check for available episodes when game state changes
+  useEffect(() => {
+    if (selectedRole === 'player' && loadedProfileId) {
+      checkAvailableEpisodes();
+    }
+  }, [gameState.level, gameState.affection, playerLocation, selectedRole, loadedProfileId]);
+
   // Simulate asynchronous notifications
   useEffect(() => {
     const interval = setInterval(() => {
@@ -1879,14 +2146,87 @@ export default function SoloLevelingSpatial() {
         unspentSkillPoints: loadedGameState.skillPoints || 0,
         storyProgress: loadedGameState.storyProgress || 0,
         unlockedActivities: loadedGameState.unlockedActivities || [],
-        sharedMemories: loadedGameState.sharedMemories || [],
-        choices: loadedGameState.choices || []
+        sharedMemories: loadedGameState.sharedMemories || []
       });
 
       console.log('Profile loaded successfully:', profile.profileName);
     } catch (error) {
       console.error('Error loading profile:', error);
     }
+  };
+
+  // Auto-save functionality
+  const autoSaveProgress = async () => {
+    if (!loadedProfileId || selectedRole !== 'player') return;
+
+    try {
+      await fetch(`/api/profiles/${loadedProfileId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gameData: {
+            level: gameState.level,
+            health: gameState.health,
+            maxHealth: gameState.maxHealth,
+            mana: gameState.mana,
+            maxMana: gameState.maxMana,
+            affectionLevel: gameState.affection,
+            intimacyLevel: gameState.intimacyLevel || 1,
+            gold: gameState.gold || 100,
+            currentScene: gameState.currentScene,
+            energy: gameState.energy || 100,
+            maxEnergy: gameState.maxEnergy || 100,
+            experience: gameState.experience || 0,
+            maxExperience: gameState.maxExperience || 100,
+            apartmentTier: gameState.apartmentTier || 1,
+            stats: gameState.stats || { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
+            statPoints: gameState.unspentStatPoints || 0,
+            skillPoints: gameState.unspentSkillPoints || 0,
+            storyProgress: gameState.storyProgress || 0,
+            inventory: gameState.inventory || [],
+            activeQuests: gameState.activeQuests || [],
+            completedQuests: gameState.completedQuests || [],
+            unlockedActivities: gameState.unlockedActivities || [],
+            sharedMemories: gameState.sharedMemories || [],
+            storyFlags: gameState.storyFlags || {}
+          }
+        })
+      });
+      console.log('Progress auto-saved successfully');
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+    }
+  };
+
+  // Auto-save every 30 seconds when in player mode
+  useEffect(() => {
+    if (selectedRole === 'player' && loadedProfileId) {
+      const autoSaveInterval = setInterval(autoSaveProgress, 30000);
+      return () => clearInterval(autoSaveInterval);
+    }
+  }, [selectedRole, loadedProfileId, gameState]);
+
+  // Save progress when significant events occur
+  useEffect(() => {
+    if (selectedRole === 'player' && loadedProfileId) {
+      autoSaveProgress();
+    }
+  }, [
+    gameState.level,
+    gameState.affection,
+    gameState.currentScene,
+    gameState.gold,
+    gameState.intimacyLevel,
+    gameState.apartmentTier
+  ]);
+
+  // Leave World functionality
+  const leaveWorld = async () => {
+    if (loadedProfileId) {
+      await autoSaveProgress(); // Save before leaving
+    }
+    setSelectedRole('none');
+    setLoadedProfileId(null);
   };
 
   // Load profile data when entering player mode with a loaded profile
@@ -1915,15 +2255,6 @@ export default function SoloLevelingSpatial() {
     return (
       <CreatorPortalDashboard 
         onLogout={() => setSelectedRole('none')}
-      />
-    );
-  }
-
-  // Manga Library Experience
-  if (selectedRole === 'manga-reader') {
-    return (
-      <MangaLibrary 
-        onBack={() => setSelectedRole('none')}
       />
     );
   }
@@ -1961,16 +2292,7 @@ export default function SoloLevelingSpatial() {
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden font-sf-pro">
       
-      {/* Manga Creator Quick Access */}
-      <motion.a
-        href="/manga-creator"
-        className="fixed top-6 left-6 px-4 py-2 rounded-full flex items-center gap-2 z-[9999] cursor-pointer shadow-2xl overflow-hidden bg-gradient-to-r from-pink-600 to-purple-600 text-white"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <BookOpen className="w-4 h-4" />
-        <span className="text-sm font-medium">Create Manga</span>
-      </motion.a>
+
 
       {/* Monarch's Aura - Shadow Crown */}
       <motion.button
@@ -2514,6 +2836,35 @@ export default function SoloLevelingSpatial() {
             </div>
           </motion.div>
         )}
+
+        {/* Episode-Driven Contextual Hints */}
+        {getEpisodeHints().map((hint) => (
+          <motion.div
+            key={hint.id}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute top-32 left-4 right-4 z-40"
+          >
+            <div
+              className="bg-purple-500/20 backdrop-blur-xl border border-purple-400/50 rounded-2xl p-4"
+              style={{ 
+                boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
+                background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(147, 51, 234, 0.1))'
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-purple-400 rounded-full flex items-center justify-center animate-pulse">
+                  <BookOpen className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-purple-200 font-semibold text-sm">{hint.title}</h3>
+                  <p className="text-purple-300/90 text-xs mt-1">{hint.message}</p>
+                  <p className="text-purple-400/70 text-xs mt-2 italic">{hint.action}</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
 
         {/* Enhanced Interactive Nodes System */}
         <LocationInteractiveNodes
@@ -3502,38 +3853,41 @@ export default function SoloLevelingSpatial() {
       <AnimatePresence>
         {dialogueActive && (
           <motion.div
-            className="fixed bottom-4 left-4 right-4 rounded-2xl shadow-2xl z-[9999]"
+            className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-[9999] flex flex-col mobile-chat-container"
             style={{ 
-              maxHeight: '60vh',
-              backdropFilter: 'blur(120px) saturate(300%)',
+              height: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
+              maxHeight: 'calc(55vh - max(20px, env(safe-area-inset-bottom)))',
+              paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+              backdropFilter: 'blur(20px) saturate(180%)',
               background: `
                 linear-gradient(135deg, 
-                  rgba(30, 41, 59, 0.95) 0%, 
-                  rgba(51, 65, 85, 0.85) 25%,
-                  rgba(30, 41, 59, 0.9) 50%,
-                  rgba(15, 23, 42, 0.95) 75%,
-                  rgba(30, 41, 59, 0.9) 100%
+                  rgba(30, 41, 59, 0.3) 0%, 
+                  rgba(51, 65, 85, 0.25) 25%,
+                  rgba(30, 41, 59, 0.28) 50%,
+                  rgba(15, 23, 42, 0.35) 75%,
+                  rgba(30, 41, 59, 0.25) 100%
                 ),
-                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.04) 0%, transparent 50%)
               `,
-              border: '1px solid rgba(139, 92, 246, 0.3)'
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              borderBottom: 'none'
             }}
-            initial={{ y: 100, opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 100, opacity: 0, scale: 0.95 }}
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            <div className="p-3 flex flex-col h-full">
+            <div className="flex flex-col h-full min-h-0 p-4" style={{ paddingBottom: '0' }}>
               
               {/* Close Button - Enhanced Glassmorphism */}
               <motion.button
                 className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-colors z-[10000]"
                 style={{
-                  backdropFilter: 'blur(40px) saturate(200%)',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                  backdropFilter: 'blur(12px) saturate(150%)',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)'
                 }}
                 onClick={exitFocusMode}
                 whileHover={{ 
@@ -3550,19 +3904,19 @@ export default function SoloLevelingSpatial() {
               
               {/* Dialogue Text - Enhanced Glassmorphism */}
               <motion.div
-                className="rounded-lg p-4 flex-1 overflow-y-auto mb-3"
+                className="rounded-lg p-4 flex-1 mb-3 flex flex-col"
                 style={{
-                  backdropFilter: 'blur(60px) saturate(200%)',
+                  backdropFilter: 'blur(16px) saturate(180%)',
                   background: `
                     linear-gradient(135deg, 
-                      rgba(30, 41, 59, 0.4) 0%, 
-                      rgba(51, 65, 85, 0.3) 25%,
-                      rgba(30, 41, 59, 0.35) 50%,
-                      rgba(15, 23, 42, 0.4) 75%,
-                      rgba(30, 41, 59, 0.35) 100%
+                      rgba(30, 41, 59, 0.65) 0%, 
+                      rgba(51, 65, 85, 0.6) 25%,
+                      rgba(30, 41, 59, 0.63) 50%,
+                      rgba(15, 23, 42, 0.67) 75%,
+                      rgba(30, 41, 59, 0.65) 100%
                     )
                   `,
-                  border: '1px solid rgba(139, 92, 246, 0.2)'
+                  border: '1px solid rgba(139, 92, 246, 0.3)'
                 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -3667,7 +4021,8 @@ export default function SoloLevelingSpatial() {
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-3 max-h-48 overflow-y-auto scroll-smooth"
+                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area"
+                      style={{ height: '200px', maxHeight: '200px' }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
@@ -3679,15 +4034,15 @@ export default function SoloLevelingSpatial() {
                         >
                           {entry.type === 'user' ? (
                             // User messages: Right-aligned, italic, no bubble, ethereal color
-                            <div className="max-w-[85%] text-right">
-                              <p className="text-slate-300/80 italic leading-relaxed text-sm">
+                            <div className="max-w-[75%] text-right">
+                              <p className="text-slate-300/80 italic leading-relaxed text-sm break-words hyphens-auto">
                                 {entry.text}
                               </p>
                             </div>
                           ) : (
                             // Cha Hae-In messages: Left-aligned, bright white, script-like
-                            <div className="max-w-[85%]">
-                              <p className="text-white leading-relaxed font-medium">
+                            <div className="max-w-[75%]">
+                              <p className="text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap">
                                 {entry.text}
                               </p>
                             </div>
@@ -3718,7 +4073,7 @@ export default function SoloLevelingSpatial() {
               </motion.div>
               
               {/* Bottom Section - Always Visible */}
-              <div className="space-y-3">
+              <div className="space-y-3" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
                 {/* Thought Prompts */}
                 {thoughtPrompts.length > 0 && (
                   <motion.div
@@ -3732,17 +4087,17 @@ export default function SoloLevelingSpatial() {
                         key={index}
                         className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
                         style={{
-                          backdropFilter: 'blur(40px) saturate(180%)',
+                          backdropFilter: 'blur(12px) saturate(150%)',
                           background: `
                             linear-gradient(135deg, 
-                              rgba(139, 92, 246, 0.25) 0%, 
-                              rgba(168, 85, 247, 0.2) 25%,
-                              rgba(139, 92, 246, 0.22) 50%,
-                              rgba(124, 58, 237, 0.25) 75%,
-                              rgba(139, 92, 246, 0.2) 100%
+                              rgba(139, 92, 246, 0.15) 0%, 
+                              rgba(168, 85, 247, 0.12) 25%,
+                              rgba(139, 92, 246, 0.13) 50%,
+                              rgba(124, 58, 237, 0.15) 75%,
+                              rgba(139, 92, 246, 0.12) 100%
                             )
                           `,
-                          border: '1px solid rgba(139, 92, 246, 0.4)'
+                          border: '1px solid rgba(139, 92, 246, 0.25)'
                         }}
                         whileHover={{ 
                           scale: 1.05,
@@ -3779,16 +4134,16 @@ export default function SoloLevelingSpatial() {
                       updateExpressionBasedOnInput(e.target.value);
                     }}
                     placeholder="Speak from the heart..."
-                    className="flex-1 text-white placeholder:text-slate-400 rounded-lg px-3 py-2 text-sm border-0 outline-none"
+                    className="flex-1 text-white placeholder:text-slate-300/70 rounded-lg px-3 py-2 text-sm border-0 outline-none"
                     style={{
-                      backdropFilter: 'blur(40px) saturate(180%)',
+                      backdropFilter: 'blur(16px) saturate(180%)',
                       background: `
                         linear-gradient(135deg, 
-                          rgba(30, 41, 59, 0.3) 0%, 
-                          rgba(51, 65, 85, 0.25) 25%,
-                          rgba(30, 41, 59, 0.28) 50%,
-                          rgba(15, 23, 42, 0.3) 75%,
-                          rgba(30, 41, 59, 0.25) 100%
+                          rgba(30, 41, 59, 0.65) 0%, 
+                          rgba(51, 65, 85, 0.6) 25%,
+                          rgba(30, 41, 59, 0.63) 50%,
+                          rgba(15, 23, 42, 0.67) 75%,
+                          rgba(30, 41, 59, 0.65) 100%
                         )
                       `,
                       border: '1px solid rgba(139, 92, 246, 0.3)'
@@ -3799,12 +4154,12 @@ export default function SoloLevelingSpatial() {
                     onClick={() => handlePlayerResponse(playerInput)}
                     className="rounded-lg px-4 py-2 text-white disabled:opacity-50"
                     style={{
-                      backdropFilter: 'blur(40px) saturate(180%)',
+                      backdropFilter: 'blur(16px) saturate(180%)',
                       background: `
                         linear-gradient(135deg, 
-                          rgba(139, 92, 246, 0.6) 0%, 
-                          rgba(236, 72, 153, 0.5) 50%,
-                          rgba(139, 92, 246, 0.6) 100%
+                          rgba(139, 92, 246, 0.7) 0%, 
+                          rgba(236, 72, 153, 0.65) 50%,
+                          rgba(139, 92, 246, 0.7) 100%
                         )
                       `,
                       border: '1px solid rgba(139, 92, 246, 0.4)'
@@ -3854,7 +4209,46 @@ export default function SoloLevelingSpatial() {
             { icon: Gift, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
-            { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } }
+            { icon: Bell, label: 'Start Episode 1', color: 'text-red-300', onClick: async () => { 
+              setMonarchAuraVisible(false);
+              try {
+                const response = await fetch('/api/episodes/EP01_Red_Echo/trigger', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ profileId: loadedProfileId })
+                });
+                
+                if (response.ok) {
+                  const data = await response.json();
+                  console.log('Episode 1 triggered successfully:', data);
+                  
+                  setCurrentDialogue("A priority alert has been sent to your Hunter's Communicator. Check your messages for an urgent mission briefing from the Hunter Association.");
+                  setDialogueActive(true);
+                  setShowLivingPortrait(true);
+                  setChaHaeInExpression('concerned');
+                  
+                  setTimeout(() => {
+                    setNotifications(prev => [...prev, {
+                      id: 'episode1_alert',
+                      type: 'episode_available',
+                      title: 'Episode 1: Echoes of the Red Gate',
+                      content: 'A critical mission has been detected.',
+                      timestamp: new Date(),
+                      action: () => setShowCommunicator(true)
+                    }]);
+                  }, 1000);
+                }
+              } catch (error) {
+                console.error('Failed to trigger episode:', error);
+              }
+            }},
+            { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
+            { icon: Power, label: 'Exit Game', color: 'text-red-300', onClick: () => { 
+              if (confirm('Are you sure you want to exit the game?')) {
+                window.location.href = '/';
+              }
+              setMonarchAuraVisible(false);
+            }}
           ].map((item, index) => (
             <button
               key={item.label}
@@ -3884,17 +4278,22 @@ export default function SoloLevelingSpatial() {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4"
+            className="fixed top-4 left-1/2 transform -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 left-4 translate-x-0 z-[9999] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4"
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-start gap-3">
               <div className={`w-3 h-3 rounded-full mt-1 ${
-                notification.type === 'quest' ? 'bg-yellow-400' : 'bg-pink-400'
+                notification.type === 'quest' ? 'bg-yellow-400' : 
+                notification.type === 'episode_available' ? 'bg-orange-400' : 'bg-pink-400'
               }`} />
               <div 
                 className="flex-1 cursor-pointer"
                 onClick={() => {
-                  setShowCommunicator(true);
+                  if (notification.action) {
+                    notification.action();
+                  } else {
+                    setShowCommunicator(true);
+                  }
                   setNotifications(prev => prev.filter(n => n.id !== notification.id));
                 }}
               >
@@ -4349,6 +4748,20 @@ export default function SoloLevelingSpatial() {
           gold: gameState.gold || 0
         }}
       />
+
+      {/* Episode Player - Integrated into Main Game */}
+      {episodeInProgress && currentEpisode && (
+        <EpisodePlayer
+          episodeId={currentEpisode}
+          onBack={() => {
+            setEpisodeInProgress(false);
+            setCurrentEpisode(null);
+          }}
+          onComplete={handleEpisodeComplete}
+          gameState={gameState}
+          onGameStateUpdate={setGameState}
+        />
+      )}
 
 
 

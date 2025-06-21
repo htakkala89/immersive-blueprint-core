@@ -1,145 +1,118 @@
-# Blueprint Engine - Project Monarch's Shadow
+# Solo Leveling RPG - Replit Guide
 
 ## Overview
 
-Project Monarch's Shadow represents the flagship demonstration of the Blueprint Engine - a revolutionary generative, transmedia platform that democratizes narrative creation. While Monarch's Shadow showcases a Solo Leveling romantic RPG experience, the true innovation lies in the underlying Blueprint Engine that empowers any user to become a creator of interactive experiences.
-
-The platform supports two powerful creation pathways:
-1. **AI Story Architect**: Generate complete interactive experiences from simple creative prompts
-2. **Ingestion & Adaptation Engine**: Transform existing content (web novels, literature, historical events) into playable experiences
-
-Monarch's Shadow serves as the proof-of-concept, demonstrating how all 18+ systems work in unison to create immersive, AI-powered interactive narratives.
+This is a comprehensive romantic RPG based on the Solo Leveling manhwa, featuring an interactive story with Cha Hae-In and Jin-Woo. The game combines narrative-driven gameplay with strategic combat systems, daily life activities, and AI-generated scene imagery to create an immersive experience.
 
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React with TypeScript
-- **UI Components**: Radix UI with shadcn/ui styling
-- **Styling**: Tailwind CSS with custom theme configuration
-- **State Management**: React hooks and context for game state
-- **Build System**: Vite for development and production builds
+- **Framework**: React 18 with TypeScript
+- **UI Library**: Radix UI components with Tailwind CSS for styling
+- **State Management**: React hooks and context for local state
+- **Build Tool**: Vite with custom plugin configuration
+- **Styling**: Tailwind CSS with custom design system variables
 
 ### Backend Architecture
-- **Runtime**: Node.js with Express.js server
+- **Runtime**: Node.js 20 with Express.js server
 - **Language**: TypeScript with ES modules
-- **API Structure**: RESTful endpoints with JSON communication
-- **File Handling**: Express-fileupload for asset management
+- **API Design**: RESTful endpoints for game state and image generation
+- **File Processing**: Express-fileupload for handling media uploads
 
-### Database Architecture
-- **ORM**: Drizzle ORM with PostgreSQL dialect
-- **Database**: PostgreSQL 16 (configured for Neon serverless)
+### Data Storage Solutions
+- **Database**: PostgreSQL 16 via Neon serverless
+- **ORM**: Drizzle ORM with migrations support
 - **Schema**: Comprehensive game state tracking with JSON fields for complex data
-- **Migrations**: Drizzle-kit for schema management
+- **Caching**: In-memory caching for images and frequently accessed data
 
 ## Key Components
 
-### Blueprint Engine Core Systems
-1. **Spatial View System** - Dynamic 3D environment generation and interaction
-2. **Dialogue System** - Context-aware character conversations with personality modeling
-3. **Quest Log** - Dynamic objective tracking and progression management
-4. **Daily Life Hub** - 22+ interactive activities across multiple categories
-5. **Intimate Activity System** - Mature content generation with relationship progression
-6. **Relationship Constellation** - Multi-dimensional character relationship tracking
-7. **Commerce Progression** - Economic systems and resource management
-8. **World Map Navigation** - Spatial location management and travel systems
-9. **AI Mood Engine** - Dynamic emotional state management for characters
-10. **Combat System** - 2.5D dungeon raids with strategic mechanics
-11. **Gear Management** - Equipment and inventory systems
-12. **Living World** - Persistent environment with time progression
-13. **Hunter's Communicator** - In-world communication systems
-14. **Economy System** - Wealth and resource distribution
-15. **Player Progression** - Skill development and character advancement
-16. **Memory Constellation** - Shared experience and story tracking
-17. **Calendar System** - Temporal progression with seasonal changes
-18. **Episodic Story Engine** - Structured narrative progression and beats
-19. **AI Story Architect** - Generate complete experiences from simple prompts
-20. **Ingestion & Adaptation Engine** - Transform existing content into interactive experiences
+### Core Game Systems
+1. **Story Engine**: Branching narrative system with scene management
+2. **Combat System**: 2.5D side-scrolling raid mechanics with TFT-style strategy
+3. **Daily Life Hub**: 22+ interactive activities across 4 categories
+4. **Image Generation**: AI-powered scene and character image creation
+5. **Voice System**: Text-to-speech integration for character dialogue
+6. **Relationship System**: Progressive affection and intimacy mechanics
 
-### AI Integration
-- **Image Generation**: Multiple providers (Google Imagen, OpenAI DALL-E, NovelAI)
-- **Conversation Engine**: Google Gemini for dynamic dialogue generation
-- **Voice Synthesis**: ElevenLabs integration for character voices
-- **Activity Proposals**: AI-powered activity suggestion system
+### Activity Categories
+- **Casual Outings** (7 activities): Coffee dates, park walks, shopping, entertainment
+- **Training & Hunter Life** (4 activities): Sparring, raid footage review, gate clearing
+- **Home Life** (6 activities): Cooking, furniture assembly, balcony conversations
+- **Intimate** (5 activities): Back rubs, cuddling, shower scenes, passionate encounters
 
-### Content Management
-- **Scene System** - Dynamic scene generation and caching
-- **Episode Engine** - Structured episodic content with JSON configuration
-- **Activity System** - Modular activity implementation with unique mechanics
-- **Image Caching** - Preloaded location images for performance
+### Combat Features
+- Real-time 2.5D side-scrolling combat
+- 4-slot action bar with cooldown management
+- Synergy system with Cha Hae-In for team attacks
+- Visual feedback with damage numbers and camera shake
+- Interactive healing items and strategic positioning
 
 ## Data Flow
 
 ### Game State Management
-1. **Session Creation**: New players receive initial game state with default values
-2. **Choice Processing**: Player choices update game state and trigger narrative progression
-3. **State Persistence**: All game state changes are saved to PostgreSQL database
-4. **Real-time Updates**: Frontend receives immediate state updates via API responses
+1. Client requests game state via session ID
+2. Server retrieves from PostgreSQL or creates new state
+3. Story engine processes current scene and available choices
+4. Image generator creates contextual scene imagery
+5. Response includes narrative, choices, and visual assets
+
+### Activity Execution
+1. Player selects activity from Daily Life Hub
+2. Activity handler validates requirements (energy, affection, etc.)
+3. Modal system displays activity-specific interface
+4. Completion rewards are calculated and applied
+5. Game state updates persist to database
 
 ### Image Generation Pipeline
-1. **Context Analysis**: System determines scene requirements (location, time, activity)
-2. **Provider Selection**: Chooses appropriate AI provider based on content type
-3. **Prompt Engineering**: Generates optimized prompts for consistent character appearance
-4. **Caching System**: Stores generated images to reduce API calls
-5. **Fallback Strategy**: Multiple providers ensure image generation reliability
-
-### Activity Execution Flow
-1. **Activity Selection**: Player chooses from available activities in Daily Life Hub
-2. **Prerequisite Checking**: System validates energy, affection, and relationship requirements
-3. **Dynamic Content**: AI generates contextual images and dialogue for the activity
-4. **Outcome Processing**: Rewards, affection changes, and memory creation are applied
-5. **State Updates**: Game state reflects all changes from the completed activity
+1. Scene context analysis determines appropriate generator
+2. Google Cloud Imagen for high-quality scenes
+3. NovelAI for mature/intimate content when needed
+4. Prompt engineering ensures character consistency
+5. Generated images cached for performance
 
 ## External Dependencies
 
 ### AI Services
-- **Google Gemini API**: Primary conversation and narrative generation
-- **Google Imagen**: High-quality scene and character image generation
-- **OpenAI GPT-4**: Fallback for conversation and DALL-E for images
-- **NovelAI**: Specialized provider for mature/intimate content generation
-- **ElevenLabs**: Voice synthesis for character dialogue
+- **Google Cloud Vertex AI**: Primary image generation using Imagen 3.0 Fast
+- **OpenAI API**: Fallback image generation and text processing
+- **Google Gemini**: Advanced narrative generation and character responses
+- **Anthropic Claude**: Alternative AI processing when configured
 
-### Database Services
-- **Neon PostgreSQL**: Serverless PostgreSQL database hosting
-- **Drizzle ORM**: Type-safe database operations and migrations
+### Authentication & Storage
+- **Neon Database**: Serverless PostgreSQL hosting
+- **Google Cloud Auth**: Service account authentication for Vertex AI
+- **File System**: Local storage for cached images and assets
 
 ### Development Tools
-- **Replit Environment**: Development and deployment platform
-- **TypeScript**: Type safety across frontend and backend
-- **Vite**: Fast development server and build tool
+- **Drizzle Kit**: Database migrations and schema management
+- **TSX**: TypeScript execution for development
+- **ESBuild**: Production build optimization
 
 ## Deployment Strategy
 
-### Production Configuration
-- **Target**: Replit Autoscale deployment
-- **Build Process**: Vite production build with Express server compilation
-- **Port Configuration**: Server runs on port 5000, externally accessible on port 80
-- **Environment Variables**: Secure API key management for all external services
+### Environment Configuration
+- **Development**: Local server on port 5000 with hot reload
+- **Production**: Autoscale deployment with optimized builds
+- **Database**: Automated provisioning of PostgreSQL instance
 
-### Development Workflow
-- **Hot Reloading**: Vite development server with instant updates
-- **Database Sync**: Drizzle push for schema synchronization
-- **Asset Management**: Static file serving for generated images
-- **Error Handling**: Comprehensive error tracking and recovery
+### Build Process
+1. Vite builds client-side React application
+2. ESBuild bundles server-side TypeScript to ESM
+3. Static assets copied to distribution directory
+4. Database migrations applied automatically
 
-### Performance Optimizations
-- **Image Preloading**: Location images cached during startup
-- **Rate Limiting**: Controlled API usage to prevent quota exhaustion
-- **Lazy Loading**: Components and assets loaded on demand
-- **Database Indexing**: Optimized queries for game state retrieval
+### Runtime Requirements
+- Node.js 20+ for modern JavaScript features
+- PostgreSQL 16 for database operations
+- Environment variables for API keys and database connection
 
 ## Changelog
-- June 18, 2025. Complete manga creation and reading ecosystem implemented - creators generate interactive manga through AI Story Architect, users access published works through immersive Manga Library with panel-by-panel navigation, character dialogue, and choice-driven progression
-- June 18, 2025. Enhanced post-creation workflow with visual asset generation using NovelAI V4.5 for character reference sheets and scene illustrations
-- June 18, 2025. MangaReader component with full reading experience - animated panel transitions, dialogue boxes, interactive choices affecting story progression, and affection point tracking
-- June 18, 2025. Integrated manga access into role selection flow - users can choose between Player Experience, Created Manga Library, or Creator Portal from unified entry point
-- June 18, 2025. Blueprint Engine dual creation pathways fully operational - AI Story Architect generates complete interactive experiences from prompts, Ingestion & Adaptation Engine transforms existing content into playable experiences
-- June 18, 2025. Blueprint Engine API endpoints implemented with comprehensive system mappings - 20 active systems ready for content generation
-- June 18, 2025. NovelAI integration fixed - corrected model name from nai-diffusion-4-curated-preview to nai-diffusion-3, intimate content generation now working properly producing 1.4MB images in 3.7 seconds
-- June 18, 2025. NovelAI V4.5 Full model integrated with robust retry logic - enhanced image quality and reliable generation for mature content
-- June 18, 2025. NovelAI integration completed - mature content generation fully operational
-- June 18, 2025. AI narrator/game master system implemented for enhanced storytelling
-- June 18, 2025. Calendar progression system with seasonal weather changes added
-- June 17, 2025. Initial setup
+
+- June 13, 2025. Hybrid Multi-Episode System Implementation - Completed advanced episode orchestration allowing multiple active episodes with intelligent priority weighting (Primary 60%, Secondary 30%, Background 10%). Features contextual blending based on location and time, dynamic priority adjustment, backwards compatibility with single-episode focus, and seamless AI chat integration for emergent storytelling.
+- June 13, 2025. Episode Focus System Chat Integration - Fixed narrative confusion by ensuring only the focused episode influences AI responses
+- June 13, 2025. Initial setup
 
 ## User Preferences
+
 Preferred communication style: Simple, everyday language.

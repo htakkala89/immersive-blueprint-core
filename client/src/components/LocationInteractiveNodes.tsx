@@ -448,7 +448,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'vanity_table',
       label: 'Vanity Table',
       icon: Eye,
-      position: { x: 20, y: 25 },
+      position: { x: 20, y: 65 },
       thoughtPrompt: 'Look at her personal items.',
       outcome: 'Observe Cha Hae-In\'s elegant makeup collection and personal accessories, gaining insight into her private life.',
       gameLogic: 'intimacy_insight_system_6'
@@ -457,7 +457,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bookshelf',
       label: 'Bookshelf',
       icon: Building,
-      position: { x: 80, y: 20 },
+      position: { x: 80, y: 60 },
       thoughtPrompt: 'Browse her book collection.',
       outcome: 'Discover her reading preferences - hunter manuals, poetry, and romantic novels that reveal her softer side.',
       gameLogic: 'character_depth_system_6'
@@ -466,7 +466,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'bed',
       label: 'Bed',
       icon: Bed,
-      position: { x: 50, y: 50 },
+      position: { x: 50, y: 90 },
       thoughtPrompt: 'Notice the carefully made bed.',
       outcome: 'Admire her attention to detail and disciplined lifestyle. Unlocks deeper understanding of her character.',
       gameLogic: 'intimacy_progression_system_5'
@@ -475,7 +475,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'window_view',
       label: 'Window View',
       icon: Eye,
-      position: { x: 80, y: 75 },
+      position: { x: 80, y: 95 },
       thoughtPrompt: 'Look out her window.',
       outcome: 'Enjoy the view she wakes up to every morning - the Seoul skyline with hunter gates visible in distance.',
       gameLogic: 'atmospheric_immersion'
@@ -484,7 +484,7 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
       id: 'tea_station',
       label: 'Tea Station',
       icon: Coffee,
-      position: { x: 20, y: 80 },
+      position: { x: 20, y: 95 },
       thoughtPrompt: 'Notice her tea collection.',
       outcome: 'Discover she enjoys traditional Korean teas. Option to prepare tea together for affection boost.',
       gameLogic: 'system_6_affection_activity'
@@ -600,43 +600,63 @@ export function LocationInteractiveNodes({
     });
   };
 
-  // ABSOLUTE NO-OVERLAP RULE: Force nodes into a strict grid system
+  // Mobile-optimized grid system with responsive positioning
   const adjustNodePositions = (rawNodes: InteractiveNode[]): InteractiveNode[] => {
     if (rawNodes.length === 0) return rawNodes;
     
-    // Calculate grid positions based on screen quadrants with massive spacing
-    const getGridPosition = (index: number, total: number): { x: number; y: number } => {
+    // Mobile-first responsive grid positioning
+    const getResponsiveGridPosition = (index: number, total: number): { x: number; y: number } => {
+      // Single node - center position
       if (total === 1) return { x: 50, y: 50 };
-      if (total === 2) return index === 0 ? { x: 20, y: 30 } : { x: 80, y: 70 };
+      
+      // Two nodes - left and right with safe margins
+      if (total === 2) return index === 0 ? { x: 25, y: 50 } : { x: 75, y: 50 };
+      
+      // Three nodes - triangle formation optimized for mobile
       if (total === 3) return [
-        { x: 20, y: 20 },
-        { x: 80, y: 20 },
-        { x: 50, y: 80 }
+        { x: 50, y: 25 },   // Top center
+        { x: 25, y: 75 },   // Bottom left
+        { x: 75, y: 75 }    // Bottom right
       ][index];
       
-      // For 4+ nodes, use corners and edges with extreme spacing
-      const positions = [
-        { x: 10, y: 10 },   // Top left corner
-        { x: 90, y: 10 },   // Top right corner  
-        { x: 10, y: 90 },   // Bottom left corner
-        { x: 90, y: 90 },   // Bottom right corner
-        { x: 50, y: 10 },   // Top center
-        { x: 50, y: 90 },   // Bottom center
-        { x: 10, y: 50 },   // Left center
-        { x: 90, y: 50 },   // Right center
-        { x: 25, y: 25 },   // Inner ring
-        { x: 75, y: 25 },
-        { x: 25, y: 75 },
-        { x: 75, y: 75 }
+      // Four nodes - corners with mobile-safe margins
+      if (total === 4) return [
+        { x: 20, y: 25 },   // Top left
+        { x: 80, y: 25 },   // Top right
+        { x: 20, y: 75 },   // Bottom left
+        { x: 80, y: 75 }    // Bottom right
+      ][index];
+      
+      // Five or more nodes - organized grid pattern
+      const mobileOptimizedPositions = [
+        { x: 20, y: 20 },   // Top row
+        { x: 50, y: 20 },
+        { x: 80, y: 20 },
+        { x: 20, y: 50 },   // Middle row
+        { x: 80, y: 50 },
+        { x: 20, y: 80 },   // Bottom row
+        { x: 50, y: 80 },
+        { x: 80, y: 80 },
+        { x: 35, y: 35 },   // Secondary positions if needed
+        { x: 65, y: 35 },
+        { x: 35, y: 65 },
+        { x: 65, y: 65 }
       ];
       
-      return positions[index % positions.length];
+      return mobileOptimizedPositions[index % mobileOptimizedPositions.length];
     };
     
-    return rawNodes.map((node, index) => ({
-      ...node,
-      position: getGridPosition(index, rawNodes.length)
-    }));
+    return rawNodes.map((node, index) => {
+      // Preserve manual positions for bottom-positioned nodes (y >= 90)
+      if (node.position.y >= 90) {
+        return node; // Keep original position
+      }
+      // Use responsive grid for other nodes
+      return {
+        ...node,
+        position: getResponsiveGridPosition(index, rawNodes.length)
+      };
+    });
   };
 
   const rawNodes = getEnvironmentallyAvailableNodes().filter((node, index, arr) => 
@@ -778,10 +798,14 @@ export function LocationInteractiveNodes({
   };
 
   const handleThoughtPromptClick = () => {
+    console.log('🎯 Act on Thought clicked!', { selectedNode });
+    
     if (selectedNode) {
+      console.log('🎯 Processing node interaction:', selectedNode.id, selectedNode.gameLogic);
+      
       // Special handling for movie night activity
       if (selectedNode.gameLogic === 'movie_night_activity') {
-        // Trigger movie night modal directly
+        console.log('🎯 Movie night activity detected');
         onNodeInteraction('movie_night_setup', 'Watch a movie together', 'Opening movie night activity');
         setShowThoughtPrompt(false);
         setSelectedNode(null);
@@ -790,9 +814,14 @@ export function LocationInteractiveNodes({
       
       // Use memory-enhanced prompts and outcomes
       const memoryState = getNodeMemoryState(selectedNode);
+      console.log('🎯 Memory state:', memoryState);
+      console.log('🎯 Calling onNodeInteraction with:', selectedNode.id, memoryState.thoughtPrompt, memoryState.outcome);
+      
       onNodeInteraction(selectedNode.id, memoryState.thoughtPrompt, memoryState.outcome);
       setShowThoughtPrompt(false);
       setSelectedNode(null);
+    } else {
+      console.log('🚨 No selectedNode found!');
     }
   };
 
@@ -839,12 +868,13 @@ export function LocationInteractiveNodes({
         return (
           <motion.div
             key={node.id}
-            className="absolute pointer-events-auto cursor-pointer z-40 opacity-100"
+            className="absolute pointer-events-auto cursor-pointer z-40"
             style={{
               left: `${node.position.x}%`,
               top: `${node.position.y}%`,
-              minWidth: '80px',
-              minHeight: '80px'
+              transform: 'translate(-50%, -50%)', // Center the node on its position
+              minWidth: '100px',
+              minHeight: '100px'
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -852,41 +882,39 @@ export function LocationInteractiveNodes({
               console.log('🎯 NODE CLICKED:', node.id);
               handleNodeClick(node);
             }}
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {/* Mobile-friendly large node */}
-            <motion.div
-              className="w-12 h-12 rounded-full flex items-center justify-center bg-purple-500 border-2 border-purple-300"
-              style={{
-                minWidth: '48px',
-                minHeight: '48px',
-                padding: '8px',
-                margin: '16px'
-              }}
-              animate={available ? {
-                boxShadow: [
-                  '0 0 5px rgba(147, 51, 234, 0.6)',
-                  '0 0 15px rgba(147, 51, 234, 0.8)',
-                  '0 0 5px rgba(147, 51, 234, 0.6)'
-                ]
-              } : {}}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <IconComponent className="w-6 h-6 text-white" />
-            </motion.div>
+            {/* Mobile-optimized node container */}
+            <div className="flex flex-col items-center justify-center">
+              {/* Node orb with proper touch target */}
+              <motion.div
+                className={`w-14 h-14 rounded-full flex items-center justify-center border-2 mb-2 ${
+                  available 
+                    ? 'bg-purple-500/90 border-purple-300 shadow-lg' 
+                    : 'bg-gray-600/70 border-gray-400'
+                }`}
+                animate={available ? {
+                  boxShadow: [
+                    '0 0 8px rgba(147, 51, 234, 0.6)',
+                    '0 0 20px rgba(147, 51, 234, 0.8)',
+                    '0 0 8px rgba(147, 51, 234, 0.6)'
+                  ]
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <IconComponent className="w-7 h-7 text-white" />
+              </motion.div>
 
-            {/* Node Label with 8px spacing from orb */}
-            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-              <div className={`backdrop-blur-sm rounded-md text-sm border ${
-                available 
-                  ? 'bg-black/80 border-purple-400/50 text-purple-200'
-                  : 'bg-black/60 border-gray-500/50 text-gray-400'
-              }`}
-              style={{
-                padding: '4px 8px' // 4px micro spacing vertical, 8px standard horizontal
-              }}>
-                {node.label}
+              {/* Node label positioned below orb */}
+              <div className="text-center">
+                <div className={`px-3 py-1 rounded-lg text-xs font-medium border backdrop-blur-sm ${
+                  available 
+                    ? 'bg-black/85 border-purple-400/60 text-purple-100' 
+                    : 'bg-black/70 border-gray-500/50 text-gray-300'
+                }`}>
+                  {node.label}
+                </div>
               </div>
             </div>
           </motion.div>

@@ -17,13 +17,19 @@ import { Button } from '@/components/ui/button';
 interface NarrativeArchitectAIProps {
   isVisible: boolean;
   onClose: () => void;
+  editingEpisode?: {
+    id: string;
+    title: string;
+    description: string;
+  } | null;
 }
 
-export function NarrativeArchitectAI({ isVisible, onClose }: NarrativeArchitectAIProps) {
+export function NarrativeArchitectAI({ isVisible, onClose, editingEpisode }: NarrativeArchitectAIProps) {
   const [activeTab, setActiveTab] = useState<'create' | 'preview' | 'library'>('create');
   const [directorsBrief, setDirectorsBrief] = useState('');
   const [generatedBlueprint, setGeneratedBlueprint] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isLoadingEpisode, setIsLoadingEpisode] = useState(false);
   const [savedEpisodes, setSavedEpisodes] = useState<Array<{
     id: string;
     title: string;
@@ -38,6 +44,32 @@ export function NarrativeArchitectAI({ isVisible, onClose }: NarrativeArchitectA
     "Build a cozy home life episode where the player and Cha Hae-In spend a quiet evening cooking dinner together, watching a movie, and having deep conversations about their future.",
     "Create an action-packed training episode where the player and Cha Hae-In practice new combat techniques together, unlocking a powerful synergy attack through trust and coordination."
   ];
+
+  // Load existing episode for editing
+  React.useEffect(() => {
+    if (editingEpisode) {
+      loadEpisodeForEditing(editingEpisode.id);
+    }
+  }, [editingEpisode]);
+
+  const loadEpisodeForEditing = async (episodeId: string) => {
+    setIsLoadingEpisode(true);
+    try {
+      const response = await fetch(`/api/episodes/${episodeId}`);
+      if (!response.ok) {
+        throw new Error('Failed to load episode');
+      }
+      const data = await response.json();
+      
+      // Set the episode content in the blueprint editor
+      setGeneratedBlueprint(JSON.stringify(data.episode, null, 2));
+      setDirectorsBrief(`Editing: ${data.episode.title} - ${data.episode.description}`);
+    } catch (error) {
+      console.error('Failed to load episode for editing:', error);
+    } finally {
+      setIsLoadingEpisode(false);
+    }
+  };
 
   const generateEpisodeBlueprint = async () => {
     if (!directorsBrief.trim()) return;
@@ -284,7 +316,14 @@ export function NarrativeArchitectAI({ isVisible, onClose }: NarrativeArchitectA
                 )}
               </div>
               
-              {generatedBlueprint ? (
+              {isLoadingEpisode ? (
+                <div className="h-[calc(100vh-320px)] bg-gray-900 rounded-lg border border-gray-600 flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="animate-spin w-8 h-8 border-2 border-gray-500 border-t-transparent rounded-full mx-auto mb-4" />
+                    <p>Loading episode content...</p>
+                  </div>
+                </div>
+              ) : generatedBlueprint ? (
                 <textarea
                   value={generatedBlueprint}
                   onChange={(e) => setGeneratedBlueprint(e.target.value)}

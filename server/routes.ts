@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage, generateAvatarExpressionImage, generateWithNovelAI } from "./imageGenerator";
+import { generateSceneImage, generateIntimateActivityImage, generateLocationSceneImage, generateAvatarExpressionImage } from "./imageGenerator";
 import { imageGenerationService } from "./imageProviders";
 import { ActivityProposalSystem } from "./activityProposalSystem";
 import { getCachedLocationImage, cacheLocationImage, preloadLocationImages, getCacheStats } from "./imagePreloader";
@@ -12,153 +12,16 @@ import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
-import { narratorSystem } from "./narratorSystem";
 import { artisticPromptEngine } from "./artisticPromptEngine";
 import { qualityEnhancer } from "./qualityEnhancer";
 import { narrativeArchitect } from "./narrative-architect-api";
-import { aiStoryArchitect } from "./ai-story-architect";
-import { ingestionAdaptationEngine } from "./ingestion-adaptation-engine";
+import { episodeEngine } from "./episodeEngine";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
-
-// Direct NovelAI V4.5 generation function
-async function directNovelAIGeneration(prompt: string): Promise<string | null> {
-  const endpoint = 'https://image.novelai.net/ai/generate-image';
-  const maxRetries = 3;
-  const retryDelay = 2000;
-
-  const requestBody = {
-    input: `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In with blonde hair, Jin-Woo with dark hair, Solo Leveling manhwa art style, romantic scene, intimate moment, high quality artwork`,
-    model: 'nai-diffusion-3',
-    action: 'generate',
-    parameters: {
-      width: 832,
-      height: 1216,
-      scale: 7,
-      sampler: 'k_dpmpp_2s_ancestral',
-      steps: 50,
-      seed: Math.floor(Math.random() * 4294967295),
-      n_samples: 1,
-      ucPreset: 0,
-      uc: 'low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted',
-      qualityToggle: true,
-      sm: true,
-      sm_dyn: true,
-      cfg_rescale: 0.7,
-      noise_schedule: "native",
-      dynamic_thresholding: true
-    }
-  };
-
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(`🎨 NovelAI V4.5 generation attempt ${attempt}/${maxRetries}...`);
-      
-      if (!process.env.NOVELAI_API_KEY) {
-        console.log('❌ NovelAI API key not found');
-        return null;
-      }
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-          'Content-Type': 'application/json',
-          'Accept': '*/*'
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      console.log(`NovelAI response status: ${response.status}`);
-
-      if (response.ok) {
-        const buffer = await response.arrayBuffer();
-        console.log(`NovelAI response size: ${buffer.byteLength} bytes`);
-        
-        try {
-          const zip = new AdmZip(Buffer.from(buffer));
-          const zipEntries = zip.getEntries();
-          
-          if (zipEntries.length > 0) {
-            const imageBuffer = zipEntries[0].getData();
-            const base64Image = imageBuffer.toString('base64');
-            console.log(`✅ NovelAI V4.5 generated successfully - Size: ${imageBuffer.length} bytes`);
-            return `data:image/png;base64,${base64Image}`;
-          }
-        } catch (zipError: any) {
-          console.log('❌ ZIP extraction failed:', zipError.message);
-        }
-      } else {
-        const errorText = await response.text();
-        console.log(`❌ NovelAI failed with status ${response.status}:`, errorText);
-        
-        // Retry on server errors
-        if (response.status >= 500 && attempt < maxRetries) {
-          console.log(`⏳ Retrying in ${retryDelay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-          continue;
-        }
-      }
-    } catch (error: any) {
-      console.log(`❌ NovelAI request failed (attempt ${attempt}):`, error.message);
-      
-      // Retry on network errors
-      if (attempt < maxRetries) {
-        console.log(`⏳ Retrying in ${retryDelay}ms...`);
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-        continue;
-      }
-    }
-  }
-
-  console.log('❌ NovelAI generation failed after all attempts');
-  return null;
-}
-
-// Quick NovelAI status check function
-async function checkNovelAIStatus(): Promise<boolean> {
-  try {
-    const response = await fetch('https://image.novelai.net/ai/generate-image', {
-      method: 'HEAD',
-      headers: {
-        'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`
-      }
-    });
-    return response.status !== 500;
-  } catch {
-    return false;
-  }
-}
-
-// Optimized romantic content generation with OpenAI
-async function generateRomanticContent(prompt: string): Promise<string | null> {
-  if (!openaiClient) {
-    console.log('OpenAI client not available');
-    return null;
-  }
-
-  try {
-    const romanticPrompt = `Beautiful anime couple in tender romantic moment, Cha Hae-In with blonde hair and Jin-Woo with dark hair from Solo Leveling, ${prompt}, emotional intimacy, soft romantic lighting, Korean manhwa art style, high quality illustration, detailed faces showing love and connection, elegant composition, warm atmosphere, artistic excellence, beautiful detailed eyes, romantic scene, tender embrace, emotional depth`;
-    
-    const response = await openaiClient.images.generate({
-      model: "dall-e-3",
-      prompt: romanticPrompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "hd",
-    });
-    
-    if (response.data?.[0]?.url) {
-      console.log('OpenAI DALL-E romantic content generated successfully');
-      return response.data[0].url;
-    }
-  } catch (error: any) {
-    console.log('OpenAI DALL-E generation failed:', error.message);
-  }
-  
-  return null;
-}
+import { db } from "./db";
+import { playerProfiles, gameStates, episodeProgress, insertPlayerProfileSchema, insertGameStateSchema } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 // Initialize OpenAI for cover generation
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -366,6 +229,44 @@ function generateFallbackPrompts(chaResponse: string, userMessage: string, conte
   const location = context?.location || 'hunter_association';
   const affectionLevel = context?.affectionLevel || 0;
   const timeOfDay = context?.timeOfDay || 'day';
+  const completedEpisodes = context?.completedEpisodes || [];
+  const sharedMemories = context?.sharedMemories || [];
+
+  // Episode-driven conversation priorities
+  // Check for episode-specific memory callbacks first
+  if (completedEpisodes.includes('EP_TEST_CAFE_DATE') && location === 'hongdae_cafe') {
+    return [
+      "Remember our last conversation here? I still think about what you said.",
+      "This place holds special memories for us now.",
+      "I'm glad we can share quiet moments like this together."
+    ];
+  }
+
+  // Episode availability hints based on progression
+  if (location === 'hongdae_cafe' && affectionLevel >= 0 && !completedEpisodes.includes('EP_TEST_CAFE_DATE')) {
+    return [
+      "I was hoping we could sit and talk properly sometime.",
+      "There's something peaceful about this place, don't you think?",
+      "Coffee dates like this... they matter more than you might realize."
+    ];
+  }
+
+  // Story progression hints based on relationship level
+  if (affectionLevel >= 20 && affectionLevel < 40) {
+    return [
+      "I've been thinking about how much we've grown closer lately.",
+      "There are things I want to share with you... when the time is right.",
+      "Do you ever wonder where this path we're on will lead us?"
+    ];
+  }
+
+  if (affectionLevel >= 40 && affectionLevel < 70) {
+    return [
+      "I trust you more than anyone else, Jin-Woo.",
+      "Sometimes I catch myself thinking about our future together.",
+      "You've become so important to me... more than I expected."
+    ];
+  }
   
   // Player Apartment - Intimate, romantic setting
   if (location === 'player_apartment') {
@@ -760,67 +661,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // System 18: Episode Management - Get Available Episodes
-  app.get('/api/episodes', async (req, res) => {
+  // Episode System - Get all episodes (database version)
+  app.get("/api/episodes", async (req, res) => {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      const episodesDir = path.join(process.cwd(), 'server/episodes');
-      
-      if (!fs.existsSync(episodesDir)) {
-        return res.json({ episodes: [] });
-      }
-      
-      const files = fs.readdirSync(episodesDir).filter(file => file.endsWith('.json'));
-      const episodes = [];
-      
-      for (const file of files) {
-        try {
-          const filePath = path.join(episodesDir, file);
-          const content = fs.readFileSync(filePath, 'utf-8');
-          const episode = JSON.parse(content);
-          episodes.push({
-            id: episode.id,
-            title: episode.title,
-            description: episode.description,
-            prerequisite: episode.prerequisite,
-            status: episode.status || 'available'
-          });
-        } catch (error) {
-          console.warn(`Failed to parse episode file ${file}:`, error);
-        }
-      }
-      
+      const episodes = await episodeEngine.getAvailableEpisodes();
       res.json({ episodes });
     } catch (error) {
-      console.error('Error fetching episodes:', error);
-      res.status(500).json({ error: 'Failed to fetch episodes' });
+      console.error("Failed to fetch episodes:", error);
+      res.status(500).json({ error: "Failed to fetch episodes" });
     }
   });
 
-  // System 18: Episode Management - Get Specific Episode
-  app.get('/api/episodes/:episodeId', async (req, res) => {
-    try {
-      const { episodeId } = req.params;
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      const episodePath = path.join(process.cwd(), 'server/episodes', `${episodeId}.json`);
-      
-      if (!fs.existsSync(episodePath)) {
-        return res.status(404).json({ error: 'Episode not found' });
-      }
-      
-      const content = fs.readFileSync(episodePath, 'utf-8');
-      const episode = JSON.parse(content);
-      
-      res.json({ episode });
-    } catch (error) {
-      console.error('Error fetching episode:', error);
-      res.status(500).json({ error: 'Failed to fetch episode' });
-    }
-  });
+
 
   // Profile Management - Get all profiles
   app.get('/api/profiles', async (req, res) => {
@@ -968,7 +820,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/profiles/:profileId/save', async (req, res) => {
     try {
       const { profileId } = req.params;
-      const { gameState } = req.body;
+      const { gameData, gameState } = req.body;
+      const dataToUpdate = gameState || gameData;
       const { db } = await import('./db');
       const { playerProfiles, gameStates } = await import('@shared/schema');
       const { eq } = await import('drizzle-orm');
@@ -988,37 +841,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await db
           .update(gameStates)
           .set({
-            narration: gameState.narration,
-            health: gameState.health,
-            maxHealth: gameState.maxHealth,
-            mana: gameState.mana,
-            maxMana: gameState.maxMana,
-            level: gameState.level,
-            experience: gameState.experience,
-            statPoints: gameState.statPoints,
-            skillPoints: gameState.skillPoints,
-            gold: gameState.gold,
-            affectionLevel: gameState.affectionLevel,
-            energy: gameState.energy,
-            maxEnergy: gameState.maxEnergy,
-            relationshipStatus: gameState.relationshipStatus,
-            intimacyLevel: gameState.intimacyLevel,
-            sharedMemories: gameState.sharedMemories,
-            livingTogether: gameState.livingTogether,
-            daysTogether: gameState.daysTogether,
-            apartmentTier: gameState.apartmentTier,
-            currentScene: gameState.currentScene,
-            choices: gameState.choices,
-            sceneData: gameState.sceneData,
-            storyPath: gameState.storyPath,
-            choiceHistory: gameState.choiceHistory,
-            storyFlags: gameState.storyFlags,
-            inventory: gameState.inventory,
-            stats: gameState.stats,
-            skills: gameState.skills,
-            scheduledActivities: gameState.scheduledActivities,
-            activeQuests: gameState.activeQuests,
-            completedQuests: gameState.completedQuests
+            narration: dataToUpdate.narration || "Your adventure continues...",
+            health: dataToUpdate.health || 100,
+            maxHealth: dataToUpdate.maxHealth || 100,
+            mana: dataToUpdate.mana || 50,
+            maxMana: dataToUpdate.maxMana || 50,
+            level: dataToUpdate.level || 1,
+            experience: dataToUpdate.experience || 0,
+            statPoints: dataToUpdate.statPoints || 0,
+            skillPoints: dataToUpdate.skillPoints || 0,
+            gold: dataToUpdate.gold || 100,
+            affectionLevel: dataToUpdate.affectionLevel || 0,
+            energy: dataToUpdate.energy || 100,
+            maxEnergy: dataToUpdate.maxEnergy || 100,
+            relationshipStatus: dataToUpdate.relationshipStatus || "dating",
+            intimacyLevel: dataToUpdate.intimacyLevel || 1,
+            sharedMemories: dataToUpdate.sharedMemories || 0,
+            livingTogether: dataToUpdate.livingTogether || 0,
+            daysTogether: dataToUpdate.daysTogether || 1,
+            apartmentTier: dataToUpdate.apartmentTier || 1,
+            currentScene: dataToUpdate.currentScene || "entrance",
+            choices: dataToUpdate.choices || [],
+            sceneData: dataToUpdate.sceneData || null,
+            storyPath: dataToUpdate.storyPath || "entrance",
+            choiceHistory: dataToUpdate.choiceHistory || [],
+            storyFlags: dataToUpdate.storyFlags || {},
+            inventory: dataToUpdate.inventory || [],
+            stats: dataToUpdate.stats || {},
+            skills: dataToUpdate.skills || [],
+            scheduledActivities: dataToUpdate.scheduledActivities || [],
+            activeQuests: dataToUpdate.activeQuests || [],
+            completedQuests: dataToUpdate.completedQuests || []
           })
           .where(eq(gameStates.id, profile[0].gameStateId));
       }
@@ -1054,22 +907,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Profile not found' });
       }
       
-      // Delete episode progress
+      // Delete episode progress first
       await db
         .delete(episodeProgress)
         .where(eq(episodeProgress.profileId, parseInt(profileId)));
       
-      // Delete game state
+      // Delete profile (this will automatically set gameStateId foreign key to null)
+      await db
+        .delete(playerProfiles)
+        .where(eq(playerProfiles.id, parseInt(profileId)));
+      
+      // Delete game state last
       if (profile[0].gameStateId) {
         await db
           .delete(gameStates)
           .where(eq(gameStates.id, profile[0].gameStateId));
       }
-      
-      // Delete profile
-      await db
-        .delete(playerProfiles)
-        .where(eq(playerProfiles.id, parseInt(profileId)));
       
       res.json({ success: true });
     } catch (error) {
@@ -1379,6 +1232,289 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Episode System - Get available episodes
+  app.get("/api/episodes", (req, res) => {
+    try {
+      const episodes = episodeEngine.getAvailableEpisodes();
+      res.json({ episodes });
+    } catch (error) {
+      console.error("Failed to get episodes:", error);
+      res.status(500).json({ error: "Failed to retrieve episodes" });
+    }
+  });
+
+  // Episode System - Get specific episode details
+  app.get("/api/episodes/:episodeId", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const episode = await episodeEngine.getEpisode(episodeId);
+      
+      if (!episode) {
+        return res.status(404).json({ error: "Episode not found" });
+      }
+      
+      // Add status and progress tracking for frontend compatibility
+      const episodeWithStatus = {
+        ...episode,
+        status: 'available',
+        currentBeatIndex: 0
+      };
+      
+      res.json({ episode: episodeWithStatus });
+    } catch (error) {
+      console.error("Failed to get episode:", error);
+      res.status(500).json({ error: "Failed to retrieve episode" });
+    }
+  });
+
+  // Episode System - Execute episode action
+  app.post("/api/episodes/:episodeId/execute", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const { beatId, actionIndex } = req.body;
+      
+      if (beatId === undefined || actionIndex === undefined) {
+        return res.status(400).json({ error: "Missing beatId or actionIndex" });
+      }
+      
+      await episodeEngine.executeEpisodeAction(episodeId, beatId, actionIndex);
+      
+      res.json({ success: true, message: "Episode action executed" });
+    } catch (error) {
+      console.error("Failed to execute episode action:", error);
+      res.status(500).json({ error: "Failed to execute episode action" });
+    }
+  });
+
+  // Episode System - Track gameplay events for episode progression
+  app.post("/api/episode-events", async (req, res) => {
+    try {
+      const { event, data, profileId } = req.body;
+      
+      if (!event || !profileId) {
+        return res.status(400).json({ error: "Missing event or profileId" });
+      }
+      
+      console.log(`🎮 Episode event: ${event}`, data);
+      
+      // Track the event with the episode engine for automatic progression
+      await episodeEngine.trackGameplayEvent(event, data, profileId);
+      
+      res.json({ 
+        success: true, 
+        message: `Event ${event} tracked for episode progression`
+      });
+    } catch (error) {
+      console.error("Episode event tracking error:", error);
+      res.status(500).json({ error: "Failed to track episode event" });
+    }
+  });
+
+  // Episode System - Trigger beat completion
+  app.post("/api/episodes/:episodeId/complete-beat", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const { beatId, eventData } = req.body;
+      
+      if (beatId === undefined) {
+        return res.status(400).json({ error: "Missing beatId" });
+      }
+      
+      const completed = await episodeEngine.triggerBeatCompletion(episodeId, beatId, eventData);
+      
+      res.json({ completed, message: completed ? "Beat completed" : "Beat completion conditions not met" });
+    } catch (error) {
+      console.error("Failed to complete beat:", error);
+      res.status(500).json({ error: "Failed to complete beat" });
+    }
+  });
+
+  // Episode System - Set focused episode
+  app.post("/api/episodes/:episodeId/focus/:profileId", async (req, res) => {
+    try {
+      const { episodeId, profileId } = req.params;
+      
+      await episodeEngine.setFocusedEpisode(Number(profileId), episodeId);
+      
+      res.json({
+        success: true,
+        focusedEpisode: episodeId,
+        message: `Episode ${episodeId} is now focused`
+      });
+    } catch (error) {
+      console.error("Failed to set focused episode:", error);
+      res.status(500).json({ error: "Failed to set focused episode" });
+    }
+  });
+
+  // Episode System - Clear focused episode
+  app.delete("/api/episodes/focus/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      
+      await episodeEngine.setFocusedEpisode(Number(profileId), null);
+      
+      res.json({
+        success: true,
+        focusedEpisode: null,
+        message: "No episode is focused"
+      });
+    } catch (error) {
+      console.error("Failed to clear focused episode:", error);
+      res.status(500).json({ error: "Failed to clear focused episode" });
+    }
+  });
+
+  // Episode System - Set multiple active episodes with priority weighting
+  app.post("/api/episodes/active/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      const { episodes } = req.body;
+      
+      if (!Array.isArray(episodes)) {
+        return res.status(400).json({ error: "Episodes must be an array" });
+      }
+      
+      await episodeEngine.setActiveEpisodes(Number(profileId), episodes);
+      
+      res.json({
+        success: true,
+        activeEpisodes: episodes,
+        message: `Set ${episodes.length} active episodes with priority weighting`
+      });
+    } catch (error) {
+      console.error("Failed to set active episodes:", error);
+      res.status(500).json({ error: "Failed to set active episodes" });
+    }
+  });
+
+  // Episode System - Get active episodes with priorities
+  app.get("/api/episodes/active/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      
+      const activeEpisodes = await episodeEngine.getActiveEpisodes(Number(profileId));
+      
+      res.json({
+        activeEpisodes,
+        count: activeEpisodes.length,
+        message: `Found ${activeEpisodes.length} active episodes`
+      });
+    } catch (error) {
+      console.error("Failed to get active episodes:", error);
+      res.status(500).json({ error: "Failed to get active episodes" });
+    }
+  });
+
+  // Episode System - Get focused episode (backwards compatibility)
+  app.get("/api/episodes/focus/:profileId", async (req, res) => {
+    try {
+      const { profileId } = req.params;
+      
+      const focusedEpisode = await episodeEngine.getFocusedEpisode(Number(profileId));
+      
+      res.json({
+        focusedEpisode,
+        message: focusedEpisode ? `Episode ${focusedEpisode} is focused` : "No episode is focused"
+      });
+    } catch (error) {
+      console.error("Failed to get focused episode:", error);
+      res.status(500).json({ error: "Failed to get focused episode" });
+    }
+  });
+
+  // Episode System - Load episode progress
+  app.get("/api/episodes/:episodeId/progress/:profileId", async (req, res) => {
+    try {
+      const { episodeId, profileId } = req.params;
+      
+      const progress = await episodeEngine.loadEpisodeProgress(Number(profileId), episodeId);
+      
+      if (progress) {
+        res.json({
+          hasProgress: true,
+          currentBeat: progress.currentBeat,
+          playerChoices: progress.playerChoices,
+          message: `Continue from beat ${progress.currentBeat}`
+        });
+      } else {
+        res.json({
+          hasProgress: false,
+          currentBeat: 0,
+          playerChoices: {},
+          message: "Starting from beginning"
+        });
+      }
+    } catch (error) {
+      console.error("Failed to load episode progress:", error);
+      res.status(500).json({ error: "Failed to load episode progress" });
+    }
+  });
+
+  // Episode System - Trigger episode start (creates communicator message)
+  app.post("/api/episodes/:episodeId/trigger", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const { profileId } = req.body;
+      
+      if (!profileId) {
+        return res.status(400).json({ error: "Missing profileId" });
+      }
+      
+      const episode = await episodeEngine.getEpisode(episodeId);
+      if (!episode) {
+        return res.status(404).json({ error: "Episode not found" });
+      }
+
+      // Set this episode as focused to prevent narrative confusion
+      await episodeEngine.setFocusedEpisode(Number(profileId), episodeId);
+
+      // Load existing progress if available
+      const progress = await episodeEngine.loadEpisodeProgress(Number(profileId), episodeId);
+      const startBeat = progress ? progress.currentBeat : 0;
+
+      // Create the episode alert message for the Hunter Communicator
+      const episodeAlert = {
+        id: `episode_${episodeId}`,
+        title: episode.title,
+        sender: "Hunter Association",
+        content: "A new critical mission has been detected. This appears to be related to unusual gate activity in the area. Your expertise is required for this investigation.",
+        timestamp: new Date(),
+        type: "quest" as const,
+        read: false,
+        questData: {
+          rank: "A",
+          type: "investigation",
+          reward: 50000000,
+          location: "hunter_association",
+          description: "Investigate the A-Rank Gate Alert",
+          longDescription: "A powerful magical anomaly has been detected. Work with Cha Hae-In to investigate and eliminate the threat.",
+          objectives: [
+            {
+              id: "investigate_gate",
+              description: "Meet with Cha Hae-In at the Hunter Association",
+              completed: false
+            }
+          ],
+          timeLimit: 24,
+          difficulty: 8,
+          estimatedDuration: 2,
+          isUrgent: true,
+          guildSupport: false
+        }
+      };
+
+      res.json({ 
+        success: true, 
+        message: "Episode triggered successfully",
+        episodeAlert
+      });
+    } catch (error) {
+      console.error("Failed to trigger episode:", error);
+      res.status(500).json({ error: "Failed to trigger episode" });
+    }
+  });
+
   // Additional core gameplay endpoints
   
   // Mature content detection and generation system
@@ -1456,6 +1592,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `${msg.senderName}: ${msg.content}`
         ).join('\n');
 
+        // Get contextual episode guidance with intelligent multi-episode blending
+        const profileId = gameState?.profileId || context?.profileId || 1;
+        const location = characterState?.location || context?.location || 'hunter_association';
+        const timeOfDay = context?.timeOfDay || 'afternoon';
+        const episodeGuidance = await episodeEngine.getContextualEpisodeGuidance(profileId, location, timeOfDay);
+        
         const fullPrompt = `${personalityPrompt}
 
 HUNTER'S COMMUNICATOR CONVERSATION:
@@ -1473,8 +1615,11 @@ Jin-Woo just sent: "${message}"
 
 ${isUrgent ? 'This message seems urgent - respond accordingly.' : ''}
 ${proposedActivity ? `Jin-Woo proposed an activity: ${JSON.stringify(proposedActivity)}` : ''}
+${episodeGuidance ? `STORY GUIDANCE: After a few exchanges, naturally suggest: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
 
 IMPORTANT: This is a CONTINUING conversation. Maintain natural flow and reference previous messages when appropriate. Don't repeat the same responses. Keep your response conversational and authentic to Cha Hae-In's character - professional but warm, strong but caring. Vary your responses based on the conversation history.
+
+${episodeGuidance ? 'After responding to the current message naturally, guide the conversation toward the story progression mentioned above.' : ''}
 
 Respond naturally as if you're texting Jin-Woo back:`;
 
@@ -1592,6 +1737,9 @@ Respond naturally as if you're texting Jin-Woo back:`;
 
         const personalityPrompt = getPersonalityPrompt(conversationContext);
         
+        // Check for episode guidance - inject natural story progression
+        const episodeGuidance = await episodeEngine.getEpisodeGuidance('GAMEPLAY_TEST', 2);
+        
         const fullPrompt = `${personalityPrompt}
 
 CURRENT SITUATION:
@@ -1602,6 +1750,8 @@ CURRENT SITUATION:
 
 Jin-Woo just said: "${message}"
 
+${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide the conversation toward: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
+
 RESPONSE INSTRUCTIONS:
 - Respond naturally as Cha Hae-In in character
 - Reference the current location and situation
@@ -1609,7 +1759,8 @@ RESPONSE INSTRUCTIONS:
 - Keep response conversational and under 100 words
 - Use "Jin-Woo" when addressing him directly
 - Show your hunter expertise when relevant
-- Express growing feelings if affection is high enough`;
+- Express growing feelings if affection is high enough
+${episodeGuidance ? '- After responding to the current message, naturally suggest the story progression mentioned above' : ''}`;
         
         const result = await model.generateContent(fullPrompt);
         response = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
@@ -1774,79 +1925,6 @@ RESPONSE INSTRUCTIONS:
     } catch (error) {
       console.error("Narrative context error:", error);
       res.status(500).json({ error: "Failed to retrieve narrative context" });
-    }
-  });
-
-  // Narrator System API Routes
-  app.post("/api/narrator/generate", async (req, res) => {
-    try {
-      const context = req.body;
-      const narration = await narratorSystem.generateNarration(context);
-      res.json(narration);
-    } catch (error) {
-      console.error("Narrator generation error:", error);
-      res.status(500).json({ error: "Failed to generate narration" });
-    }
-  });
-
-  app.post("/api/narrator/episode", async (req, res) => {
-    try {
-      const { episodeTitle, chapterNumber, context } = req.body;
-      const narration = await narratorSystem.generateEpisodeNarration(episodeTitle, chapterNumber, context);
-      res.json(narration);
-    } catch (error) {
-      console.error("Episode narration error:", error);
-      res.status(500).json({ error: "Failed to generate episode narration" });
-    }
-  });
-
-  app.post("/api/narrator/choice", async (req, res) => {
-    try {
-      const { choice, context } = req.body;
-      const narration = await narratorSystem.narratePlayerChoice(choice, context);
-      res.json({ narration });
-    } catch (error) {
-      console.error("Choice narration error:", error);
-      res.status(500).json({ error: "Failed to narrate player choice" });
-    }
-  });
-
-  app.get("/api/narrator/summary/:playerId", async (req, res) => {
-    try {
-      const { playerId } = req.params;
-      const context = req.query as any;
-      const summary = await narratorSystem.getRelationshipSummary(playerId, context);
-      res.json({ summary });
-    } catch (error) {
-      console.error("Relationship summary error:", error);
-      res.status(500).json({ error: "Failed to generate relationship summary" });
-    }
-  });
-
-  app.delete("/api/narrator/memory/:playerId", async (req, res) => {
-    try {
-      const { playerId } = req.params;
-      narratorSystem.clearNarratorMemory(playerId);
-      res.json({ success: true, message: "Narrator memory cleared" });
-    } catch (error) {
-      console.error("Clear memory error:", error);
-      res.status(500).json({ error: "Failed to clear narrator memory" });
-    }
-  });
-
-  // Test Google Imagen authentication
-  app.get("/api/test-google-auth", async (req, res) => {
-    try {
-      const { getGoogleAccessToken } = await import('./googleAuth');
-      const token = await getGoogleAccessToken();
-      res.json({ 
-        success: !!token, 
-        message: token ? "Google authentication successful" : "Google authentication failed",
-        hasToken: !!token
-      });
-    } catch (error) {
-      console.error("Google auth test error:", error);
-      res.status(500).json({ error: "Failed to test Google authentication" });
     }
   });
 
@@ -2349,57 +2427,23 @@ Respond as Cha Hae-In would in this intimate moment:`;
       const { prompt: rawPrompt, activityId, stylePreset, relationshipStatus, intimacyLevel } = req.body;
       const prompt = String(rawPrompt || '');
       
-      console.log("🎨 Generating intimate scene with NovelAI V4.5 Full...");
+      console.log("🎨 Generating intimate scene exclusively with NovelAI V4.5 Full...");
       
       // Create enhanced romantic prompt for NovelAI V4.5 Full
       const enhancedIntimatePrompt = `masterpiece, best quality, detailed, ${prompt}, Cha Hae-In and Jin-Woo intimate romantic moment, Solo Leveling manhwa art style, romantic scene, beautiful lighting, emotional intimacy, tender embrace, high quality artwork`;
       
-      // Check NovelAI status first to avoid unnecessary delays
-      const novelaiStatus = await checkNovelAIStatus();
-      let result = null;
+      // Use NovelAI exclusively for intimate scenes
+      const result = await imageGenerationService.generateImage(enhancedIntimatePrompt, 'NovelAI');
       
-      if (novelaiStatus) {
-        console.log('🎨 NovelAI appears available, attempting generation...');
-        result = await directNovelAIGeneration(enhancedIntimatePrompt);
-        
-        if (result) {
-          console.log('✅ NovelAI V4.5 intimate scene generated successfully');
-          return res.json({ 
-            imageUrl: result,
-            provider: 'NovelAI V4.5 Full'
-          });
-        }
-      } else {
-        console.log('🎨 NovelAI servers experiencing issues, using fallback immediately...');
+      if (result.success && result.imageUrl) {
+        console.log('✅ NovelAI V4.5 Full intimate scene generated successfully');
+        return res.json({ 
+          imageUrl: result.imageUrl,
+          provider: result.provider
+        });
       }
 
-      // Immediate fallback to OpenAI DALL-E for romantic scenes
-      if (openaiClient) {
-        console.log('🎨 Using OpenAI DALL-E for romantic scene generation...');
-        try {
-          const romanticPrompt = `Beautiful anime couple in tender romantic moment, Cha Hae-In with blonde hair and Jin-Woo with dark hair from Solo Leveling, emotional intimacy, soft romantic lighting, Korean manhwa art style, high quality illustration, detailed faces showing love and connection, elegant composition, warm atmosphere, artistic excellence, beautiful detailed eyes, romantic scene, tender embrace, emotional depth`;
-          
-          const openaiResult = await openaiClient.images.generate({
-            model: "dall-e-3",
-            prompt: romanticPrompt,
-            n: 1,
-            size: "1024x1024",
-            quality: "hd",
-          });
-          
-          if (openaiResult.data?.[0]?.url) {
-            console.log('✅ OpenAI DALL-E generated romantic scene successfully');
-            return res.json({ 
-              imageUrl: openaiResult.data[0].url,
-              provider: 'OpenAI DALL-E'
-            });
-          }
-        } catch (openaiError: any) {
-          console.log('⚠️ OpenAI DALL-E romantic scene failed:', openaiError.message);
-        }
-      }
-
-      console.log('⚠️ All intimate image generation providers failed');
+      console.log('⚠️ Direct intimate image generation failed');
       
       // Return fallback response with descriptive text
       return res.json({ 
@@ -2528,9 +2572,6 @@ Respond as Cha Hae-In would in this intimate moment:`;
     res.sendFile(path.join(__dirname, "../test_generated_images.html"));
   });
 
-  // Register Blueprint Engine routes
-  await addBlueprintEngineRoutes(app);
-
   const server = createServer(app);
   return server;
 }
@@ -2554,136 +2595,4 @@ function analyzeIntimacyLevel(response: string): number {
   }
   
   return maxLevel;
-}
-
-// Blueprint Engine - AI Story Architect endpoints
-export async function addBlueprintEngineRoutes(app: Express) {
-  // Generate story from prompt
-  app.post("/api/blueprint/generate-story", async (req, res) => {
-    try {
-      const { prompt, genre, setting, targetLength, matureContent } = req.body;
-      
-      if (!prompt) {
-        return res.status(400).json({ error: "Story prompt is required" });
-      }
-
-      console.log(`🏗️ Generating story from prompt: ${prompt.substring(0, 50)}...`);
-      
-      const storyPrompt = {
-        prompt,
-        genre,
-        setting,
-        targetLength: targetLength || 'medium',
-        matureContent: matureContent || false
-      };
-
-      const scaffold = await aiStoryArchitect.generateStoryScaffold(storyPrompt);
-      
-      res.json({
-        success: true,
-        scaffold,
-        metadata: {
-          generatedAt: new Date().toISOString(),
-          estimatedSessions: targetLength === 'short' ? '1-2' : targetLength === 'long' ? '5-8' : '3-5',
-          systemsPopulated: Object.keys(scaffold.systemPopulation).length
-        }
-      });
-    } catch (error) {
-      console.error("Story generation error:", error);
-      res.status(500).json({ 
-        error: "Failed to generate story scaffold",
-        details: error instanceof Error ? error.message : "Unknown error"
-      });
-    }
-  });
-
-  // Ingest and adapt existing content
-  app.post("/api/blueprint/ingest-content", async (req, res) => {
-    try {
-      const { sourceUrl, adaptationType, targetAudience, interactivityLevel, preferredLength } = req.body;
-      
-      if (!sourceUrl) {
-        return res.status(400).json({ error: "Source URL is required" });
-      }
-
-      console.log(`🔄 Ingesting content from: ${sourceUrl}`);
-      
-      const ingestionRequest = {
-        sourceUrl,
-        adaptationType: adaptationType || 'narrative',
-        targetAudience: targetAudience || 'general',
-        interactivityLevel: interactivityLevel || 'medium',
-        preferredLength: preferredLength || 'medium'
-      };
-
-      const adaptedExperience = await ingestionAdaptationEngine.ingestAndAdapt(ingestionRequest);
-      
-      res.json({
-        success: true,
-        experience: adaptedExperience,
-        metadata: {
-          adaptedAt: new Date().toISOString(),
-          originalSource: sourceUrl,
-          systemsPopulated: Object.keys(adaptedExperience.systemMappings).length,
-          estimatedPlaytime: adaptedExperience.metadata.estimatedPlaytime
-        }
-      });
-    } catch (error) {
-      console.error("Content ingestion error:", error);
-      res.status(500).json({ 
-        error: "Failed to ingest and adapt content",
-        details: error instanceof Error ? error.message : "Unknown error"
-      });
-    }
-  });
-
-  // Get Blueprint Engine capabilities
-  app.get("/api/blueprint/capabilities", (req, res) => {
-    res.json({
-      blueprintEngine: {
-        version: "1.0.0",
-        systems: [
-          { id: 1, name: "Spatial View System", status: "active" },
-          { id: 2, name: "Dialogue System", status: "active" },
-          { id: 3, name: "Quest Log", status: "active" },
-          { id: 4, name: "Daily Life Hub", status: "active" },
-          { id: 5, name: "Intimate Activity System", status: "active" },
-          { id: 6, name: "Relationship Constellation", status: "active" },
-          { id: 7, name: "Commerce Progression", status: "active" },
-          { id: 8, name: "World Map Navigation", status: "active" },
-          { id: 9, name: "AI Mood Engine", status: "active" },
-          { id: 10, name: "Combat System", status: "active" },
-          { id: 11, name: "Gear Management", status: "active" },
-          { id: 12, name: "Living World", status: "active" },
-          { id: 13, name: "Hunter's Communicator", status: "active" },
-          { id: 14, name: "Economy System", status: "active" },
-          { id: 15, name: "Player Progression", status: "active" },
-          { id: 16, name: "Memory Constellation", status: "active" },
-          { id: 17, name: "Calendar System", status: "active" },
-          { id: 18, name: "Episodic Story Engine", status: "active" },
-          { id: 19, name: "AI Story Architect", status: "active" },
-          { id: 20, name: "Ingestion & Adaptation Engine", status: "active" }
-        ],
-        creationPathways: {
-          aiStoryArchitect: {
-            available: true,
-            description: "Generate complete interactive experiences from simple creative prompts",
-            supportedGenres: ["romance", "adventure", "mystery", "sci-fi", "fantasy", "historical", "contemporary"],
-            supportedLengths: ["short", "medium", "long"]
-          },
-          ingestionAdaptation: {
-            available: true,
-            description: "Transform existing content into interactive experiences",
-            supportedSources: ["web novels", "literature", "historical documents", "educational content"],
-            adaptationTypes: ["narrative", "historical", "educational", "documentary"]
-          }
-        },
-        aiProviders: {
-          novelAI: { available: true, status: "operational" },
-          googleGemini: { available: true, status: "operational" },
-          openAI: { available: true, status: "operational" }
-        }
-      }
-    });
-  });
 }

@@ -1,6 +1,5 @@
 // Google Cloud authentication utility
 import jwt from 'jsonwebtoken';
-import { GoogleAuth } from 'google-auth-library';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -19,7 +18,7 @@ interface ServiceAccountKey {
 }
 
 // Create JWT for Google Cloud authentication
-function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string {
+export function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string {
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     iss: serviceAccount.client_email,
@@ -32,39 +31,26 @@ function createJWT(serviceAccount: ServiceAccountKey, scopes: string[]): string 
   // Ensure private key has proper line breaks and format
   let privateKey = serviceAccount.private_key;
   
-  // Handle escaped newlines from JSON - more robust approach
+  // Handle escaped newlines from JSON
   if (privateKey.includes('\\n')) {
     privateKey = privateKey.replace(/\\n/g, '\n');
   }
   
-  // Clean and reformat the private key properly
-  // Remove any existing formatting and extract just the key content
-  let keyContent = privateKey
-    .replace(/-----BEGIN PRIVATE KEY-----/g, '')
-    .replace(/-----END PRIVATE KEY-----/g, '')
-    .replace(/\s+/g, ''); // Remove all whitespace
-  
-  // Add proper line breaks every 64 characters
-  const formattedKeyLines = [];
-  for (let i = 0; i < keyContent.length; i += 64) {
-    formattedKeyLines.push(keyContent.slice(i, i + 64));
+  // Ensure proper formatting
+  if (!privateKey.includes('\n')) {
+    // If no line breaks, add them at standard positions
+    privateKey = privateKey.replace(/-----BEGIN PRIVATE KEY-----/, '-----BEGIN PRIVATE KEY-----\n')
+                           .replace(/-----END PRIVATE KEY-----/, '\n-----END PRIVATE KEY-----');
+    
+    // Add line breaks every 64 characters for the key content
+    const keyContent = privateKey.replace('-----BEGIN PRIVATE KEY-----\n', '')
+                                 .replace('\n-----END PRIVATE KEY-----', '');
+    const formattedContent = keyContent.match(/.{1,64}/g)?.join('\n') || keyContent;
+    privateKey = `-----BEGIN PRIVATE KEY-----\n${formattedContent}\n-----END PRIVATE KEY-----`;
   }
-  
-  // Reconstruct the properly formatted private key
-  privateKey = `-----BEGIN PRIVATE KEY-----\n${formattedKeyLines.join('\n')}\n-----END PRIVATE KEY-----`;
   
   console.log('🔑 Using formatted private key for JWT signing');
-  
-  // Debug the private key format
-  console.log('Private key length:', privateKey.length);
-  console.log('Private key preview:', privateKey.substring(0, 100) + '...');
-  
-  try {
-    return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
-  } catch (jwtError) {
-    console.error('JWT signing error:', jwtError);
-    throw jwtError;
-  }
+  return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
 }
 
 // Get OAuth access token from Google
@@ -103,7 +89,17 @@ export async function getGoogleAccessToken(): Promise<string | null> {
     const jwt = createJWT(serviceAccount, scopes);
     
     // Exchange JWT for access token
-    const response = await fetch(serviceAccount.token_uri, {
+    return await exchangeJWTForAccessToken(jwt, serviceAccount.token_uri);
+  } catch (error) {
+    console.error('Error getting Google access token:', error);
+    return null;
+  }
+}
+
+// Exchange JWT for access token
+export async function exchangeJWTForAccessToken(jwt: string, tokenUri: string): Promise<string | null> {
+  try {
+    const response = await fetch(tokenUri, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -115,14 +111,14 @@ export async function getGoogleAccessToken(): Promise<string | null> {
     });
 
     if (!response.ok) {
-      console.error('Failed to get Google access token:', response.status, await response.text());
+      console.error('Failed to exchange JWT for access token:', response.status, await response.text());
       return null;
     }
 
     const tokenData = await response.json();
     return tokenData.access_token;
   } catch (error) {
-    console.error('Error getting Google access token:', error);
+    console.error('Error exchanging JWT for access token:', error);
     return null;
   }
 }

@@ -1,10 +1,9 @@
 import OpenAI from "openai";
 import type { GameState } from "@shared/schema";
 import AdmZip from 'adm-zip';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { GoogleAuth } from 'google-auth-library';
-import { getGoogleAccessToken } from './googleAuthFixed.js';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -80,55 +79,46 @@ function isMatureContent(prompt: string, activityId?: string): boolean {
 async function generateWithNovelAI(prompt: string): Promise<string | null> {
   const negativePrompt = "silver hair on Cha Hae-In, white hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, low quality, worst quality, blurry, bad anatomy, deformed, ugly, distorted";
   
-  const endpoint = 'https://image.novelai.net/ai/generate-image';
-  
-  // Retry configuration for better reliability
-  const maxRetries = 3;
-  const retryDelay = 2000; // 2 seconds
+  const endpoints = [
+    'https://image.novelai.net/ai/generate-image',
+    'https://api.novelai.net/ai/generate-image'
+  ];
 
-  // Simplified NovelAI API request matching working curl format
   const requestBody = {
     input: `masterpiece, best quality, detailed, ${prompt}, Solo Leveling manhwa art style, romantic scene, beautiful lighting`,
     model: 'nai-diffusion-4-curated-preview',
-    action: 'generate',
     parameters: {
       width: 832,
       height: 1216,
       scale: 5.5,
-      sampler: 'k_dpmpp_2s_ancestral',
-      steps: 28,
+      sampler: 'k_euler_ancestral',
+      steps: 35,
       seed: Math.floor(Math.random() * 4294967295),
       n_samples: 1,
-      uc: negativePrompt
+      ucPreset: 0,
+      uc: negativePrompt,
+      qualityToggle: true,
+      sm: true,
+      sm_dyn: true,
+      cfg_rescale: 0.7,
+      noise_schedule: "native"
     }
   };
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+  for (const endpoint of endpoints) {
     try {
-      console.log(`🎨 Attempting NovelAI generation (${attempt}/${maxRetries}) via ${endpoint}...`);
-      
-      if (!process.env.NOVELAI_API_KEY) {
-        console.log('❌ NovelAI API key not found in environment');
-        return null;
-      }
-      
-      console.log(`🔑 Using NovelAI API key: ${process.env.NOVELAI_API_KEY.substring(0, 10)}...`);
-      
+      console.log(`🎨 Attempting NovelAI generation via ${endpoint}...`);
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.NOVELAI_API_KEY}`,
-          'Content-Type': 'application/json',
-          'Accept': '*/*'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestBody)
       });
 
-      console.log(`NovelAI response status: ${response.status}`);
-
       if (response.ok) {
         const buffer = await response.arrayBuffer();
-        console.log(`NovelAI response size: ${buffer.byteLength} bytes`);
         
         // NovelAI returns images in ZIP format, extract the first image
         try {
@@ -138,66 +128,72 @@ async function generateWithNovelAI(prompt: string): Promise<string | null> {
           if (zipEntries.length > 0) {
             const imageBuffer = zipEntries[0].getData();
             const base64Image = imageBuffer.toString('base64');
-            console.log(`✅ NovelAI V4.5 generated image successfully - Size: ${imageBuffer.length} bytes`);
+            console.log('✅ NovelAI generated image successfully');
             return `data:image/png;base64,${base64Image}`;
-          } else {
-            console.log('❌ No images found in NovelAI ZIP response');
           }
-        } catch (zipError: any) {
-          console.log('❌ Failed to extract ZIP from NovelAI response:', zipError.message);
+        } catch (zipError) {
+          console.log('Failed to extract ZIP from NovelAI response:', zipError);
         }
       } else {
         const errorText = await response.text();
-        console.log(`❌ NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
-        
-        // If server error (500), retry after delay
-        if (response.status >= 500 && attempt < maxRetries) {
-          console.log(`⏳ Retrying in ${retryDelay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-          continue;
-        }
-        return null;
+        console.log(`NovelAI ${endpoint} failed with status ${response.status}:`, errorText);
       }
-    } catch (error: any) {
-      console.log(`NovelAI endpoint ${endpoint} failed (attempt ${attempt}):`, error.message);
-      
-      // Retry on network errors
-      if (attempt < maxRetries) {
-        console.log(`⏳ Retrying in ${retryDelay}ms...`);
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-        continue;
-      }
+    } catch (error) {
+      console.log(`NovelAI endpoint ${endpoint} failed:`, error);
     }
   }
 
-  console.log('❌ NovelAI generation failed');
+  console.log('❌ All NovelAI endpoints failed');
   return null;
 }
 
-export { generateWithNovelAI };
+// Google Cloud authentication using service account
+async function getGoogleAccessToken(): Promise<string | null> {
+  try {
+    const credentialsPath = join(process.cwd(), 'google-service-account.json');
+    
+    if (!existsSync(credentialsPath)) {
+      console.log('Google service account file not found');
+      return null;
+    }
 
-// Google authentication is handled by the imported googleAuthFixed module
+    const credentialsData = readFileSync(credentialsPath, 'utf8');
+    const serviceAccount = JSON.parse(credentialsData);
+    
+    // Create JWT for authentication
+    const { createJWT, exchangeJWTForAccessToken } = await import('./googleAuth');
+    const jwt = createJWT(serviceAccount, ['https://www.googleapis.com/auth/cloud-platform']);
+    const accessToken = await exchangeJWTForAccessToken(jwt, serviceAccount.token_uri);
+    
+    return accessToken;
+  } catch (error) {
+    console.error('Error getting Google access token:', error);
+    return null;
+  }
+}
 
 async function generateWithGoogleImagen(prompt: string): Promise<string | null> {
   try {
-    // Use OAuth2 service account for Imagen
+    // Get authentication and project details
     const accessToken = await getGoogleAccessToken();
-    const projectId = 'blitz-esports';
-    
     if (!accessToken) {
-      console.log('❌ Failed to get Google access token');
+      console.log('Google access token not available - cannot use Imagen');
       return null;
     }
-    
-    console.log('🎨 Using Google OAuth2 for Imagen generation...');
 
+    const credentialsPath = join(process.cwd(), 'google-service-account.json');
+    const credentialsData = readFileSync(credentialsPath, 'utf8');
+    const serviceAccount = JSON.parse(credentialsData);
+    const projectId = serviceAccount.project_id;
+
+    console.log('🎨 Attempting Vertex AI Imagen generation...');
+    
+    const enhancedPrompt = prompt + ". Solo Leveling manhwa art style by DUBU (Redice Studio), vibrant neon lighting (purple, blue, gold accents), sharp clean lineart, detailed character designs, Korean webtoon aesthetic, cinematic composition, high contrast shadows, professional digital art, hunter association technology, futuristic Seoul cityscape elements";
+    
     const location = 'us-central1';
-    // Using Imagen 3.0 Fast model with OAuth2 authentication
-    const vertexEndpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
+    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-fast-generate-001:predict`;
     
-    console.log('🎨 Attempting Google Imagen generation...');
-    
-    const response = await fetch(vertexEndpoint, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -205,7 +201,7 @@ async function generateWithGoogleImagen(prompt: string): Promise<string | null> 
       },
       body: JSON.stringify({
         instances: [{
-          prompt: prompt + ". Solo Leveling manhwa art style by DUBU, vibrant glowing colors (neon purples, blues, golds), sharp dynamic action with clean lines, detailed character designs, powerful and epic feel. NEGATIVE PROMPT: purple hair on Cha Hae-In, black hair on Cha Hae-In, brown hair on Cha Hae-In, dark hair on Cha Hae-In, blonde hair on Jin-Woo, light hair on Jin-Woo, incorrect character appearances, wrong hair colors, character design errors"
+          prompt: enhancedPrompt
         }],
         parameters: {
           sampleCount: 1,
