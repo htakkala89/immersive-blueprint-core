@@ -273,7 +273,7 @@ export function PlayerProgressionSystemRedesigned({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.2 }}
-                  className="space-y-6"
+                  className="space-y-4 sm:space-y-6 max-h-[400px] overflow-y-auto scrollbar-hide"
                 >
                   {/* Relationship Header */}
                   <div className="text-center">
@@ -333,7 +333,7 @@ export function PlayerProgressionSystemRedesigned({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.2 }}
-                  className="space-y-6"
+                  className="space-y-4 sm:space-y-6 max-h-[400px] overflow-y-auto scrollbar-hide"
                 >
                   <div className="text-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
