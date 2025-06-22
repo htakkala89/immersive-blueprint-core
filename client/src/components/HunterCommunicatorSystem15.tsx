@@ -142,8 +142,7 @@ export function HunterCommunicatorSystem15({
   const [selectedConversation, setSelectedConversation] = useState<string>('cha-hae-in');
   const [currentInput, setCurrentInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [showAlerts, setShowAlerts] = useState(false);
-  const [selectedAlert, setSelectedAlert] = useState<string | null>(null);
+  // Alert system moved to notification bell
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'connecting' | 'disconnected'>('connected');
   
   // Enhanced mobile viewport handling
@@ -193,37 +192,33 @@ export function HunterCommunicatorSystem15({
     }
   ]);
 
-  // Enhanced system alerts with episode integration
-  const [systemAlerts, setSystemAlerts] = useState<SystemAlert[]>([
-    ...episodeAlerts,
-    {
-      id: 'quest-001',
-      title: 'S-Rank Gate Emergency',
-      sender: 'Hunter Association',
-      content: 'An S-Rank gate has appeared in Gangnam District. Immediate response required. All S-Rank hunters are requested to assemble.',
-      timestamp: new Date(),
-      type: 'quest',
-      read: false,
-      questData: {
-        rank: 'S',
-        type: 'Emergency Response',
-        reward: 500000,
-        location: 'Gangnam District',
-        description: 'Emergency S-Rank Gate Suppression',
-        longDescription: 'A high-threat S-Rank gate has manifested in a densely populated area. Immediate containment and elimination required to prevent civilian casualties.',
-        objectives: [
-          { id: 'obj-1', description: 'Secure the perimeter', completed: false },
-          { id: 'obj-2', description: 'Eliminate all monsters', completed: false },
-          { id: 'obj-3', description: 'Destroy the gate core', completed: false }
-        ],
-        timeLimit: 3600,
-        difficulty: 9,
-        estimatedDuration: 2,
-        isUrgent: true,
-        guildSupport: true
-      }
+  // Send system alerts to notification bell instead of showing in communicator
+  useEffect(() => {
+    if (episodeAlerts && episodeAlerts.length > 0) {
+      episodeAlerts.forEach(alert => {
+        const event = new CustomEvent('game-notification', {
+          detail: {
+            title: alert.title,
+            message: alert.content,
+            type: alert.type === 'quest' ? 'warning' : 'info',
+            persistent: true
+          }
+        });
+        window.dispatchEvent(event);
+      });
     }
-  ]);
+    
+    // Send default quest alerts to notification bell
+    const questEvent = new CustomEvent('game-notification', {
+      detail: {
+        title: 'S-Rank Gate Emergency',
+        message: 'An S-Rank gate has appeared in Gangnam District. Immediate response required.',
+        type: 'warning',
+        persistent: true
+      }
+    });
+    window.dispatchEvent(questEvent);
+  }, [episodeAlerts]);
 
   // Quick response suggestions
   const quickResponses = [
@@ -467,11 +462,7 @@ export function HunterCommunicatorSystem15({
     }
   };
 
-  const markAlertAsRead = (alertId: string) => {
-    setSystemAlerts(prev => prev.map(alert => 
-      alert.id === alertId ? { ...alert, read: true } : alert
-    ));
-  };
+  // Alert handling moved to notification bell system
 
   if (!isVisible) return <></>;
 
@@ -538,19 +529,6 @@ export function HunterCommunicatorSystem15({
             </div>
             
             <div className="flex items-center gap-3">
-              <Button
-                onClick={() => setShowAlerts(!showAlerts)}
-                size="sm"
-                variant="ghost"
-                className="relative text-slate-300 hover:text-white hover:bg-white/10"
-              >
-                <Bell className="w-5 h-5" />
-                {systemAlerts.filter(alert => !alert.read).length > 0 && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs flex items-center justify-center text-white">
-                    {systemAlerts.filter(alert => !alert.read).length}
-                  </div>
-                )}
-              </Button>
               <Button
                 onClick={onClose}
                 size="sm"
