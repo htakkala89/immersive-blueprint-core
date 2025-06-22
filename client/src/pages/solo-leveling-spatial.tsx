@@ -4511,6 +4511,41 @@ export default function SoloLevelingSpatial() {
               >
                 <X className="w-4 h-4 text-white/80" />
               </motion.button>
+
+              {/* Real-time Affection Progress Bar */}
+              <motion.div 
+                className="mb-3 rounded-lg px-4 py-2"
+                style={{
+                  backdropFilter: 'blur(12px) saturate(150%)',
+                  background: 'rgba(0, 0, 0, 0.15)',
+                  border: '1px solid rgba(139, 92, 246, 0.2)'
+                }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span className="text-pink-300 font-medium">
+                    Affection: {gameState.affection || 0}/1000
+                  </span>
+                  <span className="text-pink-200 opacity-75">
+                    {gameState.affection >= 600 ? 'Deep Bond' :
+                     gameState.affection >= 400 ? 'Close Friend' :
+                     gameState.affection >= 200 ? 'Good Friend' :
+                     gameState.affection >= 100 ? 'Friend' : 'Acquaintance'}
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <motion.div 
+                    className="h-full bg-gradient-to-r from-pink-400 to-rose-400 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ 
+                      width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%` 
+                    }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                  />
+                </div>
+              </motion.div>
               
               {/* Dialogue Text - Enhanced Glassmorphism */}
               <motion.div
@@ -4666,35 +4701,10 @@ export default function SoloLevelingSpatial() {
                       )}
                     </AnimatePresence>
 
-                    {/* Real-time Affection Progress Bar within Dialogue */}
-                    <div className="absolute top-0 left-0 right-0 z-10">
-                      <div className="bg-black/30 border-b border-pink-500/20 px-4 py-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-pink-300">
-                            Affection: {gameState.affection || 0}/1000
-                          </span>
-                          <span className="text-pink-200 opacity-75">
-                            {gameState.affection >= 600 ? 'Deep Bond' :
-                             gameState.affection >= 400 ? 'Close Friend' :
-                             gameState.affection >= 200 ? 'Good Friend' :
-                             gameState.affection >= 100 ? 'Friend' : 'Acquaintance'}
-                          </span>
-                        </div>
-                        <div className="w-full h-1 bg-white/10 rounded-full mt-1">
-                          <div 
-                            className="h-full bg-gradient-to-r from-pink-400 to-rose-400 rounded-full transition-all duration-500"
-                            style={{ 
-                              width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%` 
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area scrollbar-hide pt-12"
+                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area scrollbar-hide"
                       style={{ height: '400px', maxHeight: '400px' }}
                     >
                       {conversationHistory.map((entry, index) => (
