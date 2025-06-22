@@ -133,7 +133,7 @@ const parseCinematicText = (content: string) => {
     switch (part.type) {
       case 'dialogue':
         return (
-          <div key={index} className="text-white text-lg font-medium leading-relaxed mb-4 tracking-wide" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)', lineHeight: '1.6' }}>
+          <div key={index} className="text-white text-base font-medium leading-relaxed mb-4 tracking-wide" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)', lineHeight: '1.6' }}>
             "{part.text}"
           </div>
         );
