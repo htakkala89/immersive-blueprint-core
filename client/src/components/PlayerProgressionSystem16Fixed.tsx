@@ -24,6 +24,7 @@ interface PlayerData {
   stats: CoreStats;
   unspentStatPoints: number;
   unspentSkillPoints: number;
+  affection?: number;
 }
 
 interface ProgressionProps {
@@ -232,6 +233,30 @@ export function PlayerProgressionSystem16Fixed({
                     Explore your deepening relationship through shared memories, affection levels, and intimate moments. 
                     Track your emotional journey and the special connections you've built together.
                   </p>
+
+                  {/* Current Affection Level Display */}
+                  <div className="bg-gradient-to-r from-pink-900/40 to-purple-900/40 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 border border-pink-500/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-white font-medium text-sm sm:text-base">Current Affection Level</h4>
+                      <div className="text-right">
+                        <div className="text-xl sm:text-2xl font-bold text-pink-300">{playerData.affection || 0}</div>
+                        <div className="text-xs sm:text-sm text-pink-200">/ 1000</div>
+                      </div>
+                    </div>
+                    <div className="w-full bg-slate-700/50 rounded-full h-2 sm:h-3 overflow-hidden mb-2">
+                      <div 
+                        className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-500"
+                        style={{ width: `${Math.min(100, ((playerData.affection || 0) / 1000) * 100)}%` }}
+                      />
+                    </div>
+                    <div className="text-xs sm:text-sm text-slate-300">
+                      Next unlock: {(playerData.affection || 0) >= 600 ? "All areas unlocked!" : 
+                        (playerData.affection || 0) >= 500 ? "Wellness Spa at 600" :
+                        (playerData.affection || 0) >= 400 ? "N Seoul Tower at 500" :
+                        (playerData.affection || 0) >= 200 ? "Fine Dining at 400" :
+                        "Luxury Shopping at 200"}
+                    </div>
+                  </div>
 
                   <motion.div
                     whileHover={{ scale: 1.02 }}
