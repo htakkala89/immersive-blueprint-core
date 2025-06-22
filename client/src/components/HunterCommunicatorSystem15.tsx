@@ -490,18 +490,18 @@ export function HunterCommunicatorSystem15({
           maxHeight: viewportHeight
         }}
       >
-        {/* Enhanced Header */}
+        {/* Enhanced Header - Optimized for mobile */}
         <div 
-          className="shrink-0 p-4 sm:p-6 border-b border-white/10"
+          className="shrink-0 p-3 sm:p-6 border-b border-white/10"
           style={{
             background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(147,51,234,0.1) 100%)',
             backdropFilter: 'blur(10px)'
           }}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-xl sm:text-2xl"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05))',
                   backdropFilter: 'blur(10px)',
@@ -512,10 +512,10 @@ export function HunterCommunicatorSystem15({
                 {selectedConversationData?.participantAvatar || '💬'}
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white">
+                <h2 className="text-lg sm:text-xl font-bold text-white">
                   {selectedConversationData?.participantName || 'Hunter Communications'}
                 </h2>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
                   <div 
                     className={`w-2 h-2 rounded-full ${
                       chaState.status === 'available' ? 'bg-green-400' :
@@ -570,10 +570,10 @@ export function HunterCommunicatorSystem15({
             <AnimatePresence>
               {selectedConversationData && (
                 <div className="flex-1 flex flex-col overflow-hidden">
-                  {/* Messages List */}
+                  {/* Messages List - Optimized mobile padding */}
                   <div 
                     ref={chatContainerRef}
-                    className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4"
+                    className="flex-1 overflow-y-auto p-2 sm:p-6 space-y-3 sm:space-y-4"
                     style={{ 
                       scrollBehavior: 'smooth',
                       WebkitOverflowScrolling: 'touch'
@@ -584,11 +584,11 @@ export function HunterCommunicatorSystem15({
                         key={message.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex gap-4 ${message.senderId === 'player' ? 'flex-row-reverse' : ''}`}
+                        className={`flex gap-2 sm:gap-4 ${message.senderId === 'player' ? 'flex-row-reverse' : ''}`}
                       >
-                        {/* Avatar */}
+                        {/* Avatar - Smaller on mobile */}
                         <div 
-                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-lg sm:text-xl shrink-0"
+                          className="w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm sm:text-xl shrink-0"
                           style={{
                             background: message.senderId === 'player' 
                               ? 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(22,163,74,0.1))'
@@ -601,10 +601,10 @@ export function HunterCommunicatorSystem15({
                           {message.senderId === 'player' ? '👤' : selectedConversationData.participantAvatar}
                         </div>
 
-                        {/* Message Content */}
-                        <div className={`flex-1 max-w-[85%] sm:max-w-[70%] ${message.senderId === 'player' ? 'text-right' : ''}`}>
+                        {/* Message Content - Optimized for mobile */}
+                        <div className={`flex-1 max-w-[90%] sm:max-w-[70%] ${message.senderId === 'player' ? 'text-right' : ''}`}>
                           <div 
-                            className={`inline-block px-4 py-3 rounded-2xl ${
+                            className={`inline-block px-3 py-2 sm:px-4 sm:py-3 rounded-2xl ${
                               message.senderId === 'player' 
                                 ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white' 
                                 : 'bg-black/30 text-white border border-white/10'
@@ -710,15 +710,15 @@ export function HunterCommunicatorSystem15({
                       </motion.div>
                     ))}
 
-                    {/* Enhanced Typing Indicator */}
+                    {/* Enhanced Typing Indicator - Mobile Optimized */}
                     {isTyping && (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-4"
+                        className="flex gap-2 sm:gap-4"
                       >
                         <div 
-                          className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
+                          className="w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm sm:text-xl"
                           style={{
                             background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
                             backdropFilter: 'blur(10px)',
@@ -767,17 +767,17 @@ export function HunterCommunicatorSystem15({
                     )}
                   </div>
 
-                  {/* Enhanced Input Area */}
+                  {/* Enhanced Input Area - Optimized for mobile */}
                   <motion.div
                     layout
-                    className="shrink-0 border-t border-white/10 p-4 sm:p-6"
+                    className="shrink-0 border-t border-white/10 p-2 sm:p-6"
                     style={{
                       background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)',
                       backdropFilter: 'blur(20px)'
                     }}
                   >
-                    {/* Message Input */}
-                    <div className="relative flex items-end gap-3">
+                    {/* Message Input - Optimized mobile layout */}
+                    <div className="relative flex items-end gap-2 sm:gap-3">
                       <Textarea
                         ref={inputRef}
                         value={currentInput}
