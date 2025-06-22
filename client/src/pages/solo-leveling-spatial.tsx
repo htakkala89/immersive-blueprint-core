@@ -247,6 +247,18 @@ export default function SoloLevelingSpatial() {
     maxMana: 50,
     affection: 50,
     currentScene: 'hunter_association',
+    experience: 0,
+    maxExperience: 1000,
+    hunterRank: 'E-Rank',
+    stats: {
+      strength: 10,
+      agility: 10,
+      vitality: 10,
+      intelligence: 10,
+      sense: 10
+    },
+    unspentStatPoints: 5,
+    unspentSkillPoints: 0,
     inventory: [
       {
         id: 'red_mana_crystal_1',
