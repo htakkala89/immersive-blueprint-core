@@ -222,54 +222,54 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="absolute inset-4 bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl overflow-hidden"
+          className="absolute inset-2 sm:inset-4 bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-lg sm:rounded-2xl overflow-hidden"
           style={{
             background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 27, 75, 0.95) 50%, rgba(15, 23, 42, 0.95) 100%)',
             boxShadow: '0 0 60px rgba(147, 51, 234, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-purple-500/20">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-white" />
+          {/* Header - Mobile Optimized */}
+          <div className="flex items-center justify-between p-3 sm:p-6 border-b border-purple-500/20">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg flex items-center justify-center">
+                <Package className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-white">Monarch's Inventory</h2>
-                <p className="text-purple-300 text-sm">Manage your collected items and resources</p>
+                <h2 className="text-lg sm:text-2xl font-bold text-white">Monarch's Inventory</h2>
+                <p className="text-purple-300 text-xs sm:text-sm hidden sm:block">Manage your collected items and resources</p>
               </div>
             </div>
             <Button
               onClick={onClose}
               variant="ghost"
               size="sm"
-              className="text-white hover:bg-white/10"
+              className="text-white hover:bg-white/10 min-h-[44px] min-w-[44px]"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </Button>
           </div>
 
-          {/* Main Content - Three Column Layout */}
-          <div className="flex h-full">
-            {/* Column 1: Filter Tabs */}
-            <div className="w-64 border-r border-purple-500/20 p-6">
-              <h3 className="text-white font-semibold mb-4">Categories</h3>
-              <div className="space-y-2">
+          {/* Main Content - Mobile Responsive Layout */}
+          <div className="flex flex-col lg:flex-row h-full">
+            {/* Mobile: Horizontal Filter Tabs, Desktop: Vertical Sidebar */}
+            <div className="lg:w-64 lg:border-r border-purple-500/20 p-3 sm:p-6">
+              <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Categories</h3>
+              <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
                 {filterCategories.map((category) => (
                   <motion.button
                     key={category.id}
                     onClick={() => handleFilterChange(category.id)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
+                    className={`flex-shrink-0 lg:w-full flex items-center gap-2 lg:gap-3 p-2 lg:p-3 rounded-lg text-left transition-all min-w-[120px] lg:min-w-0 ${
                       activeFilter === category.id
                         ? 'bg-purple-600/30 border border-purple-400/50 text-white'
                         : 'text-slate-300 hover:bg-white/5 border border-transparent'
                     }`}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                   >
-                    <category.icon className={`w-5 h-5 ${category.color}`} />
-                    <span className="font-medium">{category.label}</span>
-                    <span className="ml-auto text-xs bg-slate-700/50 px-2 py-1 rounded">
+                    <category.icon className={`w-4 h-4 lg:w-5 lg:h-5 ${category.color} flex-shrink-0`} />
+                    <span className="font-medium text-xs lg:text-sm">{category.label}</span>
+                    <span className="ml-auto text-xs bg-slate-700/50 px-1.5 lg:px-2 py-1 rounded flex-shrink-0">
                       ({getFilterCount(category.id)})
                     </span>
                   </motion.button>
@@ -277,25 +277,27 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
               </div>
             </div>
 
-            {/* Column 2: Item Grid */}
-            <div className="flex-1 p-6">
-              <h3 className="text-white font-semibold mb-6">
-                Items ({filteredItems.length})
-              </h3>
-              <AnimatePresence mode="wait">
-                <motion.div 
-                  key={activeFilter}
-                  className="grid grid-cols-2 gap-6 max-h-[calc(100vh-240px)] overflow-y-auto character-scrollbar pr-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
+            {/* Main Content Area - Responsive Grid and Detail */}
+            <div className="flex-1 flex flex-col lg:flex-row">
+              {/* Item Grid */}
+              <div className="flex-1 p-3 sm:p-6">
+                <h3 className="text-white font-semibold mb-3 sm:mb-6 text-sm sm:text-base">
+                  Items ({filteredItems.length})
+                </h3>
+                <AnimatePresence mode="wait">
+                  <motion.div 
+                    key={activeFilter}
+                    className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4 max-h-[calc(100vh-200px)] overflow-y-auto character-scrollbar pr-1 sm:pr-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
                   {filteredItems.map((item, index) => (
                     <motion.button
                       key={item.id}
                       onClick={() => handleItemSelect(item)}
-                      className={`relative p-4 rounded-xl border transition-all duration-200 group ${
+                      className={`relative p-2 sm:p-4 rounded-lg sm:rounded-xl border transition-all duration-200 group ${
                         selectedItem?.id === item.id 
                           ? 'border-purple-400/70 bg-purple-500/20 shadow-lg shadow-purple-500/25' 
                           : 'border-slate-600/50 bg-slate-800/40 hover:border-purple-500/50 hover:bg-purple-500/10'
@@ -364,8 +366,8 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
               </AnimatePresence>
             </div>
 
-            {/* Column 3: Item Details */}
-            <div className="w-80 border-l border-purple-500/20 p-6">
+            {/* Item Details Panel - Mobile Responsive */}
+            <div className="lg:w-80 lg:border-l border-purple-500/20 p-3 sm:p-6">
               {selectedItem ? (
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -472,6 +474,7 @@ export function MonarchInventorySystem({ isVisible, onClose }: MonarchInventoryS
                   </div>
                 </div>
               )}
+            </div>
             </div>
           </div>
         </motion.div>
