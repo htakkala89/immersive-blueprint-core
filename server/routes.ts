@@ -1683,7 +1683,63 @@ Respond naturally as if you're texting back, using the exact formatting rules ab
         const rawResponse = result.response.text();
         let sanitizedResponse = rawResponse.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
         
-        // Post-process to ensure cinematic formatting if AI didn't follow rules
+        // Post-process to ensure premium script-like formatting per design spec
+        const ensureCinematicFormatting = (response: string): string => {
+          console.log('🎭 Post-processing response for premium script formatting:', response);
+          
+          // If already properly formatted with clear separations, ensure proper line breaks
+          if (response.includes('"') && (response.includes('*') || response.includes('('))) {
+            let formatted = response;
+            
+            // Add line breaks before actions that aren't already separated
+            formatted = formatted.replace(/([.!?"])\s*(\*[^*]+\*)/g, '$1\n\n$2');
+            
+            // Add line breaks before dialogue that isn't already separated  
+            formatted = formatted.replace(/(\*[^*]+\*)\s*("[^"]+?")/g, '$1\n\n$2');
+            
+            // Add line breaks before thoughts that aren't already separated
+            formatted = formatted.replace(/([.!?"])\s*(\([^)]+\))/g, '$1\n\n$2');
+            
+            // Add line breaks after thoughts before dialogue
+            formatted = formatted.replace(/(\([^)]+\))\s*("[^"]+?")/g, '$1\n\n$2');
+            
+            // Clean up excessive line breaks while maintaining script structure
+            formatted = formatted.replace(/\n{3,}/g, '\n\n').trim();
+            
+            console.log('🎭 Premium script-formatted response:', formatted);
+            return formatted;
+          }
+          
+          // Apply intelligent formatting to unformatted responses with proper line separations
+          let formatted = response;
+          
+          // Pattern 1: Convert obvious dialogue to quoted format with line breaks
+          formatted = formatted.replace(
+            /(^|\s)([A-Z][^.!?]*(?:Indeed|Yes|No|Perhaps|Maybe|I |You |We |That |This |The |Have |What |When |Where |Why |How )[^.!?]*[.!?])/g,
+            (match, space, sentence) => {
+              return `${space.includes('\n') ? space : '\n\n'}"${sentence.trim()}"`;
+            }
+          );
+          
+          // Pattern 2: Convert action descriptions to asterisk format with line breaks
+          formatted = formatted.replace(
+            /([^"*()]*(?:She|He|Her|His)[^.!?]*(?:taps?|glances?|adjusts?|looks?|moves?|shifts?|leans?|nods?|smiles?|frowns?|blushes?|furrows?)[^.!?]*[.!?])/gi,
+            '\n\n*$1*'
+          );
+          
+          // Pattern 3: Convert internal thoughts to parentheses format with line breaks
+          formatted = formatted.replace(
+            /([^"*()]*(?:I wonder|I think|I feel|I hope|I should|I need|Perhaps I|Maybe I)[^.!?]*[.!?])/gi,
+            '\n\n(*$1*)'
+          );
+          
+          // Clean up excessive line breaks while maintaining script structure
+          formatted = formatted.replace(/\n{3,}/g, '\n\n').trim();
+          
+          console.log('🎭 Premium script-formatted response:', formatted);
+          return formatted;
+        };
+        
         sanitizedResponse = ensureCinematicFormatting(sanitizedResponse);
         const updatedGameState = { ...gameState };
 

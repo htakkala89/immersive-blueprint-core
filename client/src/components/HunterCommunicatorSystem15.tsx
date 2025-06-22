@@ -583,62 +583,67 @@ export function HunterCommunicatorSystem15({
                                 {message.content}
                               </div>
                             ) : (
-                              // Enhanced cinematic formatting for AI messages
-                              <div className="space-y-2">
+                              // Premium cinematic script formatting per design spec
+                              <div className="space-y-4">
                                 {parseCinematicMessage(message.content).map((part, index) => (
                                   <div key={index}>
-                                    {part.type === 'dialogue' && (
+                                    {part.type === 'action' && (
                                       <div 
-                                        className="text-white font-medium text-base mb-3"
+                                        className="text-slate-300 italic font-light text-sm opacity-75 leading-relaxed mb-4"
                                         style={{
                                           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                                          lineHeight: '1.6',
+                                          lineHeight: '1.5',
+                                          letterSpacing: '0.005em',
+                                          textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                                          padding: '0.75rem 0',
+                                          fontWeight: '300'
+                                        }}
+                                      >
+                                        <em>*{part.text}</em>
+                                      </div>
+                                    )}
+                                    {part.type === 'dialogue' && (
+                                      <div 
+                                        className="text-white font-medium text-base mb-4"
+                                        style={{
+                                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                          lineHeight: '1.5',
                                           letterSpacing: '0.01em',
                                           textShadow: '0 1px 2px rgba(0,0,0,0.8)',
                                           fontSize: '16px',
-                                          fontWeight: '500'
+                                          fontWeight: '400',
+                                          color: '#ffffff',
+                                          padding: '0.5rem 0'
                                         }}
                                       >
                                         "{part.text}"
                                       </div>
                                     )}
-                                    {part.type === 'action' && (
-                                      <div 
-                                        className="text-amber-300 italic font-light text-sm opacity-90 leading-relaxed mb-2"
-                                        style={{
-                                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                                          lineHeight: '1.6',
-                                          letterSpacing: '0.005em',
-                                          textShadow: '0 1px 2px rgba(0,0,0,0.6)',
-                                          padding: '0.25rem 0'
-                                        }}
-                                      >
-                                        <em>*{part.text}*</em>
-                                      </div>
-                                    )}
                                     {part.type === 'thought' && (
                                       <div 
-                                        className="text-slate-400 italic font-light text-sm opacity-75 leading-relaxed pl-4 mb-3 border-l-2 border-slate-600 border-opacity-30"
+                                        className="text-slate-400 italic font-light text-sm opacity-70 leading-relaxed mb-4"
                                         style={{
                                           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                                          lineHeight: '1.6',
+                                          lineHeight: '1.5',
                                           letterSpacing: '0.005em',
                                           textShadow: '0 1px 2px rgba(0,0,0,0.6)',
-                                          padding: '0.5rem 0 0.5rem 1rem'
+                                          padding: '0.5rem 0',
+                                          fontWeight: '300'
                                         }}
                                       >
-                                        <em>({part.text})</em>
+                                        <em>(*{part.text}*)</em>
                                       </div>
                                     )}
                                     {part.type === 'narrative' && (
                                       <div 
-                                        className="text-slate-300 font-light text-sm leading-relaxed opacity-80 mb-2"
+                                        className="text-slate-300 font-light text-sm leading-relaxed opacity-80 mb-3"
                                         style={{
                                           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                                          lineHeight: '1.6',
+                                          lineHeight: '1.5',
                                           letterSpacing: '0.005em',
                                           textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                                          padding: '0.25rem 0'
+                                          padding: '0.25rem 0',
+                                          fontWeight: '300'
                                         }}
                                       >
                                         {part.text}
