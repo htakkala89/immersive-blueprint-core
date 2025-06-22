@@ -192,33 +192,7 @@ export function HunterCommunicatorSystem15({
     }
   ]);
 
-  // Send system alerts to notification bell instead of showing in communicator
-  useEffect(() => {
-    if (episodeAlerts && episodeAlerts.length > 0) {
-      episodeAlerts.forEach(alert => {
-        const event = new CustomEvent('game-notification', {
-          detail: {
-            title: alert.title,
-            message: alert.content,
-            type: alert.type === 'quest' ? 'warning' : 'info',
-            persistent: true
-          }
-        });
-        window.dispatchEvent(event);
-      });
-    }
-    
-    // Send default quest alerts to notification bell
-    const questEvent = new CustomEvent('game-notification', {
-      detail: {
-        title: 'S-Rank Gate Emergency',
-        message: 'An S-Rank gate has appeared in Gangnam District. Immediate response required.',
-        type: 'warning',
-        persistent: true
-      }
-    });
-    window.dispatchEvent(questEvent);
-  }, [episodeAlerts]);
+  // Episode alerts are now handled by the main game system to prevent duplicates
 
   // Quick response suggestions
   const quickResponses = [

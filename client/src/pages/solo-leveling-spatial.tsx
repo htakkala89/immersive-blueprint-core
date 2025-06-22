@@ -1067,7 +1067,19 @@ export default function SoloLevelingSpatial() {
       
       if (newEpisodeNotifications.length > 0) {
         setEpisodeNotifications(prev => [...prev, ...newEpisodeNotifications]);
-        setNotifications(prev => [...prev, ...newUINotifications]);
+        
+        // Send to centralized notification bell instead of local notifications
+        newEpisodeNotifications.forEach((notification: any) => {
+          const event = new CustomEvent('game-notification', {
+            detail: {
+              title: notification.title,
+              message: notification.content,
+              type: 'info',
+              persistent: true
+            }
+          });
+          window.dispatchEvent(event);
+        });
       }
     } catch (error) {
       console.error('Failed to check available episodes:', error);

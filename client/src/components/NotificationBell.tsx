@@ -26,18 +26,29 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
     const handleNotification = (event: CustomEvent) => {
       const { title, message, type = 'info', persistent = false } = event.detail;
       
-      const newNotification: Notification = {
-        id: Date.now().toString(),
-        title,
-        message,
-        type,
-        timestamp: new Date(),
-        read: false,
-        persistent
-      };
+      // Prevent duplicate notifications with same title and message
+      setNotifications(prev => {
+        const isDuplicate = prev.some(notification => 
+          notification.title === title && notification.message === message
+        );
+        
+        if (isDuplicate) {
+          return prev; // Don't add duplicate
+        }
+        
+        const newNotification: Notification = {
+          id: Date.now().toString(),
+          title,
+          message,
+          type,
+          timestamp: new Date(),
+          read: false,
+          persistent
+        };
 
-      setNotifications(prev => [newNotification, ...prev]);
-      setUnreadCount(prev => prev + 1);
+        setUnreadCount(count => count + 1);
+        return [newNotification, ...prev];
+      });
     };
 
     window.addEventListener('game-notification', handleNotification as EventListener);
