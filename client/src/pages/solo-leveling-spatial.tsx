@@ -1033,18 +1033,8 @@ export default function SoloLevelingSpatial() {
   const [showGangnamFurnishings, setShowGangnamFurnishings] = useState(false);
   const [showLuxuryRealtor, setShowLuxuryRealtor] = useState(false);
   
-  // NPC Dialogue System - Simple static dialogue box
-  const [showReceptionistDialogue, setShowReceptionistDialogue] = useState<{
-    dialogue: string;
-    position: { x: number; y: number };
-  } | null>(null);
-  
   // Elevator System - Floor Selection UI
-  const [showFloorSelect, setShowFloorSelect] = useState(false);
   const [elevatorTransition, setElevatorTransition] = useState(false);
-  
-  // Cinematic Mode - For atmospheric River's Edge experience
-  const [cinematicMode, setCinematicMode] = useState(false);
   
   // Developer Menu - Collapsible state
   const [showDevMenu, setShowDevMenu] = useState(false);
@@ -4205,7 +4195,7 @@ export default function SoloLevelingSpatial() {
 
               case 'jewelry_counter':
                 // Open item inspection with cycling jewelry display
-                setShowJewelryInspection(true);
+                setShowItemInspection(true);
                 handleEnvironmentalInteraction({
                   id: 'jewelry_browsing',
                   action: 'Browse the jewelry collection together. Each piece sparks conversations about taste, memories, and future possibilities.',
