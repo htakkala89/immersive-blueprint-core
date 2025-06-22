@@ -484,6 +484,9 @@ export default function SoloLevelingSpatial() {
   const [selectedRole, setSelectedRole] = useState<'none' | 'player' | 'creator'>('none');
   const [loadedProfileId, setLoadedProfileId] = useState<number | null>(null);
 
+  // Notifications dropdown state
+  const [showNotifications, setShowNotifications] = useState(false);
+
   // Sommelier Dialog state
   const [showSommelierDialog, setShowSommelierDialog] = useState(false);
 
@@ -4582,6 +4585,16 @@ export default function SoloLevelingSpatial() {
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
+            { 
+              icon: Bell, 
+              label: 'Notifications', 
+              color: 'text-amber-300', 
+              badge: unreadNotificationCount > 0 ? unreadNotificationCount : null,
+              onClick: () => { 
+                setShowNotifications(!showNotifications); 
+                setMonarchAuraVisible(false); 
+              } 
+            },
             { icon: Power, label: 'Leave World', color: 'text-red-300', onClick: () => { 
               if (confirm('Are you sure you want to leave the world?')) {
                 window.location.href = '/';
@@ -4591,21 +4604,121 @@ export default function SoloLevelingSpatial() {
           ].map((item, index) => (
             <button
               key={item.label}
-              className="w-full flex items-center gap-2 p-2.5 sm:p-2 rounded text-white hover:bg-white/10 transition-all mb-1 min-h-[44px] sm:min-h-[36px]"
+              className="w-full flex items-center gap-2 p-2.5 sm:p-2 rounded text-white hover:bg-white/10 transition-all mb-1 min-h-[44px] sm:min-h-[36px] relative"
               onClick={item.onClick}
             >
               <item.icon className={`w-4 h-4 sm:w-4 sm:h-4 ${item.color}`} />
               <span className="text-xs font-medium truncate">{item.label}</span>
+              {item.badge && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  {item.badge > 9 ? '9+' : item.badge}
+                </span>
+              )}
             </button>
           ))}
         </div>
       )}
 
+      {/* Notifications Dropdown */}
+      {showNotifications && (
+        <div className="fixed top-16 sm:top-20 right-2 sm:right-6 w-72 sm:w-80 max-h-96 bg-black/20 backdrop-blur-xl border border-white/30 rounded-lg z-[9998] shadow-2xl overflow-hidden" 
+             style={{ 
+               background: 'rgba(255, 255, 255, 0.08)', 
+               backdropFilter: 'blur(40px) saturate(180%)', 
+               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+             }}>
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-white/20">
+            <div className="flex items-center gap-2">
+              <Bell className="w-4 h-4 text-amber-300" />
+              <span className="text-white font-medium">Notifications</span>
+              {unreadNotificationCount > 0 && (
+                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  {unreadNotificationCount}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setShowNotifications(false)}
+              className="text-slate-400 hover:text-white p-1 rounded"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Notifications List */}
+          <div className="max-h-80 overflow-y-auto">
+            {monarchNotifications.length === 0 ? (
+              <div className="p-6 text-center text-slate-400">
+                <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>No notifications yet</p>
+              </div>
+            ) : (
+              <div className="p-2">
+                {monarchNotifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`p-3 mb-2 rounded-lg border transition-all cursor-pointer ${
+                      notification.read
+                        ? 'bg-slate-800/30 border-slate-700/30 opacity-75'
+                        : 'bg-slate-700/50 border-slate-600/50'
+                    }`}
+                    onClick={() => {
+                      setMonarchNotifications(prev =>
+                        prev.map(n =>
+                          n.id === notification.id ? { ...n, read: true } : n
+                        )
+                      );
+                      if (!notification.read) {
+                        setUnreadNotificationCount(count => Math.max(0, count - 1));
+                      }
+                    }}
+                  >
+                    <div className="flex items-start gap-2">
+                      <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                        notification.type === 'success' ? 'bg-green-400' :
+                        notification.type === 'warning' ? 'bg-yellow-400' :
+                        notification.type === 'error' ? 'bg-red-400' : 'bg-blue-400'
+                      }`} />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-white font-medium text-sm">{notification.title}</h4>
+                        <p className="text-slate-300 text-xs mt-1">{notification.message}</p>
+                        <p className="text-slate-500 text-xs mt-1">
+                          {notification.timestamp.toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Actions */}
+          {monarchNotifications.length > 0 && (
+            <div className="p-3 border-t border-white/20">
+              <button
+                onClick={() => {
+                  setMonarchNotifications(prev => prev.map(n => ({ ...n, read: true })));
+                  setUnreadNotificationCount(0);
+                }}
+                className="w-full text-xs text-slate-400 hover:text-white py-2 rounded transition-colors"
+              >
+                Mark all as read
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Click outside to close */}
-      {monarchAuraVisible && (
+      {(monarchAuraVisible || showNotifications) && (
         <div 
           className="fixed inset-0 z-[9997]" 
-          onClick={() => setMonarchAuraVisible(false)}
+          onClick={() => {
+            setMonarchAuraVisible(false);
+            setShowNotifications(false);
+          }}
         />
       )}
 
