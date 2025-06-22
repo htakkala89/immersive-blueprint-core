@@ -219,8 +219,8 @@ export function PlayerProgressionSystemRedesigned({
                     return null;
                   })()}
                   
-                  {/* Stats Grid - Mobile Optimized */}
-                  <div className="grid gap-3 max-h-[400px] overflow-y-auto">
+                  {/* Stats Grid - Mobile Optimized with Invisible Scroll */}
+                  <div className="grid gap-3 max-h-[400px] overflow-y-auto scrollbar-hide">
                     {playerData.stats && Object.keys(playerData.stats).length > 0 ? (Object.keys(playerData.stats) as Array<keyof CoreStats>).map((stat) => (
                       <div 
                         key={stat}
