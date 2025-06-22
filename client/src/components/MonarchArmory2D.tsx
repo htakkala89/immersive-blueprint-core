@@ -232,10 +232,10 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
           </Button>
         </div>
 
-        {/* Main Content - Responsive Layout */}
-        <div className="flex flex-col lg:flex-row h-[calc(100%-80px)]">
+        {/* Main Content - Mobile-First Responsive Layout */}
+        <div className="flex flex-col lg:flex-row h-[calc(100%-80px)] overflow-hidden">
           {/* Column 1: Total Stats Panel */}
-          <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-purple-500/20 p-4 lg:p-6">
+          <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-purple-500/20 p-4 lg:p-6 flex-shrink-0">
             <h3 className="text-white font-semibold mb-6 text-lg">Total Stats</h3>
             <div className="space-y-4">
               {Object.entries(totalStats).map(([stat, value]) => (
@@ -271,7 +271,7 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
           </div>
 
           {/* Column 2: Monarch's Schematic (Paper Doll) */}
-          <div className="flex-1 p-4 lg:p-6 flex flex-col items-center justify-center">
+          <div className="flex-1 p-4 lg:p-6 flex flex-col items-center justify-center min-h-0">
             <h3 className="text-white font-semibold mb-4 lg:mb-6 text-lg">Monarch's Schematic</h3>
             <div className="relative w-64 h-80 lg:w-80 lg:h-96 border border-purple-500/30 rounded-xl bg-slate-800/30 overflow-hidden">
               {/* Stylized Jin-Woo Silhouette */}
@@ -338,15 +338,17 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
           </div>
 
           {/* Column 3: Available Equipment */}
-          <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-purple-500/20 p-4 lg:p-6">
-            <h3 className="text-white font-semibold mb-4 lg:mb-6 text-lg">Available Equipment</h3>
-            <div className="space-y-3 max-h-[40vh] lg:max-h-[calc(100vh-250px)] overflow-y-auto character-scrollbar">
+          <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-purple-500/20 p-4 lg:p-6 flex flex-col min-h-0">
+            <h3 className="text-white font-semibold mb-4 lg:mb-6 text-lg flex-shrink-0">Available Equipment</h3>
+            <div className="space-y-3 flex-1 overflow-y-auto character-scrollbar touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
               {availableEquipment.map((item) => (
                 <motion.button
                   key={item.id}
-                  className={`w-full p-4 rounded-xl border-2 ${getRarityBorder(item.rarity)} text-left transition-all hover:scale-[1.02]`}
+                  className={`w-full p-4 rounded-xl border-2 ${getRarityBorder(item.rarity)} text-left transition-all hover:scale-[1.02] min-h-[60px] touch-manipulation`}
                   onMouseEnter={() => setHoveredItem(item)}
                   onMouseLeave={() => setHoveredItem(null)}
+                  onTouchStart={() => setHoveredItem(item)}
+                  onTouchEnd={() => setHoveredItem(null)}
                   onClick={() => handleEquipItem(item)}
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.98 }}
