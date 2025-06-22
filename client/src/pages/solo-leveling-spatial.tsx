@@ -346,7 +346,6 @@ export default function SoloLevelingSpatial() {
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
   const [scheduledActivities, setScheduledActivities] = useState<any[]>([]);
-  const [showActivityNotification, setShowActivityNotification] = useState(false);
   const [showActivityScheduled, setShowActivityScheduled] = useState(false);
   
   // System 2: Affection Heart System state
@@ -1676,8 +1675,12 @@ export default function SoloLevelingSpatial() {
         const newActivities = data.gameState.scheduledActivities;
         if (newActivities.length > scheduledActivities.length) {
           setScheduledActivities(newActivities);
-          setShowActivityNotification(true);
-          setTimeout(() => setShowActivityNotification(false), 5000);
+          const latestActivity = newActivities[newActivities.length - 1];
+          triggerNotification({
+            title: 'Activity Scheduled!',
+            message: latestActivity?.title || 'New activity has been scheduled',
+            type: 'success'
+          });
         }
       }
       
@@ -1874,14 +1877,12 @@ export default function SoloLevelingSpatial() {
     if (locationEpisodes.length > 0 && interactionPoint.id === 'cha_hae_in') {
       // If there's an available episode and player interacts with Cha Hae-In, offer to start episode
       const episode = locationEpisodes[0];
-      setNotifications(prev => [...prev, {
-        id: `episode_trigger_${Date.now()}`,
-        type: 'episode_available',
+      triggerNotification({
         title: 'Story Episode Available',
-        content: `"${episode.title}" - Would you like to begin this story?`,
-        timestamp: new Date(),
-        action: () => triggerEpisode(episode.id)
-      }]);
+        message: `"${episode.title}" - Would you like to begin this story?`,
+        type: 'info',
+        persistent: true
+      });
       // Continue to dialogue interface instead of opening communicator
     }
 
@@ -3169,8 +3170,11 @@ export default function SoloLevelingSpatial() {
               
               // Show quest progress notification
               setTimeout(() => {
-                setShowActivityNotification(true);
-                setTimeout(() => setShowActivityNotification(false), 3000);
+                triggerNotification({
+                  title: 'Quest Progress',
+                  message: 'You made progress on your current quest!',
+                  type: 'success'
+                });
               }, 1000);
               
               console.log(`Quest progress: ${activeQuestAtLocation.title} advanced by interaction`);
@@ -3545,8 +3549,12 @@ export default function SoloLevelingSpatial() {
                   x: 20,
                   y: 30
                 });
-                setShowActivityNotification(true);
-                setTimeout(() => setShowActivityNotification(false), 4000);
+                triggerNotification({
+                  title: 'Master Suite Unlocked!',
+                  message: 'Ultimate intimate activities are now available in your Day Planner',
+                  type: 'success',
+                  persistent: true
+                });
                 console.log('Master suite gateway activated - Highest tier intimate activities unlocked');
                 break;
 
