@@ -124,256 +124,325 @@ export function MonarchArmory({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="fixed inset-0 z-[9999] bg-gradient-to-br from-indigo-950 via-purple-950 to-black"
+      className="fixed inset-0 z-[9999] bg-gradient-to-br from-indigo-950 via-purple-950 to-black overflow-y-auto"
     >
-      {/* Header */}
-      <div className="relative z-10 p-4 flex justify-between items-center">
-        <motion.div
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          className="liquid-glass p-4"
-        >
-          <h2 className="text-2xl font-bold text-white mb-1">Monarch's Armory</h2>
-          <p className="text-purple-300 text-sm">Level {playerLevel} Shadow Monarch</p>
-        </motion.div>
+      {/* Mobile-First Header */}
+      <div className="sticky top-0 z-10 p-3 sm:p-4 bg-gradient-to-br from-indigo-950/90 via-purple-950/90 to-black/90 backdrop-blur-md border-b border-purple-500/30">
+        <div className="flex justify-between items-center mb-3">
+          <motion.div
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="flex-1"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Monarch's Armory</h2>
+            <p className="text-purple-300 text-xs sm:text-sm">Level {playerLevel} Shadow Monarch</p>
+          </motion.div>
 
-        <div className="flex gap-2">
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            size="sm"
+            className="text-white hover:bg-red-500/20 border border-white/20 h-10 w-10 p-0"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Mobile Tab Navigation */}
+        <div className="flex gap-1 sm:gap-2">
           <Button
             onClick={() => setViewMode('equip')}
             variant={viewMode === 'equip' ? 'default' : 'ghost'}
-            className="text-white"
+            className="flex-1 text-xs sm:text-sm text-white h-9"
           >
-            <Sword className="w-4 h-4 mr-1" />
+            <Sword className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             Equip
           </Button>
           <Button
             onClick={() => setViewMode('upgrade')}
             variant={viewMode === 'upgrade' ? 'default' : 'ghost'}
-            className="text-white"
+            className="flex-1 text-xs sm:text-sm text-white h-9"
           >
-            <Gem className="w-4 h-4 mr-1" />
+            <Gem className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             Upgrade
           </Button>
           <Button
             onClick={() => setViewMode('gift')}
             variant={viewMode === 'gift' ? 'default' : 'ghost'}
-            className="text-white"
+            className="flex-1 text-xs sm:text-sm text-white h-9"
           >
-            <Crown className="w-4 h-4 mr-1" />
+            <Crown className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             Gift
-          </Button>
-          <Button
-            onClick={onClose}
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-red-500/20 border border-white/20 liquid-glass relative z-[10001]"
-          >
-            <X className="w-5 h-5" />
           </Button>
         </div>
       </div>
 
-      <div className="flex h-full pt-20 pb-4">
-        {/* 3D Character Model Area */}
-        <div className="flex-1 flex items-center justify-center p-4">
-          <motion.div
-            ref={modelRef}
-            className="relative w-96 h-96 backdrop-blur-md bg-white/5 rounded-xl border border-purple-500/30 overflow-hidden"
-            onMouseMove={handleMouseMove}
-            style={{
-              transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
-            }}
-          >
-            {/* Character Silhouette */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div 
-                className="w-48 h-80 bg-gradient-to-b from-purple-600/30 to-black/50 rounded-full"
-                animate={{ 
-                  boxShadow: selectedItem 
-                    ? `0 0 40px ${selectedItem.rarity === 'legendary' ? '#f59e0b' : 
-                        selectedItem.rarity === 'mythic' ? '#ef4444' : '#8b5cf6'}80`
-                    : '0 0 20px rgba(139, 92, 246, 0.3)'
-                }}
-              >
-                {/* Equipment Slots */}
-                <motion.div 
-                  className="absolute top-8 left-1/2 transform -translate-x-1/2 w-8 h-8 border-2 border-purple-400 rounded-full bg-purple-900/50 flex items-center justify-center cursor-pointer hover:bg-purple-800/50"
-                  whileHover={{ scale: 1.1 }}
-                  onClick={() => console.log('Head slot')}
-                >
-                  <Crown className="w-4 h-4 text-purple-300" />
-                </motion.div>
-
-                <motion.div 
-                  className="absolute top-20 left-1/2 transform -translate-x-1/2 w-12 h-16 border-2 border-purple-400 rounded bg-purple-900/50 flex items-center justify-center cursor-pointer hover:bg-purple-800/50"
-                  whileHover={{ scale: 1.05 }}
-                  onClick={() => console.log('Armor slot')}
-                >
-                  <Shield className="w-6 h-6 text-purple-300" />
-                </motion.div>
-
-                <motion.div 
-                  className="absolute top-24 -left-4 w-6 h-12 border-2 border-purple-400 rounded bg-purple-900/50 flex items-center justify-center cursor-pointer hover:bg-purple-800/50"
-                  whileHover={{ scale: 1.1 }}
-                  onClick={() => console.log('Weapon slot')}
-                >
-                  <Sword className="w-4 h-4 text-purple-300" />
-                </motion.div>
-
-                <motion.div 
-                  className="absolute bottom-24 left-1/2 transform -translate-x-1/2 w-6 h-6 border-2 border-purple-400 rounded-full bg-purple-900/50 flex items-center justify-center cursor-pointer hover:bg-purple-800/50"
-                  whileHover={{ scale: 1.1 }}
-                  onClick={() => console.log('Ring slot')}
-                >
-                  <div className="w-2 h-2 bg-purple-300 rounded-full" />
-                </motion.div>
-              </motion.div>
+      {/* Mobile-Optimized Content */}
+      <div className="p-3 sm:p-4 pb-20 space-y-4">
+        {/* Total Stats Overview */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="backdrop-blur-md bg-white/5 rounded-xl border border-purple-500/30 p-4"
+        >
+          <h3 className="text-lg font-bold text-white mb-3">Total Stats</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 text-center">
+              <div className="w-2 h-2 bg-red-400 rounded-full mx-auto mb-2"></div>
+              <p className="text-red-300 text-xs mb-1">Attack</p>
+              <p className="text-white font-bold text-lg">1500</p>
             </div>
+            <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 text-center">
+              <div className="w-2 h-2 bg-blue-400 rounded-full mx-auto mb-2"></div>
+              <p className="text-blue-300 text-xs mb-1">Defense</p>
+              <p className="text-white font-bold text-lg">200</p>
+            </div>
+            <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 text-center">
+              <div className="w-2 h-2 bg-green-400 rounded-full mx-auto mb-2"></div>
+              <p className="text-green-300 text-xs mb-1">Speed</p>
+              <p className="text-white font-bold text-lg">0</p>
+            </div>
+            <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 text-center">
+              <div className="w-2 h-2 bg-purple-400 rounded-full mx-auto mb-2"></div>
+              <p className="text-purple-300 text-xs mb-1">Magic</p>
+              <p className="text-white font-bold text-lg">0</p>
+            </div>
+          </div>
+        </motion.div>
 
-            {/* Floating Equipment Preview */}
-            <AnimatePresence>
-              {selectedItem && (
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        {/* Character Schematic - Mobile Optimized */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1, transition: { delay: 0.1 } }}
+          className="backdrop-blur-md bg-white/5 rounded-xl border border-purple-500/30 p-4"
+        >
+          <h3 className="text-lg font-bold text-white mb-3">Monarch's Schematic</h3>
+          <div className="flex justify-center">
+            <motion.div
+              ref={modelRef}
+              className="relative w-64 h-80 sm:w-80 sm:h-96 backdrop-blur-sm bg-white/5 rounded-xl border border-purple-500/20 overflow-hidden"
+              onMouseMove={handleMouseMove}
+              style={{
+                transform: `perspective(1000px) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`
+              }}
+            >
+              {/* Character Silhouette */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <motion.div 
+                  className="w-32 h-64 sm:w-48 sm:h-80 bg-gradient-to-b from-purple-600/30 to-black/50 rounded-full relative"
+                  animate={{ 
+                    boxShadow: selectedItem 
+                      ? `0 0 40px ${selectedItem.rarity === 'legendary' ? '#f59e0b' : 
+                          selectedItem.rarity === 'mythic' ? '#ef4444' : '#8b5cf6'}80`
+                      : '0 0 20px rgba(139, 92, 246, 0.3)'
+                  }}
                 >
-                  <div 
-                    className={`w-32 h-32 rounded-lg bg-gradient-to-br ${getRarityColor(selectedItem.rarity)} ${getRarityGlow(selectedItem.rarity)} flex items-center justify-center`}
+                  {/* Equipment Slots - Mobile Optimized */}
+                  <motion.div 
+                    className="absolute top-6 left-1/2 transform -translate-x-1/2 w-8 h-8 border-2 border-purple-400 rounded-full bg-purple-900/50 flex items-center justify-center cursor-pointer hover:bg-purple-800/50"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => console.log('Head slot')}
                   >
-                    <Sword className="w-16 h-16 text-white" />
-                  </div>
+                    <Crown className="w-4 h-4 text-purple-300" />
+                  </motion.div>
+
+                  <motion.div 
+                    className="absolute top-16 left-1/2 transform -translate-x-1/2 w-10 h-12 border-2 border-purple-400 rounded bg-purple-900/50 flex items-center justify-center cursor-pointer hover:bg-purple-800/50"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => console.log('Armor slot')}
+                  >
+                    <Shield className="w-5 h-5 text-purple-300" />
+                  </motion.div>
+
+                  <motion.div 
+                    className="absolute top-20 -left-3 w-6 h-10 border-2 border-purple-400 rounded bg-purple-900/50 flex items-center justify-center cursor-pointer hover:bg-purple-800/50"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => console.log('Weapon slot')}
+                  >
+                    <Sword className="w-3 h-3 text-purple-300" />
+                  </motion.div>
+
+                  <motion.div 
+                    className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-6 h-6 border-2 border-purple-400 rounded-full bg-purple-900/50 flex items-center justify-center cursor-pointer hover:bg-purple-800/50"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => console.log('Ring slot')}
+                  >
+                    <div className="w-2 h-2 bg-purple-300 rounded-full" />
+                  </motion.div>
                 </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
+              </div>
 
-        {/* Equipment Inventory */}
-        <div className="w-96 p-4">
-          <div className="backdrop-blur-md bg-black/40 rounded-xl border border-purple-500/30 h-full p-4">
-            <h3 className="text-xl font-bold text-white mb-4">
-              {viewMode === 'equip' ? 'Equipment' : 
-               viewMode === 'upgrade' ? 'Shadow Forge' : 
-               'Gift to Cha Hae-In'}
-            </h3>
-
-            <div className="space-y-3 h-96 overflow-y-auto">
-              {activeEquipment.map((item) => (
-                <motion.div
-                  key={item.id}
-                  className={`backdrop-blur-sm bg-white/5 rounded-lg p-3 border cursor-pointer transition-all ${
-                    selectedItem?.id === item.id 
-                      ? `border-${item.rarity === 'legendary' ? 'yellow' : item.rarity === 'mythic' ? 'red' : 'purple'}-400 bg-white/10` 
-                      : 'border-white/20 hover:border-white/40'
-                  }`}
-                  onClick={() => setSelectedItem(item)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="flex items-center gap-3">
+              {/* Floating Equipment Preview */}
+              <AnimatePresence>
+                {selectedItem && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                  >
                     <div 
-                      className={`w-12 h-12 rounded bg-gradient-to-br ${getRarityColor(item.rarity)} flex items-center justify-center`}
+                      className={`w-20 h-20 sm:w-32 sm:h-32 rounded-lg bg-gradient-to-br ${getRarityColor(selectedItem.rarity)} ${getRarityGlow(selectedItem.rarity)} flex items-center justify-center`}
                     >
-                      {item.type === 'weapon' && <Sword className="w-6 h-6 text-white" />}
-                      {item.type === 'armor' && <Shield className="w-6 h-6 text-white" />}
-                      {item.type === 'accessory' && <div className="w-4 h-4 bg-white rounded-full" />}
+                      <Sword className="w-10 h-10 sm:w-16 sm:h-16 text-white" />
                     </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+        </motion.div>
 
-                    <div className="flex-1">
-                      <h4 className="font-bold text-white text-sm">{item.name}</h4>
-                      <p className="text-xs text-gray-300 capitalize">{item.rarity} {item.type}</p>
+        {/* Equipment List - Mobile Optimized */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
+          className="backdrop-blur-md bg-white/5 rounded-xl border border-purple-500/30 p-4"
+        >
+          <h3 className="text-lg font-bold text-white mb-3">
+            {viewMode === 'equip' ? 'Available Equipment' : 
+             viewMode === 'upgrade' ? 'Shadow Forge' : 
+             'Gift to Cha Hae-In'}
+          </h3>
+
+          <div className="space-y-3">
+            {activeEquipment.map((item) => (
+              <motion.div
+                key={item.id}
+                className={`backdrop-blur-sm bg-white/5 rounded-lg p-3 border cursor-pointer transition-all ${
+                  selectedItem?.id === item.id 
+                    ? `border-${item.rarity === 'legendary' ? 'yellow' : item.rarity === 'mythic' ? 'red' : 'purple'}-400 bg-white/10` 
+                    : 'border-white/20 hover:border-white/40'
+                }`}
+                onClick={() => setSelectedItem(item)}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div 
+                    className={`w-12 h-12 rounded bg-gradient-to-br ${getRarityColor(item.rarity)} flex items-center justify-center`}
+                  >
+                    {item.type === 'weapon' && <Sword className="w-6 h-6 text-white" />}
+                    {item.type === 'armor' && <Shield className="w-6 h-6 text-white" />}
+                    {item.type === 'accessory' && <div className="w-4 h-4 bg-white rounded-full" />}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-white text-sm truncate">{item.name}</h4>
+                    <p className="text-xs text-gray-300 capitalize">{item.rarity} {item.type}</p>
+                    <div className="flex items-center gap-2 mt-1">
                       {item.equipped && (
-                        <span className="text-xs text-green-400">Equipped</span>
+                        <span className="text-xs text-green-400 bg-green-900/30 px-2 py-0.5 rounded-full">Equipped</span>
+                      )}
+                      {viewMode === 'upgrade' && item.upgradable && (
+                        <span className="text-xs text-yellow-400 bg-yellow-900/30 px-2 py-0.5 rounded-full">Upgradable</span>
                       )}
                     </div>
-
-                    {viewMode === 'upgrade' && item.upgradable && (
-                      <Plus className="w-4 h-4 text-yellow-400" />
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Item Details */}
-            <AnimatePresence>
-              {selectedItem && (
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 20, opacity: 0 }}
-                  className="mt-4 backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/20"
-                >
-                  <h4 className="font-bold text-white mb-2">{selectedItem.name}</h4>
-                  <p className="text-sm text-gray-300 mb-3">{selectedItem.description}</p>
-                  
-                  <div className="space-y-1">
-                    {selectedItem.stats.attack && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-red-300">Attack</span>
-                        <span className="text-white">+{selectedItem.stats.attack}</span>
-                      </div>
-                    )}
-                    {selectedItem.stats.defense && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-blue-300">Defense</span>
-                        <span className="text-white">+{selectedItem.stats.defense}</span>
-                      </div>
-                    )}
-                    {selectedItem.stats.speed && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-green-300">Speed</span>
-                        <span className="text-white">+{selectedItem.stats.speed}</span>
-                      </div>
-                    )}
-                    {selectedItem.stats.mana && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-purple-300">Mana</span>
-                        <span className="text-white">+{selectedItem.stats.mana}</span>
-                      </div>
-                    )}
                   </div>
 
-                  <div className="flex gap-2 mt-4">
-                    {viewMode === 'equip' && !selectedItem.equipped && (
-                      <Button 
-                        onClick={() => onEquip(selectedItem.id, selectedItem.type)}
-                        className="flex-1 bg-purple-600 hover:bg-purple-700"
-                        size="sm"
-                      >
-                        Equip
-                      </Button>
-                    )}
-                    
-                    {viewMode === 'upgrade' && selectedItem.upgradable && (
-                      <Button 
-                        onClick={() => onUpgrade(selectedItem.id)}
-                        className="flex-1 bg-yellow-600 hover:bg-yellow-700"
-                        size="sm"
-                      >
-                        <Gem className="w-3 h-3 mr-1" />
-                        Upgrade
-                      </Button>
-                    )}
-                    
-                    {viewMode === 'gift' && onGiftToChaHaeIn && (
-                      <Button 
-                        onClick={() => onGiftToChaHaeIn(selectedItem.id)}
-                        className="flex-1 bg-pink-600 hover:bg-pink-700"
-                        size="sm"
-                      >
-                        <Crown className="w-3 h-3 mr-1" />
-                        Gift to Hae-In
-                      </Button>
-                    )}
+                  {/* Quick Stats */}
+                  <div className="text-right text-xs">
+                    {item.stats.attack && <div className="text-red-300">ATK +{item.stats.attack}</div>}
+                    {item.stats.defense && <div className="text-blue-300">DEF +{item.stats.defense}</div>}
+                    {item.stats.speed && <div className="text-green-300">SPD +{item.stats.speed}</div>}
+                    {item.stats.mana && <div className="text-purple-300">MP +{item.stats.mana}</div>}
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+              </motion.div>
+            ))}
           </div>
-        </div>
+        </motion.div>
+
+        {/* Item Details - Mobile Optimized */}
+        <AnimatePresence>
+          {selectedItem && (
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              className="backdrop-blur-md bg-white/5 rounded-xl border border-purple-500/30 p-4"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div 
+                  className={`w-16 h-16 rounded-lg bg-gradient-to-br ${getRarityColor(selectedItem.rarity)} flex items-center justify-center`}
+                >
+                  {selectedItem.type === 'weapon' && <Sword className="w-8 h-8 text-white" />}
+                  {selectedItem.type === 'armor' && <Shield className="w-8 h-8 text-white" />}
+                  {selectedItem.type === 'accessory' && <div className="w-6 h-6 bg-white rounded-full" />}
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-bold text-white text-lg">{selectedItem.name}</h4>
+                  <p className="text-sm text-gray-300 capitalize">{selectedItem.rarity} {selectedItem.type}</p>
+                </div>
+              </div>
+              
+              <p className="text-sm text-gray-300 mb-4">{selectedItem.description}</p>
+              
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {selectedItem.stats.attack && (
+                  <div className="backdrop-blur-sm bg-red-900/20 rounded-lg p-3 text-center">
+                    <div className="text-red-300 text-xs mb-1">Attack</div>
+                    <div className="text-white font-bold">+{selectedItem.stats.attack}</div>
+                  </div>
+                )}
+                {selectedItem.stats.defense && (
+                  <div className="backdrop-blur-sm bg-blue-900/20 rounded-lg p-3 text-center">
+                    <div className="text-blue-300 text-xs mb-1">Defense</div>
+                    <div className="text-white font-bold">+{selectedItem.stats.defense}</div>
+                  </div>
+                )}
+                {selectedItem.stats.speed && (
+                  <div className="backdrop-blur-sm bg-green-900/20 rounded-lg p-3 text-center">
+                    <div className="text-green-300 text-xs mb-1">Speed</div>
+                    <div className="text-white font-bold">+{selectedItem.stats.speed}</div>
+                  </div>
+                )}
+                {selectedItem.stats.mana && (
+                  <div className="backdrop-blur-sm bg-purple-900/20 rounded-lg p-3 text-center">
+                    <div className="text-purple-300 text-xs mb-1">Mana</div>
+                    <div className="text-white font-bold">+{selectedItem.stats.mana}</div>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                {viewMode === 'equip' && !selectedItem.equipped && (
+                  <Button 
+                    onClick={() => onEquip(selectedItem.id, selectedItem.type)}
+                    className="w-full bg-purple-600 hover:bg-purple-700 h-12"
+                  >
+                    <Sword className="w-4 h-4 mr-2" />
+                    Equip Item
+                  </Button>
+                )}
+                
+                {viewMode === 'upgrade' && selectedItem.upgradable && (
+                  <Button 
+                    onClick={() => onUpgrade(selectedItem.id)}
+                    className="w-full bg-yellow-600 hover:bg-yellow-700 h-12"
+                  >
+                    <Gem className="w-4 h-4 mr-2" />
+                    Upgrade Item
+                  </Button>
+                )}
+                
+                {viewMode === 'gift' && onGiftToChaHaeIn && (
+                  <Button 
+                    onClick={() => onGiftToChaHaeIn(selectedItem.id)}
+                    className="w-full bg-pink-600 hover:bg-pink-700 h-12"
+                  >
+                    <Crown className="w-4 h-4 mr-2" />
+                    Gift to Cha Hae-In
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
