@@ -48,6 +48,7 @@ import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
 import { SparkleEffect } from '@/components/SparkleEffect';
 import { MysticalEye } from '@/components/MysticalEye';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
+import NotificationBell, { triggerNotification } from '@/components/NotificationBell';
 import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
 import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
 import { CreatorPortalDashboard } from '@/components/CreatorPortalDashboard';
@@ -434,14 +435,12 @@ export default function SoloLevelingSpatial() {
     const locationEpisodes = getLocationEpisodes();
     if (locationEpisodes.length > 0) {
       const episode = locationEpisodes[0];
-      setNotifications(prev => [...prev, {
-        id: `episode_interaction_${Date.now()}`,
-        type: 'episode_available' as const,
+      triggerNotification({
         title: 'Story Episode Available',
-        content: `"${episode.title}" - Begin this story with Cha Hae-In?`,
-        timestamp: new Date(),
-        action: () => triggerEpisode(episode.id)
-      }]);
+        message: `"${episode.title}" - Begin this story with Cha Hae-In?`,
+        type: 'info',
+        persistent: true
+      });
     }
     
     // Step 1: Focus Animation (300ms)
@@ -4056,64 +4055,43 @@ export default function SoloLevelingSpatial() {
           )}
         </motion.div>
         
-        {/* Narrative Lens Icon */}
-        <AnimatePresence>
-          {narrativeLensActive && (
-            <motion.div
-              className="absolute top-6 right-6"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0 }}
-            >
-              <MysticalEye
-                intensity="high"
-                size="md"
-                color="purple"
-                isActive={true}
-                onClick={() => {
-                  console.log('Narrative lens activated');
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Top-right UI Controls */}
+        <motion.div
+          className="absolute top-6 right-6 flex items-center gap-3"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ 
+            opacity: isFocusMode ? 0 : 1, 
+            x: isFocusMode ? 50 : 0 
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Notification Bell */}
+          <NotificationBell />
+          
+          {/* Narrative Lens Icon */}
+          <AnimatePresence>
+            {narrativeLensActive && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+              >
+                <MysticalEye
+                  intensity="high"
+                  size="md"
+                  color="purple"
+                  isActive={true}
+                  onClick={() => {
+                    console.log('Narrative lens activated');
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </motion.div>
       
-      {/* Activity Scheduled Notification */}
-      <AnimatePresence>
-        {showActivityNotification && (
-          <motion.div
-            className="fixed top-6 right-6 z-50 p-4 rounded-lg max-w-sm"
-            style={{
-              backdropFilter: 'blur(60px) saturate(200%)',
-              background: `
-                linear-gradient(135deg, 
-                  rgba(16, 185, 129, 0.9) 0%, 
-                  rgba(5, 150, 105, 0.8) 100%
-                )
-              `,
-              border: '1px solid rgba(16, 185, 129, 0.6)',
-              boxShadow: '0 20px 40px rgba(16, 185, 129, 0.3)'
-            }}
-            initial={{ opacity: 0, x: 100, scale: 0.8 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 100, scale: 0.8 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <span className="text-white text-lg">✓</span>
-              </div>
-              <div>
-                <h3 className="text-white font-medium text-sm">Activity Scheduled!</h3>
-                <p className="text-white/80 text-xs">
-                  {scheduledActivities.length > 0 && scheduledActivities[scheduledActivities.length - 1]?.title}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
 
       {/* Dialogue System - Enhanced Glassmorphism */}
       <AnimatePresence>
