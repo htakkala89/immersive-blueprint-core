@@ -4542,91 +4542,168 @@ export default function SoloLevelingSpatial() {
                     animate={{ 
                       width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%`,
                       boxShadow: showAffectionGain ? [
-                        '0 0 4px rgba(255, 105, 180, 0.3)',
-                        '0 0 12px rgba(255, 105, 180, 0.8)',
-                        '0 0 20px rgba(255, 105, 180, 1)',
-                        '0 0 12px rgba(255, 105, 180, 0.8)',
-                        '0 0 4px rgba(255, 105, 180, 0.3)'
+                        '0 0 6px rgba(255, 105, 180, 0.4)',
+                        '0 0 25px rgba(255, 105, 180, 1.2)',
+                        '0 0 40px rgba(255, 105, 180, 1.5)',
+                        '0 0 30px rgba(255, 105, 180, 1.2)',
+                        '0 0 15px rgba(255, 105, 180, 0.8)',
+                        '0 0 6px rgba(255, 105, 180, 0.4)'
                       ] : '0 0 4px rgba(255, 105, 180, 0.3)',
-                      scale: showAffectionGain ? [1, 1.02, 1.05, 1.02, 1] : 1
+                      scale: showAffectionGain ? [1, 1.08, 1.15, 1.12, 1.05, 1] : 1,
+                      filter: showAffectionGain ? [
+                        'brightness(1)',
+                        'brightness(1.4)',
+                        'brightness(1.8)',
+                        'brightness(1.6)', 
+                        'brightness(1.2)',
+                        'brightness(1)'
+                      ] : 'brightness(1)'
                     }}
                     transition={{ 
                       width: { duration: 1.2, ease: "easeOut", delay: showAffectionGain ? 1.5 : 0 },
                       boxShadow: { 
-                        duration: 0.4, 
+                        duration: 0.8, 
                         delay: showAffectionGain ? 1.6 : 0,
-                        repeat: showAffectionGain ? 1 : 0
+                        repeat: showAffectionGain ? 1 : 0,
+                        ease: "easeInOut"
                       },
                       scale: { 
-                        duration: 0.6, 
+                        duration: 1.0, 
+                        delay: showAffectionGain ? 1.6 : 0,
+                        ease: "easeInOut"
+                      },
+                      filter: {
+                        duration: 0.8,
                         delay: showAffectionGain ? 1.6 : 0,
                         ease: "easeInOut"
                       }
                     }}
                   >
-                    {/* Hearts impact ripple effect */}
+                    {/* Multiple Hearts impact ripple effects */}
                     <AnimatePresence>
                       {showAffectionGain && (
-                        <motion.div
-                          className="absolute inset-0 rounded-full border-2 border-pink-300/60"
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ 
-                            scale: [0.8, 1.3, 1.8],
-                            opacity: [0, 0.8, 0]
-                          }}
-                          exit={{ opacity: 0 }}
-                          transition={{ 
-                            duration: 1.2,
-                            delay: 1.5,
-                            ease: "easeOut"
-                          }}
-                        />
-                      )}
-                    </AnimatePresence>
-
-                    {/* Sparkle sweep when gaining affection */}
-                    <AnimatePresence>
-                      {showAffectionGain && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                          initial={{ x: '-100%', opacity: 0 }}
-                          animate={{ 
-                            x: ['100%', '200%'],
-                            opacity: [0, 1, 0]
-                          }}
-                          exit={{ opacity: 0 }}
-                          transition={{ 
-                            duration: 1.0,
-                            delay: 1.7,
-                            ease: "easeInOut"
-                          }}
-                        />
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                  
-                  {/* Progress bar celebration particles */}
-                  <AnimatePresence>
-                    {showAffectionGain && (
-                      <>
-                        {[...Array(6)].map((_, i) => (
+                        <>
                           <motion.div
-                            key={i}
-                            className="absolute w-1 h-1 bg-pink-300 rounded-full"
-                            style={{
-                              left: `${80 + i * 4}%`,
-                              top: '-3px'
-                            }}
-                            initial={{ opacity: 0, scale: 0, y: 0 }}
+                            className="absolute inset-0 rounded-full border-3 border-pink-200/80"
+                            initial={{ scale: 0.6, opacity: 0 }}
                             animate={{ 
+                              scale: [0.6, 1.5, 2.2],
                               opacity: [0, 1, 0],
-                              scale: [0, 2, 0],
-                              y: [0, -12, -20]
+                              borderWidth: [3, 2, 1]
                             }}
                             exit={{ opacity: 0 }}
                             transition={{ 
                               duration: 1.4,
-                              delay: 1.8 + i * 0.08,
+                              delay: 1.5,
+                              ease: "easeOut"
+                            }}
+                          />
+                          <motion.div
+                            className="absolute inset-0 rounded-full border-2 border-pink-300/70"
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ 
+                              scale: [0.8, 1.8, 2.5],
+                              opacity: [0, 0.8, 0]
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ 
+                              duration: 1.6,
+                              delay: 1.6,
+                              ease: "easeOut"
+                            }}
+                          />
+                          <motion.div
+                            className="absolute inset-0 rounded-full border-1 border-pink-400/50"
+                            initial={{ scale: 1.0, opacity: 0 }}
+                            animate={{ 
+                              scale: [1.0, 2.2, 3.0],
+                              opacity: [0, 0.6, 0]
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ 
+                              duration: 1.8,
+                              delay: 1.7,
+                              ease: "easeOut"
+                            }}
+                          />
+                        </>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Enhanced multi-layer sparkle sweep */}
+                    <AnimatePresence>
+                      {showAffectionGain && (
+                        <>
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/70 to-transparent"
+                            initial={{ x: '-100%', opacity: 0 }}
+                            animate={{ 
+                              x: ['100%', '200%'],
+                              opacity: [0, 1, 0]
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ 
+                              duration: 0.8,
+                              delay: 1.6,
+                              ease: "easeInOut"
+                            }}
+                          />
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-200/60 to-transparent"
+                            initial={{ x: '-120%', opacity: 0 }}
+                            animate={{ 
+                              x: ['80%', '220%'],
+                              opacity: [0, 0.8, 0]
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ 
+                              duration: 1.2,
+                              delay: 1.8,
+                              ease: "easeInOut"
+                            }}
+                          />
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-300/40 to-transparent"
+                            initial={{ x: '-80%', opacity: 0 }}
+                            animate={{ 
+                              x: ['120%', '180%'],
+                              opacity: [0, 0.6, 0]
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ 
+                              duration: 1.0,
+                              delay: 2.0,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        </>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                  
+                  {/* Enhanced Progress bar celebration particles */}
+                  <AnimatePresence>
+                    {showAffectionGain && (
+                      <>
+                        {[...Array(12)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className={`absolute rounded-full ${i % 3 === 0 ? 'w-2 h-2 bg-pink-200' : i % 3 === 1 ? 'w-1.5 h-1.5 bg-pink-300' : 'w-1 h-1 bg-pink-400'}`}
+                            style={{
+                              left: `${70 + i * 3}%`,
+                              top: `${i % 2 === 0 ? '-4px' : '-6px'}`
+                            }}
+                            initial={{ opacity: 0, scale: 0, y: 0, rotate: 0 }}
+                            animate={{ 
+                              opacity: [0, 1, 1, 0],
+                              scale: [0, 3, 2, 0],
+                              y: [0, -15, -25, -35],
+                              rotate: [0, 180, 360]
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ 
+                              duration: 2.0,
+                              delay: 1.7 + i * 0.06,
                               ease: "easeOut"
                             }}
                           />
@@ -4635,25 +4712,52 @@ export default function SoloLevelingSpatial() {
                     )}
                   </AnimatePresence>
 
-                  {/* Hearts absorption point indicator */}
+                  {/* Hearts absorption explosion effect */}
                   <AnimatePresence>
                     {showAffectionGain && (
                       <motion.div
-                        className="absolute w-2 h-2 bg-pink-200 rounded-full"
+                        className="absolute w-6 h-6 bg-gradient-to-r from-pink-300 to-pink-500 rounded-full"
                         style={{
-                          right: '8px',
-                          top: '-1px'
+                          right: '6px',
+                          top: '-6px'
                         }}
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ 
-                          scale: [0, 1.5, 0],
-                          opacity: [0, 1, 0]
+                          scale: [0, 2, 4, 2, 0],
+                          opacity: [0, 0.8, 1, 0.6, 0],
+                          boxShadow: [
+                            '0 0 0px rgba(255, 105, 180, 0)',
+                            '0 0 10px rgba(255, 105, 180, 0.8)',
+                            '0 0 20px rgba(255, 105, 180, 1)',
+                            '0 0 30px rgba(255, 105, 180, 0.6)',
+                            '0 0 0px rgba(255, 105, 180, 0)'
+                          ]
                         }}
                         exit={{ opacity: 0 }}
                         transition={{ 
-                          duration: 0.8,
+                          duration: 1.2,
                           delay: 1.5,
                           ease: "easeOut"
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  {/* Enhanced background flash effect */}
+                  <AnimatePresence>
+                    {showAffectionGain && (
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-pink-400/30 via-pink-300/50 to-pink-400/30 rounded-full"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ 
+                          opacity: [0, 0.8, 0.6, 0],
+                          scale: [0.9, 1.1, 1.2, 1]
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{ 
+                          duration: 1.0,
+                          delay: 1.5,
+                          ease: "easeInOut"
                         }}
                       />
                     )}

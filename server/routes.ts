@@ -2114,19 +2114,35 @@ RESPONSE INSTRUCTIONS:
         dynamicPrompts = generateFallbackPrompts(response, message, context).slice(0, 4);
       }
       
+      // Save the updated game state back to the profile to persist affection changes
+      if (playerId) {
+        try {
+          const finalGameState = updatedGameState.scheduledActivities ? {
+            ...updatedGameState,
+            affection: Math.min(1000, (gameState.affection || 0) + (affectionBonus || 0))
+          } : {
+            ...updatedGameState
+          };
+
+          await fetch(`${req.protocol}://${req.get('host')}/api/profiles/${playerId}/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gameState: finalGameState })
+          });
+
+          console.log(`💾 Saved updated game state with affection: ${finalGameState.affection}`);
+        } catch (saveError) {
+          console.error("Failed to save updated game state:", saveError);
+        }
+      }
+
       res.json({ 
         response, 
         audioUrl,
         expression: expressionUpdate,
         thoughtPrompts: dynamicPrompts,
         showAffectionHeart,
-        gameState: updatedGameState.scheduledActivities ? {
-          ...updatedGameState,
-          affection: Math.min(100, (gameState.affection || 25) + 1 + affectionBonus)
-        } : {
-          ...gameState,
-          affection: Math.min(100, (gameState.affection || 25) + 1 + affectionBonus)
-        }
+        gameState: updatedGameState
       });
     } catch (error) {
       console.error("Chat error:", error);
