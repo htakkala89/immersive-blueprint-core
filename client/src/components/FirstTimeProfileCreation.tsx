@@ -115,7 +115,7 @@ export function FirstTimeProfileCreation({ onCreateProfile, isCreating = false }
               
               <div className="space-y-3">
                 <p className="text-xs text-slate-400 text-center">Suggested names:</p>
-                <div className="flex flex-wrap gap-2 justify-center">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-center">
                   {suggestedNames.map((name) => (
                     <Button
                       key={name}
@@ -123,7 +123,7 @@ export function FirstTimeProfileCreation({ onCreateProfile, isCreating = false }
                       size="sm"
                       onClick={() => setProfileName(name)}
                       disabled={isCreating}
-                      className="text-xs border-white/20 text-slate-300 hover:bg-white/10 hover:text-white"
+                      className="text-xs border-white/20 text-slate-300 hover:bg-white/10 hover:text-white h-8 sm:h-auto"
                     >
                       {name}
                     </Button>
