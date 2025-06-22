@@ -329,11 +329,10 @@ export default function SoloLevelingSpatial() {
   const [visitHistory, setVisitHistory] = useState<Record<string, number>>({});
   const [chaHaeInPresent, setChaHaeInPresent] = useState(true);
 
-  // Focus Animation for immersive dialogue
+  // Generate automatic greeting when clicking Cha Hae-In's node
   const handleChaHaeInInteraction = async () => {
     console.log('Starting Cha Hae-In interaction...');
     
-    // Always start with dialogue interface when clicking her golden node
     // Check for available episodes at current location first
     const locationEpisodes = getLocationEpisodes();
     if (locationEpisodes.length > 0) {
@@ -346,138 +345,96 @@ export default function SoloLevelingSpatial() {
         timestamp: new Date(),
         action: () => triggerEpisode(episode.id)
       }]);
-      // Continue to dialogue interface instead of opening communicator
     }
     
-    // Step 1: Focus Animation (300ms)
-    setIsFocusMode(true);
-    console.log('Focus mode activated');
-    
-    // Step 2: Generate character image if not available
-    if (!emotionalImage) {
-      try {
-        const getEmotionalState = () => {
-          if (gameState.affection >= 80) return 'romantic_anticipation';
-          if (gameState.affection >= 60) return 'warm_welcoming';
-          if (gameState.affection >= 40) return 'professional_friendly';
-          return 'focused_professional';
-        };
+    // Generate initial greeting based on location and relationship
+    try {
+      const greetingPrompt = getLocationSpecificGreeting();
+      
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: greetingPrompt,
+          gameState: {
+            ...gameState,
+            playerId: gameState.playerId || 'spatial_player',
+            sessionId: gameState.sessionId || 'spatial_session'
+          },
+          characterState: {
+            location: playerLocation,
+            activity: currentLocationData.chaActivity
+          },
+          context: {
+            timeOfDay,
+            location: playerLocation,
+            isInitialGreeting: true
+          },
+          communicatorMode: true,
+          conversationHistory: []
+        })
+      });
 
-        const emotion = getEmotionalState();
-        const params = new URLSearchParams({
-          emotion,
-          location: playerLocation,
-          timeOfDay
-        });
-
-        const response = await fetch(`/api/chat-scene-image?${params}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
+      if (response.ok) {
+        const data = await response.json();
         
-        if (response.ok) {
-          const data = await response.json();
-          if (data.imageUrl) {
-            setEmotionalImage(data.imageUrl);
-          }
-        }
-      } catch (error) {
-        console.log('Character image generation skipped');
+        // Add the greeting message to conversation history
+        setConversationHistory([{
+          id: `greeting_${Date.now()}`,
+          senderName: 'Cha Hae-In',
+          content: data.response,
+          timestamp: new Date(),
+          type: 'cha_hae_in'
+        }]);
+        
+        // Open the Hunter's Communicator with the greeting already displayed
+        setShowCommunicator(true);
+        console.log('Hunter\'s Communicator opened with automatic greeting');
+      } else {
+        console.error('Failed to generate initial greeting');
+        // Fallback to opening communicator normally
+        setShowCommunicator(true);
       }
+    } catch (error) {
+      console.error('Error generating greeting:', error);
+      // Fallback to opening communicator normally
+      setShowCommunicator(true);
     }
+  };
+
+  // Generate location-specific greeting prompt
+  const getLocationSpecificGreeting = () => {
+    const affectionLevel = gameState.affection || 0;
     
-    // Step 3: UI transitions
-    setTimeout(() => {
-      console.log('Starting dialogue transitions...');
-      setShowLivingPortrait(true);
-      setChaHaeInExpression('recognition');
-      
-      // Step 4: Generate location-aware dialogue
-      const getLocationSpecificDialogue = () => {
-        const affectionLevel = gameState.affection || 0;
-        
-        switch (playerLocation) {
-          case 'chahaein_apartment':
-            if (affectionLevel >= 70) {
-              return {
-                dialogue: "Jin-Woo... I'm so glad you came over. I was just making some tea. Would you like to stay for a while?",
-                prompts: [
-                  "I'd love to stay with you.",
-                  "Tea sounds perfect.",
-                  "How are you feeling tonight?"
-                ]
-              };
-            } else if (affectionLevel >= 40) {
-              return {
-                dialogue: "Oh, Jin-Woo! I wasn't expecting you. Please, come in. Make yourself comfortable.",
-                prompts: [
-                  "Thanks for inviting me in.",
-                  "Your place is beautiful.",
-                  "I hope I'm not intruding."
-                ]
-              };
-            } else {
-              return {
-                dialogue: "Jin-Woo? What brings you to my apartment? Is everything alright?",
-                prompts: [
-                  "I wanted to check on you.",
-                  "Sorry if this is sudden.",
-                  "We need to talk about something."
-                ]
-              };
-            }
-            
-          case 'hunter_association':
-            return {
-              dialogue: "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?",
-              prompts: [
-                "Just wanted to see you.",
-                "Anything interesting in the report?", 
-                "Ready for a break? I can handle the rest."
-              ]
-            };
-            
-          case 'player_apartment':
-            if (affectionLevel >= 80) {
-              return {
-                dialogue: "Your place feels like home now, Jin-Woo. I love spending time here with you.",
-                prompts: [
-                  "I love having you here.",
-                  "This is our place now.",
-                  "Want to relax together?"
-                ]
-              };
-            } else {
-              return {
-                dialogue: "Your apartment has such a nice atmosphere, Jin-Woo. Thank you for having me over.",
-                prompts: [
-                  "I'm glad you like it.",
-                  "Would you like something to drink?",
-                  "Make yourself at home."
-                ]
-              };
-            }
-            
-          default:
-            return {
-              dialogue: "Jin-Woo, what brings you here? Is there something you need?",
-              prompts: [
-                "Just wanted to see you.",
-                "How are things going?",
-                "Do you have a moment to talk?"
-              ]
-            };
+    switch (playerLocation) {
+      case 'chahaein_apartment':
+        if (affectionLevel >= 70) {
+          return "[INITIAL_GREETING] Jin-Woo just arrived at your apartment. You're happy to see him. Greet him warmly.";
+        } else if (affectionLevel >= 40) {
+          return "[INITIAL_GREETING] Jin-Woo unexpectedly visits your apartment. You're pleasantly surprised. Welcome him in.";
+        } else {
+          return "[INITIAL_GREETING] Jin-Woo shows up at your apartment door. You're curious why he's here. Greet him professionally but with slight concern.";
         }
-      };
-      
-      const locationDialogue = getLocationSpecificDialogue();
-      setCurrentDialogue(locationDialogue.dialogue);
-      setThoughtPrompts(locationDialogue.prompts);
-      
-      setDialogueActive(true);
-      console.log('Dialogue activated');
-      setChaHaeInExpression('welcoming');
-    }, 300);
+        
+      case 'hunter_association':
+        return "[INITIAL_GREETING] Jin-Woo approaches you while you're working at the Hunter Association. You look up from your current task and acknowledge him.";
+        
+      case 'player_apartment':
+        if (affectionLevel >= 80) {
+          return "[INITIAL_GREETING] You're at Jin-Woo's apartment, feeling completely at home. Greet him with love and familiarity.";
+        } else {
+          return "[INITIAL_GREETING] You're visiting Jin-Woo's apartment. Greet him and comment on his home.";
+        }
+        
+      case 'hongdae_cafe':
+        return "[INITIAL_GREETING] Jin-Woo finds you at the café. You're enjoying your coffee. Look up and greet him with a smile.";
+        
+      case 'myeongdong_restaurant':
+        return "[INITIAL_GREETING] You're at the restaurant when Jin-Woo arrives. Invite him to join you.";
+        
+      default:
+        return `[INITIAL_GREETING] Jin-Woo approaches you at ${playerLocation}. You're ${currentLocationData.chaActivity}. Greet him naturally.`;
+    }
   };
 
   const exitFocusMode = () => {
