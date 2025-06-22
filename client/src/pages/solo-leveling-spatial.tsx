@@ -48,7 +48,7 @@ import LuxuryDepartmentStore from '@/components/LuxuryDepartmentStoreNew';
 import { SparkleEffect } from '@/components/SparkleEffect';
 import { MysticalEye } from '@/components/MysticalEye';
 import GangnamFurnishings from '@/components/GangnamFurnishings';
-import NotificationBell, { triggerNotification } from '@/components/NotificationBell';
+import { triggerNotification } from '@/components/NotificationBell';
 import { EpisodicStoryEngine } from '@/components/EpisodicStoryEngine';
 import { RoleSelectionScreen } from '@/components/RoleSelectionScreen';
 import { CreatorPortalDashboard } from '@/components/CreatorPortalDashboard';
@@ -5082,6 +5082,8 @@ export default function SoloLevelingSpatial() {
             ...updates
           }));
         }}
+        onOpenInventory={() => setShowInventory(true)}
+        onOpenArmory={() => setShowMonarchArmory(true)}
       />
 
       {/* System 18: Episodic Story Engine */}

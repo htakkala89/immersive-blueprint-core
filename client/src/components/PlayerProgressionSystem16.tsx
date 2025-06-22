@@ -52,15 +52,19 @@ interface ProgressionProps {
   onClose: () => void;
   playerData: PlayerData;
   onUpdatePlayer: (updates: Partial<PlayerData>) => void;
+  onOpenInventory?: () => void;
+  onOpenArmory?: () => void;
 }
 
 export function PlayerProgressionSystem16({
   isVisible,
   onClose,
   playerData,
-  onUpdatePlayer
+  onUpdatePlayer,
+  onOpenInventory,
+  onOpenArmory
 }: ProgressionProps) {
-  const [activeTab, setActiveTab] = useState<'stats' | 'skills'>('stats');
+  const [activeTab, setActiveTab] = useState<'stats' | 'skills' | 'equipment'>('stats');
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [constellationZoom, setConstellationZoom] = useState(1);
   const [constellationPan, setConstellationPan] = useState({ x: 0, y: 0 });
@@ -350,6 +354,16 @@ export function PlayerProgressionSystem16({
             }`}
           >
             Monarch's Constellation
+          </button>
+          <button
+            onClick={() => setActiveTab('equipment')}
+            className={`px-6 py-4 font-medium transition-colors ${
+              activeTab === 'equipment'
+                ? 'text-purple-300 border-b-2 border-purple-500 bg-purple-900/20'
+                : 'text-slate-400 hover:text-white hover:bg-slate-700/30'
+            }`}
+          >
+            Equipment
           </button>
         </div>
 
@@ -777,6 +791,110 @@ export function PlayerProgressionSystem16({
                   </div>
                 </motion.div>
               )}
+            </div>
+          )}
+
+          {activeTab === 'equipment' && (
+            <div className="h-full overflow-y-auto character-scrollbar p-6">
+              <div className="max-w-4xl mx-auto space-y-6">
+                {/* Equipment Management Header */}
+                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                  <h3 className="text-xl font-bold text-white mb-4">Equipment Management</h3>
+                  <p className="text-slate-300 mb-6">
+                    Manage your inventory, equipment, and armory from this central hub.
+                  </p>
+
+                  {/* Equipment Action Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Inventory Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-xl p-6 border border-purple-500/30 cursor-pointer"
+                      onClick={() => {
+                        onClose();
+                        onOpenInventory?.();
+                      }}
+                    >
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-full bg-purple-600/30 flex items-center justify-center">
+                          <Package className="w-6 h-6 text-purple-300" />
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white">Inventory</h4>
+                          <p className="text-purple-200 text-sm">Items & Resources</p>
+                        </div>
+                      </div>
+                      <p className="text-slate-300 text-sm mb-4">
+                        Access your consumables, materials, quest items, and gifts. Manage item quantities and sell unwanted resources.
+                      </p>
+                      <div className="flex items-center text-purple-300 text-sm font-medium">
+                        Open Inventory →
+                      </div>
+                    </motion.div>
+
+                    {/* Armory Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-xl p-6 border border-amber-500/30 cursor-pointer"
+                      onClick={() => {
+                        onClose();
+                        onOpenArmory?.();
+                      }}
+                    >
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-full bg-amber-600/30 flex items-center justify-center">
+                          <Crown className="w-6 h-6 text-amber-300" />
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white">Armory</h4>
+                          <p className="text-amber-200 text-sm">Weapons & Equipment</p>
+                        </div>
+                      </div>
+                      <p className="text-slate-300 text-sm mb-4">
+                        Equip weapons, armor, and accessories. View equipment stats and manage your combat loadout.
+                      </p>
+                      <div className="flex items-center text-amber-300 text-sm font-medium">
+                        Open Armory →
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Quick Equipment Overview */}
+                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                  <h3 className="text-xl font-bold text-white mb-4">Quick Overview</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Package className="w-5 h-5 text-purple-300" />
+                        <span className="text-white font-medium">Inventory Items</span>
+                      </div>
+                      <p className="text-2xl font-bold text-purple-300">24</p>
+                      <p className="text-slate-400 text-sm">Items stored</p>
+                    </div>
+                    
+                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Sword className="w-5 h-5 text-amber-300" />
+                        <span className="text-white font-medium">Equipped Items</span>
+                      </div>
+                      <p className="text-2xl font-bold text-amber-300">6</p>
+                      <p className="text-slate-400 text-sm">Currently equipped</p>
+                    </div>
+                    
+                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Star className="w-5 h-5 text-green-300" />
+                        <span className="text-white font-medium">Equipment Power</span>
+                      </div>
+                      <p className="text-2xl font-bold text-green-300">S+</p>
+                      <p className="text-slate-400 text-sm">Overall rating</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
