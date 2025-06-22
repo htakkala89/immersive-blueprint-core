@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, MessageCircle, Bell, X, Users, Zap } from 'lucide-react';
+import { Send, MessageCircle, X, Users, Zap } from 'lucide-react';
 
 // Enhanced Message Types
 interface Message {
