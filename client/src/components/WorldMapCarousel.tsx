@@ -237,7 +237,8 @@ export function WorldMapCarousel({
   };
 
   const getLocationColor = (location: LocationNode) => {
-    if (location.hasCharacter) return 'text-yellow-400 bg-yellow-400/20 border-yellow-400/50';
+    // Cha Hae-In's presence always takes priority with bright yellow heart
+    if (location.hasCharacter) return 'text-yellow-400 bg-yellow-400/30 border-yellow-400/70 shadow-lg shadow-yellow-400/50';
     if (location.state === 'locked') return 'text-slate-400 bg-slate-700/30 border-slate-600/50';
     if (location.state === 'gate') return 'text-red-400 bg-red-400/20 border-red-400/50';
     if (activeQuests.some(quest => quest.includes(location.id))) return 'text-blue-400 bg-blue-400/20 border-blue-400/50';
@@ -365,10 +366,18 @@ export function WorldMapCarousel({
                       {location.hasCharacter && (
                         <motion.div
                           initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center"
+                          animate={{ 
+                            scale: [1, 1.2, 1],
+                            opacity: [1, 0.8, 1]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg shadow-yellow-400/50"
                         >
-                          <Heart className="w-3 h-3 text-yellow-900" />
+                          <Heart className="w-3 h-3 text-yellow-900 fill-current" />
                         </motion.div>
                       )}
                     </motion.div>

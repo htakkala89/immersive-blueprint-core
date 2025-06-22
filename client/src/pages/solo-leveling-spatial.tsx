@@ -1002,6 +1002,152 @@ export default function SoloLevelingSpatial() {
   // Developer Menu - Collapsible state
   const [showDevMenu, setShowDevMenu] = useState(false);
 
+  // Equipment Management System
+  const [playerEquipment, setPlayerEquipment] = useState([
+    {
+      id: 'kasaka_fang',
+      name: 'Kasaka\'s Poisonous Fang',
+      type: 'weapon',
+      rarity: 'legendary',
+      stats: { attack: 1200, speed: 150 },
+      description: 'A legendary dagger that deals poison damage over time',
+      image: '/equipment/kasaka_fang.png',
+      equipped: true,
+      upgradable: true
+    },
+    {
+      id: 'knight_killer',
+      name: 'Knight Killer',
+      type: 'weapon',
+      rarity: 'rare',
+      stats: { attack: 800, speed: 120 },
+      description: 'A powerful sword effective against armored enemies',
+      image: '/equipment/knight_killer.png',
+      equipped: false,
+      upgradable: true
+    },
+    {
+      id: 'shadow_armor',
+      name: 'Shadow Sovereign\'s Armor',
+      type: 'armor',
+      rarity: 'mythic',
+      stats: { defense: 2000, mana: 500 },
+      description: 'Armor worn by the Shadow Sovereign himself',
+      image: '/equipment/shadow_armor.png',
+      equipped: true,
+      upgradable: false
+    }
+  ]);
+
+  // Equipment management handlers
+  const handleEquipItem = (itemId: string, slot: string) => {
+    setPlayerEquipment(prev => prev.map(item => {
+      if (item.id === itemId) {
+        // Unequip other items of the same type first
+        const updatedEquipment = prev.map(otherItem => 
+          otherItem.type === item.type && otherItem.id !== itemId 
+            ? { ...otherItem, equipped: false }
+            : otherItem
+        );
+        return { ...item, equipped: true };
+      }
+      return item;
+    }));
+    
+    // Apply stat bonuses to character
+    const equippedItem = playerEquipment.find(item => item.id === itemId);
+    if (equippedItem) {
+      setGameState(prev => ({
+        ...prev,
+        stats: {
+          ...prev.stats,
+          strength: (prev.stats?.strength || 100) + (equippedItem.stats.attack || 0) / 10,
+          agility: (prev.stats?.agility || 100) + (equippedItem.stats.speed || 0) / 10,
+          vitality: (prev.stats?.vitality || 100) + (equippedItem.stats.defense || 0) / 10,
+          intelligence: (prev.stats?.intelligence || 100) + (equippedItem.stats.mana || 0) / 10,
+          sense: prev.stats?.sense || 100
+        }
+      }));
+      
+      console.log(`✨ Equipped ${equippedItem.name} - Stats updated`);
+    }
+  };
+
+  const handleUnequipItem = (itemId: string) => {
+    setPlayerEquipment(prev => prev.map(item => 
+      item.id === itemId ? { ...item, equipped: false } : item
+    ));
+    
+    // Remove stat bonuses from character
+    const unequippedItem = playerEquipment.find(item => item.id === itemId);
+    if (unequippedItem) {
+      setGameState(prev => ({
+        ...prev,
+        stats: {
+          ...prev.stats,
+          strength: Math.max(10, (prev.stats?.strength || 100) - (unequippedItem.stats.attack || 0) / 10),
+          agility: Math.max(10, (prev.stats?.agility || 100) - (unequippedItem.stats.speed || 0) / 10),
+          vitality: Math.max(10, (prev.stats?.vitality || 100) - (unequippedItem.stats.defense || 0) / 10),
+          intelligence: Math.max(10, (prev.stats?.intelligence || 100) - (unequippedItem.stats.mana || 0) / 10),
+          sense: prev.stats?.sense || 100
+        }
+      }));
+      
+      console.log(`🔄 Unequipped ${unequippedItem.name} - Stats restored`);
+    }
+  };
+
+  const handleUpgradeItem = (itemId: string) => {
+    setPlayerEquipment(prev => prev.map(item => {
+      if (item.id === itemId && item.upgradable) {
+        const upgradeCost = 50000 * (item.rarity === 'legendary' ? 3 : item.rarity === 'epic' ? 2 : 1);
+        
+        if ((gameState.gold || 0) >= upgradeCost) {
+          setGameState(prevState => ({
+            ...prevState,
+            gold: Math.max(0, (prevState.gold || 0) - upgradeCost)
+          }));
+          
+          return {
+            ...item,
+            stats: {
+              attack: (item.stats.attack || 0) * 1.2,
+              defense: (item.stats.defense || 0) * 1.2,
+              speed: (item.stats.speed || 0) * 1.1,
+              mana: (item.stats.mana || 0) * 1.15
+            },
+            name: item.name + ' +1'
+          };
+        }
+      }
+      return item;
+    }));
+  };
+
+  const handleGiftToChaHaeIn = (itemId: string) => {
+    const giftedItem = playerEquipment.find(item => item.id === itemId);
+    if (giftedItem) {
+      // Remove item from inventory
+      setPlayerEquipment(prev => prev.filter(item => item.id !== itemId));
+      
+      // Increase affection based on item rarity
+      const affectionGain = {
+        'common': 5,
+        'rare': 10,
+        'epic': 20,
+        'legendary': 35,
+        'mythic': 50
+      }[giftedItem.rarity] || 5;
+      
+      setGameState(prev => ({
+        ...prev,
+        affection: Math.min(100, prev.affection + affectionGain)
+      }));
+      
+      console.log(`💝 Gifted ${giftedItem.name} to Cha Hae-In - Affection +${affectionGain}`);
+    }
+  };
+
   // Keyboard shortcuts for development
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
