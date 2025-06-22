@@ -4535,15 +4535,73 @@ export default function SoloLevelingSpatial() {
                      gameState.affection >= 100 ? 'Friend' : 'Acquaintance'}
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden relative">
                   <motion.div 
-                    className="h-full bg-gradient-to-r from-pink-400 to-rose-400 rounded-full"
+                    className="h-full bg-gradient-to-r from-pink-400 to-rose-400 rounded-full relative overflow-hidden"
                     initial={{ width: 0 }}
                     animate={{ 
-                      width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%` 
+                      width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%`,
+                      boxShadow: showAffectionGain ? [
+                        '0 0 8px rgba(255, 105, 180, 0.6)',
+                        '0 0 16px rgba(255, 105, 180, 0.8)',
+                        '0 0 8px rgba(255, 105, 180, 0.6)'
+                      ] : '0 0 4px rgba(255, 105, 180, 0.3)'
                     }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                  />
+                    transition={{ 
+                      width: { duration: 1.2, ease: "easeOut", delay: showAffectionGain ? 1.5 : 0 },
+                      boxShadow: { duration: 0.6, repeat: showAffectionGain ? 2 : 0 }
+                    }}
+                  >
+                    {/* Sparkle overlay when gaining affection */}
+                    <AnimatePresence>
+                      {showAffectionGain && (
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                          initial={{ x: '-100%', opacity: 0 }}
+                          animate={{ 
+                            x: ['100%', '200%'],
+                            opacity: [0, 1, 0]
+                          }}
+                          exit={{ opacity: 0 }}
+                          transition={{ 
+                            duration: 1.5,
+                            delay: 1.3,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                  
+                  {/* Progress bar celebration particles */}
+                  <AnimatePresence>
+                    {showAffectionGain && (
+                      <>
+                        {[...Array(5)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-1 h-1 bg-pink-300 rounded-full"
+                            style={{
+                              left: `${85 + i * 3}%`,
+                              top: '-2px'
+                            }}
+                            initial={{ opacity: 0, scale: 0, y: 0 }}
+                            animate={{ 
+                              opacity: [0, 1, 0],
+                              scale: [0, 1.5, 0],
+                              y: [0, -8, -16]
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ 
+                              duration: 1.2,
+                              delay: 1.8 + i * 0.1,
+                              ease: "easeOut"
+                            }}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
               
@@ -4663,28 +4721,40 @@ export default function SoloLevelingSpatial() {
                   </motion.div>
                   
                   <div className="flex-1 relative">
-                    {/* Sparkle Hearts within Dialogue Window */}
+                    {/* Hearts that Flow into Progress Bar */}
                     <AnimatePresence>
                       {sparkleHearts.map((heart) => (
-                        <div
+                        <motion.div
                           key={heart.id}
-                          className="absolute pointer-events-none z-10"
+                          className="absolute pointer-events-none z-20"
                           style={{
                             left: `${heart.x}%`,
                             top: `${heart.y}%`,
-                            fontSize: '1.2rem',
+                            fontSize: '1.5rem',
                             color: '#ff69b4',
-                            textShadow: '0 0 8px rgba(255, 105, 180, 0.6)',
-                            animation: 'sparkleHeart 2s ease-out forwards',
-                            animationDelay: `${heart.delay}ms`
+                            textShadow: '0 0 12px rgba(255, 105, 180, 0.8)',
+                          }}
+                          initial={{ opacity: 1, scale: 1, rotate: 0 }}
+                          animate={{ 
+                            opacity: [1, 1, 0],
+                            scale: [1, 1.2, 0.3],
+                            rotate: [0, 15, -15, 0],
+                            x: [0, 0, -200],
+                            y: [0, -20, -150]
+                          }}
+                          exit={{ opacity: 0 }}
+                          transition={{ 
+                            duration: 1.8,
+                            delay: heart.delay / 1000,
+                            ease: "easeInOut"
                           }}
                         >
                           💕
-                        </div>
+                        </motion.div>
                       ))}
                     </AnimatePresence>
 
-                    {/* Affection Gain Notification within Dialogue */}
+                    {/* Affection Gain Notification with Sparkle */}
                     <AnimatePresence>
                       {showAffectionGain && (
                         <motion.div 
@@ -4694,9 +4764,20 @@ export default function SoloLevelingSpatial() {
                           exit={{ opacity: 0, y: -20, scale: 0.9 }}
                           transition={{ duration: 0.4 }}
                         >
-                          <div className="bg-gradient-to-r from-pink-500/90 to-rose-500/90 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                            +{affectionGainAmount} Affection 💖
-                          </div>
+                          <motion.div 
+                            className="bg-gradient-to-r from-pink-500/90 to-rose-500/90 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg relative overflow-hidden"
+                            animate={{
+                              boxShadow: [
+                                '0 4px 15px rgba(255, 105, 180, 0.3)',
+                                '0 8px 25px rgba(255, 105, 180, 0.6)',
+                                '0 4px 15px rgba(255, 105, 180, 0.3)'
+                              ]
+                            }}
+                            transition={{ duration: 0.8, repeat: 1 }}
+                          >
+                            +{affectionGainAmount} Affection ✨
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] animate-pulse" />
+                          </motion.div>
                         </motion.div>
                       )}
                     </AnimatePresence>
