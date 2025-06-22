@@ -2003,14 +2003,31 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-scroll behavior: bottom-anchored scrolling for mobile
+  // Smart auto-scroll behavior: Show beginning of AI responses, bottom for user messages
   useEffect(() => {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
       setTimeout(() => {
         if (conversationScrollRef.current) {
-          // Always scroll to bottom for both user and AI messages on mobile
-          // This provides consistent behavior and prevents conversation jumping
-          conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+          const lastMessage = conversationHistory[conversationHistory.length - 1];
+          
+          if (lastMessage.type === 'cha_hae_in') {
+            // For AI responses: Position so user can read from the beginning
+            // Find the last AI message element and scroll to show it 10% from top
+            const scrollContainer = conversationScrollRef.current;
+            const messageElements = scrollContainer.querySelectorAll('.message-bubble');
+            const lastMessageElement = messageElements[messageElements.length - 1];
+            
+            if (lastMessageElement) {
+              const containerHeight = scrollContainer.clientHeight;
+              const elementTop = (lastMessageElement as HTMLElement).offsetTop;
+              const targetScrollTop = elementTop - (containerHeight * 0.1); // 10% from top
+              
+              scrollContainer.scrollTop = Math.max(0, targetScrollTop);
+            }
+          } else {
+            // For user messages: Scroll to bottom for natural input flow
+            conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+          }
         }
       }, 150); // Small delay to ensure content is rendered
     }
@@ -4573,7 +4590,7 @@ export default function SoloLevelingSpatial() {
                       {conversationHistory.map((entry, index) => (
                         <motion.div
                           key={index}
-                          className={`flex ${entry.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                          className={`flex ${entry.type === 'user' ? 'justify-end' : 'justify-start'} message-bubble`}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 }}
