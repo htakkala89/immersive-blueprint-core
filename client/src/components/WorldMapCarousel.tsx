@@ -96,12 +96,12 @@ export function WorldMapCarousel({
           hasCharacter: chaHaeInLocation === 'luxury_mall'
         },
         {
-          id: 'fine_dining',
+          id: 'myeongdong_restaurant',
           name: 'Fine Dining Restaurant',
           description: 'Exclusive culinary experiences',
           state: playerAffection >= 400 ? 'default' : 'locked',
           unlockCondition: 'Requires 400+ Affection',
-          hasCharacter: chaHaeInLocation === 'fine_dining'
+          hasCharacter: chaHaeInLocation === 'myeongdong_restaurant'
         },
         {
           id: 'spa_wellness',
@@ -191,19 +191,19 @@ export function WorldMapCarousel({
       textColor: 'text-purple-300',
       locations: [
         {
-          id: 'jinwoo_apartment',
+          id: 'player_apartment',
           name: "Jin-Woo's Apartment",
           description: 'Your personal living space',
           state: 'default',
-          hasCharacter: chaHaeInLocation === 'jinwoo_apartment'
+          hasCharacter: chaHaeInLocation === 'player_apartment'
         },
         {
-          id: 'cha_apartment',
+          id: 'chahaein_apartment',
           name: "Cha Hae-In's Apartment",
           description: "Cha Hae-In's private residence",
           state: playerAffection >= 800 ? 'default' : 'locked',
           unlockCondition: 'Requires 800+ Affection',
-          hasCharacter: chaHaeInLocation === 'cha_apartment'
+          hasCharacter: chaHaeInLocation === 'chahaein_apartment'
         }
       ]
     }

@@ -1842,10 +1842,37 @@ export default function SoloLevelingSpatial() {
   // Debug logging for character presence
   console.log('Current time:', timeOfDay);
   console.log('Cha Hae-In location:', chaHaeInCurrentLocation);
+  console.log('Player affection:', gameState.affection);
   console.log('Player location:', playerLocation);
   console.log('Current scene:', gameState.currentScene);
   console.log('Should Cha be present?', currentLocationData?.chaHaeInPresent);
   console.log('Cha position:', currentLocationData?.chaPosition);
+  
+  // DEBUG: Show when Cha would be available
+  const debugGetLocation = (time: string) => {
+    const affection = gameState.affection;
+    if (time === 'morning') {
+      if (affection >= 80) return 'player_apartment';
+      if (affection >= 70) return 'chahaein_apartment';
+      return 'hunter_association';
+    } else if (time === 'afternoon') {
+      return 'hunter_association';
+    } else if (time === 'evening') {
+      if (affection >= 60) return 'myeongdong_restaurant';
+      if (affection >= 40) return 'hongdae_cafe';
+      return 'hunter_association';
+    } else {
+      if (affection >= 80) return 'player_apartment';
+      if (affection >= 70) return 'chahaein_apartment';
+      return null;
+    }
+  };
+  
+  console.log('DEBUG - Cha location at different times:');
+  console.log('  Morning:', debugGetLocation('morning'));
+  console.log('  Afternoon:', debugGetLocation('afternoon'));
+  console.log('  Evening:', debugGetLocation('evening'));
+  console.log('  Night:', debugGetLocation('night'));
 
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
