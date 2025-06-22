@@ -3711,11 +3711,7 @@ export default function SoloLevelingSpatial() {
                 console.log('🍽️ View menu clicked - opening Myeongdong dinner modal');
                 setShowMyeongdongDinner(true);
                 break;
-              case 'speak_sommelier':
-                // Open sommelier dialogue interface as per spec
-                console.log('🍷 Sommelier interaction - opening wine selection dialogue');
-                setShowSommelierDialog(true);
-                break;
+
                 
               // N Seoul Tower - Date Activity Exclusive Nodes
               case 'observation_deck':
@@ -4272,38 +4268,9 @@ export default function SoloLevelingSpatial() {
                 setShowFloorSelect(true);
                 console.log('Opening floor selection UI');
                 break;
-              case 'sparring_ring':
-                // Direct shortcut to Daily Life sparring activity
-                setShowDailyLifeHub(true);
-                setTimeout(() => {
-                  // Auto-select sparring activity
-                  const sparringActivity = document.querySelector('[data-activity="sparring_session"]');
-                  if (sparringActivity) {
-                    sparringActivity.click();
-                  }
-                }, 100);
-                handleEnvironmentalInteraction({
-                  id: 'sparring_shortcut',
-                  action: 'Enter the sparring ring for direct training with Cha Hae-In. The familiar environment enhances your combat coordination.',
-                  name: 'Sparring Ring Entry',
-                  x: 50,
-                  y: 50
-                });
-                console.log('Sparring ring - Opening Daily Life sparring activity');
-                break;
 
-              case 'combat_analytics':
-                // Show raid statistics UI
-                setShowRaidStats(true);
-                handleEnvironmentalInteraction({
-                  id: 'combat_analysis',
-                  action: 'Review detailed combat statistics and raid performance data. Analyzing your joint combat effectiveness reveals areas for improvement.',
-                  name: 'Combat Analytics Terminal',
-                  x: 70,
-                  y: 30
-                });
-                console.log('Combat analytics - Opening raid statistics interface');
-                break;
+
+
 
 
 
