@@ -464,54 +464,61 @@ export function PlayerProgressionSystem16({
                   </div>
                   <div className="px-4 sm:px-6 pb-4 sm:pb-6 max-h-80 sm:max-h-96 overflow-y-auto character-scrollbar">
                     <div className="space-y-2 sm:space-y-3">
-                    {Object.entries(playerData.stats).map(([statKey, value]) => {
-                      const IconComponent = getStatIcon(statKey as keyof CoreStats);
-                      const colorClass = getStatColor(statKey as keyof CoreStats);
+                    {playerData.stats && Object.entries(playerData.stats).length > 0 ? (
+                      Object.entries(playerData.stats).map(([statKey, value]) => {
+                        const IconComponent = getStatIcon(statKey as keyof CoreStats);
+                        const colorClass = getStatColor(statKey as keyof CoreStats);
                       
-                      return (
-                        <div key={statKey} className="flex items-center justify-between p-2 sm:p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
-                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                            <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${colorClass} flex-shrink-0`} />
-                            <div className="min-w-0 flex-1">
-                              <span className="text-white font-medium capitalize text-sm sm:text-base">{statKey}</span>
-                              <div className="text-xs text-slate-400 hidden sm:block">
-                                {statKey === 'strength' && 'Physical damage & carrying capacity'}
-                                {statKey === 'agility' && 'Attack speed & critical chance'}
-                                {statKey === 'vitality' && 'Health & defense'}
-                                {statKey === 'intelligence' && 'Mana & magical damage'}
-                                {statKey === 'sense' && 'Detection & weak point identification'}
+                        return (
+                          <div key={statKey} className="flex items-center justify-between p-2 sm:p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                              <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${colorClass} flex-shrink-0`} />
+                              <div className="min-w-0 flex-1">
+                                <span className="text-white font-medium capitalize text-sm sm:text-base">{statKey}</span>
+                                <div className="text-xs text-slate-400 hidden sm:block">
+                                  {statKey === 'strength' && 'Physical damage & carrying capacity'}
+                                  {statKey === 'agility' && 'Attack speed & critical chance'}
+                                  {statKey === 'vitality' && 'Health & defense'}
+                                  {statKey === 'intelligence' && 'Mana & magical damage'}
+                                  {statKey === 'sense' && 'Detection & weak point identification'}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                            <motion.span 
-                              className="text-xl sm:text-2xl font-bold text-white"
-                              key={`${statKey}-${value}`}
-                              initial={{ scale: 1.2, color: '#fbbf24' }}
-                              animate={{ scale: 1, color: '#ffffff' }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              {value}
-                            </motion.span>
-                            {playerData.unspentStatPoints > 0 && (
-                              <motion.div
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
+                            
+                            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                              <motion.span 
+                                className="text-xl sm:text-2xl font-bold text-white"
+                                key={`${statKey}-${value}`}
+                                initial={{ scale: 1.2, color: '#fbbf24' }}
+                                animate={{ scale: 1, color: '#ffffff' }}
+                                transition={{ duration: 0.3 }}
                               >
-                                <Button
-                                  onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
-                                  size="sm"
-                                  className="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 w-8 h-8 sm:w-9 sm:h-9 p-0 shadow-lg border border-purple-400/30 min-h-[32px] min-w-[32px] sm:min-h-[36px] sm:min-w-[36px]"
+                                {value}
+                              </motion.span>
+                              {playerData.unspentStatPoints > 0 && (
+                                <motion.div
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
                                 >
-                                  <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                                </Button>
-                              </motion.div>
-                            )}
+                                  <Button
+                                    onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
+                                    size="sm"
+                                    className="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 w-8 h-8 sm:w-9 sm:h-9 p-0 shadow-lg border border-purple-400/30 min-h-[32px] min-w-[32px] sm:min-h-[36px] sm:min-w-[36px]"
+                                  >
+                                    <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  </Button>
+                                </motion.div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-8 text-slate-400">
+                        <Brain className="w-12 h-12 mx-auto mb-3" />
+                        <p>No stats available</p>
+                      </div>
+                    )}
                     </div>
                   </div>
                 </div>

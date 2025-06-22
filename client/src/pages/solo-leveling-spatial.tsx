@@ -62,6 +62,7 @@ import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSy
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
 import { AutoWeatherSystem, DynamicWeatherSystem } from '@/components/DynamicWeatherSystem';
+import { RelationshipConstellation } from '@/components/RelationshipConstellation';
 
 // Premium script formatting parser for in-person dialogue display
 const parseCinematicText = (content: string) => {

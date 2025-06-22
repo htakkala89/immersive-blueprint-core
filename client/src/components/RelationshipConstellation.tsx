@@ -1,120 +1,79 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { 
+  Heart, Star, X, Sparkles, Crown, Eye, 
+  Moon, Sun, Coffee, Gift, Sword, Shield,
+  MapPin, Calendar, Camera, MessageCircle
+} from 'lucide-react';
 
-interface Memory {
+interface SharedMemory {
   id: string;
+  type: 'romantic' | 'adventure' | 'daily' | 'intimate' | 'special';
   title: string;
   description: string;
-  date: string;
-  importance: number; // 1-5, affects star brightness
-  category: 'first_meeting' | 'intimate_moment' | 'combat_synergy' | 'gift_exchange' | 'confession' | 'milestone';
-  x: number;
-  y: number;
-  z: number;
+  location: string;
+  timestamp: string;
+  affectionGain: number;
+  imageUrl?: string;
 }
 
 interface ConstellationProps {
   isVisible: boolean;
   onClose: () => void;
   affectionLevel: number;
-  memories: Memory[];
-  onMemorySelect?: (memory: Memory) => void;
+  intimacyLevel: number;
+  sharedMemories: SharedMemory[];
+  relationshipMilestones: string[];
+  currentMood: 'happy' | 'loving' | 'shy' | 'excited' | 'content';
 }
 
-export function RelationshipConstellation({ 
-  isVisible, 
-  onClose, 
-  affectionLevel, 
-  memories = [],
-  onMemorySelect 
+export function RelationshipConstellation({
+  isVisible,
+  onClose,
+  affectionLevel,
+  intimacyLevel,
+  sharedMemories,
+  relationshipMilestones,
+  currentMood
 }: ConstellationProps) {
-  const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
-  const [cameraPosition, setCameraPosition] = useState({ x: 0, y: 0, zoom: 1 });
-  const [isDragging, setIsDragging] = useState(false);
-  const lastMousePos = useRef({ x: 0, y: 0 });
+  const [selectedMemory, setSelectedMemory] = useState<SharedMemory | null>(null);
+  const [activeView, setActiveView] = useState<'constellation' | 'memories' | 'milestones'>('constellation');
 
-  // Generate sample memories if none provided
-  const sampleMemories: Memory[] = memories.length > 0 ? memories : [
-    {
-      id: '1',
-      title: 'First Meeting',
-      description: 'The moment our eyes first met at the Hunter Association.',
-      date: '2024-01-15',
-      importance: 5,
-      category: 'first_meeting',
-      x: 0,
-      y: 0,
-      z: 0
-    },
-    {
-      id: '2', 
-      title: 'Training Together',
-      description: 'Our first sparring session revealed perfect combat synergy.',
-      date: '2024-02-03',
-      importance: 4,
-      category: 'combat_synergy',
-      x: 150,
-      y: -80,
-      z: 50
-    },
-    {
-      id: '3',
-      title: 'Coffee Date',
-      description: 'A quiet moment sharing stories over warm coffee.',
-      date: '2024-02-14',
-      importance: 3,
-      category: 'intimate_moment',
-      x: -120,
-      y: 100,
-      z: -30
-    },
-    {
-      id: '4',
-      title: 'First Gift',
-      description: 'The silver pendant that made her eyes light up.',
-      date: '2024-02-20',
-      importance: 4,
-      category: 'gift_exchange',
-      x: 80,
-      y: 120,
-      z: 80
+  const relationshipProgress = Math.min(100, (affectionLevel / 1000) * 100);
+  const intimacyProgress = Math.min(100, (intimacyLevel / 10) * 100);
+
+  const getMemoryIcon = (type: string) => {
+    switch (type) {
+      case 'romantic': return Heart;
+      case 'adventure': return Sword;
+      case 'daily': return Coffee;
+      case 'intimate': return Crown;
+      case 'special': return Star;
+      default: return Sparkles;
     }
-  ];
-
-  const activeMemories = sampleMemories;
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    lastMousePos.current = { x: e.clientX, y: e.clientY };
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    
-    const deltaX = e.clientX - lastMousePos.current.x;
-    const deltaY = e.clientY - lastMousePos.current.y;
-    
-    setCameraPosition(prev => ({
-      ...prev,
-      x: prev.x + deltaX * 0.5,
-      y: prev.y + deltaY * 0.5
-    }));
-    
-    lastMousePos.current = { x: e.clientX, y: e.clientY };
+  const getMemoryColor = (type: string) => {
+    switch (type) {
+      case 'romantic': return 'from-pink-500 to-red-500';
+      case 'adventure': return 'from-blue-500 to-purple-500';
+      case 'daily': return 'from-amber-500 to-orange-500';
+      case 'intimate': return 'from-purple-500 to-pink-500';
+      case 'special': return 'from-yellow-500 to-amber-500';
+      default: return 'from-gray-500 to-slate-500';
+    }
   };
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    setCameraPosition(prev => ({
-      ...prev,
-      zoom: Math.max(0.5, Math.min(3, prev.zoom + e.deltaY * -0.001))
-    }));
+  const getMoodIcon = () => {
+    switch (currentMood) {
+      case 'happy': return '😊';
+      case 'loving': return '💕';
+      case 'shy': return '😊';
+      case 'excited': return '✨';
+      case 'content': return '😌';
+      default: return '😊';
+    }
   };
 
   if (!isVisible) return null;
@@ -124,193 +83,302 @@ export function RelationshipConstellation({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] bg-gradient-to-b from-indigo-950 via-purple-950 to-black"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4"
     >
-      {/* Starfield Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 200 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white rounded-full opacity-30"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Close Button */}
-      <Button
-        onClick={onClose}
-        variant="ghost"
-        size="sm"
-        className="absolute top-4 right-4 z-[10001] text-white hover:bg-white/10"
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="w-full max-w-6xl h-full max-h-[90vh] bg-gradient-to-br from-slate-900 to-purple-900 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden"
       >
-        <X className="w-5 h-5" />
-      </Button>
-
-      {/* Constellation Title */}
-      <div className="absolute top-4 left-4 z-10">
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="liquid-glass p-4"
-        >
-          <h2 className="text-2xl font-bold text-white mb-2">Our Constellation</h2>
-          <div className="flex items-center gap-2 text-purple-200">
-            <Heart className="w-4 h-4" />
-            <span>Affection: {affectionLevel}%</span>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Memory Stars */}
-      <div 
-        className="absolute inset-0 transition-transform duration-300 ease-out"
-        style={{
-          transform: `translate(${cameraPosition.x}px, ${cameraPosition.y}px) scale(${cameraPosition.zoom})`
-        }}
-      >
-        <div className="relative w-full h-full flex items-center justify-center">
-          {activeMemories.map((memory, index) => {
-            const brightness = (memory.importance / 5) * (affectionLevel / 100);
-            const size = 8 + (memory.importance * 4);
-            
-            return (
-              <motion.div
-                key={memory.id}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ 
-                  scale: 1, 
-                  opacity: 1,
-                  filter: `brightness(${brightness + 0.3})`
-                }}
-                transition={{ delay: index * 0.2 }}
-                className="absolute cursor-pointer group"
-                style={{
-                  left: `calc(50% + ${memory.x}px)`,
-                  top: `calc(50% + ${memory.y}px)`,
-                  transform: `translateZ(${memory.z}px)`
-                }}
-                onClick={() => setSelectedMemory(memory)}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
+        {/* Header */}
+        <div className="bg-gradient-to-r from-purple-900/80 to-pink-900/80 p-4 sm:p-6 border-b border-purple-500/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Relationship Constellation</h2>
+                <p className="text-purple-200 text-sm sm:text-base">Your bond with Cha Hae-In</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="text-3xl">{getMoodIcon()}</div>
+              <Button
+                onClick={onClose}
+                variant="ghost"
+                size="sm"
+                className="text-white/60 hover:text-white/90 hover:bg-white/10 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px]"
               >
-                <div
-                  className={`relative transition-all duration-300 ${
-                    memory.category === 'first_meeting' ? 'text-gold-400' :
-                    memory.category === 'intimate_moment' ? 'text-pink-400' :
-                    memory.category === 'combat_synergy' ? 'text-red-400' :
-                    memory.category === 'gift_exchange' ? 'text-green-400' :
-                    memory.category === 'confession' ? 'text-purple-400' :
-                    'text-blue-400'
-                  }`}
-                  style={{ 
-                    width: `${size}px`, 
-                    height: `${size}px`,
-                    filter: `drop-shadow(0 0 ${size/2}px currentColor)`
-                  }}
-                >
-                  <Star className="w-full h-full fill-current" />
-                  
-                  {/* Connecting Lines */}
-                  {index < activeMemories.length - 1 && (
-                    <div
-                      className="absolute top-1/2 left-1/2 origin-left bg-gradient-to-r from-current to-transparent opacity-30"
-                      style={{
-                        width: `${Math.sqrt(
-                          Math.pow(activeMemories[index + 1].x - memory.x, 2) +
-                          Math.pow(activeMemories[index + 1].y - memory.y, 2)
-                        )}px`,
-                        height: '1px',
-                        transform: `rotate(${Math.atan2(
-                          activeMemories[index + 1].y - memory.y,
-                          activeMemories[index + 1].x - memory.x
-                        )}rad)`
-                      }}
-                    />
-                  )}
-                </div>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
 
-                {/* Hover Tooltip */}
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                  <div className="backdrop-blur-md bg-black/50 rounded px-2 py-1 text-white text-xs whitespace-nowrap border border-white/20">
-                    {memory.title}
+        {/* Navigation Tabs */}
+        <div className="bg-slate-800/50 border-b border-slate-700/50">
+          <div className="flex">
+            {[
+              { id: 'constellation', label: 'Bond Overview', icon: Heart },
+              { id: 'memories', label: 'Shared Memories', icon: Camera },
+              { id: 'milestones', label: 'Milestones', icon: Star }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveView(tab.id as any)}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium transition-all min-h-[44px] ${
+                  activeView === tab.id
+                    ? 'text-purple-300 border-b-2 border-purple-400 bg-purple-900/30'
+                    : 'text-slate-400 hover:text-slate-300 hover:bg-slate-700/30'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content Area */}
+        <div className="flex-1 overflow-hidden">
+          {activeView === 'constellation' && (
+            <div className="h-full p-4 sm:p-6 overflow-y-auto">
+              {/* Relationship Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
+                <div className="bg-gradient-to-br from-pink-900/50 to-red-900/30 rounded-xl p-4 sm:p-6 border border-pink-500/30">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Heart className="w-6 h-6 text-pink-400" />
+                    <h3 className="text-lg font-bold text-white">Affection Level</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-pink-200">Progress</span>
+                      <span className="text-white font-medium">{affectionLevel}/1000</span>
+                    </div>
+                    <div className="w-full bg-slate-700 rounded-full h-3">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${relationshipProgress}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        className="bg-gradient-to-r from-pink-500 to-red-500 h-3 rounded-full"
+                      />
+                    </div>
+                    <p className="text-pink-200 text-sm">
+                      {relationshipProgress < 20 && "Getting to know each other"}
+                      {relationshipProgress >= 20 && relationshipProgress < 40 && "Growing closer"}
+                      {relationshipProgress >= 40 && relationshipProgress < 60 && "Strong connection"}
+                      {relationshipProgress >= 60 && relationshipProgress < 80 && "Deep bond"}
+                      {relationshipProgress >= 80 && "Unbreakable love"}
+                    </p>
                   </div>
                 </div>
-              </motion.div>
-            );
-          })}
+
+                <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/30 rounded-xl p-4 sm:p-6 border border-purple-500/30">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Crown className="w-6 h-6 text-purple-400" />
+                    <h3 className="text-lg font-bold text-white">Intimacy Level</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-purple-200">Progress</span>
+                      <span className="text-white font-medium">{intimacyLevel}/10</span>
+                    </div>
+                    <div className="w-full bg-slate-700 rounded-full h-3">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${intimacyProgress}%` }}
+                        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full"
+                      />
+                    </div>
+                    <p className="text-purple-200 text-sm">
+                      {intimacyProgress < 20 && "Building trust"}
+                      {intimacyProgress >= 20 && intimacyProgress < 40 && "Comfortable together"}
+                      {intimacyProgress >= 40 && intimacyProgress < 60 && "Intimate moments"}
+                      {intimacyProgress >= 60 && intimacyProgress < 80 && "Deep intimacy"}
+                      {intimacyProgress >= 80 && "Soul connection"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Constellation Visualization */}
+              <div className="bg-gradient-to-br from-slate-900/80 to-purple-900/40 rounded-xl p-6 border border-purple-500/30 min-h-[300px] relative overflow-hidden">
+                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                  Bond Constellation
+                </h3>
+                
+                {/* Constellation Stars */}
+                <div className="relative h-64 overflow-hidden">
+                  {/* Central Star - Cha Hae-In */}
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center shadow-lg shadow-purple-500/50">
+                      <Heart className="w-8 h-8 text-white" />
+                    </div>
+                    <p className="text-center text-white text-sm mt-2 font-medium">Cha Hae-In</p>
+                  </motion.div>
+
+                  {/* Memory Stars */}
+                  {sharedMemories.slice(0, 8).map((memory, index) => {
+                    const angle = (index / 8) * 2 * Math.PI;
+                    const radius = 80;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    const IconComponent = getMemoryIcon(memory.type);
+                    
+                    return (
+                      <motion.div
+                        key={memory.id}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.7 + index * 0.1 }}
+                        className="absolute top-1/2 left-1/2 cursor-pointer"
+                        style={{
+                          transform: `translate(${x - 12}px, ${y - 12}px)`
+                        }}
+                        onClick={() => setSelectedMemory(memory)}
+                      >
+                        <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${getMemoryColor(memory.type)} flex items-center justify-center shadow-md hover:scale-110 transition-transform`}>
+                          <IconComponent className="w-3 h-3 text-white" />
+                        </div>
+                        
+                        {/* Connection line */}
+                        <svg className="absolute top-3 left-3" style={{ width: Math.abs(x), height: Math.abs(y) }}>
+                          <line
+                            x1={x > 0 ? 0 : Math.abs(x)}
+                            y1={y > 0 ? 0 : Math.abs(y)}
+                            x2={x > 0 ? Math.abs(x) : 0}
+                            y2={y > 0 ? Math.abs(y) : 0}
+                            stroke="rgba(168, 85, 247, 0.3)"
+                            strokeWidth="1"
+                            className="animate-pulse"
+                          />
+                        </svg>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeView === 'memories' && (
+            <div className="h-full p-4 sm:p-6 overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sharedMemories.map((memory) => {
+                  const IconComponent = getMemoryIcon(memory.type);
+                  return (
+                    <motion.div
+                      key={memory.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`bg-gradient-to-br ${getMemoryColor(memory.type)} p-4 rounded-xl cursor-pointer hover:scale-105 transition-transform`}
+                      onClick={() => setSelectedMemory(memory)}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <IconComponent className="w-5 h-5 text-white" />
+                        <h4 className="text-white font-medium text-sm">{memory.title}</h4>
+                      </div>
+                      <p className="text-white/80 text-xs mb-2 line-clamp-2">{memory.description}</p>
+                      <div className="flex items-center justify-between text-white/60 text-xs">
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          <span>{memory.location}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="w-3 h-3" />
+                          <span>+{memory.affectionGain}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {activeView === 'milestones' && (
+            <div className="h-full p-4 sm:p-6 overflow-y-auto">
+              <div className="space-y-4">
+                {relationshipMilestones.map((milestone, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                      <Star className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium">{milestone}</p>
+                      <p className="text-slate-400 text-sm">Relationship milestone achieved</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Memory Detail Modal */}
       <AnimatePresence>
         {selectedMemory && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="absolute inset-4 flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/50 flex items-center justify-center p-4"
+            onClick={() => setSelectedMemory(null)}
           >
-            <motion.div 
-              className="backdrop-blur-md bg-white/10 rounded-xl p-6 border border-white/20 max-w-md w-full pointer-events-auto"
-              layoutId={`memory-${selectedMemory.id}`}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-slate-800 rounded-xl p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-white">{selectedMemory.title}</h3>
-                <Button
-                  onClick={() => setSelectedMemory(null)}
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/10"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+              <div className="flex items-center gap-3 mb-4">
+                {React.createElement(getMemoryIcon(selectedMemory.type), {
+                  className: "w-6 h-6 text-purple-400"
+                })}
+                <h3 className="text-lg font-bold text-white">{selectedMemory.title}</h3>
               </div>
-              
-              <p className="text-purple-100 mb-4">{selectedMemory.description}</p>
-              
-              <div className="flex justify-between items-center text-sm text-purple-200">
-                <span>{selectedMemory.date}</span>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star 
-                      key={i}
-                      className={`w-3 h-3 ${
-                        i < selectedMemory.importance 
-                          ? 'text-yellow-400 fill-current' 
-                          : 'text-gray-400'
-                      }`}
-                    />
-                  ))}
+              <p className="text-slate-300 mb-4">{selectedMemory.description}</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <MapPin className="w-4 h-4" />
+                  <span>{selectedMemory.location}</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Calendar className="w-4 h-4" />
+                  <span>{new Date(selectedMemory.timestamp).toLocaleDateString()}</span>
+                </div>
+                <div className="flex items-center gap-2 text-pink-400">
+                  <Heart className="w-4 h-4" />
+                  <span>+{selectedMemory.affectionGain} Affection</span>
                 </div>
               </div>
-
-              {onMemorySelect && (
-                <Button
-                  onClick={() => onMemorySelect(selectedMemory)}
-                  className="w-full mt-4 bg-purple-600 hover:bg-purple-700"
-                >
-                  Relive Memory
-                </Button>
-              )}
+              <Button
+                onClick={() => setSelectedMemory(null)}
+                className="w-full mt-4 bg-purple-600 hover:bg-purple-700"
+              >
+                Close
+              </Button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Instructions */}
-      <div className="absolute bottom-4 left-4 text-purple-200 text-sm">
-        <p>Drag to explore • Scroll to zoom • Click stars to view memories</p>
-      </div>
     </motion.div>
   );
 }
