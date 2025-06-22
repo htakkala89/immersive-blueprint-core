@@ -5232,7 +5232,7 @@ export default function SoloLevelingSpatial() {
         context={showHunterMarketVendors ? 'market' : showUnifiedShop ? 'vendor' : 'hidden'}
       />
 
-      <WorldMapSystem8
+      <WorldMapCarousel
         isVisible={showWorldMap}
         onClose={() => setShowWorldMap(false)}
         onLocationSelect={handleLocationTravel}
