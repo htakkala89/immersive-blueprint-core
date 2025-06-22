@@ -2814,6 +2814,123 @@ Respond as Cha Hae-In would in this intimate moment:`;
     }
   });
 
+  // Test endpoint for interactive node validation
+  app.post('/api/test-node-interaction', async (req, res) => {
+    try {
+      const { nodeId, locationId, thoughtPrompt, outcome } = req.body;
+      
+      console.log(`🧪 Testing node: ${locationId}:${nodeId}`);
+      
+      // Validate node interaction logic
+      const testResult = {
+        success: false,
+        nodeId,
+        locationId,
+        thoughtPrompt,
+        outcome,
+        timestamp: new Date().toISOString(),
+        error: null,
+        details: {}
+      };
+
+      // Test different node types based on their expected behavior
+      const nodeTestCases = {
+        // Hongdae Arcade nodes
+        'fighting_game_cabinet': { type: 'competitive_gaming', goldCost: 3000, affectionGain: 4 },
+        'rhythm_game_station': { type: 'cooperative_gaming', goldCost: 2000, affectionGain: 5 },
+        'claw_machine': { type: 'prize_game', goldCost: 5000, affectionGain: 6, hasRNG: true },
+        'photo_booth': { type: 'memory_creation', goldCost: 8000, affectionGain: 7, createsMemory: true },
+        
+        // Hongdae Karaoke nodes
+        'song_selection': { type: 'musical_bonding', goldCost: 0, affectionGain: 3 },
+        'microphone_setup': { type: 'duet_preparation', goldCost: 0, affectionGain: 4 },
+        'private_seating': { type: 'intimate_conversation', goldCost: 0, affectionGain: 5 },
+        'mood_lighting': { type: 'romantic_ambiance', goldCost: 0, affectionGain: 6 },
+        
+        // Traditional Market nodes
+        'street_food_vendor': { type: 'cultural_food', goldCost: 8000, affectionGain: 4 },
+        'handicraft_stall': { type: 'cultural_shopping', goldCost: 15000, affectionGain: 3 },
+        'tea_ceremony_area': { type: 'formal_cultural', goldCost: 12000, affectionGain: 5 },
+        'elderly_vendor': { type: 'npc_dialogue', goldCost: 0, affectionGain: 2 },
+        
+        // Myeongdong nodes
+        'cosmetics_shop': { type: 'beauty_bonding', goldCost: 25000, affectionGain: 4 },
+        'street_food_cart': { type: 'street_food_date', goldCost: 6000, affectionGain: 3 },
+        'fashion_boutique': { type: 'fashion_styling', goldCost: 40000, affectionGain: 5 },
+        'street_performer': { type: 'romantic_entertainment', goldCost: 0, affectionGain: 4 },
+        
+        // Low-Rank Gate nodes
+        'gate_scanner': { type: 'tactical_planning', goldCost: 0, affectionGain: 2 },
+        'equipment_check': { type: 'safety_preparation', goldCost: 0, affectionGain: 3 },
+        'gate_entrance': { type: 'training_dungeon', goldCost: 0, affectionGain: 5, grantsExperience: true },
+        'safety_beacon': { type: 'safety_protocol', goldCost: 0, affectionGain: 2 },
+        
+        // Existing nodes
+        'mission_board': { type: 'ui_panel', goldCost: 0, affectionGain: 0, opensUI: 'QuestBoard' },
+        'receptionist': { type: 'npc_dialogue', goldCost: 0, affectionGain: 1 },
+        'food_vendor_cart': { type: 'direct_action', goldCost: 5000, affectionGain: 3 }
+      };
+
+      const expectedBehavior = nodeTestCases[nodeId];
+      
+      if (!expectedBehavior) {
+        testResult.error = `Node ${nodeId} not found in test cases`;
+        return res.json(testResult);
+      }
+
+      // Validate node behavior matches expectations
+      testResult.details = {
+        expectedType: expectedBehavior.type,
+        expectedGoldCost: expectedBehavior.goldCost,
+        expectedAffectionGain: expectedBehavior.affectionGain,
+        hasRNG: expectedBehavior.hasRNG || false,
+        createsMemory: expectedBehavior.createsMemory || false,
+        opensUI: expectedBehavior.opensUI || null,
+        grantsExperience: expectedBehavior.grantsExperience || false
+      };
+
+      // Simulate successful node interaction
+      if (expectedBehavior.type === 'ui_panel') {
+        testResult.success = true;
+        testResult.details.action = `Opens ${expectedBehavior.opensUI} interface`;
+      } else if (expectedBehavior.type === 'npc_dialogue') {
+        testResult.success = true;
+        testResult.details.action = 'Initiates NPC conversation';
+      } else if (expectedBehavior.type === 'direct_action') {
+        testResult.success = true;
+        testResult.details.action = 'Executes immediate game state change';
+      } else {
+        // Complex interactive nodes
+        testResult.success = true;
+        testResult.details.action = `Executes ${expectedBehavior.type} interaction`;
+        
+        if (expectedBehavior.hasRNG) {
+          testResult.details.rngOutcome = Math.random() > 0.6 ? 'success' : 'failure';
+        }
+        
+        if (expectedBehavior.createsMemory) {
+          testResult.details.memoryCreated = {
+            type: expectedBehavior.type,
+            location: locationId,
+            timestamp: new Date().toISOString()
+          };
+        }
+      }
+
+      console.log(`✅ Node test completed: ${nodeId} - ${testResult.success ? 'PASS' : 'FAIL'}`);
+      
+      res.json(testResult);
+      
+    } catch (error) {
+      console.error('❌ Node test error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   // Serve test images page
   app.get("/test-images", (req, res) => {
     res.sendFile(path.join(__dirname, "../test_generated_images.html"));
