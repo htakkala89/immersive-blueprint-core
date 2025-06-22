@@ -4193,18 +4193,7 @@ export default function SoloLevelingSpatial() {
                 console.log('Combat analytics - Opening raid statistics interface');
                 break;
 
-              case 'jewelry_counter':
-                // Open item inspection with cycling jewelry display
-                setShowItemInspection(true);
-                handleEnvironmentalInteraction({
-                  id: 'jewelry_browsing',
-                  action: 'Browse the jewelry collection together. Each piece sparks conversations about taste, memories, and future possibilities.',
-                  name: 'Jewelry Counter',
-                  x: 60,
-                  y: 40
-                });
-                console.log('Jewelry counter - Opening item inspection interface');
-                break;
+
 
               case 'rivers_edge':
                 // Create atmospheric scene with camera pan effect
@@ -4223,18 +4212,7 @@ export default function SoloLevelingSpatial() {
                 console.log('Rivers edge - Cinematic atmospheric scene with camera pan');
                 break;
 
-              case 'speak_sommelier':
-                // Open wine recommendation dialogue for gold
-                setShowSommelierDialog(true);
-                handleEnvironmentalInteraction({
-                  id: 'sommelier_consultation',
-                  action: 'Consult with the sommelier about wine pairings. Professional wine guidance enhances the romantic dining experience.',
-                  name: 'Sommelier Consultation',
-                  x: 70,
-                  y: 30
-                });
-                console.log('Sommelier - Opening wine recommendation dialogue');
-                break;
+
 
               case 'artifact_display':
                 // Open Relationship Constellation interface
@@ -4658,18 +4636,7 @@ export default function SoloLevelingSpatial() {
                 });
                 console.log('Infinity pool - Exclusive high-end activity with major affection gain');
                 break;
-              case 'artifact_display':
-                // Direct link to Relationship Constellation System
-                setShowInventory(true);
-                handleEnvironmentalInteraction({
-                  id: 'trophy_examination',
-                  action: 'You examine your collection of trophies and artifacts together. Each piece tells a story of your journey - the battles fought, the victories won, the moments shared. Cha Hae-In studies each item with reverence, remembering the experiences that brought you here.',
-                  name: 'Artifact Display',
-                  x: 30,
-                  y: 25
-                });
-                console.log('Artifact display - Opening Relationship Constellation with Memory Cards');
-                break;
+
               case 'wine_cellar':
                 // Simple wine selection with inventory addition
                 if ((gameState.gold || 0) >= 25000) {
@@ -4777,7 +4744,6 @@ export default function SoloLevelingSpatial() {
                   console.log('Shower - Early game bathroom conversation');
                 }
                 break;
-              case 'vanity_table':
               case 'bookshelf':
               case 'window_view':
               case 'tea_station':
