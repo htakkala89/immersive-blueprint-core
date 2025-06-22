@@ -213,7 +213,7 @@ export function PlayerProgressionSystemRedesigned({
 
                   {/* Stats Grid */}
                   <div className="grid gap-4">
-                    {(Object.keys(playerData.stats) as Array<keyof CoreStats>).map((stat) => (
+                    {playerData.stats ? (Object.keys(playerData.stats) as Array<keyof CoreStats>).map((stat) => (
                       <div 
                         key={stat}
                         className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
@@ -225,19 +225,19 @@ export function PlayerProgressionSystemRedesigned({
                             </div>
                             <div>
                               <h4 className="text-white font-medium capitalize">{stat}</h4>
-                              <p className="text-slate-400 text-sm">Current: {playerData.stats[stat]}</p>
+                              <p className="text-slate-400 text-sm">Current: {playerData.stats?.[stat]}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => deallocateStat(stat)}
-                              disabled={playerData.stats[stat] <= 1}
+                              disabled={(playerData.stats?.[stat] ?? 0) <= 1}
                               className="w-8 h-8 bg-slate-700/50 hover:bg-slate-600/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all duration-200"
                             >
                               <Minus className="w-4 h-4 text-slate-300" />
                             </button>
                             <span className="w-12 text-center text-white font-bold text-lg">
-                              {playerData.stats[stat]}
+                              {playerData.stats?.[stat] ?? 0}
                             </span>
                             <button
                               onClick={() => allocateStat(stat)}
@@ -249,7 +249,11 @@ export function PlayerProgressionSystemRedesigned({
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )) : (
+                      <div className="text-center py-8">
+                        <p className="text-slate-400">No stats available</p>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
