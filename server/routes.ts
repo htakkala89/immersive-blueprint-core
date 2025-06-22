@@ -1365,6 +1365,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Episode System - Delete episode permanently
+  app.delete("/api/episodes/:episodeId/:profileId", async (req, res) => {
+    try {
+      const { episodeId, profileId } = req.params;
+      
+      await episodeEngine.deleteEpisode(Number(profileId), episodeId);
+      
+      res.json({
+        success: true,
+        message: `Episode ${episodeId} deleted successfully`
+      });
+    } catch (error) {
+      console.error("Failed to delete episode:", error);
+      res.status(500).json({ error: "Failed to delete episode" });
+    }
+  });
+
   // Episode System - Set multiple active episodes with priority weighting
   app.post("/api/episodes/active/:profileId", async (req, res) => {
     try {

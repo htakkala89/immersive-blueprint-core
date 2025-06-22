@@ -172,17 +172,21 @@ export class EpisodeEngine {
     this.episodes.set("EP01_Red_Echo", ep01);
   }
 
-  // Core methods for episode management - use creator portal files only
+  // Core methods for episode management - respect database deletion state
   async getAvailableEpisodes(): Promise<EpisodeData[]> {
     try {
       const fs = await import('fs');
       const path = await import('path');
       
+      // Check database for deleted episodes first
+      const deletedEpisodes = await this.getDeletedEpisodes();
+      
       const episodesDir = path.join(process.cwd(), 'server/episodes');
       
       if (!fs.existsSync(episodesDir)) {
-        // Return default episode if no creator portal episodes exist
-        return Array.from(this.episodes.values());
+        // Return default episode if no creator portal episodes exist, but filter deleted ones
+        const defaultEpisodes = Array.from(this.episodes.values());
+        return defaultEpisodes.filter(ep => !deletedEpisodes.includes(ep.id));
       }
       
       const files = fs.readdirSync(episodesDir).filter(file => file.endsWith('.json'));
@@ -200,9 +204,12 @@ export class EpisodeEngine {
           const episode = JSON.parse(content);
           
           // Only load episodes with the beats structure for gameplay integration
-          if (episode.id && episode.title && episode.beats && Array.isArray(episode.beats)) {
+          // AND that haven't been deleted by user
+          if (episode.id && episode.title && episode.beats && Array.isArray(episode.beats) && !deletedEpisodes.includes(episode.id)) {
             episodes.push(episode);
             console.log(`✓ Loaded episode: ${episode.id}`);
+          } else if (deletedEpisodes.includes(episode.id)) {
+            console.log(`⚠ Skipping deleted episode: ${episode.id}`);
           }
         } catch (error) {
           // Silent skip to prevent runtime errors
@@ -210,10 +217,76 @@ export class EpisodeEngine {
         }
       }
       
-      // If no creator portal episodes, return default
-      return episodes.length > 0 ? episodes : Array.from(this.episodes.values());
+      // If no creator portal episodes, return default but filter deleted ones
+      if (episodes.length === 0) {
+        const defaultEpisodes = Array.from(this.episodes.values());
+        return defaultEpisodes.filter(ep => !deletedEpisodes.includes(ep.id));
+      }
+      
+      return episodes;
     } catch (error) {
-      return Array.from(this.episodes.values());
+      const deletedEpisodes = await this.getDeletedEpisodes();
+      const defaultEpisodes = Array.from(this.episodes.values());
+      return defaultEpisodes.filter(ep => !deletedEpisodes.includes(ep.id));
+    }
+  }
+
+  // Method to track deleted episodes in database
+  private async getDeletedEpisodes(): Promise<string[]> {
+    try {
+      const { db } = await import('./db');
+      const { gameStates } = await import('@shared/schema');
+      
+      // Get deleted episodes from game states (stored in episodeState)
+      const states = await db.select().from(gameStates);
+      const deletedEpisodes: string[] = [];
+      
+      for (const state of states) {
+        if (state.episodeState && typeof state.episodeState === 'object') {
+          const episodeState = state.episodeState as any;
+          if (episodeState.deletedEpisodes && Array.isArray(episodeState.deletedEpisodes)) {
+            deletedEpisodes.push(...episodeState.deletedEpisodes);
+          }
+        }
+      }
+      
+      return Array.from(new Set(deletedEpisodes)); // Remove duplicates
+    } catch (error) {
+      console.error('Failed to get deleted episodes from database:', error);
+      return [];
+    }
+  }
+
+  async deleteEpisode(profileId: number, episodeId: string): Promise<void> {
+    try {
+      const { db } = await import('./db');
+      const { gameStates } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const [gameState] = await db.select().from(gameStates).where(eq(gameStates.id, profileId));
+      
+      if (gameState) {
+        const currentEpisodeState = gameState.episodeState as any || {};
+        const deletedEpisodes = currentEpisodeState.deletedEpisodes || [];
+        
+        if (!deletedEpisodes.includes(episodeId)) {
+          deletedEpisodes.push(episodeId);
+          
+          await db.update(gameStates)
+            .set({
+              episodeState: {
+                ...currentEpisodeState,
+                deletedEpisodes
+              }
+            })
+            .where(eq(gameStates.id, profileId));
+          
+          console.log(`✓ Episode ${episodeId} marked as deleted for profile ${profileId}`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to delete episode:', error);
+      throw error;
     }
   }
 
@@ -221,6 +294,12 @@ export class EpisodeEngine {
     try {
       const fs = await import('fs');
       const path = await import('path');
+      
+      // Check if episode is deleted
+      const deletedEpisodes = await this.getDeletedEpisodes();
+      if (deletedEpisodes.includes(episodeId)) {
+        return undefined;
+      }
       
       const episodePath = path.join(process.cwd(), 'server/episodes', `${episodeId}.json`);
       
