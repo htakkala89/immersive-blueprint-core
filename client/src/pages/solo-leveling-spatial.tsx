@@ -219,6 +219,7 @@ interface GameState {
   synergyFillRate?: number;
   romanticMilestone?: boolean;
   deepConversationUnlocked?: boolean;
+  visitHistory?: Record<string, number>;
 }
 
 interface WorldLocation {
@@ -533,6 +534,15 @@ export default function SoloLevelingSpatial() {
   const [storyFlags, setStoryFlags] = useState<string[]>(['beginning_journey', 'gate_clearance_quest_active']);
   const [visitHistory, setVisitHistory] = useState<Record<string, number>>({});
   const [chaHaeInPresent, setChaHaeInPresent] = useState(true);
+
+  // Additional state for node testing system
+  const [showRaidStats, setShowRaidStats] = useState(false);
+  const [showReceptionistDialogue, setShowReceptionistDialogue] = useState<{
+    dialogue: string;
+    position: { x: number; y: number };
+  } | null>(null);
+  const [showFloorSelect, setShowFloorSelect] = useState(false);
+  const [cinematicMode, setCinematicMode] = useState(false);
 
   // Generate automatic greeting in the dialogue interface when clicking Cha Hae-In's node
   const handleChaHaeInInteraction = async () => {
@@ -4161,15 +4171,128 @@ export default function SoloLevelingSpatial() {
                 console.log('Opening floor selection UI');
                 break;
               case 'sparring_ring':
-              case 'combat_analytics':
-                // Training facility interactions
+                // Direct shortcut to Daily Life sparring activity
+                setShowDailyLifeHub(true);
+                setTimeout(() => {
+                  // Auto-select sparring activity
+                  const sparringActivity = document.querySelector('[data-activity="sparring_session"]');
+                  if (sparringActivity) {
+                    sparringActivity.click();
+                  }
+                }, 100);
                 handleEnvironmentalInteraction({
-                  id: nodeId,
-                  action: thoughtPrompt,
-                  name: nodeId.replace(/_/g, ' '),
+                  id: 'sparring_shortcut',
+                  action: 'Enter the sparring ring for direct training with Cha Hae-In. The familiar environment enhances your combat coordination.',
+                  name: 'Sparring Ring Entry',
                   x: 50,
                   y: 50
                 });
+                console.log('Sparring ring - Opening Daily Life sparring activity');
+                break;
+
+              case 'combat_analytics':
+                // Show raid statistics UI
+                setShowRaidStats(true);
+                handleEnvironmentalInteraction({
+                  id: 'combat_analysis',
+                  action: 'Review detailed combat statistics and raid performance data. Analyzing your joint combat effectiveness reveals areas for improvement.',
+                  name: 'Combat Analytics Terminal',
+                  x: 70,
+                  y: 30
+                });
+                console.log('Combat analytics - Opening raid statistics interface');
+                break;
+
+              case 'jewelry_counter':
+                // Open item inspection with cycling jewelry display
+                setShowJewelryInspection(true);
+                handleEnvironmentalInteraction({
+                  id: 'jewelry_browsing',
+                  action: 'Browse the jewelry collection together. Each piece sparks conversations about taste, memories, and future possibilities.',
+                  name: 'Jewelry Counter',
+                  x: 60,
+                  y: 40
+                });
+                console.log('Jewelry counter - Opening item inspection interface');
+                break;
+
+              case 'rivers_edge':
+                // Create atmospheric scene with camera pan effect
+                setCinematicMode(true);
+                handleEnvironmentalInteraction({
+                  id: 'riverside_atmosphere',
+                  action: 'Walk to the river\'s edge together. The flowing water and gentle breeze create a peaceful moment of connection as the camera slowly pans across the scenic view.',
+                  name: 'Riverside Walk',
+                  x: 20,
+                  y: 70
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 8)
+                }));
+                console.log('Rivers edge - Cinematic atmospheric scene with camera pan');
+                break;
+
+              case 'speak_sommelier':
+                // Open wine recommendation dialogue for gold
+                setShowSommelierDialog(true);
+                handleEnvironmentalInteraction({
+                  id: 'sommelier_consultation',
+                  action: 'Consult with the sommelier about wine pairings. Professional wine guidance enhances the romantic dining experience.',
+                  name: 'Sommelier Consultation',
+                  x: 70,
+                  y: 30
+                });
+                console.log('Sommelier - Opening wine recommendation dialogue');
+                break;
+
+              case 'artifact_display':
+                // Open Relationship Constellation interface
+                setShowRelationshipConstellation(true);
+                handleEnvironmentalInteraction({
+                  id: 'artifact_memories',
+                  action: 'Examine the artifacts from your adventures together. Each item holds memories that strengthen your bond and connection.',
+                  name: 'Memory Artifacts',
+                  x: 80,
+                  y: 60
+                });
+                console.log('Artifact display - Opening Relationship Constellation');
+                break;
+
+              case 'vanity_table':
+                // Special dialogue with memory triggers
+                const visitCount = (gameState.visitHistory?.['vanity_table'] || 0) + 1;
+                setGameState(prev => ({
+                  ...prev,
+                  visitHistory: {
+                    ...prev.visitHistory,
+                    'vanity_table': visitCount
+                  }
+                }));
+
+                if (visitCount === 1) {
+                  handleEnvironmentalInteraction({
+                    id: 'vanity_first_visit',
+                    action: 'Notice Cha Hae-In\'s personal vanity table for the first time. The intimate glimpse into her private space reveals a more personal side of her.',
+                    name: 'Personal Vanity',
+                    x: 75,
+                    y: 45
+                  });
+                  console.log('Vanity table - First visit special dialogue');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'vanity_return_visit',
+                    action: 'Return to the vanity area with growing familiarity. Your deepening understanding of her personal space reflects your evolving relationship.',
+                    name: 'Familiar Space',
+                    x: 75,
+                    y: 45
+                  });
+                  console.log('Vanity table - Repeat visit with evolving understanding');
+                }
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + (visitCount === 1 ? 5 : 3))
+                }));
                 break;
               // Penthouse Gateway Nodes - Tier 3 Luxury Experience
               case 'penthouse_living_room_couch':
