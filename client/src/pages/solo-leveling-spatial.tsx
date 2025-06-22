@@ -62,6 +62,103 @@ import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
 import { AutoWeatherSystem, DynamicWeatherSystem } from '@/components/DynamicWeatherSystem';
 
+// Premium script formatting parser for in-person dialogue display
+const parseCinematicText = (content: string) => {
+  const parts: Array<{
+    type: 'dialogue' | 'action' | 'thought' | 'narrative';
+    text: string;
+  }> = [];
+
+  let currentIndex = 0;
+  const contentLength = content.length;
+
+  while (currentIndex < contentLength) {
+    const remainingContent = content.slice(currentIndex);
+
+    // Look for dialogue (quoted text)
+    const dialogueMatch = remainingContent.match(/^"([^"]*)"(\s*)/);
+    if (dialogueMatch) {
+      parts.push({
+        type: 'dialogue',
+        text: dialogueMatch[1]
+      });
+      currentIndex += dialogueMatch[0].length;
+      continue;
+    }
+
+    // Look for actions (asterisk text)
+    const actionMatch = remainingContent.match(/^\*([^*]*)\*(\s*)/);
+    if (actionMatch) {
+      parts.push({
+        type: 'action',
+        text: actionMatch[1]
+      });
+      currentIndex += actionMatch[0].length;
+      continue;
+    }
+
+    // Look for thoughts (parenthesis text)
+    const thoughtMatch = remainingContent.match(/^\(([^)]*)\)(\s*)/);
+    if (thoughtMatch) {
+      parts.push({
+        type: 'thought',
+        text: thoughtMatch[1]
+      });
+      currentIndex += thoughtMatch[0].length;
+      continue;
+    }
+
+    // Look for narrative (everything else)
+    const narrativeMatch = remainingContent.match(/^([^"*()]+)/);
+    if (narrativeMatch) {
+      const text = narrativeMatch[1].trim();
+      if (text) {
+        parts.push({
+          type: 'narrative',
+          text: text
+        });
+      }
+      currentIndex += narrativeMatch[0].length;
+      continue;
+    }
+
+    // Skip single character if no matches
+    currentIndex += 1;
+  }
+
+  // Convert parts to JSX with proper styling
+  return parts.map((part, index) => {
+    switch (part.type) {
+      case 'dialogue':
+        return (
+          <div key={index} className="text-white text-lg font-medium leading-relaxed mb-3">
+            "{part.text}"
+          </div>
+        );
+      case 'action':
+        return (
+          <div key={index} className="text-amber-400 italic text-base leading-relaxed mb-3 pl-4">
+            *{part.text}*
+          </div>
+        );
+      case 'thought':
+        return (
+          <div key={index} className="text-gray-400 italic text-sm leading-relaxed mb-3 pl-6 border-l-2 border-gray-600">
+            ({part.text})
+          </div>
+        );
+      case 'narrative':
+        return (
+          <div key={index} className="text-gray-200 text-base leading-relaxed mb-3">
+            {part.text}
+          </div>
+        );
+      default:
+        return null;
+    }
+  });
+};
+
 interface CoreStats {
   strength: number;
   agility: number;
