@@ -74,12 +74,23 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
   };
 
   const handleEquipItem = (item: Equipment) => {
+    console.log('🎯 Equipping item:', item.name, 'to slot:', item.slot);
     const previousItem = equippedItems[item.slot];
-    setEquippedItems(prev => ({ ...prev, [item.slot]: item }));
+    if (previousItem) {
+      console.log('⚔️ Replacing previous item:', previousItem.name);
+    }
+    
+    setEquippedItems(prev => {
+      const newEquipped = { ...prev, [item.slot]: item };
+      console.log('📦 Updated equipped items:', newEquipped);
+      return newEquipped;
+    });
     
     // Animate stat changes
     setAnimatingStats(prev => ({ ...prev, ...Object.keys(item.stats).reduce((acc, stat) => ({ ...acc, [stat]: true }), {}) }));
     setTimeout(() => setAnimatingStats({}), 600);
+    
+    console.log('✅ Equipment operation completed');
   };
 
   const handleUnequipItem = (slot: string) => {
@@ -304,10 +315,13 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
                             ))}
                           </div>
                           <button
-                            onClick={() => handleEquipItem(item)}
-                            className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+                            onClick={() => {
+                              console.log('🎮 Button clicked for:', item.name);
+                              handleEquipItem(item);
+                            }}
+                            className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors active:bg-purple-800"
                           >
-                            Equip Item
+                            {equippedItems[item.slot]?.id === item.id ? 'Equipped ✓' : 'Equip Item'}
                           </button>
                         </div>
                       </div>
