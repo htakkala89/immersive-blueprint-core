@@ -1694,18 +1694,30 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-scroll behavior: scroll to top for new AI responses, bottom for user messages
+  // Auto-scroll behavior: smart scrolling to show beginning of new AI responses
   useEffect(() => {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
       const lastMessage = conversationHistory[conversationHistory.length - 1];
       
-      if (lastMessage.type === 'cha_hae_in') {
-        // For Cha Hae-In's responses, scroll to top so users see the beginning
-        conversationScrollRef.current.scrollTop = 0;
-      } else {
-        // For user messages, scroll to bottom to see their own input
-        conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
-      }
+      setTimeout(() => {
+        if (conversationScrollRef.current) {
+          if (lastMessage.type === 'cha_hae_in') {
+            // For AI responses, scroll to show the beginning of the latest message
+            const messages = conversationScrollRef.current.children;
+            const lastMessageElement = messages[messages.length - 1] as HTMLElement;
+            if (lastMessageElement) {
+              // Scroll to position the start of the new message near the top of the visible area
+              const containerHeight = conversationScrollRef.current.clientHeight;
+              const messageTop = lastMessageElement.offsetTop;
+              const targetScroll = Math.max(0, messageTop - containerHeight * 0.1); // 10% from top
+              conversationScrollRef.current.scrollTop = targetScroll;
+            }
+          } else {
+            // For user messages, scroll to bottom to see their input
+            conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+          }
+        }
+      }, 150); // Small delay to ensure content is rendered
     }
   }, [conversationHistory]);
 
