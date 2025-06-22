@@ -519,6 +519,13 @@ export default function SoloLevelingSpatial() {
           // Display the AI-generated greeting in the dialogue interface
           setCurrentDialogue(data.response);
           
+          // Add the initial greeting to conversation history so it appears in the dialogue area
+          setConversationHistory([{
+            type: 'cha_hae_in',
+            text: data.response,
+            timestamp: new Date()
+          }]);
+          
           // Set contextual thought prompts based on location and relationship
           const contextualPrompts = getLocationSpecificPrompts();
           setThoughtPrompts(contextualPrompts);
@@ -528,6 +535,14 @@ export default function SoloLevelingSpatial() {
           // Fallback to predefined greeting if AI fails
           const fallbackDialogue = getFallbackLocationDialogue();
           setCurrentDialogue(fallbackDialogue.dialogue);
+          
+          // Add fallback greeting to conversation history
+          setConversationHistory([{
+            type: 'cha_hae_in',
+            text: fallbackDialogue.dialogue,
+            timestamp: new Date()
+          }]);
+          
           setThoughtPrompts(fallbackDialogue.prompts);
           console.log('Using fallback dialogue due to AI generation failure');
         }
@@ -536,6 +551,14 @@ export default function SoloLevelingSpatial() {
         // Fallback to predefined greeting
         const fallbackDialogue = getFallbackLocationDialogue();
         setCurrentDialogue(fallbackDialogue.dialogue);
+        
+        // Add fallback greeting to conversation history
+        setConversationHistory([{
+          type: 'cha_hae_in',
+          text: fallbackDialogue.dialogue,
+          timestamp: new Date()
+        }]);
+        
         setThoughtPrompts(fallbackDialogue.prompts);
       }
       
