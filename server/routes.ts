@@ -1886,8 +1886,9 @@ Respond naturally as if you're texting back, using the exact formatting rules ab
 
         const personalityPrompt = getPersonalityPrompt(conversationContext);
         
-        // Check for episode guidance - inject natural story progression
-        const episodeGuidance = await episodeEngine.getEpisodeGuidance('GAMEPLAY_TEST', 2);
+        // Only get episode guidance occasionally to prevent repetitive suggestions
+        const shouldIncludeEpisodeGuidance = Math.random() < 0.3; // 30% chance only
+        const episodeGuidance = shouldIncludeEpisodeGuidance ? await episodeEngine.getEpisodeGuidance('GAMEPLAY_TEST', 2) : null;
         
         const fullPrompt = `${personalityPrompt}
 
@@ -1899,20 +1900,23 @@ CURRENT SITUATION:
 
 Player just said: "${message}"
 
-${episodeGuidance ? `STORY GUIDANCE: After responding naturally, guide the conversation toward: "${episodeGuidance}" - weave this into the conversation flow naturally, don't mention it's a quest or episode.` : ''}
+${episodeGuidance ? `OPTIONAL STORY GUIDANCE: Only if the conversation naturally flows toward it, you could mention: "${episodeGuidance}" - but prioritize responding to the player's actual message first.` : ''}
 
 RESPONSE INSTRUCTIONS:
-- Respond naturally as Cha Hae-In in character
-- Reference the current location and situation
-- Show appropriate emotional reactions based on affection level
+- PRIORITY 1: Respond naturally to what the player actually said
+- PRIORITY 2: Stay in character as Cha Hae-In - professional but warm
+- PRIORITY 3: Reference the current location and situation appropriately
+- AVOID: Defaulting to training or mission suggestions unless directly relevant
+- AVOID: Repetitive phrases like "Perhaps we could work on that now"
+- FOCUS: Present moment conversation, personal connection, natural dialogue
 - Keep response conversational and under 100 words
-- Use natural conversation flow
-- Show your hunter expertise when relevant
-- Express growing feelings if affection is high enough
-${episodeGuidance ? '- After responding to the current message, naturally suggest the story progression mentioned above' : ''}`;
+- Express growing feelings if affection is high enough`;
         
         const result = await model.generateContent(fullPrompt);
-        response = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+        let rawResponse = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+        
+        // Apply cinematic formatting for in-person dialogue interface
+        response = ensureCinematicFormatting(rawResponse);
         
         // Advanced emotion detection for avatar updates
         const responseText = response.toLowerCase();
