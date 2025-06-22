@@ -209,35 +209,33 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-7xl h-[90vh] bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl overflow-hidden"
+        className="w-full max-w-7xl h-[90vh] sm:h-[85vh] bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-purple-500/20">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-600/20 rounded-full flex items-center justify-center">
-              <Crown className="w-6 h-6 text-purple-400" />
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-purple-500/20">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-600/20 rounded-full flex items-center justify-center">
+              <Crown className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">Monarch's Armory</h2>
-              <p className="text-purple-300 text-sm">Maximum Clarity and Speed</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Monarch's Armory</h2>
+              <p className="text-purple-300 text-xs sm:text-sm">Maximum Clarity and Speed</p>
             </div>
           </div>
-          <Button
+          <button
             onClick={onClose}
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-white/10"
+            className="w-10 h-10 bg-slate-800/50 hover:bg-slate-700/50 rounded-xl flex items-center justify-center transition-all duration-200"
           >
-            <X className="w-6 h-6" />
-          </Button>
+            <X className="w-5 h-5 text-slate-300" />
+          </button>
         </div>
 
         {/* Main Content - Mobile-First Responsive Layout */}
         <div className="flex flex-col lg:flex-row h-[calc(100%-80px)] overflow-hidden">
           {/* Column 1: Total Stats Panel */}
-          <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-purple-500/20 p-4 lg:p-6 flex-shrink-0">
-            <h3 className="text-white font-semibold mb-6 text-lg">Total Stats</h3>
-            <div className="space-y-4">
+          <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-purple-500/20 p-3 sm:p-4 lg:p-6 flex-shrink-0">
+            <h3 className="text-white font-semibold mb-4 sm:mb-6 text-base sm:text-lg">Total Stats</h3>
+            <div className="space-y-3 sm:space-y-4">
               {Object.entries(totalStats).map(([stat, value]) => (
                 <motion.div
                   key={stat}
@@ -271,9 +269,9 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
           </div>
 
           {/* Column 2: Monarch's Schematic (Paper Doll) */}
-          <div className="flex-1 p-4 lg:p-6 flex flex-col items-center justify-center min-h-0">
-            <h3 className="text-white font-semibold mb-4 lg:mb-6 text-lg">Monarch's Schematic</h3>
-            <div className="relative w-64 h-80 lg:w-80 lg:h-96 border border-purple-500/30 rounded-xl bg-slate-800/30 overflow-hidden">
+          <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col items-center justify-center min-h-0">
+            <h3 className="text-white font-semibold mb-3 sm:mb-4 lg:mb-6 text-base sm:text-lg">Monarch's Schematic</h3>
+            <div className="relative w-48 h-60 sm:w-64 sm:h-80 lg:w-80 lg:h-96 border border-purple-500/30 rounded-xl bg-slate-800/30 overflow-hidden">
               {/* Stylized Jin-Woo Silhouette */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <svg viewBox="0 0 100 120" className="w-full h-full opacity-20">
@@ -338,13 +336,13 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
           </div>
 
           {/* Column 3: Available Equipment */}
-          <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-purple-500/20 p-4 lg:p-6 flex flex-col min-h-0">
-            <h3 className="text-white font-semibold mb-4 lg:mb-6 text-lg flex-shrink-0">Available Equipment</h3>
-            <div className="space-y-3 flex-1 overflow-y-auto character-scrollbar touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-purple-500/20 p-3 sm:p-4 lg:p-6 flex flex-col min-h-0">
+            <h3 className="text-white font-semibold mb-3 sm:mb-4 lg:mb-6 text-base sm:text-lg flex-shrink-0">Available Equipment</h3>
+            <div className="space-y-2 sm:space-y-3 flex-1 overflow-y-auto character-scrollbar touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
               {availableEquipment.map((item) => (
                 <motion.button
                   key={item.id}
-                  className={`w-full p-4 rounded-xl border-2 ${getRarityBorder(item.rarity)} text-left transition-all hover:scale-[1.02] min-h-[60px] touch-manipulation`}
+                  className={`w-full p-3 sm:p-4 rounded-xl border-2 ${getRarityBorder(item.rarity)} text-left transition-all hover:scale-[1.02] min-h-[56px] sm:min-h-[60px] touch-manipulation`}
                   onMouseEnter={() => setHoveredItem(item)}
                   onMouseLeave={() => setHoveredItem(null)}
                   onTouchStart={() => setHoveredItem(item)}
@@ -353,16 +351,16 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-2xl">{item.icon}</span>
-                    <div className="flex-1">
-                      <h4 className={`font-medium ${getRarityTextColor(item.rarity)}`}>{item.name}</h4>
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                    <span className="text-xl sm:text-2xl">{item.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className={`font-medium text-sm sm:text-base ${getRarityTextColor(item.rarity)} truncate`}>{item.name}</h4>
                       <p className="text-slate-400 text-xs capitalize">{item.slot}</p>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
                     {Object.entries(item.stats).map(([stat, value]) => (
-                      <span key={stat} className="text-xs bg-slate-700/50 px-2 py-1 rounded text-slate-300">
+                      <span key={stat} className="text-xs bg-slate-700/50 px-1.5 sm:px-2 py-1 rounded text-slate-300">
                         {stat}: +{value}
                       </span>
                     ))}
