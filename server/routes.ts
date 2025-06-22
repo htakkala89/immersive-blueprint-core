@@ -1233,9 +1233,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Episode System - Get available episodes
-  app.get("/api/episodes", (req, res) => {
+  app.get("/api/episodes", async (req, res) => {
     try {
-      const episodes = episodeEngine.getAvailableEpisodes();
+      const episodes = await episodeEngine.getAvailableEpisodes();
       res.json({ episodes });
     } catch (error) {
       console.error("Failed to get episodes:", error);
