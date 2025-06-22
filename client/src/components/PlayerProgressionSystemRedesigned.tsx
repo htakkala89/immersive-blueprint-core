@@ -104,13 +104,13 @@ export function PlayerProgressionSystemRedesigned({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden shadow-2xl"
+          className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
         >
           {/* Header */}
           <div className="relative bg-gradient-to-r from-purple-900/40 to-blue-900/40 border-b border-slate-700/50 p-6">
@@ -188,8 +188,9 @@ export function PlayerProgressionSystemRedesigned({
           </div>
 
           {/* Content */}
-          <div className="p-6 max-h-96 overflow-y-auto">
-            <AnimatePresence mode="wait">
+          <div className="flex-1 overflow-hidden">
+            <div className="h-full overflow-y-auto p-4 sm:p-6">
+              <AnimatePresence mode="wait">
               {activeTab === 'stats' && (
                 <motion.div
                   key="stats"
@@ -218,40 +219,40 @@ export function PlayerProgressionSystemRedesigned({
                     return null;
                   })()}
                   
-                  {/* Stats Grid */}
-                  <div className="grid gap-4">
+                  {/* Stats Grid - Mobile Optimized */}
+                  <div className="grid gap-3 max-h-[400px] overflow-y-auto">
                     {playerData.stats && Object.keys(playerData.stats).length > 0 ? (Object.keys(playerData.stats) as Array<keyof CoreStats>).map((stat) => (
                       <div 
                         key={stat}
-                        className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
+                        className="bg-slate-800/40 rounded-lg p-3 sm:p-4 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
                       >
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className={`${getStatColor(stat)}`}>
+                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                            <div className={`${getStatColor(stat)} flex-shrink-0`}>
                               {getStatIcon(stat)}
                             </div>
-                            <div>
-                              <h4 className="text-white font-medium capitalize">{stat}</h4>
-                              <p className="text-slate-400 text-sm">Current: {playerData.stats?.[stat]}</p>
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-white font-medium capitalize text-sm sm:text-base truncate">{stat}</h4>
+                              <p className="text-slate-400 text-xs sm:text-sm">Current: {playerData.stats?.[stat]}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                             <button
                               onClick={() => deallocateStat(stat)}
                               disabled={(playerData.stats?.[stat] ?? 0) <= 1}
-                              className="w-8 h-8 bg-slate-700/50 hover:bg-slate-600/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all duration-200"
+                              className="w-8 h-8 sm:w-9 sm:h-9 bg-slate-700/50 hover:bg-slate-600/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all duration-200 touch-manipulation"
                             >
-                              <Minus className="w-4 h-4 text-slate-300" />
+                              <Minus className="w-3 h-3 sm:w-4 sm:h-4 text-slate-300" />
                             </button>
-                            <span className="w-12 text-center text-white font-bold text-lg">
+                            <span className="w-8 sm:w-12 text-center text-white font-bold text-base sm:text-lg">
                               {playerData.stats?.[stat] ?? 0}
                             </span>
                             <button
                               onClick={() => allocateStat(stat)}
                               disabled={playerData.unspentStatPoints === 0}
-                              className="w-8 h-8 bg-purple-600/50 hover:bg-purple-500/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all duration-200"
+                              className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-600/50 hover:bg-purple-500/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all duration-200 touch-manipulation"
                             >
-                              <Plus className="w-4 h-4 text-white" />
+                              <Plus className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                             </button>
                           </div>
                         </div>
@@ -259,7 +260,6 @@ export function PlayerProgressionSystemRedesigned({
                     )) : (
                       <div className="text-center py-8">
                         <p className="text-slate-400">No stats available</p>
-                        <p className="text-xs text-slate-500 mt-2">Debug: stats = {JSON.stringify(playerData.stats)}</p>
                       </div>
                     )}
                   </div>
@@ -393,6 +393,7 @@ export function PlayerProgressionSystemRedesigned({
                 </motion.div>
               )}
             </AnimatePresence>
+            </div>
           </div>
         </motion.div>
       </div>
