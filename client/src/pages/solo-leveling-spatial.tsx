@@ -484,6 +484,8 @@ export default function SoloLevelingSpatial() {
     }
   };
 
+
+
   // Generate contextual thought prompts based on location and relationship
   const getLocationSpecificPrompts = () => {
     const affectionLevel = gameState.affection || 0;
@@ -555,102 +557,7 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Premium script formatting parser for in-person dialogue
-  const parseCinematicDialogue = (content: string) => {
-    const parts: Array<{
-      type: 'dialogue' | 'action' | 'thought' | 'narrative';
-      text: string;
-    }> = [];
 
-    let currentIndex = 0;
-    const contentLength = content.length;
-
-    while (currentIndex < contentLength) {
-      const remainingContent = content.slice(currentIndex);
-
-      // Look for dialogue (quoted text)
-      const dialogueMatch = remainingContent.match(/^"([^"]*)"(\s*)/);
-      if (dialogueMatch) {
-        parts.push({
-          type: 'dialogue',
-          text: dialogueMatch[1]
-        });
-        currentIndex += dialogueMatch[0].length;
-        continue;
-      }
-
-      // Look for actions (asterisk text)
-      const actionMatch = remainingContent.match(/^\*([^*]*)\*(\s*)/);
-      if (actionMatch) {
-        parts.push({
-          type: 'action',
-          text: actionMatch[1]
-        });
-        currentIndex += actionMatch[0].length;
-        continue;
-      }
-
-      // Look for thoughts (parenthesis text)
-      const thoughtMatch = remainingContent.match(/^\(([^)]*)\)(\s*)/);
-      if (thoughtMatch) {
-        parts.push({
-          type: 'thought',
-          text: thoughtMatch[1]
-        });
-        currentIndex += thoughtMatch[0].length;
-        continue;
-      }
-
-      // Look for narrative (everything else)
-      const narrativeMatch = remainingContent.match(/^([^"*()]+)/);
-      if (narrativeMatch) {
-        const text = narrativeMatch[1].trim();
-        if (text) {
-          parts.push({
-            type: 'narrative',
-            text: text
-          });
-        }
-        currentIndex += narrativeMatch[0].length;
-        continue;
-      }
-
-      // Skip single character if no matches
-      currentIndex += 1;
-    }
-
-    // Convert parts to JSX with proper styling
-    return parts.map((part, index) => {
-      switch (part.type) {
-        case 'dialogue':
-          return (
-            <div key={index} className="text-white text-lg font-medium leading-relaxed mb-3">
-              "{part.text}"
-            </div>
-          );
-        case 'action':
-          return (
-            <div key={index} className="text-amber-400 italic text-base leading-relaxed mb-3 pl-4">
-              *{part.text}*
-            </div>
-          );
-        case 'thought':
-          return (
-            <div key={index} className="text-gray-400 italic text-sm leading-relaxed mb-3 pl-6 border-l-2 border-gray-600">
-              ({part.text})
-            </div>
-          );
-        case 'narrative':
-          return (
-            <div key={index} className="text-gray-200 text-base leading-relaxed mb-3">
-              {part.text}
-            </div>
-          );
-        default:
-          return null;
-      }
-    });
-  };
 
   // Fallback dialogue if AI generation fails
   const getFallbackLocationDialogue = () => {
@@ -1599,9 +1506,8 @@ export default function SoloLevelingSpatial() {
       
       const data = await response.json();
       
-      // Apply premium script formatting to the response
-      const formattedResponse = parseCinematicDialogue(data.response);
-      setCurrentDialogue(formattedResponse);
+      // Set the raw response and let the display component handle formatting
+      setCurrentDialogue(data.response);
       
       // Track episode event for player chatting with Cha Hae-In
       fetch('/api/episode-events', {
@@ -4292,11 +4198,11 @@ export default function SoloLevelingSpatial() {
                               </p>
                             </div>
                           ) : (
-                            // Cha Hae-In messages: Left-aligned, bright white, script-like
+                            // Cha Hae-In messages: Left-aligned, cinematic script formatting
                             <div className="max-w-[75%]">
-                              <p className="text-white leading-relaxed font-medium break-words hyphens-auto whitespace-pre-wrap">
-                                {entry.text}
-                              </p>
+                              <div className="leading-relaxed break-words hyphens-auto">
+                                {parseCinematicText(entry.text)}
+                              </div>
                             </div>
                           )}
                         </motion.div>
