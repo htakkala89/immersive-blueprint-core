@@ -4627,11 +4627,74 @@ export default function SoloLevelingSpatial() {
                     </div>
                   </motion.div>
                   
-                  <div className="flex-1">
+                  <div className="flex-1 relative">
+                    {/* Sparkle Hearts within Dialogue Window */}
+                    <AnimatePresence>
+                      {sparkleHearts.map((heart) => (
+                        <div
+                          key={heart.id}
+                          className="absolute pointer-events-none z-10"
+                          style={{
+                            left: `${heart.x}%`,
+                            top: `${heart.y}%`,
+                            fontSize: '1.2rem',
+                            color: '#ff69b4',
+                            textShadow: '0 0 8px rgba(255, 105, 180, 0.6)',
+                            animation: 'sparkleHeart 2s ease-out forwards',
+                            animationDelay: `${heart.delay}ms`
+                          }}
+                        >
+                          💕
+                        </div>
+                      ))}
+                    </AnimatePresence>
+
+                    {/* Affection Gain Notification within Dialogue */}
+                    <AnimatePresence>
+                      {showAffectionGain && (
+                        <motion.div 
+                          className="absolute top-2 left-1/2 transform -translate-x-1/2 z-20"
+                          initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <div className="bg-gradient-to-r from-pink-500/90 to-rose-500/90 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                            +{affectionGainAmount} Affection 💖
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Real-time Affection Progress Bar within Dialogue */}
+                    <div className="absolute top-0 left-0 right-0 z-10">
+                      <div className="bg-black/30 border-b border-pink-500/20 px-4 py-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-pink-300">
+                            Affection: {gameState.affection || 0}/1000
+                          </span>
+                          <span className="text-pink-200 opacity-75">
+                            {gameState.affection >= 600 ? 'Deep Bond' :
+                             gameState.affection >= 400 ? 'Close Friend' :
+                             gameState.affection >= 200 ? 'Good Friend' :
+                             gameState.affection >= 100 ? 'Friend' : 'Acquaintance'}
+                          </span>
+                        </div>
+                        <div className="w-full h-1 bg-white/10 rounded-full mt-1">
+                          <div 
+                            className="h-full bg-gradient-to-r from-pink-400 to-rose-400 rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%` 
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area scrollbar-hide"
+                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area scrollbar-hide pt-12"
                       style={{ height: '400px', maxHeight: '400px' }}
                     >
                       {conversationHistory.map((entry, index) => (
@@ -5017,62 +5080,7 @@ export default function SoloLevelingSpatial() {
         />
       )}
 
-      {/* Sparkle Heart Effects */}
-      <AnimatePresence>
-        {sparkleHearts.map((heart) => (
-          <div
-            key={heart.id}
-            className="sparkle-heart"
-            style={{
-              left: `${heart.x}%`,
-              top: `${heart.y}%`,
-              animationDelay: `${heart.delay}ms`
-            }}
-          >
-            💕
-          </div>
-        ))}
-      </AnimatePresence>
 
-      {/* Affection Gain Notification */}
-      <AnimatePresence>
-        {showAffectionGain && (
-          <div className="affection-gain-notification">
-            +{affectionGainAmount} Affection 💖
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Real-time Affection Meter (shown during conversations) */}
-      <AnimatePresence>
-        {(dialogueActive || showAffectionGain) && (
-          <motion.div 
-            className="affection-meter visible"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="text-center text-xs">
-              Affection: {gameState.affection || 0}/1000
-            </div>
-            <div className="affection-progress-bar">
-              <div 
-                className="affection-progress-fill"
-                style={{ 
-                  width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%` 
-                }}
-              />
-            </div>
-            <div className="text-center text-xs opacity-75">
-              {gameState.affection >= 600 ? 'Deep Bond' :
-               gameState.affection >= 400 ? 'Close Friend' :
-               gameState.affection >= 200 ? 'Good Friend' :
-               gameState.affection >= 100 ? 'Friend' : 'Acquaintance'}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* System 15: Mobile-Optimized Notification Banners */}
       <AnimatePresence>
