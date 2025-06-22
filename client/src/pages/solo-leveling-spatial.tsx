@@ -33,7 +33,7 @@ import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSyste
 import { WorldMapCarousel } from '@/components/WorldMapCarousel';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
-import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
+
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
 import { PlayerProgressionSystemRedesigned as PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystemRedesigned';
 import { MonarchArmory } from '@/components/MonarchArmory';
@@ -944,7 +944,7 @@ export default function SoloLevelingSpatial() {
     return () => clearInterval(timeInterval);
   }, []);
   
-  const [showConstellation, setShowConstellation] = useState(false);
+
   const [showDungeonRaid, setShowDungeonRaid] = useState(false);
   const [showCoffeeActivity, setShowCoffeeActivity] = useState(false);
   const [showTrainingActivity, setShowTrainingActivity] = useState(false);
@@ -4775,7 +4775,7 @@ export default function SoloLevelingSpatial() {
                 { icon: Sword, label: 'Raid', color: 'from-red-500 to-orange-500', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
                 { icon: Star, label: 'Quests', color: 'from-green-500 to-emerald-500', onClick: () => { setShowQuestLog(true); setMonarchAuraVisible(false); } },
                 { icon: MapPin, label: 'World Map', color: 'from-blue-500 to-cyan-500', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
-                { icon: Heart, label: 'Constellation', color: 'from-pink-500 to-rose-500', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
+                { icon: Heart, label: 'Constellation', color: 'from-pink-500 to-rose-500', onClick: () => { setShowRelationshipConstellation(true); setMonarchAuraVisible(false); } },
                 { icon: Home, label: 'Daily Life', color: 'from-yellow-500 to-amber-500', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
                 { icon: MessageCircle, label: 'Communicator', color: 'from-cyan-500 to-teal-500', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
                 { icon: BookOpen, label: 'Episodes', color: 'from-orange-500 to-red-500', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
@@ -5321,16 +5321,7 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      <RelationshipConstellationSystem6
-        isVisible={showConstellation}
-        onClose={() => setShowConstellation(false)}
-        affectionLevel={Math.min(100, gameState.affection * 10)} // Convert 0-10 scale to 0-100, cap at 100%
-        memories={[]} // Additional custom memories can be added here
-        onMemorySelect={(memory) => {
-          console.log('Viewing memory:', memory.title);
-          // Could trigger scene replay or dialogue here
-        }}
-      />
+
 
       <DungeonRaidSystem11
         isVisible={showDungeonRaid}
