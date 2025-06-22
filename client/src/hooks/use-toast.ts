@@ -1,4 +1,5 @@
 import * as React from "react"
+import { triggerNotification } from "@/components/NotificationBell"
 
 import type {
   ToastActionElement,
@@ -142,24 +143,36 @@ type Toast = Omit<ToasterToast, "id">
 function toast({ ...props }: Toast) {
   const id = genId()
 
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: "UPDATE_TOAST",
-      toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+  // Convert toast to notification bell instead of showing overlay toast
+  const getNotificationType = (variant: string | null | undefined) => {
+    switch (variant) {
+      case 'destructive': return 'error';
+      case 'default': return 'info';
+      default: return 'info';
+    }
+  };
 
-  dispatch({
-    type: "ADD_TOAST",
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss()
-      },
-    },
-  })
+  // Trigger notification bell instead of toast
+  triggerNotification({
+    title: typeof props.title === 'string' ? props.title : 'Notification',
+    message: typeof props.description === 'string' ? props.description : 'System update',
+    type: getNotificationType(props.variant as string),
+    persistent: false
+  });
+
+  const update = (props: ToasterToast) => {
+    // Update notification bell if needed
+    triggerNotification({
+      title: typeof props.title === 'string' ? props.title : 'Updated Notification',
+      message: typeof props.description === 'string' ? props.description : 'System update',
+      type: getNotificationType(props.variant as string),
+      persistent: false
+    });
+  }
+  
+  const dismiss = () => {
+    // Notification bell handles dismissal automatically
+  }
 
   return {
     id: id,
