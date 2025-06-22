@@ -166,10 +166,10 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
                 </div>
               </div>
               
-              {/* Close Button - Fixed positioning */}
+              {/* Close Button - Top left positioning */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors z-[60] shadow-lg"
+                className="absolute top-4 left-4 p-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors z-[60] shadow-lg"
                 aria-label="Close Armory"
               >
                 <X className="w-5 h-5 text-white" />
