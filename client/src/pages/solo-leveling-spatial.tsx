@@ -1908,6 +1908,20 @@ export default function SoloLevelingSpatial() {
       
       const data = await response.json();
       
+      // Update game state with any changes from conversation (including affection)
+      if (data.gameState) {
+        setGameState(prev => ({
+          ...prev,
+          ...data.gameState
+        }));
+        
+        // Log affection changes
+        if (data.gameState.affection !== undefined && data.gameState.affection !== gameState.affection) {
+          const gain = data.gameState.affection - (gameState.affection || 0);
+          console.log(`💕 Affection updated: +${gain} (${gameState.affection || 0} → ${data.gameState.affection})`);
+        }
+      }
+      
       // Set the raw response and let the display component handle formatting
       setCurrentDialogue(data.response);
       

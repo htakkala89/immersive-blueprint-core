@@ -1998,6 +1998,30 @@ RESPONSE INSTRUCTIONS:
         else if (responseText.includes('worry') || responseText.includes('concern') || responseText.includes('careful') || responseText.includes('danger')) {
           expressionUpdate = 'concerned';
         }
+        
+        // Calculate affection gain from conversation
+        let affectionGain = 0;
+        const baseAffectionGain = 2; // Base gain for any conversation
+        
+        // Bonus affection for romantic/positive interactions
+        if (expressionUpdate === 'romantic') affectionGain += 3;
+        else if (expressionUpdate === 'welcoming' || expressionUpdate === 'amused') affectionGain += 2;
+        else if (expressionUpdate === 'surprised') affectionGain += 1;
+        
+        // Additional bonus for meaningful conversations (longer player messages)
+        if (message.length > 50) affectionGain += 1;
+        
+        affectionGain += baseAffectionGain;
+        
+        // Apply affection gain to game state
+        updatedGameState.affection = Math.min(1000, (gameState.affection || 0) + affectionGain);
+        
+        console.log(`💕 Conversation affection gain: +${affectionGain} (${gameState.affection || 0} → ${updatedGameState.affection})`);
+        
+        // Special affection boost for romantic expressions
+        if (expressionUpdate === 'romantic' && affectionGain >= 4) {
+          console.log('💕 Affection Heart triggered by romantic moment!');
+        }
       }
       
       let audioUrl = null;
