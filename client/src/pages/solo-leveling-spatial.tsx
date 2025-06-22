@@ -62,7 +62,7 @@ import { NarrativeProgressionSystem9 } from '@/components/NarrativeProgressionSy
 import { QuestLogSystem3 } from '@/components/QuestLogSystem3';
 import ItemInspectionView from '@/components/ItemInspectionView';
 import { AutoWeatherSystem, DynamicWeatherSystem } from '@/components/DynamicWeatherSystem';
-import { RelationshipConstellation } from '@/components/RelationshipConstellation';
+
 
 // Premium script formatting parser for in-person dialogue display
 const parseCinematicText = (content: string) => {
@@ -6307,22 +6307,7 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      {/* Relationship Constellation */}
-      <RelationshipConstellation
-        isVisible={showRelationshipConstellation}
-        onClose={() => setShowRelationshipConstellation(false)}
-        affectionLevel={gameState.affection || 0}
-        intimacyLevel={gameState.intimacyLevel || 1}
-        sharedMemories={gameState.sharedMemories || []}
-        relationshipMilestones={[
-          "First meeting at Hunter Association",
-          "Coffee date in Hongdae",
-          "Training session together",
-          "Intimate moment shared",
-          "Deep emotional connection"
-        ]}
-        currentMood="happy"
-      />
+
 
     </div>
   );
