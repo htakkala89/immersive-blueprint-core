@@ -5017,6 +5017,63 @@ export default function SoloLevelingSpatial() {
         />
       )}
 
+      {/* Sparkle Heart Effects */}
+      <AnimatePresence>
+        {sparkleHearts.map((heart) => (
+          <div
+            key={heart.id}
+            className="sparkle-heart"
+            style={{
+              left: `${heart.x}%`,
+              top: `${heart.y}%`,
+              animationDelay: `${heart.delay}ms`
+            }}
+          >
+            💕
+          </div>
+        ))}
+      </AnimatePresence>
+
+      {/* Affection Gain Notification */}
+      <AnimatePresence>
+        {showAffectionGain && (
+          <div className="affection-gain-notification">
+            +{affectionGainAmount} Affection 💖
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Real-time Affection Meter (shown during conversations) */}
+      <AnimatePresence>
+        {(dialogueActive || showAffectionGain) && (
+          <motion.div 
+            className="affection-meter visible"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="text-center text-xs">
+              Affection: {gameState.affection || 0}/1000
+            </div>
+            <div className="affection-progress-bar">
+              <div 
+                className="affection-progress-fill"
+                style={{ 
+                  width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%` 
+                }}
+              />
+            </div>
+            <div className="text-center text-xs opacity-75">
+              {gameState.affection >= 600 ? 'Deep Bond' :
+               gameState.affection >= 400 ? 'Close Friend' :
+               gameState.affection >= 200 ? 'Good Friend' :
+               gameState.affection >= 100 ? 'Friend' : 'Acquaintance'}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* System 15: Mobile-Optimized Notification Banners */}
       <AnimatePresence>
         {notifications.map((notification, index) => (
