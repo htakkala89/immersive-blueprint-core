@@ -3703,32 +3703,7 @@ export default function SoloLevelingSpatial() {
                 ]);
                 console.log('Park bench - Heartfelt scene with high affection gain');
                 break;
-              case 'street_food_vendor':
-                // Simple food sharing interaction
-                if ((gameState.gold || 0) >= 5000) {
-                  setGameState(prev => ({
-                    ...prev,
-                    gold: Math.max(0, (prev.gold || 0) - 5000),
-                    affection: Math.min(100, prev.affection + 4)
-                  }));
-                  handleEnvironmentalInteraction({
-                    id: 'street_food_sharing',
-                    action: 'You buy hotteok from the street vendor. [- ₩5,000]. The sweet pancakes are still warm as you share them. Cha Hae-In laughs when the honey drips on her fingers. "I haven\'t had street food in ages," she admits, licking the sweetness away with genuine delight.',
-                    name: 'Street Food Vendor',
-                    x: 25,
-                    y: 40
-                  });
-                  console.log('Street food sharing - Small affection gain through simple pleasure');
-                } else {
-                  handleEnvironmentalInteraction({
-                    id: 'food_vendor_browse',
-                    action: 'You approach the street food vendor together. The aroma of hotteok and tteokbokki fills the air. Cha Hae-In inhales deeply. "That smells incredible," she says wistfully.',
-                    name: 'Street Food Vendor',
-                    x: 25,
-                    y: 40
-                  });
-                }
-                break;
+
                 
               case 'reception_desk':
               case 'architectural_models':
@@ -3830,6 +3805,347 @@ export default function SoloLevelingSpatial() {
                 // Opens lore panel with gate information
                 setShowQuestBoard(true);
                 console.log('Opening mission board with gate alerts and world lore');
+                break;
+
+              // Hongdae Arcade Interactive Nodes
+              case 'fighting_game_cabinet':
+                // Competitive gaming mini-game
+                handleEnvironmentalInteraction({
+                  id: 'fighting_game',
+                  action: 'Challenge Cha Hae-In to a fighting game match. The competitive spirit brings you closer together as you discover her surprisingly fierce gaming skills.',
+                  name: 'Fighting Game Cabinet',
+                  x: 25,
+                  y: 40
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 4),
+                  gold: (prev.gold || 0) - 3000
+                }));
+                break;
+
+              case 'rhythm_game_station':
+                // Cooperative rhythm gaming
+                handleEnvironmentalInteraction({
+                  id: 'rhythm_game',
+                  action: 'Try the rhythm game together. Working in sync to hit the beats creates a sense of harmony and teamwork between you.',
+                  name: 'Rhythm Game Station',
+                  x: 75,
+                  y: 30
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 5),
+                  gold: (prev.gold || 0) - 2000
+                }));
+                break;
+
+              case 'claw_machine':
+                // Prize winning game
+                const clawSuccess = Math.random() > 0.6; // 40% success rate
+                if (clawSuccess) {
+                  handleEnvironmentalInteraction({
+                    id: 'claw_machine_win',
+                    action: 'You successfully win a cute plushie from the claw machine! Cha Hae-In\'s delighted expression makes the effort completely worthwhile.',
+                    name: 'Claw Machine',
+                    x: 50,
+                    y: 75
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(1000, prev.affection + 6),
+                    gold: (prev.gold || 0) - 5000,
+                    inventory: [...(prev.inventory || []), 'cute_plushie']
+                  }));
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'claw_machine_fail',
+                    action: 'The claw machine proves challenging, but Cha Hae-In appreciates your determined effort. "It\'s the thought that counts," she says warmly.',
+                    name: 'Claw Machine',
+                    x: 50,
+                    y: 75
+                  });
+                  setGameState(prev => ({
+                    ...prev,
+                    affection: Math.min(1000, prev.affection + 2),
+                    gold: (prev.gold || 0) - 5000
+                  }));
+                }
+                break;
+
+              case 'photo_booth':
+                // Memory creation through photos
+                handleEnvironmentalInteraction({
+                  id: 'photo_booth',
+                  action: 'Take photos together in the booth. The close proximity and shared laughter create precious memories you\'ll both treasure.',
+                  name: 'Photo Booth',
+                  x: 20,
+                  y: 80
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 7),
+                  gold: (prev.gold || 0) - 8000,
+                  sharedMemories: [...(prev.sharedMemories || []), {
+                    id: Date.now().toString(),
+                    type: 'photo_booth',
+                    location: 'hongdae_arcade',
+                    description: 'Playful arcade photo session',
+                    timestamp: new Date().toISOString()
+                  }]
+                }));
+                break;
+
+              // Hongdae Karaoke Interactive Nodes
+              case 'song_selection':
+                // Musical bonding through song choices
+                handleEnvironmentalInteraction({
+                  id: 'karaoke_songs',
+                  action: 'Browse the song catalog together. Discovering each other\'s musical preferences reveals new depths to your personalities.',
+                  name: 'Song Selection Screen',
+                  x: 30,
+                  y: 20
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 3)
+                }));
+                break;
+
+              case 'microphone_setup':
+                // Duet preparation bonding
+                handleEnvironmentalInteraction({
+                  id: 'karaoke_duet_prep',
+                  action: 'Set up the microphones for a duet. The anticipation and close collaboration heighten the romantic atmosphere.',
+                  name: 'Microphone Setup',
+                  x: 70,
+                  y: 40
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 4)
+                }));
+                break;
+
+              case 'private_seating':
+                // Intimate conversation during breaks
+                handleEnvironmentalInteraction({
+                  id: 'karaoke_couch',
+                  action: 'Sit together on the couch between songs. The private setting encourages deeper conversation and connection.',
+                  name: 'Private Couch',
+                  x: 50,
+                  y: 80
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 5)
+                }));
+                break;
+
+              case 'mood_lighting':
+                // Romantic ambiance creation
+                handleEnvironmentalInteraction({
+                  id: 'karaoke_lighting',
+                  action: 'Adjust the room lighting for ambiance. The warm, dim lighting creates a romantic atmosphere perfect for intimate moments.',
+                  name: 'Mood Lighting Controls',
+                  x: 85,
+                  y: 25
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 6)
+                }));
+                break;
+
+              // Traditional Market Cultural Experience Nodes
+              case 'street_food_vendor':
+                // Cultural food bonding
+                handleEnvironmentalInteraction({
+                  id: 'traditional_food',
+                  action: 'Sample authentic Korean street food together. Sharing traditional snacks sparks conversations about childhood memories and cultural heritage.',
+                  name: 'Traditional Street Food',
+                  x: 30,
+                  y: 50
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 4),
+                  gold: (prev.gold || 0) - 8000
+                }));
+                break;
+
+              case 'handicraft_stall':
+                // Cultural shopping experience
+                handleEnvironmentalInteraction({
+                  id: 'traditional_crafts',
+                  action: 'Browse traditional Korean handicrafts. Learning about artisanship together deepens your appreciation for Korean culture.',
+                  name: 'Traditional Handicrafts',
+                  x: 70,
+                  y: 35
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 3),
+                  gold: (prev.gold || 0) - 15000
+                }));
+                break;
+
+              case 'tea_ceremony_area':
+                // Formal cultural bonding
+                handleEnvironmentalInteraction({
+                  id: 'tea_ceremony',
+                  action: 'Participate in a traditional tea ceremony. The formal cultural experience creates a sense of shared respect and understanding.',
+                  name: 'Traditional Tea Ceremony',
+                  x: 50,
+                  y: 75
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 5),
+                  gold: (prev.gold || 0) - 12000
+                }));
+                break;
+
+              case 'elderly_vendor':
+                // NPC wisdom sharing
+                handleEnvironmentalInteraction({
+                  id: 'market_elder',
+                  action: 'Chat with the friendly elderly vendor. Their wisdom about life and local history provides valuable insights and perspective.',
+                  name: 'Elderly Market Vendor',
+                  x: 20,
+                  y: 25
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 2)
+                }));
+                break;
+
+              // Myeongdong Street Shopping Experience Nodes
+              case 'cosmetics_shop':
+                // Beauty routine bonding
+                handleEnvironmentalInteraction({
+                  id: 'beauty_shopping',
+                  action: 'Browse Korean beauty products together. Learning about Cha Hae-In\'s skincare routine creates intimate understanding.',
+                  name: 'Korean Cosmetics Shop',
+                  x: 25,
+                  y: 30
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 4),
+                  gold: (prev.gold || 0) - 25000
+                }));
+                break;
+
+              case 'street_food_cart':
+                // Street food date experience
+                handleEnvironmentalInteraction({
+                  id: 'myeongdong_food',
+                  action: 'Try the famous Myeongdong street food. Sharing spicy tteokbokki and hotteok while people-watching creates casual intimacy.',
+                  name: 'Popular Street Food Cart',
+                  x: 75,
+                  y: 45
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 3),
+                  gold: (prev.gold || 0) - 6000
+                }));
+                break;
+
+              case 'fashion_boutique':
+                // Fashion styling activity
+                handleEnvironmentalInteraction({
+                  id: 'fashion_styling',
+                  action: 'Look at the latest Korean fashion trends. Helping Cha Hae-In pick out casual clothes reveals her personal style preferences.',
+                  name: 'Trendy Fashion Boutique',
+                  x: 50,
+                  y: 20
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 5),
+                  gold: (prev.gold || 0) - 40000
+                }));
+                break;
+
+              case 'street_performer':
+                // Romantic street entertainment
+                handleEnvironmentalInteraction({
+                  id: 'street_performance',
+                  action: 'Watch the street performers together. Enjoying live music and entertainment while standing close together feels naturally romantic.',
+                  name: 'Street Performance',
+                  x: 60,
+                  y: 80
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 4)
+                }));
+                break;
+
+              // Low-Rank Gate Training Nodes
+              case 'gate_scanner':
+                // Tactical planning together
+                handleEnvironmentalInteraction({
+                  id: 'gate_analysis',
+                  action: 'Scan the gate for threat level and monster types. Planning strategy with Cha Hae-In demonstrates professional coordination.',
+                  name: 'Gate Analysis Scanner',
+                  x: 30,
+                  y: 30
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 2)
+                }));
+                break;
+
+              case 'equipment_check':
+                // Pre-dungeon preparation
+                handleEnvironmentalInteraction({
+                  id: 'equipment_verification',
+                  action: 'Check equipment readiness before entering. Ensuring proper gear shows your concern for both your safety and hers.',
+                  name: 'Equipment Verification',
+                  x: 70,
+                  y: 40
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 3)
+                }));
+                break;
+
+              case 'gate_entrance':
+                // Begin training dungeon
+                handleEnvironmentalInteraction({
+                  id: 'training_dungeon_entry',
+                  action: 'Enter the gate together for training. The shared challenge strengthens your partnership and combat coordination.',
+                  name: 'Gate Portal',
+                  x: 50,
+                  y: 75
+                });
+                // TODO: This should eventually trigger combat system
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 5),
+                  experience: (prev.experience || 0) + 50
+                }));
+                break;
+
+              case 'safety_beacon':
+                // Safety protocol setup
+                handleEnvironmentalInteraction({
+                  id: 'safety_protocols',
+                  action: 'Activate the safety beacon for emergency extraction. Setting up safety protocols shows your protective instincts.',
+                  name: 'Emergency Safety Beacon',
+                  x: 85,
+                  y: 20
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 2)
+                }));
                 break;
               case 'receptionist':
                 // Simple NPC dialogue box - no focus animation, brief interaction

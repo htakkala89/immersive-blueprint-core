@@ -525,6 +525,226 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
     }
   ],
 
+  // Hongdae District - Retro Arcade
+  hongdae_arcade: [
+    {
+      id: 'fighting_game_cabinet',
+      label: 'Fighting Game Cabinet',
+      icon: Zap,
+      position: { x: 25, y: 40 },
+      thoughtPrompt: 'Challenge Cha Hae-In to a fighting game match',
+      outcome: 'Competitive gaming session with skill-based outcomes and playful rivalry',
+      gameLogic: 'arcade_fighting_game_minigame',
+      requirements: []
+    },
+    {
+      id: 'rhythm_game_station',
+      label: 'Rhythm Game Station',
+      icon: Monitor,
+      position: { x: 75, y: 30 },
+      thoughtPrompt: 'Try the rhythm game together',
+      outcome: 'Cooperative rhythm gaming that builds teamwork and creates shared memories',
+      gameLogic: 'arcade_rhythm_game_coop',
+      requirements: []
+    },
+    {
+      id: 'claw_machine',
+      label: 'Claw Machine',
+      icon: ShoppingBag,
+      position: { x: 50, y: 75 },
+      thoughtPrompt: 'Win a prize for Cha Hae-In from the claw machine',
+      outcome: 'Attempt to win cute plushie. Success based on gold spent and luck',
+      gameLogic: 'claw_machine_prize_game',
+      requirements: []
+    },
+    {
+      id: 'photo_booth',
+      label: 'Photo Booth',
+      icon: Eye,
+      position: { x: 20, y: 80 },
+      thoughtPrompt: 'Suggest taking photos together in the booth',
+      outcome: 'Creates shared memory photos and increases intimacy through close proximity',
+      gameLogic: 'photo_booth_memory_creation',
+      requirements: []
+    }
+  ],
+
+  // Hongdae District - Karaoke Room
+  hongdae_karaoke: [
+    {
+      id: 'song_selection',
+      label: 'Song Selection Screen',
+      icon: Monitor,
+      position: { x: 30, y: 20 },
+      thoughtPrompt: 'Browse the song catalog together',
+      outcome: 'Discover each other\'s musical preferences and select duets',
+      gameLogic: 'karaoke_song_selection_bonding',
+      requirements: []
+    },
+    {
+      id: 'microphone_setup',
+      label: 'Microphone Setup',
+      icon: Zap,
+      position: { x: 70, y: 40 },
+      thoughtPrompt: 'Set up the microphones for a duet',
+      outcome: 'Prepare for romantic duet performance with close collaboration',
+      gameLogic: 'karaoke_duet_preparation',
+      requirements: []
+    },
+    {
+      id: 'private_seating',
+      label: 'Private Couch',
+      icon: Sofa,
+      position: { x: 50, y: 80 },
+      thoughtPrompt: 'Sit together on the couch between songs',
+      outcome: 'Intimate conversation during breaks, sharing musical memories',
+      gameLogic: 'karaoke_intimate_conversation',
+      requirements: []
+    },
+    {
+      id: 'mood_lighting',
+      label: 'Mood Lighting Controls',
+      icon: Eye,
+      position: { x: 85, y: 25 },
+      thoughtPrompt: 'Adjust the room lighting for ambiance',
+      outcome: 'Create romantic atmosphere that enhances the karaoke experience',
+      gameLogic: 'karaoke_romantic_ambiance',
+      requirements: []
+    }
+  ],
+
+  // Traditional Market - Korean Culture Experience
+  traditional_market: [
+    {
+      id: 'street_food_vendor',
+      label: 'Traditional Street Food',
+      icon: ChefHat,
+      position: { x: 30, y: 50 },
+      thoughtPrompt: 'Sample authentic Korean street food together',
+      outcome: 'Share traditional snacks and discuss Korean culture and childhood memories',
+      gameLogic: 'cultural_food_experience',
+      requirements: []
+    },
+    {
+      id: 'handicraft_stall',
+      label: 'Traditional Handicrafts',
+      icon: ShoppingBag,
+      position: { x: 70, y: 35 },
+      thoughtPrompt: 'Browse traditional Korean handicrafts',
+      outcome: 'Learn about Korean artisanship and possibly purchase meaningful gifts',
+      gameLogic: 'cultural_shopping_experience',
+      requirements: []
+    },
+    {
+      id: 'tea_ceremony_area',
+      label: 'Traditional Tea Ceremony',
+      icon: Coffee,
+      position: { x: 50, y: 75 },
+      thoughtPrompt: 'Participate in a traditional tea ceremony',
+      outcome: 'Formal cultural experience that deepens understanding and respect',
+      gameLogic: 'tea_ceremony_cultural_bonding',
+      requirements: []
+    },
+    {
+      id: 'elderly_vendor',
+      label: 'Elderly Market Vendor',
+      icon: Users,
+      position: { x: 20, y: 25 },
+      thoughtPrompt: 'Chat with the friendly elderly vendor',
+      outcome: 'Gain wisdom and local stories from experienced market vendor',
+      gameLogic: 'npc_dialogue_wisdom_sharing',
+      requirements: []
+    }
+  ],
+
+  // Myeongdong Street - Shopping and Street Food
+  myeongdong: [
+    {
+      id: 'cosmetics_shop',
+      label: 'Korean Cosmetics Shop',
+      icon: ShoppingBag,
+      position: { x: 25, y: 30 },
+      thoughtPrompt: 'Browse Korean beauty products together',
+      outcome: 'Learn about Cha Hae-In\'s beauty routine and preferences',
+      gameLogic: 'beauty_shopping_bonding',
+      requirements: []
+    },
+    {
+      id: 'street_food_cart',
+      label: 'Popular Street Food Cart',
+      icon: ChefHat,
+      position: { x: 75, y: 45 },
+      thoughtPrompt: 'Try the famous Myeongdong street food',
+      outcome: 'Share spicy tteokbokki and hotteok while people-watching',
+      gameLogic: 'street_food_date_experience',
+      requirements: []
+    },
+    {
+      id: 'fashion_boutique',
+      label: 'Trendy Fashion Boutique',
+      icon: ShoppingBag,
+      position: { x: 50, y: 20 },
+      thoughtPrompt: 'Look at the latest Korean fashion trends',
+      outcome: 'Help Cha Hae-In pick out casual clothes outside of hunter attire',
+      gameLogic: 'fashion_styling_activity',
+      requirements: []
+    },
+    {
+      id: 'street_performer',
+      label: 'Street Performance',
+      icon: Eye,
+      position: { x: 60, y: 80 },
+      thoughtPrompt: 'Watch the street performers together',
+      outcome: 'Enjoy live music and entertainment while standing close together',
+      gameLogic: 'street_performance_romantic_moment',
+      requirements: []
+    }
+  ],
+
+  // Low-Rank Gate - Dungeon Training Entrance
+  low_rank_gate: [
+    {
+      id: 'gate_scanner',
+      label: 'Gate Analysis Scanner',
+      icon: Eye,
+      position: { x: 30, y: 30 },
+      thoughtPrompt: 'Scan the gate for threat level and monster types',
+      outcome: 'Analyze dungeon contents and plan strategy with Cha Hae-In',
+      gameLogic: 'gate_analysis_tactical_planning',
+      requirements: []
+    },
+    {
+      id: 'equipment_check',
+      label: 'Equipment Verification',
+      icon: Shield,
+      position: { x: 70, y: 40 },
+      thoughtPrompt: 'Check equipment readiness before entering',
+      outcome: 'Ensure proper gear and weapons are equipped for safe exploration',
+      gameLogic: 'pre_dungeon_equipment_check',
+      requirements: []
+    },
+    {
+      id: 'gate_entrance',
+      label: 'Gate Portal',
+      icon: Zap,
+      position: { x: 50, y: 75 },
+      thoughtPrompt: 'Enter the gate together for training',
+      outcome: 'Begin low-level dungeon raid for skill development and teamwork',
+      gameLogic: 'enter_training_dungeon',
+      requirements: []
+    },
+    {
+      id: 'safety_beacon',
+      label: 'Emergency Safety Beacon',
+      icon: Building,
+      position: { x: 85, y: 20 },
+      thoughtPrompt: 'Activate the safety beacon for emergency extraction',
+      outcome: 'Set up safety protocols for secure training environment',
+      gameLogic: 'dungeon_safety_protocol_setup',
+      requirements: []
+    }
+  ],
+
   // Hunter Market - Trading Hub
   hunter_market: [
     {
