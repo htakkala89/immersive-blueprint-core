@@ -1687,55 +1687,89 @@ Respond naturally as if you're texting back, using the exact formatting rules ab
         const ensureCinematicFormatting = (response: string): string => {
           console.log('🎭 Post-processing response for premium script formatting:', response);
           
-          // If already properly formatted with clear separations, ensure proper line breaks
-          if (response.includes('"') && (response.includes('*') || response.includes('('))) {
-            let formatted = response;
+          // Parse elements using regex to separate dialogue, actions, and thoughts
+          const elements = [];
+          let remaining = response;
+          
+          // Extract all quoted dialogue
+          const dialogueMatches = Array.from(remaining.matchAll(/"([^"]+)"/g));
+          dialogueMatches.forEach(match => {
+            elements.push({
+              type: 'dialogue',
+              content: match[1],
+              position: match.index || 0
+            });
+          });
+          
+          // Extract all asterisk actions
+          const actionMatches = Array.from(remaining.matchAll(/\*([^*]+)\*/g));
+          actionMatches.forEach(match => {
+            elements.push({
+              type: 'action', 
+              content: match[1],
+              position: match.index || 0
+            });
+          });
+          
+          // Extract all parentheses thoughts
+          const thoughtMatches = Array.from(remaining.matchAll(/\(([^)]+)\)/g));
+          thoughtMatches.forEach(match => {
+            elements.push({
+              type: 'thought',
+              content: match[1], 
+              position: match.index || 0
+            });
+          });
+          
+          // If we found formatted elements, reconstruct with line breaks
+          if (elements.length > 0) {
+            // Sort by position to maintain original order
+            elements.sort((a, b) => a.position - b.position);
             
-            // Add line breaks before actions that aren't already separated
-            formatted = formatted.replace(/([.!?"])\s*(\*[^*]+\*)/g, '$1\n\n$2');
-            
-            // Add line breaks before dialogue that isn't already separated  
-            formatted = formatted.replace(/(\*[^*]+\*)\s*("[^"]+?")/g, '$1\n\n$2');
-            
-            // Add line breaks before thoughts that aren't already separated
-            formatted = formatted.replace(/([.!?"])\s*(\([^)]+\))/g, '$1\n\n$2');
-            
-            // Add line breaks after thoughts before dialogue
-            formatted = formatted.replace(/(\([^)]+\))\s*("[^"]+?")/g, '$1\n\n$2');
-            
-            // Clean up excessive line breaks while maintaining script structure
-            formatted = formatted.replace(/\n{3,}/g, '\n\n').trim();
+            const formatted = elements.map(element => {
+              switch (element.type) {
+                case 'dialogue':
+                  return `"${element.content.trim()}"`;
+                case 'action':
+                  return `*${element.content.trim()}*`;
+                case 'thought':
+                  return `(${element.content.trim()})`;
+                default:
+                  return element.content.trim();
+              }
+            }).join('\n\n');
             
             console.log('🎭 Premium script-formatted response:', formatted);
             return formatted;
           }
           
-          // Apply intelligent formatting to unformatted responses with proper line separations
-          let formatted = response;
+          // Fallback: intelligent parsing for unformatted text
+          const lines = response.split(/[.!?]/).filter(line => line.trim());
+          const formattedLines = [];
           
-          // Pattern 1: Convert obvious dialogue to quoted format with line breaks
-          formatted = formatted.replace(
-            /(^|\s)([A-Z][^.!?]*(?:Indeed|Yes|No|Perhaps|Maybe|I |You |We |That |This |The |Have |What |When |Where |Why |How )[^.!?]*[.!?])/g,
-            (match, space, sentence) => {
-              return `${space.includes('\n') ? space : '\n\n'}"${sentence.trim()}"`;
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+            
+            // Detect dialogue patterns
+            if (trimmed.includes('Hunter') || trimmed.includes('I was') || trimmed.includes('Perhaps') || trimmed.includes('Let\'s')) {
+              formattedLines.push(`"${trimmed}."`);
             }
-          );
+            // Detect action patterns
+            else if (trimmed.includes('glances') || trimmed.includes('taps') || trimmed.includes('straightens') || trimmed.includes('She ')) {
+              formattedLines.push(`*${trimmed}.*`);
+            }
+            // Detect thought patterns
+            else if (trimmed.includes('He\'s') || trimmed.includes('just to see me')) {
+              formattedLines.push(`(${trimmed}...)`);
+            }
+            // Default to dialogue for other content
+            else if (trimmed.length > 0) {
+              formattedLines.push(`"${trimmed}."`);
+            }
+          }
           
-          // Pattern 2: Convert action descriptions to asterisk format with line breaks
-          formatted = formatted.replace(
-            /([^"*()]*(?:She|He|Her|His)[^.!?]*(?:taps?|glances?|adjusts?|looks?|moves?|shifts?|leans?|nods?|smiles?|frowns?|blushes?|furrows?)[^.!?]*[.!?])/gi,
-            '\n\n*$1*'
-          );
-          
-          // Pattern 3: Convert internal thoughts to parentheses format with line breaks
-          formatted = formatted.replace(
-            /([^"*()]*(?:I wonder|I think|I feel|I hope|I should|I need|Perhaps I|Maybe I)[^.!?]*[.!?])/gi,
-            '\n\n(*$1*)'
-          );
-          
-          // Clean up excessive line breaks while maintaining script structure
-          formatted = formatted.replace(/\n{3,}/g, '\n\n').trim();
-          
+          const formatted = formattedLines.join('\n\n');
           console.log('🎭 Premium script-formatted response:', formatted);
           return formatted;
         };
