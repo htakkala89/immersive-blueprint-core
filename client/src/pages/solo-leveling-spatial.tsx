@@ -35,7 +35,7 @@ import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
-import { PlayerProgressionSystem16Fixed as PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16Fixed';
+import { PlayerProgressionSystemRedesigned as PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystemRedesigned';
 import { MonarchArmory } from '@/components/MonarchArmory';
 import { MonarchInventorySystem } from '@/components/MonarchInventorySystemFixed';
 import { MonarchArmory2D } from '@/components/MonarchArmory2D';
@@ -4717,57 +4717,119 @@ export default function SoloLevelingSpatial() {
       
 
 
-      {/* Monarch's Aura - Mobile-Responsive Menu */}
-      {monarchAuraVisible && (
-        <div className="fixed top-16 sm:top-20 right-2 sm:right-6 w-44 sm:w-40 bg-black/20 backdrop-blur-xl border border-white/30 rounded-lg p-2 z-[9998] shadow-2xl" 
-             style={{ 
-               background: 'rgba(255, 255, 255, 0.08)', 
-               backdropFilter: 'blur(40px) saturate(180%)', 
-               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
-             }}>
-          <div className="text-white text-sm mb-2 font-medium text-center opacity-80">Monarch's Aura</div>
-          {[
-            { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
-            { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowQuestLog(true); setMonarchAuraVisible(false); } },
-            { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
-            { icon: Heart, label: 'Constellation', color: 'text-pink-300', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
-            { icon: Home, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
-            { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
-            { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
-            { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
-            { 
-              icon: Bell, 
-              label: 'Notifications', 
-              color: 'text-amber-300', 
-              badge: unreadNotificationCount > 0 ? unreadNotificationCount : null,
-              onClick: () => { 
-                setShowNotifications(!showNotifications); 
-                setMonarchAuraVisible(false); 
-              } 
-            },
-            { icon: Power, label: 'Leave World', color: 'text-red-300', onClick: () => { 
-              if (confirm('Are you sure you want to leave the world?')) {
-                window.location.href = '/';
-              }
-              setMonarchAuraVisible(false);
+      {/* Monarch's Aura - Redesigned Modern Menu */}
+      <AnimatePresence>
+        {monarchAuraVisible && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="fixed top-16 sm:top-20 right-2 sm:right-6 w-72 bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 border border-slate-700/50 rounded-2xl p-4 z-[9998] shadow-2xl"
+            style={{ 
+              backdropFilter: 'blur(40px) saturate(180%)', 
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
             }}
-          ].map((item, index) => (
-            <button
-              key={item.label}
-              className="w-full flex items-center gap-2 p-2.5 sm:p-2 rounded text-white hover:bg-white/10 transition-all mb-1 min-h-[44px] sm:min-h-[36px] relative"
-              onClick={item.onClick}
-            >
-              <item.icon className={`w-4 h-4 sm:w-4 sm:h-4 ${item.color}`} />
-              <span className="text-xs font-medium truncate">{item.label}</span>
-              {item.badge && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                  {item.badge > 9 ? '9+' : item.badge}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+          >
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-700/50">
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                <Crown className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-sm">Monarch's Aura</h3>
+                <p className="text-slate-400 text-xs">Shadow Authority</p>
+              </div>
+            </div>
+
+            {/* Menu Grid */}
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {[
+                { icon: Sword, label: 'Raid', color: 'from-red-500 to-orange-500', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
+                { icon: Star, label: 'Quests', color: 'from-green-500 to-emerald-500', onClick: () => { setShowQuestLog(true); setMonarchAuraVisible(false); } },
+                { icon: MapPin, label: 'World Map', color: 'from-blue-500 to-cyan-500', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
+                { icon: Heart, label: 'Constellation', color: 'from-pink-500 to-rose-500', onClick: () => { setShowConstellation(true); setMonarchAuraVisible(false); } },
+                { icon: Home, label: 'Daily Life', color: 'from-yellow-500 to-amber-500', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
+                { icon: MessageCircle, label: 'Communicator', color: 'from-cyan-500 to-teal-500', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
+                { icon: BookOpen, label: 'Episodes', color: 'from-orange-500 to-red-500', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
+                { icon: User, label: 'Character', color: 'from-indigo-500 to-purple-500', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } }
+              ].map((item, index) => (
+                <motion.button
+                  key={item.label}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, delay: index * 0.03 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="relative p-3 bg-slate-800/40 hover:bg-slate-700/50 rounded-xl border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200 group"
+                  onClick={item.onClick}
+                >
+                  <div className={`w-8 h-8 bg-gradient-to-br ${item.color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-200`}>
+                    <item.icon className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-white text-xs font-medium block">{item.label}</span>
+                </motion.button>
+              ))}
+            </div>
+
+            {/* Special Actions */}
+            <div className="space-y-2">
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.3 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                className="w-full p-3 bg-gradient-to-r from-amber-900/40 to-yellow-900/40 border border-amber-500/30 hover:border-amber-400/50 rounded-xl transition-all duration-200 relative"
+                onClick={() => { 
+                  setShowNotifications(!showNotifications); 
+                  setMonarchAuraVisible(false); 
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-lg flex items-center justify-center">
+                    <Bell className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="text-white text-sm font-medium block">Notifications</span>
+                    <span className="text-amber-300 text-xs">System alerts</span>
+                  </div>
+                  {unreadNotificationCount > 0 && (
+                    <div className="w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                      {unreadNotificationCount}
+                    </div>
+                  )}
+                </div>
+              </motion.button>
+
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.35 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                className="w-full p-3 bg-gradient-to-r from-red-900/40 to-gray-900/40 border border-red-500/30 hover:border-red-400/50 rounded-xl transition-all duration-200"
+                onClick={() => { 
+                  if (confirm('Are you sure you want to leave the world?')) {
+                    window.location.href = '/';
+                  }
+                  setMonarchAuraVisible(false);
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-gray-500 rounded-lg flex items-center justify-center">
+                    <Power className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="text-white text-sm font-medium block">Leave World</span>
+                    <span className="text-red-300 text-xs">Exit to main menu</span>
+                  </div>
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Notifications Dropdown */}
       {showNotifications && (
