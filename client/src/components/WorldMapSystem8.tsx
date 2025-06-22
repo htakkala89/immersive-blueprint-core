@@ -406,17 +406,17 @@ export function WorldMapSystem8({
           }}
         />
 
-        {/* Enhanced Header Panel */}
+        {/* Mobile-Optimized Header Panel */}
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="absolute top-6 left-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4 min-w-[280px]"
+          className="absolute top-2 left-2 right-2 sm:top-6 sm:left-6 sm:right-auto bg-black/40 backdrop-blur-xl border border-white/20 rounded-xl p-3 sm:p-4 sm:min-w-[280px]"
         >
-          <h1 className="text-white text-2xl font-bold mb-2">Monarch's Seoul</h1>
-          <div className="text-white/60 text-sm space-y-1">
+          <h1 className="text-white text-lg sm:text-2xl font-bold mb-1 sm:mb-2">Monarch's Seoul</h1>
+          <div className="text-white/60 text-xs sm:text-sm space-y-1">
             <div className="capitalize">{currentTime} • Ethereal Projection</div>
-            <div>{getTimeDescription()}</div>
-            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/10">
+            <div className="hidden sm:block">{getTimeDescription()}</div>
+            <div className="flex items-center gap-2 mt-1 sm:mt-2 pt-1 sm:pt-2 border-t border-white/10">
               <div className="text-xs">Affection: {playerAffection}/10</div>
               <div className="flex-1 bg-white/10 rounded-full h-1">
                 <div 
@@ -428,69 +428,69 @@ export function WorldMapSystem8({
           </div>
         </motion.div>
 
-        {/* Legend Panel */}
+        {/* Mobile-Optimized Legend Panel */}
         <motion.div
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="absolute top-6 right-6 bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl p-4"
+          className="absolute bottom-20 right-2 sm:top-6 sm:right-6 sm:bottom-auto bg-black/40 backdrop-blur-xl border border-white/20 rounded-xl p-2 sm:p-4"
         >
-          <h3 className="text-white text-sm font-medium mb-3">Legend</h3>
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200"></div>
-              <span className="text-white/80">Cha Hae-In Present</span>
+          <h3 className="text-white text-xs sm:text-sm font-medium mb-2 sm:mb-3">Legend</h3>
+          <div className="space-y-1 sm:space-y-2 text-xs">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 border border-yellow-200"></div>
+              <span className="text-white/80">Cha Hae-In</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border border-purple-300"></div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border border-purple-300"></div>
               <span className="text-white/80">Available</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border border-blue-300"></div>
-              <span className="text-white/80">Quest Available</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border border-blue-300"></div>
+              <span className="text-white/80">Quest</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gray-600 border border-gray-500"></div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gray-600 border border-gray-500"></div>
               <span className="text-white/80">Locked</span>
             </div>
           </div>
         </motion.div>
 
-        {/* Zoom Controls */}
+        {/* Mobile-Optimized Zoom Controls */}
         <motion.div
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="absolute bottom-6 right-6 flex flex-col gap-2"
+          className="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 flex flex-col gap-1 sm:gap-2"
         >
           <Button
             onClick={() => setZoomLevel(prev => Math.min(prev + 0.2, 2))}
             variant="ghost"
             size="icon"
-            className="bg-black/40 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10"
+            className="w-10 h-10 sm:w-12 sm:h-12 bg-black/40 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
           <Button
             onClick={() => setZoomLevel(prev => Math.max(prev - 0.2, 0.6))}
             variant="ghost"
             size="icon"
-            className="bg-black/40 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10"
+            className="w-10 h-10 sm:w-12 sm:h-12 bg-black/40 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10"
           >
-            <Minus className="w-4 h-4" />
+            <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </motion.div>
 
-        {/* Close Button */}
+        {/* Mobile-Optimized Close Button */}
         <Button
           onClick={onClose}
           variant="ghost"
           size="icon"
-          className="absolute top-6 right-6 text-white/60 hover:bg-white/10 z-10"
+          className="absolute top-2 right-2 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 text-white/60 hover:bg-white/10 z-10"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5 sm:w-6 sm:h-6" />
         </Button>
 
-        {/* Responsive Map Container */}
-        <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-6 md:p-12 lg:p-20">
+        {/* Mobile-Responsive Map Container */}
+        <div className="absolute inset-0 flex items-center justify-center p-1 sm:p-6 md:p-12 lg:p-20" style={{ paddingTop: '80px', paddingBottom: '60px' }}>
           <motion.div
             className="relative w-full h-full max-w-7xl max-h-5xl"
             style={{ transform: `scale(${zoomLevel})` }}
@@ -518,16 +518,16 @@ export function WorldMapSystem8({
                 }}
                 whileHover={{ scale: 1.02 }}
               >
-                {/* Zone Title - Simplified */}
-                <div className="absolute -top-4 left-2 right-2">
+                {/* Mobile-Optimized Zone Title */}
+                <div className="absolute -top-3 sm:-top-4 left-1 right-1 sm:left-2 sm:right-2">
                   <motion.div
-                    className={`bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md border transition-all duration-300 ${
+                    className={`bg-black/60 backdrop-blur-sm px-1 sm:px-2 py-0.5 sm:py-1 rounded-md border transition-all duration-300 ${
                       focusedZone === zone.id 
                         ? 'border-white/50' 
                         : 'border-white/20'
                     }`}
                   >
-                    <h3 className="text-white text-[10px] font-medium text-center">{zone.name}</h3>
+                    <h3 className="text-white text-[8px] sm:text-[10px] md:text-xs font-medium text-center truncate">{zone.name}</h3>
                   </motion.div>
                 </div>
 
@@ -546,10 +546,10 @@ export function WorldMapSystem8({
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {/* Enhanced Location Orb */}
+                    {/* Mobile-Optimized Location Orb */}
                     <div className="relative">
                       <motion.div
-                        className={`w-9 h-9 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full relative border-2 min-w-[36px] min-h-[36px] mobile-location-node ${
+                        className={`w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full relative border-2 min-w-[44px] min-h-[44px] mobile-location-node ${
                           location.state === 'locked' 
                             ? 'bg-gray-600 border-gray-500' :
                           location.state === 'presence' 
@@ -626,25 +626,25 @@ export function WorldMapSystem8({
           </motion.div>
         </div>
 
-        {/* Location Confirmation Panel */}
+        {/* Mobile-Optimized Location Confirmation Panel */}
         <AnimatePresence>
           {selectedLocation && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-10"
               onClick={() => setSelectedLocation(null)}
             >
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-black/60 backdrop-blur-xl border border-white/30 rounded-3xl p-8 max-w-2xl w-full mx-4"
+                initial={{ scale: 0.9, opacity: 0, y: 100 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 100 }}
+                className="bg-black/60 backdrop-blur-xl border border-white/30 rounded-t-3xl sm:rounded-3xl p-4 sm:p-8 max-w-2xl w-full mx-0 sm:mx-4"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Preview Image */}
-                <div className="w-full h-64 rounded-2xl mb-6 overflow-hidden">
+                {/* Mobile Preview Image */}
+                <div className="w-full h-40 sm:h-64 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 overflow-hidden">
                   {locationImage ? (
                     <img 
                       src={locationImage} 
@@ -664,18 +664,18 @@ export function WorldMapSystem8({
                   )}
                 </div>
 
-                {/* Location Info */}
-                <div className="space-y-4">
-                  <h2 className="text-white text-2xl font-bold">{selectedLocation.name}</h2>
-                  <p className="text-white/80">{selectedLocation.description}</p>
+                {/* Mobile-Optimized Location Info */}
+                <div className="space-y-3 sm:space-y-4">
+                  <h2 className="text-white text-xl sm:text-2xl font-bold">{selectedLocation.name}</h2>
+                  <p className="text-white/80 text-sm sm:text-base">{selectedLocation.description}</p>
                   
                   {selectedLocation.atmosphere && (
-                    <div className="text-purple-300 text-sm">
+                    <div className="text-purple-300 text-xs sm:text-sm">
                       Current Atmosphere: {selectedLocation.atmosphere}
                     </div>
                   )}
 
-                  <div className={`text-sm ${
+                  <div className={`text-xs sm:text-sm ${
                     chaHaeInLocation === selectedLocation.id ? 'text-yellow-400' : 'text-white/60'
                   }`}>
                     {chaHaeInLocation === selectedLocation.id ? 
@@ -685,19 +685,19 @@ export function WorldMapSystem8({
                   </div>
 
                   {selectedLocation.state === 'locked' && (
-                    <div className="text-red-400 text-sm flex items-center gap-2">
-                      <Lock className="w-4 h-4" />
+                    <div className="text-red-400 text-xs sm:text-sm flex items-center gap-2">
+                      <Lock className="w-3 h-3 sm:w-4 sm:h-4" />
                       {selectedLocation.unlockCondition}
                     </div>
                   )}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-4 mt-8">
+                {/* Mobile-Optimized Action Buttons */}
+                <div className="flex gap-3 sm:gap-4 mt-6 sm:mt-8">
                   <Button
                     onClick={() => setSelectedLocation(null)}
                     variant="ghost"
-                    className="flex-1 text-white/60 hover:bg-white/10"
+                    className="flex-1 h-12 sm:h-10 text-white/60 hover:bg-white/10"
                   >
                     Cancel
                   </Button>
