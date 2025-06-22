@@ -2003,12 +2003,13 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-scroll behavior: Always scroll to bottom to prevent text cutoff issues
+  // Auto-scroll behavior: bottom-anchored scrolling for mobile
   useEffect(() => {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
       setTimeout(() => {
         if (conversationScrollRef.current) {
-          // Always scroll to bottom to ensure complete message visibility
+          // Always scroll to bottom for both user and AI messages on mobile
+          // This provides consistent behavior and prevents conversation jumping
           conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
         }
       }, 150); // Small delay to ensure content is rendered
@@ -4572,7 +4573,7 @@ export default function SoloLevelingSpatial() {
                       {conversationHistory.map((entry, index) => (
                         <motion.div
                           key={index}
-                          className={`flex ${entry.type === 'user' ? 'justify-end' : 'justify-start'} message-bubble`}
+                          className={`flex ${entry.type === 'user' ? 'justify-end' : 'justify-start'}`}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 }}
