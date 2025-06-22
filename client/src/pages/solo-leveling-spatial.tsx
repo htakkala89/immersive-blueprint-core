@@ -3585,12 +3585,7 @@ export default function SoloLevelingSpatial() {
                 console.log('Dungeon raid state set to true');
                 console.log('🎯 Red Gate case executed successfully');
                 break;
-              case 'jewelry_counter':
-                // Open Item Inspection View for jewelry
-                setItemInspectionCategory('jewelry');
-                setShowItemInspection(true);
-                console.log('Opening jewelry collection view');
-                break;
+
               case 'designer_apparel':
                 // Open Item Inspection View for clothing
                 setItemInspectionCategory('clothing');
@@ -4116,6 +4111,130 @@ export default function SoloLevelingSpatial() {
                 }));
                 break;
 
+              case 'combat_analytics':
+                // Show raid statistics UI
+                setShowInventory(true);
+                handleEnvironmentalInteraction({
+                  id: 'raid_statistics_review',
+                  action: 'Analyze your raid performance statistics with Cha Hae-In. Reviewing combat data together helps identify improvement areas and strengthens teamwork.',
+                  name: 'Combat Analytics Dashboard',
+                  x: 60,
+                  y: 40
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 3)
+                }));
+                console.log('Combat analytics - Opening raid statistics UI');
+                break;
+
+              case 'jewelry_counter':
+                // Open item inspection with cycling jewelry
+                setShowInventory(true);
+                handleEnvironmentalInteraction({
+                  id: 'jewelry_inspection',
+                  action: 'Browse exquisite jewelry pieces together. Each item sparkles under the display lights as you and Cha Hae-In admire the craftsmanship.',
+                  name: 'Luxury Jewelry Display',
+                  x: 50,
+                  y: 30
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 4)
+                }));
+                console.log('Jewelry counter - Opening item inspection with cycling jewelry');
+                break;
+
+              case 'rivers_edge':
+                // Create atmospheric scene with camera pan
+                setCinematicMode(true);
+                handleEnvironmentalInteraction({
+                  id: 'riverside_contemplation',
+                  action: 'Stand together at the river\'s edge, watching the water flow peacefully. The gentle sound of the current creates a serene atmosphere for quiet conversation.',
+                  name: 'Riverside Moments',
+                  x: 80,
+                  y: 70
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 5)
+                }));
+                console.log('Rivers edge - Creating atmospheric scene with camera pan');
+                break;
+
+              case 'receptionist':
+                // Provide rotating gameplay hints
+                const hints = [
+                  'Try visiting different locations at various times of day to find Cha Hae-In',
+                  'Increase your affection level to unlock new areas and activities',
+                  'Check your inventory regularly for useful items and equipment',
+                  'Daily activities help build stronger relationships and provide rewards'
+                ];
+                const randomHint = hints[Math.floor(Math.random() * hints.length)];
+                handleEnvironmentalInteraction({
+                  id: 'receptionist_guidance',
+                  action: `The receptionist offers helpful advice: "${randomHint}"`,
+                  name: 'Hunter Association Reception',
+                  x: 20,
+                  y: 60
+                });
+                console.log('Receptionist - Providing rotating gameplay hints');
+                break;
+
+              case 'speak_sommelier':
+                // Offer wine recommendations for gold
+                if ((gameState.gold || 0) >= 15000) {
+                  setGameState(prev => ({
+                    ...prev,
+                    gold: (prev.gold || 0) - 15000,
+                    affection: Math.min(1000, prev.affection + 6)
+                  }));
+                  handleEnvironmentalInteraction({
+                    id: 'sommelier_consultation',
+                    action: 'The sommelier recommends a perfect wine pairing for your dining experience. Their expertise elevates the romantic atmosphere significantly.',
+                    name: 'Wine Sommelier Service',
+                    x: 30,
+                    y: 50
+                  });
+                  console.log('Sommelier - Wine recommendation purchased for 15,000 gold');
+                } else {
+                  handleEnvironmentalInteraction({
+                    id: 'sommelier_unavailable',
+                    action: 'The sommelier\'s premium consultation service requires 15,000 gold. Consider saving up for this luxurious enhancement to your dining experience.',
+                    name: 'Wine Sommelier Service',
+                    x: 30,
+                    y: 50
+                  });
+                  console.log('Sommelier - Insufficient gold for wine recommendation');
+                }
+                break;
+
+              case 'sparring_ring':
+                // Shortcut to Daily Life sparring activity
+                setShowDailyLifeHub(true);
+                handleEnvironmentalInteraction({
+                  id: 'sparring_invitation',
+                  action: 'Enter the sparring ring for training with Cha Hae-In. This direct access to sparring activities helps improve your combat skills together.',
+                  name: 'Training Sparring Ring',
+                  x: 50,
+                  y: 50
+                });
+                console.log('Sparring ring - Opening Daily Life sparring activity');
+                break;
+
+              case 'artifact_display':
+                // Open Relationship Constellation
+                setShowRelationshipConstellation(true);
+                handleEnvironmentalInteraction({
+                  id: 'artifact_memories',
+                  action: 'Examine your collection of artifacts and mementos. Each piece represents a shared memory and milestone in your journey together.',
+                  name: 'Memory Artifact Display',
+                  x: 70,
+                  y: 30
+                });
+                console.log('Artifact display - Opening Relationship Constellation');
+                break;
+
               case 'gate_entrance':
                 // Begin training dungeon
                 handleEnvironmentalInteraction({
@@ -4147,14 +4266,7 @@ export default function SoloLevelingSpatial() {
                   affection: Math.min(1000, prev.affection + 2)
                 }));
                 break;
-              case 'receptionist':
-                // Simple NPC dialogue box - no focus animation, brief interaction
-                setShowReceptionistDialogue({
-                  dialogue: getReceptionistDialogue(),
-                  position: { x: 65, y: 45 }
-                });
-                console.log('Guild Employee Ji-Hoon providing rumor/hint');
-                break;
+
               case 'elevator_bank':
                 // Floor selection UI - opens sleek navigation panel
                 setShowFloorSelect(true);
