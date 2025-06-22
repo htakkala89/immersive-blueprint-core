@@ -527,134 +527,180 @@ export function PlayerProgressionSystem16({
           )}
 
           {activeTab === 'skills' && (
-            <div className="h-full flex flex-col lg:flex-row">
-              {/* Skill Constellation View */}
-              <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-slate-900/50 to-purple-900/30 min-h-[300px] lg:min-h-0">
-                {/* Constellation Background */}
-                <div className="absolute inset-0">
-                  {/* Starfield effect */}
-                  {[...Array(30)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-1 h-1 bg-white rounded-full opacity-30 animate-pulse"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                        animationDelay: `${Math.random() * 3}s`
-                      }}
-                    />
-                  ))}
+            <div className="h-full p-4 sm:p-6 overflow-y-auto character-scrollbar">
+              <div className="w-full max-w-4xl mx-auto space-y-4 sm:space-y-6">
+                {/* Relationship Constellation Access */}
+                <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/30 rounded-xl p-4 sm:p-6 border border-purple-500/30">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-4">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold text-white">Relationship Constellation</h3>
+                      <p className="text-purple-200 text-sm sm:text-base">Your bond with Cha Hae-In</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-slate-300 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
+                    Explore your deepening relationship through shared memories, affection levels, and intimate moments. 
+                    Track your emotional journey and the special connections you've built together.
+                  </p>
+
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg p-3 sm:p-4 cursor-pointer transition-all hover:shadow-lg hover:shadow-purple-500/25"
+                    onClick={() => {
+                      onClose();
+                      // This would trigger the relationship constellation view
+                      console.log('Opening Relationship Constellation...');
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <div>
+                          <h4 className="text-white font-medium text-sm sm:text-base">View Constellation</h4>
+                          <p className="text-purple-100 text-xs sm:text-sm">Affection: {Math.round((playerData.stats?.intelligence || 10) * 5.5)}/1000</p>
+                        </div>
+                      </div>
+                      <div className="text-white text-lg">→</div>
+                    </div>
+                  </motion.div>
                 </div>
 
-                {/* Skills Container */}
-                <div 
-                  className="relative w-full h-full overflow-auto"
-                  style={{
-                    transform: `scale(${Math.max(0.4, constellationZoom * 0.8)}) translate(${constellationPan.x}px, ${constellationPan.y}px)`
-                  }}
-                >
-                  {/* Skill Connection Lines */}
-                  <svg className="absolute inset-0 pointer-events-none" style={{ width: '800px', height: '600px' }}>
-                    {skills.map(skill => 
-                      skill.prerequisites?.map(prereqId => {
-                        const prereq = skills.find(s => s.id === prereqId);
-                        if (!prereq) return null;
-                        
-                        return (
-                          <line
-                            key={`${skill.id}-${prereqId}`}
-                            x1={prereq.position.x}
-                            y1={prereq.position.y}
-                            x2={skill.position.x}
-                            y2={skill.position.y}
-                            stroke="rgba(147, 51, 234, 0.4)"
-                            strokeWidth="2"
-                            strokeDasharray={skill.isUnlocked ? "0" : "5,5"}
-                          />
-                        );
-                      })
-                    )}
-                  </svg>
+                {/* Placeholder for future skill systems */}
+                <div className="bg-slate-800/50 rounded-xl p-4 sm:p-6 border border-slate-700/50">
+                  <div className="text-center py-8">
+                    <Crown className="w-12 h-12 mx-auto mb-3 text-slate-400" />
+                    <h3 className="text-lg font-bold text-white mb-2">Monarch's Skills</h3>
+                    <p className="text-slate-400 text-sm">Advanced skill systems coming soon...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-                  {/* Skill Nodes */}
-                  <div className="relative" style={{ width: '800px', height: '600px' }}>
-                    {skills.map(skill => {
-                      const IconComponent = skill.icon;
-                      
-                      return (
-                        <motion.div
-                          key={skill.id}
-                          className="absolute cursor-pointer touch-manipulation"
-                          style={{
-                            left: skill.position.x - 24,
-                            top: skill.position.y - 24
-                          }}
-                          onClick={() => setSelectedSkill(skill)}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          {/* Skill Node */}
-                          <div
-                            className={`w-12 h-12 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center relative ${
-                              skill.isUnlocked
-                                ? 'bg-gradient-to-br from-purple-600 to-amber-500 border-amber-400 shadow-lg shadow-purple-500/50'
-                                : skill.canAfford
-                                ? 'bg-gradient-to-br from-purple-700/50 to-purple-600/50 border-purple-400 animate-pulse'
-                                : 'bg-slate-700/50 border-slate-600'
-                            }`}
-                          >
-                            <IconComponent 
-                              className={`w-5 h-5 lg:w-6 lg:h-6 ${
-                                skill.isUnlocked ? 'text-white' : 
-                                skill.canAfford ? 'text-purple-300' : 
-                                'text-slate-500'
-                              }`} 
-                            />
-                            
-                            {/* Level indicator */}
-                            {skill.isUnlocked && skill.currentLevel > 0 && (
-                              <div className="absolute -bottom-1 -right-1 w-4 h-4 lg:w-5 lg:h-5 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
-                                {skill.currentLevel}
-                              </div>
-                            )}
-                          </div>
-                          
-                          {/* Skill Name */}
-                          <div className="absolute -bottom-6 lg:-bottom-8 left-1/2 transform -translate-x-1/2 text-center max-w-20 lg:max-w-24">
-                            <div className={`text-xs font-medium leading-tight ${
-                              skill.isUnlocked ? 'text-amber-300' : 
-                              skill.canAfford ? 'text-purple-300' : 
-                              'text-slate-500'
-                            }`}>
-                              {skill.name.split(' ').slice(0, 2).join(' ')}
-                            </div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
+          {activeTab === 'equipment' && (
+            <div className="h-full overflow-y-auto character-scrollbar p-2 sm:p-6">
+              <div className="w-full max-w-4xl mx-auto space-y-3 sm:space-y-6">
+                {/* Equipment Management Header */}
+                <div className="bg-slate-800/50 rounded-xl p-3 sm:p-6 border border-slate-700/50">
+                  <h3 className="text-base sm:text-xl font-bold text-white mb-2 sm:mb-4">Equipment Management</h3>
+                  <p className="text-slate-300 mb-3 sm:mb-6 text-xs sm:text-base leading-relaxed">
+                    Manage your inventory, equipment, and armory from this central hub.
+                  </p>
+
+                  {/* Equipment Action Cards - Mobile Optimized */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    {/* Inventory Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-purple-500/30 cursor-pointer min-h-[60px] sm:min-h-[120px]"
+                      onClick={() => {
+                        onClose();
+                        onOpenInventory?.();
+                      }}
+                    >
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-600/30 flex items-center justify-center flex-shrink-0">
+                          <Package className="w-5 h-5 sm:w-6 sm:h-6 text-purple-300" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm sm:text-lg font-bold text-white">Inventory</h4>
+                          <p className="text-purple-200 text-xs sm:text-sm">Items & Resources</p>
+                          <p className="text-slate-300 text-xs hidden sm:block mt-1">
+                            Access consumables, materials, quest items
+                          </p>
+                        </div>
+                        <div className="text-purple-300 text-lg font-light">
+                          →
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Armory Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-amber-500/30 cursor-pointer min-h-[60px] sm:min-h-[120px]"
+                      onClick={() => {
+                        onClose();
+                        onOpenArmory?.();
+                      }}
+                    >
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-amber-600/30 flex items-center justify-center flex-shrink-0">
+                          <Crown className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm sm:text-lg font-bold text-white">Armory</h4>
+                          <p className="text-amber-200 text-xs sm:text-sm">Weapons & Equipment</p>
+                          <p className="text-slate-300 text-xs hidden sm:block mt-1">
+                            Equip weapons, armor, accessories
+                          </p>
+                        </div>
+                        <div className="text-amber-300 text-lg font-light">
+                          →
+                        </div>
+                      </div>
+                    </motion.div>
                   </div>
                 </div>
 
-                {/* Zoom Controls */}
-                <div className="absolute bottom-3 right-3 lg:bottom-4 lg:right-4 flex flex-col gap-1 lg:gap-2">
-                  <Button
-                    onClick={() => setConstellationZoom(Math.min(2, constellationZoom + 0.2))}
-                    size="sm"
-                    className="bg-slate-700/80 hover:bg-slate-600/80 w-8 h-8 p-0 text-xs"
-                  >
-                    +
-                  </Button>
-                  <Button
-                    onClick={() => setConstellationZoom(Math.max(0.5, constellationZoom - 0.2))}
-                    size="sm"
-                    className="bg-slate-700/80 hover:bg-slate-600/80 w-8 h-8 p-0 text-xs"
-                  >
-                    −
-                  </Button>
+                {/* Quick Equipment Overview - Mobile Optimized */}
+                <div className="bg-slate-800/50 rounded-lg sm:rounded-xl p-3 sm:p-6 border border-slate-700/50">
+                  <h3 className="text-base sm:text-xl font-bold text-white mb-3 sm:mb-4">Quick Overview</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+                    <div className="bg-slate-700/30 rounded-lg p-3 border border-slate-600/30">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-purple-300 flex-shrink-0" />
+                          <span className="text-white font-medium text-sm">Inventory Items</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-purple-300">24</p>
+                          <p className="text-slate-400 text-xs">Items stored</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-slate-700/30 rounded-lg p-3 border border-slate-600/30">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Crown className="w-4 h-4 text-amber-300 flex-shrink-0" />
+                          <span className="text-white font-medium text-sm">Equipped Items</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-amber-300">6</p>
+                          <p className="text-slate-400 text-xs">Currently equipped</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-slate-700/30 rounded-lg p-3 border border-slate-600/30">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Star className="w-4 h-4 text-green-300 flex-shrink-0" />
+                          <span className="text-white font-medium text-sm">Equipment Power</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-green-300">S+</p>
+                          <p className="text-slate-400 text-xs">Overall rating</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
-                {/* Mobile Skills Summary */}
-                <div className="lg:hidden absolute top-3 left-3 right-3 bg-slate-800/80 backdrop-blur-sm rounded-lg p-2">
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-300">Available Skills</span>
                     <span className="text-purple-300 font-medium">{skills.filter(s => s.canAfford).length} Ready</span>

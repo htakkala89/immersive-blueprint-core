@@ -463,6 +463,9 @@ export default function SoloLevelingSpatial() {
 
   // System 16: Player Progression state
   const [showPlayerProgression, setShowPlayerProgression] = useState(false);
+  
+  // Relationship Constellation state
+  const [showRelationshipConstellation, setShowRelationshipConstellation] = useState(false);
 
   // System 3: Quest Log state
   const [showQuestLog, setShowQuestLog] = useState(false);
@@ -6212,6 +6215,23 @@ export default function SoloLevelingSpatial() {
           money: gameState.gold || 0,
           energy: gameState.energy || 80
         }}
+      />
+
+      {/* Relationship Constellation */}
+      <RelationshipConstellation
+        isVisible={showRelationshipConstellation}
+        onClose={() => setShowRelationshipConstellation(false)}
+        affectionLevel={gameState.affection || 0}
+        intimacyLevel={gameState.intimacyLevel || 1}
+        sharedMemories={gameState.sharedMemories || []}
+        relationshipMilestones={[
+          "First meeting at Hunter Association",
+          "Coffee date in Hongdae",
+          "Training session together",
+          "Intimate moment shared",
+          "Deep emotional connection"
+        ]}
+        currentMood="happy"
       />
 
     </div>
