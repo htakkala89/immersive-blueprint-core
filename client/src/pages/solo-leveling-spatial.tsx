@@ -2003,31 +2003,13 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Smart auto-scroll behavior: Show beginning of AI responses, bottom for user messages
+  // Auto-scroll behavior: Always scroll to bottom to prevent text cutoff issues
   useEffect(() => {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
       setTimeout(() => {
         if (conversationScrollRef.current) {
-          const lastMessage = conversationHistory[conversationHistory.length - 1];
-          
-          if (lastMessage.type === 'cha_hae_in') {
-            // For AI responses: Position so user can read from the beginning
-            // Find the last AI message element and scroll to show it 10% from top
-            const scrollContainer = conversationScrollRef.current;
-            const messageElements = scrollContainer.querySelectorAll('.message-bubble');
-            const lastMessageElement = messageElements[messageElements.length - 1];
-            
-            if (lastMessageElement) {
-              const containerHeight = scrollContainer.clientHeight;
-              const elementTop = (lastMessageElement as HTMLElement).offsetTop;
-              const targetScrollTop = elementTop - (containerHeight * 0.1); // 10% from top
-              
-              scrollContainer.scrollTop = Math.max(0, targetScrollTop);
-            }
-          } else {
-            // For user messages: Scroll to bottom for natural input flow
-            conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
-          }
+          // Always scroll to bottom to ensure complete message visibility
+          conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
         }
       }, 150); // Small delay to ensure content is rendered
     }
