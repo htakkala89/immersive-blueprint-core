@@ -2003,14 +2003,28 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-scroll behavior: bottom-anchored scrolling for mobile
+  // Auto-scroll behavior: show new messages from top
   useEffect(() => {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
       setTimeout(() => {
         if (conversationScrollRef.current) {
-          // Always scroll to bottom for both user and AI messages on mobile
-          // This provides consistent behavior and prevents conversation jumping
-          conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+          const lastMessage = conversationHistory[conversationHistory.length - 1];
+          
+          if (lastMessage.type === 'cha_hae_in') {
+            // For AI messages: show from the top of the new message
+            const messageElements = conversationScrollRef.current.children;
+            const lastMessageElement = messageElements[messageElements.length - 1] as HTMLElement;
+            
+            if (lastMessageElement) {
+              // Calculate position to show message from top
+              const containerHeight = conversationScrollRef.current.clientHeight;
+              const messageTop = lastMessageElement.offsetTop;
+              conversationScrollRef.current.scrollTop = messageTop;
+            }
+          } else {
+            // For user messages: scroll to bottom for natural input flow
+            conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
+          }
         }
       }, 150); // Small delay to ensure content is rendered
     }
@@ -4567,7 +4581,7 @@ export default function SoloLevelingSpatial() {
                     {/* Cinematic Script-Style Conversation History */}
                     <div 
                       ref={conversationScrollRef}
-                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area"
+                      className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area scrollbar-hide"
                       style={{ height: '400px', maxHeight: '400px' }}
                     >
                       {conversationHistory.map((entry, index) => (

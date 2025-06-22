@@ -98,6 +98,19 @@
     @apply focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-75;
   }
   
+  /* Hide scrollbar while maintaining functionality */
+  .scrollbar-hide {
+    /* IE and Edge */
+    -ms-overflow-style: none;
+    /* Firefox */
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    /* Safari and Chrome */
+    display: none;
+  }
+  
   /* Mobile-friendly button sizing */
   .btn-touch {
     min-height: 44px;
