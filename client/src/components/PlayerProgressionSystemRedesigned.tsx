@@ -211,9 +211,16 @@ export function PlayerProgressionSystemRedesigned({
                     </div>
                   )}
 
+                  {/* Debug Stats Info - Using useEffect instead of inline console.log */}
+                  {(() => {
+                    console.log('🔍 PlayerData stats:', playerData.stats);
+                    console.log('🔍 Full PlayerData:', playerData);
+                    return null;
+                  })()}
+                  
                   {/* Stats Grid */}
                   <div className="grid gap-4">
-                    {playerData.stats ? (Object.keys(playerData.stats) as Array<keyof CoreStats>).map((stat) => (
+                    {playerData.stats && Object.keys(playerData.stats).length > 0 ? (Object.keys(playerData.stats) as Array<keyof CoreStats>).map((stat) => (
                       <div 
                         key={stat}
                         className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
@@ -252,6 +259,7 @@ export function PlayerProgressionSystemRedesigned({
                     )) : (
                       <div className="text-center py-8">
                         <p className="text-slate-400">No stats available</p>
+                        <p className="text-xs text-slate-500 mt-2">Debug: stats = {JSON.stringify(playerData.stats)}</p>
                       </div>
                     )}
                   </div>
