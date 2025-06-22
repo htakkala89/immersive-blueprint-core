@@ -520,16 +520,16 @@ export function PlayerProgressionSystem16({
           )}
 
           {activeTab === 'skills' && (
-            <div className="h-full flex">
+            <div className="h-full flex flex-col lg:flex-row">
               {/* Skill Constellation View */}
-              <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-slate-900/50 to-purple-900/30">
+              <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-slate-900/50 to-purple-900/30 min-h-[300px] lg:min-h-0">
                 {/* Constellation Background */}
                 <div className="absolute inset-0">
                   {/* Starfield effect */}
-                  {[...Array(50)].map((_, i) => (
+                  {[...Array(30)].map((_, i) => (
                     <div
                       key={i}
-                      className="absolute w-1 h-1 bg-white rounded-full opacity-30"
+                      className="absolute w-1 h-1 bg-white rounded-full opacity-30 animate-pulse"
                       style={{
                         left: `${Math.random() * 100}%`,
                         top: `${Math.random() * 100}%`,
@@ -541,13 +541,13 @@ export function PlayerProgressionSystem16({
 
                 {/* Skills Container */}
                 <div 
-                  className="relative w-full h-full"
+                  className="relative w-full h-full overflow-auto"
                   style={{
-                    transform: `scale(${constellationZoom}) translate(${constellationPan.x}px, ${constellationPan.y}px)`
+                    transform: `scale(${Math.max(0.4, constellationZoom * 0.8)}) translate(${constellationPan.x}px, ${constellationPan.y}px)`
                   }}
                 >
                   {/* Skill Connection Lines */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                  <svg className="absolute inset-0 pointer-events-none" style={{ width: '800px', height: '600px' }}>
                     {skills.map(skill => 
                       skill.prerequisites?.map(prereqId => {
                         const prereq = skills.find(s => s.id === prereqId);
@@ -570,78 +570,88 @@ export function PlayerProgressionSystem16({
                   </svg>
 
                   {/* Skill Nodes */}
-                  {skills.map(skill => {
-                    const IconComponent = skill.icon;
-                    
-                    return (
-                      <motion.div
-                        key={skill.id}
-                        className="absolute cursor-pointer"
-                        style={{
-                          left: skill.position.x - 30,
-                          top: skill.position.y - 30
-                        }}
-                        onClick={() => setSelectedSkill(skill)}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {/* Skill Node */}
-                        <div
-                          className={`w-16 h-16 rounded-full border-2 flex items-center justify-center relative ${
-                            skill.isUnlocked
-                              ? 'bg-gradient-to-br from-purple-600 to-amber-500 border-amber-400 shadow-lg shadow-purple-500/50'
-                              : skill.canAfford
-                              ? 'bg-gradient-to-br from-purple-700/50 to-purple-600/50 border-purple-400 animate-pulse'
-                              : 'bg-slate-700/50 border-slate-600'
-                          }`}
+                  <div className="relative" style={{ width: '800px', height: '600px' }}>
+                    {skills.map(skill => {
+                      const IconComponent = skill.icon;
+                      
+                      return (
+                        <motion.div
+                          key={skill.id}
+                          className="absolute cursor-pointer touch-manipulation"
+                          style={{
+                            left: skill.position.x - 24,
+                            top: skill.position.y - 24
+                          }}
+                          onClick={() => setSelectedSkill(skill)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
                         >
-                          <IconComponent 
-                            className={`w-6 h-6 ${
-                              skill.isUnlocked ? 'text-white' : 
+                          {/* Skill Node */}
+                          <div
+                            className={`w-12 h-12 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center relative ${
+                              skill.isUnlocked
+                                ? 'bg-gradient-to-br from-purple-600 to-amber-500 border-amber-400 shadow-lg shadow-purple-500/50'
+                                : skill.canAfford
+                                ? 'bg-gradient-to-br from-purple-700/50 to-purple-600/50 border-purple-400 animate-pulse'
+                                : 'bg-slate-700/50 border-slate-600'
+                            }`}
+                          >
+                            <IconComponent 
+                              className={`w-5 h-5 lg:w-6 lg:h-6 ${
+                                skill.isUnlocked ? 'text-white' : 
+                                skill.canAfford ? 'text-purple-300' : 
+                                'text-slate-500'
+                              }`} 
+                            />
+                            
+                            {/* Level indicator */}
+                            {skill.isUnlocked && skill.currentLevel > 0 && (
+                              <div className="absolute -bottom-1 -right-1 w-4 h-4 lg:w-5 lg:h-5 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
+                                {skill.currentLevel}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Skill Name */}
+                          <div className="absolute -bottom-6 lg:-bottom-8 left-1/2 transform -translate-x-1/2 text-center max-w-20 lg:max-w-24">
+                            <div className={`text-xs font-medium leading-tight ${
+                              skill.isUnlocked ? 'text-amber-300' : 
                               skill.canAfford ? 'text-purple-300' : 
                               'text-slate-500'
-                            }`} 
-                          />
-                          
-                          {/* Level indicator */}
-                          {skill.isUnlocked && skill.currentLevel > 0 && (
-                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
-                              {skill.currentLevel}
+                            }`}>
+                              {skill.name.split(' ').slice(0, 2).join(' ')}
                             </div>
-                          )}
-                        </div>
-                        
-                        {/* Skill Name */}
-                        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                          <div className={`text-xs font-medium whitespace-nowrap ${
-                            skill.isUnlocked ? 'text-amber-300' : 
-                            skill.canAfford ? 'text-purple-300' : 
-                            'text-slate-500'
-                          }`}>
-                            {skill.name}
                           </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Zoom Controls */}
-                <div className="absolute bottom-4 right-4 flex flex-col gap-2">
+                <div className="absolute bottom-3 right-3 lg:bottom-4 lg:right-4 flex flex-col gap-1 lg:gap-2">
                   <Button
                     onClick={() => setConstellationZoom(Math.min(2, constellationZoom + 0.2))}
                     size="sm"
-                    className="bg-slate-700/80 hover:bg-slate-600/80"
+                    className="bg-slate-700/80 hover:bg-slate-600/80 w-8 h-8 p-0 text-xs"
                   >
                     +
                   </Button>
                   <Button
                     onClick={() => setConstellationZoom(Math.max(0.5, constellationZoom - 0.2))}
                     size="sm"
-                    className="bg-slate-700/80 hover:bg-slate-600/80"
+                    className="bg-slate-700/80 hover:bg-slate-600/80 w-8 h-8 p-0 text-xs"
                   >
                     −
                   </Button>
+                </div>
+
+                {/* Mobile Skills Summary */}
+                <div className="lg:hidden absolute top-3 left-3 right-3 bg-slate-800/80 backdrop-blur-sm rounded-lg p-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-300">Available Skills</span>
+                    <span className="text-purple-300 font-medium">{skills.filter(s => s.canAfford).length} Ready</span>
+                  </div>
                 </div>
               </div>
 
@@ -810,30 +820,33 @@ export function PlayerProgressionSystem16({
                   </p>
 
                   {/* Equipment Action Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
                     {/* Inventory Card */}
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-xl p-4 sm:p-6 border border-purple-500/30 cursor-pointer min-h-[120px] sm:min-h-[140px]"
+                      className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-xl p-3 sm:p-6 border border-purple-500/30 cursor-pointer"
                       onClick={() => {
                         onClose();
                         onOpenInventory?.();
                       }}
                     >
-                      <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                      <div className="flex items-center gap-3 mb-2 sm:mb-4">
                         <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-purple-600/30 flex items-center justify-center flex-shrink-0">
                           <Package className="w-4 h-4 sm:w-6 sm:h-6 text-purple-300" />
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="text-base sm:text-lg font-bold text-white">Inventory</h4>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm sm:text-lg font-bold text-white">Inventory</h4>
                           <p className="text-purple-200 text-xs sm:text-sm">Items & Resources</p>
                         </div>
+                        <div className="text-purple-300 text-xs font-medium sm:hidden">
+                          →
+                        </div>
                       </div>
-                      <p className="text-slate-300 text-xs sm:text-sm mb-3 sm:mb-4 hidden sm:block">
-                        Access your consumables, materials, quest items, and gifts. Manage item quantities and sell unwanted resources.
+                      <p className="text-slate-300 text-xs sm:text-sm mb-2 sm:mb-4 hidden sm:block">
+                        Access your consumables, materials, quest items, and gifts.
                       </p>
-                      <div className="flex items-center text-purple-300 text-xs sm:text-sm font-medium">
+                      <div className="text-purple-300 text-xs sm:text-sm font-medium hidden sm:flex items-center">
                         Open Inventory →
                       </div>
                     </motion.div>
@@ -842,25 +855,28 @@ export function PlayerProgressionSystem16({
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-xl p-4 sm:p-6 border border-amber-500/30 cursor-pointer min-h-[120px] sm:min-h-[140px]"
+                      className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-xl p-3 sm:p-6 border border-amber-500/30 cursor-pointer"
                       onClick={() => {
                         onClose();
                         onOpenArmory?.();
                       }}
                     >
-                      <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                      <div className="flex items-center gap-3 mb-2 sm:mb-4">
                         <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-amber-600/30 flex items-center justify-center flex-shrink-0">
                           <Crown className="w-4 h-4 sm:w-6 sm:h-6 text-amber-300" />
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="text-base sm:text-lg font-bold text-white">Armory</h4>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm sm:text-lg font-bold text-white">Armory</h4>
                           <p className="text-amber-200 text-xs sm:text-sm">Weapons & Equipment</p>
                         </div>
+                        <div className="text-amber-300 text-xs font-medium sm:hidden">
+                          →
+                        </div>
                       </div>
-                      <p className="text-slate-300 text-xs sm:text-sm mb-3 sm:mb-4 hidden sm:block">
-                        Equip weapons, armor, and accessories. View equipment stats and manage your combat loadout.
+                      <p className="text-slate-300 text-xs sm:text-sm mb-2 sm:mb-4 hidden sm:block">
+                        Equip weapons, armor, and accessories. View equipment stats.
                       </p>
-                      <div className="flex items-center text-amber-300 text-xs sm:text-sm font-medium">
+                      <div className="text-amber-300 text-xs sm:text-sm font-medium hidden sm:flex items-center">
                         Open Armory →
                       </div>
                     </motion.div>
@@ -868,34 +884,46 @@ export function PlayerProgressionSystem16({
                 </div>
 
                 {/* Quick Equipment Overview */}
-                <div className="bg-slate-800/50 rounded-xl p-4 sm:p-6 border border-slate-700/50">
-                  <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Quick Overview</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                    <div className="bg-slate-700/30 rounded-lg p-3 sm:p-4 border border-slate-600/30">
-                      <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                        <Package className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />
-                        <span className="text-white font-medium text-sm sm:text-base">Inventory Items</span>
+                <div className="bg-slate-800/50 rounded-xl p-3 sm:p-6 border border-slate-700/50">
+                  <h3 className="text-base sm:text-xl font-bold text-white mb-3 sm:mb-4">Quick Overview</h3>
+                  <div className="space-y-2 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
+                    <div className="bg-slate-700/30 rounded-lg p-3 border border-slate-600/30">
+                      <div className="flex items-center justify-between sm:flex-col sm:items-start">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-purple-300" />
+                          <span className="text-white font-medium text-sm">Inventory Items</span>
+                        </div>
+                        <div className="text-right sm:text-left sm:mt-2">
+                          <p className="text-lg sm:text-2xl font-bold text-purple-300">24</p>
+                          <p className="text-slate-400 text-xs">Items stored</p>
+                        </div>
                       </div>
-                      <p className="text-xl sm:text-2xl font-bold text-purple-300">24</p>
-                      <p className="text-slate-400 text-xs sm:text-sm">Items stored</p>
                     </div>
                     
-                    <div className="bg-slate-700/30 rounded-lg p-3 sm:p-4 border border-slate-600/30">
-                      <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                        <Sword className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
-                        <span className="text-white font-medium text-sm sm:text-base">Equipped Items</span>
+                    <div className="bg-slate-700/30 rounded-lg p-3 border border-slate-600/30">
+                      <div className="flex items-center justify-between sm:flex-col sm:items-start">
+                        <div className="flex items-center gap-2">
+                          <Sword className="w-4 h-4 text-amber-300" />
+                          <span className="text-white font-medium text-sm">Equipped Items</span>
+                        </div>
+                        <div className="text-right sm:text-left sm:mt-2">
+                          <p className="text-lg sm:text-2xl font-bold text-amber-300">6</p>
+                          <p className="text-slate-400 text-xs">Currently equipped</p>
+                        </div>
                       </div>
-                      <p className="text-xl sm:text-2xl font-bold text-amber-300">6</p>
-                      <p className="text-slate-400 text-xs sm:text-sm">Currently equipped</p>
                     </div>
                     
-                    <div className="bg-slate-700/30 rounded-lg p-3 sm:p-4 border border-slate-600/30">
-                      <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                        <Star className="w-4 h-4 sm:w-5 sm:h-5 text-green-300" />
-                        <span className="text-white font-medium text-sm sm:text-base">Equipment Power</span>
+                    <div className="bg-slate-700/30 rounded-lg p-3 border border-slate-600/30">
+                      <div className="flex items-center justify-between sm:flex-col sm:items-start">
+                        <div className="flex items-center gap-2">
+                          <Star className="w-4 h-4 text-green-300" />
+                          <span className="text-white font-medium text-sm">Equipment Power</span>
+                        </div>
+                        <div className="text-right sm:text-left sm:mt-2">
+                          <p className="text-lg sm:text-2xl font-bold text-green-300">S+</p>
+                          <p className="text-slate-400 text-xs">Overall rating</p>
+                        </div>
                       </div>
-                      <p className="text-xl sm:text-2xl font-bold text-green-300">S+</p>
-                      <p className="text-slate-400 text-xs sm:text-sm">Overall rating</p>
                     </div>
                   </div>
                 </div>

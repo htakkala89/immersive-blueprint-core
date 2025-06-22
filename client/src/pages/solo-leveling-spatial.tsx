@@ -30,7 +30,7 @@ import { MyeongdongDinnerModal } from '@/components/MyeongdongDinnerModal';
 import { DevToolsPanel } from '@/components/DevToolsPanel';
 import { IntimateActivitySystem5 } from '@/components/IntimateActivitySystem5';
 import { HunterCommunicatorSystem15 } from '@/components/HunterCommunicatorSystem15';
-import { WorldMapSystem8 } from '@/components/WorldMapSystem8';
+import { WorldMapCarousel } from '@/components/WorldMapCarousel';
 import { UnifiedShop } from '@/components/UnifiedShop';
 import EnergyReplenishmentModal from '@/components/EnergyReplenishmentModal';
 import { RelationshipConstellationSystem6 } from '@/components/RelationshipConstellationSystem6';
