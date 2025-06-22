@@ -296,30 +296,30 @@ export function PlayerProgressionSystem16({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-7xl h-[90vh] mx-4"
+        className="w-full max-w-7xl h-[95vh] sm:h-[90vh]"
         style={{
           background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(51, 65, 85, 0.9) 100%)',
           backdropFilter: 'blur(20px) saturate(180%)',
           border: '1px solid rgba(148, 163, 184, 0.2)',
-          borderRadius: '20px',
+          borderRadius: '12px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-amber-500 flex items-center justify-center">
-              <Crown className="w-6 h-6 text-white" />
+        <div className="flex items-center justify-between p-3 sm:p-6 border-b border-slate-700/50">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-purple-600 to-amber-500 flex items-center justify-center">
+              <Crown className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">Character Command</h2>
-              <p className="text-slate-400">Player Progression & Skills</p>
+              <h2 className="text-lg sm:text-2xl font-bold text-white">Character Command</h2>
+              <p className="text-xs sm:text-sm text-slate-400">Player Progression & Skills</p>
             </div>
           </div>
           
@@ -327,7 +327,7 @@ export function PlayerProgressionSystem16({
             onClick={onClose}
             variant="ghost"
             size="sm"
-            className="text-white hover:bg-red-600/30"
+            className="text-white hover:bg-red-600/30 min-h-[44px] min-w-[44px]"
           >
             <X className="w-5 h-5" />
           </Button>
@@ -337,45 +337,50 @@ export function PlayerProgressionSystem16({
         <div className="flex border-b border-slate-700/50">
           <button
             onClick={() => setActiveTab('stats')}
-            className={`px-6 py-4 font-medium transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors min-h-[44px] ${
               activeTab === 'stats'
                 ? 'text-purple-300 border-b-2 border-purple-500 bg-purple-900/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-700/30'
             }`}
           >
-            Core Stats
+            <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Core Stats</span>
+            <span className="sm:hidden">Stats</span>
           </button>
           <button
             onClick={() => setActiveTab('skills')}
-            className={`px-6 py-4 font-medium transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors min-h-[44px] ${
               activeTab === 'skills'
                 ? 'text-purple-300 border-b-2 border-purple-500 bg-purple-900/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-700/30'
             }`}
           >
-            Monarch's Constellation
+            <Star className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden lg:inline">Monarch's Constellation</span>
+            <span className="lg:hidden">Skills</span>
           </button>
           <button
             onClick={() => setActiveTab('equipment')}
-            className={`px-6 py-4 font-medium transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors min-h-[44px] ${
               activeTab === 'equipment'
                 ? 'text-purple-300 border-b-2 border-purple-500 bg-purple-900/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-700/30'
             }`}
           >
-            Equipment
+            <Package className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span>Equipment</span>
           </button>
         </div>
 
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">
           {activeTab === 'stats' && (
-            <div className="h-full overflow-y-auto character-scrollbar p-6">
-              <div className="max-w-4xl mx-auto space-y-6">
+            <div className="h-full overflow-y-auto character-scrollbar p-3 sm:p-6">
+              <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
                 {/* Player Info */}
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-                  <h3 className="text-xl font-bold text-white mb-4">Hunter Profile</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="bg-slate-800/50 rounded-xl p-4 sm:p-6 border border-slate-700/50">
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Hunter Profile</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
                     <div className="flex justify-between items-center">
                       <span className="text-slate-300">Name:</span>
                       <span className="text-white font-medium">{playerData.name}</span>
@@ -405,9 +410,9 @@ export function PlayerProgressionSystem16({
                   </div>
 
                   {/* Health and Mana */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <div className="flex justify-between text-sm text-red-300 mb-1">
+                      <div className="flex justify-between text-xs sm:text-sm text-red-300 mb-1">
                         <span>Health</span>
                         <span>{playerData.health}/{playerData.maxHealth}</span>
                       </div>
@@ -419,7 +424,7 @@ export function PlayerProgressionSystem16({
                       </div>
                     </div>
                     <div>
-                      <div className="flex justify-between text-sm text-blue-300 mb-1">
+                      <div className="flex justify-between text-xs sm:text-sm text-blue-300 mb-1">
                         <span>Mana</span>
                         <span>{playerData.mana}/{playerData.maxMana}</span>
                       </div>
@@ -438,13 +443,13 @@ export function PlayerProgressionSystem16({
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-r from-purple-900/50 to-amber-900/50 rounded-xl p-4 border border-purple-500/30"
+                    className="bg-gradient-to-r from-purple-900/50 to-amber-900/50 rounded-xl p-3 sm:p-4 border border-purple-500/30"
                   >
-                    <div className="flex items-center gap-3">
-                      <Star className="w-6 h-6 text-amber-400" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Star className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
                       <div>
-                        <h4 className="text-amber-300 font-bold">Points Available!</h4>
-                        <p className="text-slate-300 text-sm">
+                        <h4 className="text-amber-300 font-bold text-sm sm:text-base">Points Available!</h4>
+                        <p className="text-slate-300 text-xs sm:text-sm">
                           {playerData.unspentStatPoints} Stat Points • {playerData.unspentSkillPoints} Skill Points
                         </p>
                       </div>
@@ -454,11 +459,11 @@ export function PlayerProgressionSystem16({
 
                 {/* Core Stats */}
                 <div className="bg-slate-800/50 rounded-xl border border-slate-700/50">
-                  <div className="p-6 pb-4">
-                    <h3 className="text-xl font-bold text-white">Core Stats</h3>
+                  <div className="p-4 sm:p-6 pb-3 sm:pb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-white">Core Stats</h3>
                   </div>
-                  <div className="px-6 pb-6 max-h-96 overflow-y-auto character-scrollbar">
-                    <div className="space-y-3">
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6 max-h-80 sm:max-h-96 overflow-y-auto character-scrollbar">
+                    <div className="space-y-2 sm:space-y-3">
                     {Object.entries(playerData.stats).map(([statKey, value]) => {
                       const IconComponent = getStatIcon(statKey as keyof CoreStats);
                       const colorClass = getStatColor(statKey as keyof CoreStats);
