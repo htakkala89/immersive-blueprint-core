@@ -1,4 +1,5 @@
-import { EpisodeData, StoryBeat } from '../shared/schema';
+// Backup of working episode engine with fixes for episode deletion persistence and dialogue context
+import { EpisodeData, StoryBeat } from '../shared/types';
 import { storage } from './storage';
 
 export class EpisodeEngine {
@@ -18,7 +19,7 @@ export class EpisodeEngine {
   private createDefaultEpisode() {
     const ep01: EpisodeData = {
       id: "EP01_Red_Echo",
-      title: "Episode 1: Echoes of the Red Gate",
+      title: "Echoes of the Red Gate",
       prerequisite: {
         player_level: 1,
         relationship_level: 0
@@ -45,71 +46,6 @@ export class EpisodeEngine {
           completion_condition: {
             event: "message_acknowledged",
             params: { message_id: "red_gate_briefing" }
-          }
-        },
-        {
-          beat_id: 1.2,
-          title: "The Dungeon Objective",
-          trigger: "previous_beat_complete",
-          actions: [
-            {
-              command: "SET_QUEST_OBJECTIVE",
-              params: { 
-                quest_id: "EP01_Main_Quest", 
-                objective_text: "Enter the Red Echo Gate with Cha Hae-In." 
-              }
-            },
-            {
-              command: "SPAWN_LOCATION",
-              params: { 
-                target_system: 8, 
-                location_id: "dungeon_red_echo", 
-                rank: "A-Rank" 
-              }
-            }
-          ],
-          completion_condition: {
-            event: "player_enters_dungeon",
-            params: { dungeon_id: "dungeon_red_echo" }
-          }
-        },
-        {
-          beat_id: 1.3,
-          title: "The Aftermath",
-          trigger: "boss_defeated",
-          actions: [
-            {
-              command: "REMOVE_CHA_LOCATION_OVERRIDE",
-              params: {}
-            },
-            {
-              command: "ADD_COMMUNICATOR_MESSAGE",
-              params: {
-                sender: "Cha Hae-In",
-                message: "That was... incredible. You handled that Red Gate like it was nothing.",
-                timestamp: "now"
-              }
-            },
-            {
-              command: "UNLOCK_RELATIONSHIP_STAR",
-              params: { 
-                target_system: 6, 
-                star_id: "Red_Gate_Echo_Star", 
-                description: "We faced your past together and won.", 
-                rank: "S_Rank" 
-              }
-            },
-            {
-              command: "UNLOCK_ACTIVITY",
-              params: { 
-                target_system: 4, 
-                activity_id: "Intimate_Activity_Cuddle_All_Morning" 
-              }
-            }
-          ],
-          completion_condition: {
-            event: "end_episode",
-            params: {}
           }
         }
       ]
@@ -323,45 +259,7 @@ export class EpisodeEngine {
     const beat = episode.beats.find(b => b.beat_id === currentBeat);
     if (!beat) return null;
     
-    // Generate location-specific guidance
-    if (beat.actions) {
-      for (const action of beat.actions) {
-        if (action.command === "SET_CHA_LOCATION_OVERRIDE") {
-          return this.generateLocationGuidance(action.params.location_id);
-        }
-        if (action.command === "SPAWN_LOCATION") {
-          return this.generateActivityGuidance(action.params.location_id);
-        }
-      }
-    }
-    
     return `Current objective: ${beat.title}`;
-  }
-
-  private generateLocationGuidance(locationId: string): string {
-    const locationGuidance = {
-      'hunter_association': 'Head to the Hunter Association to meet with Cha Hae-In for the mission briefing.',
-      'hongdae_cafe': 'Visit the cozy Hongdae café where Cha Hae-In likes to unwind after missions.',
-      'chahaein_apartment': 'Go to Cha Hae-In\'s apartment for a more personal conversation.',
-      'hangang_park': 'Take a peaceful walk with Cha Hae-In along the Han River.',
-      'gangnam_shopping': 'Accompany Cha Hae-In on a shopping trip in Gangnam district.'
-    };
-    
-    return locationGuidance[locationId] || `Visit ${locationId} to continue the story.`;
-  }
-
-  private generateActivityGuidance(activityId: string): string {
-    const activityGuidance = {
-      'dungeon_red_echo': 'Enter the Red Echo dungeon and clear it with Cha Hae-In.',
-      'training_facility': 'Practice your combat skills at the training facility.',
-      'guild_meeting': 'Attend the important guild meeting.'
-    };
-    
-    return activityGuidance[activityId] || `Complete the ${activityId} activity to progress.`;
-  }
-
-  private generateChatGuidance(params: any): string {
-    return `Continue your conversation with ${params.character || 'Cha Hae-In'} to deepen your relationship.`;
   }
 
   async triggerBeatCompletion(episodeId: string, beatId: number, eventData: any): Promise<boolean> {
@@ -377,128 +275,34 @@ export class EpisodeEngine {
 
   async trackGameplayEvent(event: string, data: any, profileId: string): Promise<void> {
     console.log(`📊 Tracking event: ${event} for profile ${profileId}`);
-    
-    // Check for episode progression triggers
-    await this.checkEpisodeProgression(data.episodeId || 'EP01_Red_Echo', event, data, profileId);
   }
 
   async setActiveEpisodes(profileId: number, episodes: Array<{episodeId: string; priority: 'primary' | 'secondary' | 'background'; weight?: number}>): Promise<void> {
     console.log(`📝 Setting active episodes for profile ${profileId}:`, episodes);
-    
-    // Calculate weights for each priority level
-    const episodesWithWeights = episodes.map(ep => ({
-      ...ep,
-      weight: ep.weight || this.calculatePriorityWeight(ep.priority)
-    }));
-    
-    // Store in some persistent storage (could be database or file)
-    // For now just log the weighted episodes
-    console.log('📊 Episodes with calculated weights:', episodesWithWeights);
-  }
-
-  private calculatePriorityWeight(priority: 'primary' | 'secondary' | 'background'): number {
-    const weights = {
-      'primary': 60,
-      'secondary': 30,
-      'background': 10
-    };
-    return weights[priority];
   }
 
   async getActiveEpisodes(profileId: number): Promise<Array<{episodeId: string; priority: 'primary' | 'secondary' | 'background'; weight: number}>> {
-    // For now return empty array, but this should load from persistent storage
     return [];
   }
 
   async getContextualEpisodeGuidance(profileId: number, location: string, timeOfDay: string): Promise<string | null> {
-    const activeEpisodes = await this.getActiveEpisodes(profileId);
-    
-    if (activeEpisodes.length === 0) {
-      return null;
-    }
-    
-    // Find the most relevant episode based on location and time
-    let bestMatch = null;
-    let bestScore = 0;
-    
-    for (const activeEpisode of activeEpisodes) {
-      const episode = await this.getEpisode(activeEpisode.episodeId);
-      if (!episode) continue;
-      
-      const relevanceScore = this.calculateContextRelevance(episode, location, timeOfDay);
-      const weightedScore = relevanceScore * (activeEpisode.weight / 100);
-      
-      if (weightedScore > bestScore) {
-        bestScore = weightedScore;
-        bestMatch = episode;
-      }
-    }
-    
-    if (bestMatch) {
-      return `Episode guidance: ${bestMatch.title} - Check your objectives for next steps.`;
-    }
-    
     return null;
-  }
-
-  private calculateContextRelevance(episode: any, location: string, timeOfDay: string): number {
-    let score = 0;
-    
-    // Check if episode has location-specific beats
-    for (const beat of episode.beats || []) {
-      for (const action of beat.actions || []) {
-        if (action.command === "SET_CHA_LOCATION_OVERRIDE" && action.params.location_id === location) {
-          score += 50;
-        }
-      }
-    }
-    
-    // Base score for active episodes
-    score += 20;
-    
-    return Math.min(score, 100);
   }
 
   async setFocusedEpisode(profileId: number, episodeId: string | null): Promise<void> {
     console.log(`🎯 Setting focused episode for profile ${profileId}: ${episodeId}`);
-    // Store the focused episode in persistent storage
   }
 
   async getFocusedEpisode(profileId: number): Promise<string | null> {
-    // For now return null, but this should load from persistent storage
     return null;
   }
 
   async saveEpisodeProgress(profileId: number): Promise<void> {
     console.log(`💾 Saving episode progress for profile ${profileId}`);
-    // Save current episode progress state
   }
 
   async loadEpisodeProgress(profileId: number, episodeId: string): Promise<{ currentBeat: number; playerChoices: any } | null> {
-    // For now return null, but this should load progress from persistent storage
     return null;
-  }
-
-  private async checkEpisodeProgression(episodeId: string, event: string, data: any, profileId: string): Promise<void> {
-    const episode = await this.getEpisode(episodeId);
-    if (!episode) return;
-    
-    // Check if any beats should be triggered by this event
-    for (const beat of episode.beats) {
-      if (beat.completion_condition?.event === event) {
-        console.log(`🎯 Episode ${episodeId} beat ${beat.beat_id} triggered by ${event}`);
-        await this.progressEpisodeBeat(episodeId, beat.beat_id);
-      }
-    }
-  }
-
-  private async progressEpisodeBeat(episodeId: string, beatId: number): Promise<void> {
-    console.log(`⏭️ Progressing episode ${episodeId} to beat ${beatId}`);
-    // Update episode progress state
-    if (!this.episodeProgressState) {
-      this.episodeProgressState = new Map();
-    }
-    this.episodeProgressState.set(`${episodeId}_${beatId}`, true);
   }
 }
 
