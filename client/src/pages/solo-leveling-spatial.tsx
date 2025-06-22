@@ -2693,36 +2693,40 @@ export default function SoloLevelingSpatial() {
       
       const { profile, gameState: loadedGameState } = await response.json();
       
-      // Update current game state with loaded data
-      setGameState({
-        level: loadedGameState.level || 1,
-        health: loadedGameState.health || 100,
-        maxHealth: loadedGameState.maxHealth || 100,
-        mana: loadedGameState.mana || 50,
-        maxMana: loadedGameState.maxMana || 50,
-        affection: loadedGameState.affectionLevel || 0,
-        currentScene: loadedGameState.currentScene || "hunter_association",
-        inventory: loadedGameState.inventory || [],
-        inCombat: loadedGameState.inCombat || false,
-        gold: loadedGameState.gold || 100,
-        intimacyLevel: loadedGameState.intimacyLevel || 1,
-        energy: loadedGameState.energy || 100,
-        maxEnergy: loadedGameState.maxEnergy || 100,
-        experience: loadedGameState.experience || 0,
-        maxExperience: loadedGameState.maxExperience || 100,
-        apartmentTier: loadedGameState.apartmentTier || 1,
-        playerId: loadedGameState.sessionId,
-        activeQuests: loadedGameState.activeQuests || [],
-        completedQuests: loadedGameState.completedQuests || [],
-        intelligence: loadedGameState.stats?.intelligence || 10,
-        storyFlags: loadedGameState.storyFlags || {},
-        stats: loadedGameState.stats || { strength: 10, agility: 10, vitality: 10, intelligence: 10, sense: 10 },
-        unspentStatPoints: loadedGameState.statPoints || 0,
-        unspentSkillPoints: loadedGameState.skillPoints || 0,
-        storyProgress: loadedGameState.storyProgress || 0,
-        unlockedActivities: loadedGameState.unlockedActivities || [],
-        sharedMemories: loadedGameState.sharedMemories || []
-      });
+      // Update current game state with loaded data, preserving initial stats if none exist
+      setGameState(prev => ({
+        ...prev,
+        level: loadedGameState.level || prev.level,
+        health: loadedGameState.health || prev.health,
+        maxHealth: loadedGameState.maxHealth || prev.maxHealth,
+        mana: loadedGameState.mana || prev.mana,
+        maxMana: loadedGameState.maxMana || prev.maxMana,
+        affection: loadedGameState.affectionLevel || prev.affection,
+        currentScene: loadedGameState.currentScene || prev.currentScene,
+        inventory: loadedGameState.inventory || prev.inventory,
+        inCombat: loadedGameState.inCombat || prev.inCombat,
+        gold: loadedGameState.gold || prev.gold,
+        intimacyLevel: loadedGameState.intimacyLevel || prev.intimacyLevel,
+        energy: loadedGameState.energy || prev.energy,
+        maxEnergy: loadedGameState.maxEnergy || prev.maxEnergy,
+        experience: loadedGameState.experience || prev.experience,
+        maxExperience: loadedGameState.maxExperience || prev.maxExperience,
+        apartmentTier: loadedGameState.apartmentTier || prev.apartmentTier,
+        playerId: loadedGameState.sessionId || prev.playerId,
+        activeQuests: loadedGameState.activeQuests || prev.activeQuests,
+        completedQuests: loadedGameState.completedQuests || prev.completedQuests,
+        storyFlags: loadedGameState.storyFlags || prev.storyFlags,
+        // Preserve initial stats if loaded stats are empty/undefined
+        stats: (loadedGameState.stats && Object.keys(loadedGameState.stats).length > 0) 
+          ? loadedGameState.stats 
+          : prev.stats,
+        unspentStatPoints: loadedGameState.statPoints !== undefined ? loadedGameState.statPoints : prev.unspentStatPoints,
+        unspentSkillPoints: loadedGameState.skillPoints !== undefined ? loadedGameState.skillPoints : prev.unspentSkillPoints,
+        hunterRank: loadedGameState.hunterRank || prev.hunterRank,
+        storyProgress: loadedGameState.storyProgress || prev.storyProgress || 0,
+        unlockedActivities: loadedGameState.unlockedActivities || prev.unlockedActivities,
+        sharedMemories: loadedGameState.sharedMemories || prev.sharedMemories || []
+      }));
 
       console.log('Profile loaded successfully:', profile.profileName);
     } catch (error) {
