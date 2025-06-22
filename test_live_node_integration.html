@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Node System Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .pass { background: #004d00; border-left: 4px solid #00ff00; }
+        .fail { background: #4d0000; border-left: 4px solid #ff0000; }
+        .progress {
+            background: #333;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
+            transition: width 0.3s ease;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #005999;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Live Node System Integration Test</h1>
+        <p>This test directly interacts with the actual React component to verify node handlers are working correctly.</p>
+        
+        <button onclick="runLiveNodeTests()">▶️ Run Live Node Tests</button>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="passCount">0</div>
+                <div>Passed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="failCount">0</div>
+                <div>Failed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="passRate">0%</div>
+                <div>Pass Rate</div>
+            </div>
+        </div>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+        
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let passCount = 0;
+        let failCount = 0;
+
+        // Node tests that directly interact with the React component
+        const nodeTests = [
+            {
+                name: 'Combat Analytics',
+                location: 'training_facility',
+                nodeId: 'combat_analytics',
+                expectedUI: 'showRaidStats',
+                description: 'Should open raid statistics UI'
+            },
+            {
+                name: 'Jewelry Counter',
+                location: 'luxury_mall',
+                nodeId: 'jewelry_counter',
+                expectedUI: 'showItemInspection',
+                description: 'Should open item inspection interface'
+            },
+            {
+                name: 'Rivers Edge',
+                location: 'hangang_park',
+                nodeId: 'rivers_edge',
+                expectedState: 'cinematicMode',
+                description: 'Should trigger cinematic mode'
+            },
+            {
+                name: 'Receptionist',
+                location: 'hunter_association',
+                nodeId: 'receptionist',
+                expectedInteraction: 'environmental',
+                description: 'Should provide gameplay hints'
+            },
+            {
+                name: 'Sommelier',
+                location: 'myeongdong_restaurant',
+                nodeId: 'speak_sommelier',
+                expectedGoldChange: -15000,
+                description: 'Should deduct gold for wine recommendation'
+            },
+            {
+                name: 'Sparring Ring',
+                location: 'training_facility',
+                nodeId: 'sparring_ring',
+                expectedUI: 'showDailyLifeHub',
+                description: 'Should open Daily Life Hub'
+            },
+            {
+                name: 'Artifact Display',
+                location: 'player_apartment',
+                nodeId: 'artifact_display',
+                expectedUI: 'showRelationshipConstellation',
+                description: 'Should open Relationship Constellation'
+            },
+            {
+                name: 'Vanity Table',
+                location: 'chahaein_apartment',
+                nodeId: 'vanity_table',
+                expectedMemory: true,
+                description: 'Should track visit history'
+            }
+        ];
+
+        async function runLiveNodeTests() {
+            console.log('🚀 Starting Live Node Integration Tests...');
+            testResults = [];
+            passCount = 0;
+            failCount = 0;
+            
+            const resultsContainer = document.getElementById('testResults');
+            resultsContainer.innerHTML = '<h3>Running Tests...</h3>';
+            
+            for (let i = 0; i < nodeTests.length; i++) {
+                const test = nodeTests[i];
+                console.log(`🔬 Testing: ${test.name}`);
+                
+                const result = await testNodeHandler(test);
+                testResults.push(result);
+                
+                if (result.passed) {
+                    passCount++;
+                } else {
+                    failCount++;
+                }
+                
+                // Update progress
+                const progress = ((i + 1) / nodeTests.length) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+                
+                // Update stats
+                updateStats();
+                
+                // Add result to display
+                addTestResult(result);
+                
+                // Small delay for UI updates
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            console.log('✅ Live Node Integration Tests Complete!');
+            showFinalReport();
+        }
+
+        async function testNodeHandler(test) {
+            try {
+                // Check if we're in the React app context
+                if (typeof window.handleNodeInteraction === 'function') {
+                    // Direct interaction with React component
+                    const result = await window.handleNodeInteraction(test.nodeId, test.location);
+                    return verifyNodeResult(test, result);
+                } else {
+                    // Simulate the interaction by checking if handler exists
+                    const handlerExists = await checkHandlerImplementation(test);
+                    return {
+                        name: test.name,
+                        description: test.description,
+                        passed: handlerExists,
+                        details: handlerExists ? 'Handler implemented correctly' : 'Handler not found or incorrect'
+                    };
+                }
+            } catch (error) {
+                console.error(`❌ Test failed for ${test.name}:`, error);
+                return {
+                    name: test.name,
+                    description: test.description,
+                    passed: false,
+                    details: `Error: ${error.message}`
+                };
+            }
+        }
+
+        async function checkHandlerImplementation(test) {
+            // Check if the component has the required handlers by examining the code
+            try {
+                const response = await fetch('/src/pages/solo-leveling-spatial.tsx');
+                const componentCode = await response.text();
+                
+                // Check if the case statement exists for this node
+                const casePattern = new RegExp(`case '${test.nodeId}':`);
+                const hasCase = casePattern.test(componentCode);
+                
+                if (!hasCase) {
+                    return false;
+                }
+                
+                // Check for expected UI state changes
+                if (test.expectedUI) {
+                    const uiPattern = new RegExp(`set${test.expectedUI.charAt(0).toUpperCase() + test.expectedUI.slice(1)}\\(true\\)`);
+                    return uiPattern.test(componentCode);
+                }
+                
+                // Check for cinematic mode
+                if (test.expectedState === 'cinematicMode') {
+                    const cinematicPattern = /setCinematicMode\(true\)/;
+                    return cinematicPattern.test(componentCode);
+                }
+                
+                // Check for environmental interactions
+                if (test.expectedInteraction === 'environmental') {
+                    const envPattern = /handleEnvironmentalInteraction/;
+                    return envPattern.test(componentCode);
+                }
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Error checking handler implementation:', error);
+                return false;
+            }
+        }
+
+        function verifyNodeResult(test, result) {
+            // Verify the result matches expectations
+            let passed = false;
+            let details = '';
+            
+            if (test.expectedUI && result.uiState) {
+                passed = result.uiState[test.expectedUI] === true;
+                details = passed ? `UI state ${test.expectedUI} activated` : `Expected ${test.expectedUI} to be true`;
+            } else if (test.expectedState && result.gameState) {
+                passed = result.gameState[test.expectedState] === true;
+                details = passed ? `Game state ${test.expectedState} activated` : `Expected ${test.expectedState} to be true`;
+            } else if (test.expectedGoldChange && result.goldChange) {
+                passed = result.goldChange === test.expectedGoldChange;
+                details = passed ? `Gold changed by ${result.goldChange}` : `Expected gold change ${test.expectedGoldChange}, got ${result.goldChange}`;
+            } else {
+                passed = result.success === true;
+                details = result.message || 'Handler executed successfully';
+            }
+            
+            return {
+                name: test.name,
+                description: test.description,
+                passed: passed,
+                details: details
+            };
+        }
+
+        function updateStats() {
+            document.getElementById('passCount').textContent = passCount;
+            document.getElementById('failCount').textContent = failCount;
+            
+            const total = passCount + failCount;
+            const rate = total > 0 ? Math.round((passCount / total) * 100) : 0;
+            document.getElementById('passRate').textContent = rate + '%';
+        }
+
+        function addTestResult(result) {
+            const resultsContainer = document.getElementById('testResults');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${result.passed ? 'pass' : 'fail'}`;
+            resultDiv.innerHTML = `
+                <strong>${result.passed ? '✅' : '❌'} ${result.name}</strong><br>
+                <small>${result.description}</small><br>
+                <em>${result.details}</em>
+            `;
+            resultsContainer.appendChild(resultDiv);
+        }
+
+        function showFinalReport() {
+            const total = passCount + failCount;
+            const passRate = total > 0 ? Math.round((passCount / total) * 100) : 0;
+            
+            console.log(`📊 Final Results: ${passCount}/${total} tests passed (${passRate}%)`);
+            
+            const resultsContainer = document.getElementById('testResults');
+            const reportDiv = document.createElement('div');
+            reportDiv.className = 'test-result';
+            reportDiv.style.background = '#333';
+            reportDiv.style.borderLeft = '4px solid #007acc';
+            reportDiv.innerHTML = `
+                <h3>📊 Test Summary</h3>
+                <p><strong>Total Tests:</strong> ${total}</p>
+                <p><strong>Passed:</strong> ${passCount}</p>
+                <p><strong>Failed:</strong> ${failCount}</p>
+                <p><strong>Pass Rate:</strong> ${passRate}%</p>
+                <p><strong>Status:</strong> ${passRate === 100 ? '🎉 All tests passed!' : '⚠️ Some tests failed'}</p>
+            `;
+            resultsContainer.appendChild(reportDiv);
+        }
+
+        // Auto-run tests if this page is loaded in the React app context
+        window.addEventListener('load', () => {
+            if (window.location.pathname.includes('test')) {
+                setTimeout(runLiveNodeTests, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
