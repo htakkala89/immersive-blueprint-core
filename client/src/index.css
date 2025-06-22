@@ -498,6 +498,39 @@
   transform: translateZ(0);
 }
 
+/* World Map Mobile Optimization */
+.mobile-location-node {
+  /* Ensure adequate touch targets for mobile */
+  min-width: 44px;
+  min-height: 44px;
+  /* Prevent accidental zoom on mobile */
+  touch-action: manipulation;
+  /* Better mobile tap response */
+  -webkit-tap-highlight-color: transparent;
+  /* Improve mobile performance */
+  transform: translateZ(0);
+}
+
+/* Mobile World Map Container */
+.mobile-world-map {
+  /* Prevent mobile scrolling interference */
+  touch-action: pan-x pan-y;
+  /* Better mobile performance */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  /* Smooth mobile interactions */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Zone panel mobile optimization */
+.mobile-zone-panel {
+  /* Prevent text selection on mobile */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Better mobile touch response */
+  touch-action: manipulation;
+}
+
 /* Mobile-specific viewport handling */
 @supports (-webkit-touch-callout: none) {
   /* iOS Safari specific fixes */

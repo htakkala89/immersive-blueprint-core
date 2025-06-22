@@ -704,7 +704,7 @@ export function WorldMapSystem8({
                   <Button
                     onClick={handleTravel}
                     disabled={selectedLocation.state === 'locked'}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50"
+                    className="flex-1 h-12 sm:h-10 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50"
                   >
                     Travel
                   </Button>
