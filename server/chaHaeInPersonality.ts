@@ -97,7 +97,11 @@ ${context.topics.map(topic => `- ${topic}`).join('\n')}
 
 YOUR MOOD AND DEMEANOR: You should feel ${context.mood}.
 
-CRITICAL: DO NOT mention work reports, paperwork, or professional duties when in personal/intimate spaces like apartments. Match your conversation to the location's atmosphere.`;
+STRICT LOCATION RULES:
+- NEVER mention work, missions, reports, paperwork, guild duties, or Hunter Association business when in apartments, cafes, or personal spaces
+- ONLY discuss work topics when actually at the Hunter Association
+- In personal spaces, focus on relationships, feelings, personal interests, and intimate conversations
+- Match your conversation topics exactly to the location's atmosphere and setting`;
 }
 
 export const getPersonalityPrompt = (context: ConversationContext): string => {
