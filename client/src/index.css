@@ -646,6 +646,124 @@
   }
 }
 
+/* Sparkle heart animations */
+@keyframes sparkleHeart {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2) rotate(15deg);
+  }
+  40% {
+    transform: scale(1) rotate(-10deg);
+  }
+  60% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(0.9) rotate(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg) translateY(-20px);
+  }
+}
+
+.sparkle-heart {
+  position: fixed;
+  font-size: 1.5rem;
+  color: #ff69b4;
+  text-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+  animation: sparkleHeart 2s ease-out forwards;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Affection gain notification */
+@keyframes affectionGainPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(0px);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.1) translateY(-5px);
+  }
+  50% {
+    transform: scale(1) translateY(-10px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-30px);
+  }
+}
+
+.affection-gain-notification {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(255, 105, 180, 0.9), rgba(255, 20, 147, 0.9));
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.4);
+  animation: affectionGainPulse 2s ease-out forwards;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Real-time affection meter */
+.affection-meter {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #ff69b4;
+  border-radius: 25px;
+  padding: 8px 16px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+  backdrop-filter: blur(10px);
+  z-index: 9997;
+  transition: all 0.3s ease;
+}
+
+.affection-meter.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.affection-meter.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-20px);
+}
+
+.affection-progress-bar {
+  width: 120px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  margin: 4px 0;
+  overflow: hidden;
+}
+
+.affection-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff1493, #ff69b4);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px rgba(255, 105, 180, 0.6);
+}
+
 /* Cinematic Message Formatting */
 .cinematic-dialogue {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

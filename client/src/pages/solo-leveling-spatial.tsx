@@ -509,7 +509,16 @@ export default function SoloLevelingSpatial() {
     timestamp: Date;
   }>>([]);
 
-
+  // Affection animation states
+  const [showAffectionGain, setShowAffectionGain] = useState(false);
+  const [affectionGainAmount, setAffectionGainAmount] = useState(0);
+  const [previousAffection, setPreviousAffection] = useState(gameState.affection || 0);
+  const [sparkleHearts, setSparkleHearts] = useState<Array<{
+    id: string;
+    x: number;
+    y: number;
+    delay: number;
+  }>>([]);
 
   // System 8: World Map state - activeQuests defined below with other quest states
   
@@ -863,6 +872,28 @@ export default function SoloLevelingSpatial() {
     setCurrentDialogue('');
     // Clear coffee activity context when exiting dialogue
     setCoffeeActivityContext(null);
+  };
+
+  // Trigger sparkle heart animation when affection is gained
+  const triggerAffectionGain = (gainAmount: number) => {
+    setAffectionGainAmount(gainAmount);
+    setShowAffectionGain(true);
+    
+    // Generate sparkle hearts at random positions
+    const newSparkleHearts = Array.from({ length: Math.min(gainAmount, 5) }, (_, i) => ({
+      id: `sparkle-${Date.now()}-${i}`,
+      x: Math.random() * 80 + 10, // 10-90% of screen width
+      y: Math.random() * 60 + 20, // 20-80% of screen height
+      delay: i * 100 // Stagger animations
+    }));
+    
+    setSparkleHearts(newSparkleHearts);
+    
+    // Clear sparkle hearts after animation
+    setTimeout(() => {
+      setSparkleHearts([]);
+      setShowAffectionGain(false);
+    }, 2000);
   };
 
   const handleGestureActivation = (e: React.TouchEvent | React.MouseEvent) => {
@@ -1910,16 +1941,21 @@ export default function SoloLevelingSpatial() {
       
       // Update game state with any changes from conversation (including affection)
       if (data.gameState) {
+        // Check for affection changes before updating state
+        if (data.gameState.affection !== undefined && data.gameState.affection !== gameState.affection) {
+          const gain = data.gameState.affection - (gameState.affection || 0);
+          console.log(`💕 Affection updated: +${gain} (${gameState.affection || 0} → ${data.gameState.affection})`);
+          
+          if (gain > 0) {
+            // Trigger sparkle heart animation
+            triggerAffectionGain(gain);
+          }
+        }
+        
         setGameState(prev => ({
           ...prev,
           ...data.gameState
         }));
-        
-        // Log affection changes
-        if (data.gameState.affection !== undefined && data.gameState.affection !== gameState.affection) {
-          const gain = data.gameState.affection - (gameState.affection || 0);
-          console.log(`💕 Affection updated: +${gain} (${gameState.affection || 0} → ${data.gameState.affection})`);
-        }
       }
       
       // Set the raw response and let the display component handle formatting
