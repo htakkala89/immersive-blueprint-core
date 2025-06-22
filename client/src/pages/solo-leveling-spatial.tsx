@@ -5433,6 +5433,7 @@ export default function SoloLevelingSpatial() {
         }}
         onOpenInventory={() => setShowInventory(true)}
         onOpenArmory={() => setShowMonarchArmory(true)}
+        onOpenRelationshipConstellation={() => setShowRelationshipConstellation(true)}
       />
 
       {/* System 18: Episodic Story Engine */}

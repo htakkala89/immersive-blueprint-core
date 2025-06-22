@@ -294,7 +294,15 @@ export function PlayerProgressionSystemRedesigned({
 
                   {/* Relationship Actions */}
                   <div className="grid gap-3">
-                    <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2">
+                    <button 
+                      onClick={() => {
+                        onClose();
+                        if (onOpenRelationshipConstellation) {
+                          onOpenRelationshipConstellation();
+                        }
+                      }}
+                      className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2"
+                    >
                       <Sparkles className="w-4 h-4" />
                       View Constellation
                     </button>
