@@ -81,6 +81,49 @@ interface HunterCommunicatorSystem15Props {
   episodeAlerts?: SystemAlert[];
 }
 
+// Enhanced cinematic message parsing function for premium script formatting
+const parseCinematicMessage = (content: string) => {
+  const parts = [];
+  
+  // Split content by double line breaks to maintain server-side formatting
+  const segments = content.split('\n\n').filter(segment => segment.trim());
+  
+  for (const segment of segments) {
+    const trimmed = segment.trim();
+    
+    // Check for dialogue (quoted text)
+    if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+      parts.push({
+        type: 'dialogue',
+        text: trimmed.slice(1, -1) // Remove quotes
+      });
+    }
+    // Check for actions (asterisk text)
+    else if (trimmed.startsWith('*') && trimmed.endsWith('*')) {
+      parts.push({
+        type: 'action',
+        text: trimmed.slice(1, -1) // Remove asterisks
+      });
+    }
+    // Check for thoughts (parentheses text)
+    else if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
+      parts.push({
+        type: 'thought',
+        text: trimmed.slice(1, -1) // Remove parentheses
+      });
+    }
+    // Default to narrative for other content
+    else if (trimmed.length > 0) {
+      parts.push({
+        type: 'narrative',
+        text: trimmed
+      });
+    }
+  }
+  
+  return parts;
+};
+
 export function HunterCommunicatorSystem15({
   isVisible,
   onClose,
