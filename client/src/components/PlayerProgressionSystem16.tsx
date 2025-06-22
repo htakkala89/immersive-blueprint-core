@@ -469,12 +469,12 @@ export function PlayerProgressionSystem16({
                       const colorClass = getStatColor(statKey as keyof CoreStats);
                       
                       return (
-                        <div key={statKey} className="flex items-center justify-between p-2 bg-slate-700/30 rounded-lg border border-slate-600/30">
-                          <div className="flex items-center gap-3">
-                            <IconComponent className={`w-5 h-5 ${colorClass}`} />
-                            <div>
-                              <span className="text-white font-medium capitalize">{statKey}</span>
-                              <div className="text-xs text-slate-400">
+                        <div key={statKey} className="flex items-center justify-between p-2 sm:p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                            <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${colorClass} flex-shrink-0`} />
+                            <div className="min-w-0 flex-1">
+                              <span className="text-white font-medium capitalize text-sm sm:text-base">{statKey}</span>
+                              <div className="text-xs text-slate-400 hidden sm:block">
                                 {statKey === 'strength' && 'Physical damage & carrying capacity'}
                                 {statKey === 'agility' && 'Attack speed & critical chance'}
                                 {statKey === 'vitality' && 'Health & defense'}
@@ -484,9 +484,9 @@ export function PlayerProgressionSystem16({
                             </div>
                           </div>
                           
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                             <motion.span 
-                              className="text-2xl font-bold text-white"
+                              className="text-xl sm:text-2xl font-bold text-white"
                               key={`${statKey}-${value}`}
                               initial={{ scale: 1.2, color: '#fbbf24' }}
                               animate={{ scale: 1, color: '#ffffff' }}
@@ -502,9 +502,9 @@ export function PlayerProgressionSystem16({
                                 <Button
                                   onClick={() => allocateStatPoint(statKey as keyof CoreStats)}
                                   size="sm"
-                                  className="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 w-8 h-8 p-0 shadow-lg border border-purple-400/30"
+                                  className="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 w-8 h-8 sm:w-9 sm:h-9 p-0 shadow-lg border border-purple-400/30 min-h-[32px] min-w-[32px] sm:min-h-[36px] sm:min-w-[36px]"
                                 >
-                                  <Plus className="w-4 h-4" />
+                                  <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                                 </Button>
                               </motion.div>
                             )}
@@ -800,40 +800,40 @@ export function PlayerProgressionSystem16({
           )}
 
           {activeTab === 'equipment' && (
-            <div className="h-full overflow-y-auto character-scrollbar p-6">
-              <div className="max-w-4xl mx-auto space-y-6">
+            <div className="h-full overflow-y-auto character-scrollbar p-3 sm:p-6">
+              <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
                 {/* Equipment Management Header */}
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-                  <h3 className="text-xl font-bold text-white mb-4">Equipment Management</h3>
-                  <p className="text-slate-300 mb-6">
+                <div className="bg-slate-800/50 rounded-xl p-4 sm:p-6 border border-slate-700/50">
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Equipment Management</h3>
+                  <p className="text-slate-300 mb-4 sm:mb-6 text-sm sm:text-base">
                     Manage your inventory, equipment, and armory from this central hub.
                   </p>
 
                   {/* Equipment Action Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {/* Inventory Card */}
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-xl p-6 border border-purple-500/30 cursor-pointer"
+                      className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-xl p-4 sm:p-6 border border-purple-500/30 cursor-pointer min-h-[120px] sm:min-h-[140px]"
                       onClick={() => {
                         onClose();
                         onOpenInventory?.();
                       }}
                     >
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-full bg-purple-600/30 flex items-center justify-center">
-                          <Package className="w-6 h-6 text-purple-300" />
+                      <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                        <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-purple-600/30 flex items-center justify-center flex-shrink-0">
+                          <Package className="w-4 h-4 sm:w-6 sm:h-6 text-purple-300" />
                         </div>
-                        <div>
-                          <h4 className="text-lg font-bold text-white">Inventory</h4>
-                          <p className="text-purple-200 text-sm">Items & Resources</p>
+                        <div className="min-w-0">
+                          <h4 className="text-base sm:text-lg font-bold text-white">Inventory</h4>
+                          <p className="text-purple-200 text-xs sm:text-sm">Items & Resources</p>
                         </div>
                       </div>
-                      <p className="text-slate-300 text-sm mb-4">
+                      <p className="text-slate-300 text-xs sm:text-sm mb-3 sm:mb-4 hidden sm:block">
                         Access your consumables, materials, quest items, and gifts. Manage item quantities and sell unwanted resources.
                       </p>
-                      <div className="flex items-center text-purple-300 text-sm font-medium">
+                      <div className="flex items-center text-purple-300 text-xs sm:text-sm font-medium">
                         Open Inventory →
                       </div>
                     </motion.div>
@@ -842,25 +842,25 @@ export function PlayerProgressionSystem16({
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-xl p-6 border border-amber-500/30 cursor-pointer"
+                      className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-xl p-4 sm:p-6 border border-amber-500/30 cursor-pointer min-h-[120px] sm:min-h-[140px]"
                       onClick={() => {
                         onClose();
                         onOpenArmory?.();
                       }}
                     >
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-full bg-amber-600/30 flex items-center justify-center">
-                          <Crown className="w-6 h-6 text-amber-300" />
+                      <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                        <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-amber-600/30 flex items-center justify-center flex-shrink-0">
+                          <Crown className="w-4 h-4 sm:w-6 sm:h-6 text-amber-300" />
                         </div>
-                        <div>
-                          <h4 className="text-lg font-bold text-white">Armory</h4>
-                          <p className="text-amber-200 text-sm">Weapons & Equipment</p>
+                        <div className="min-w-0">
+                          <h4 className="text-base sm:text-lg font-bold text-white">Armory</h4>
+                          <p className="text-amber-200 text-xs sm:text-sm">Weapons & Equipment</p>
                         </div>
                       </div>
-                      <p className="text-slate-300 text-sm mb-4">
+                      <p className="text-slate-300 text-xs sm:text-sm mb-3 sm:mb-4 hidden sm:block">
                         Equip weapons, armor, and accessories. View equipment stats and manage your combat loadout.
                       </p>
-                      <div className="flex items-center text-amber-300 text-sm font-medium">
+                      <div className="flex items-center text-amber-300 text-xs sm:text-sm font-medium">
                         Open Armory →
                       </div>
                     </motion.div>
@@ -868,34 +868,34 @@ export function PlayerProgressionSystem16({
                 </div>
 
                 {/* Quick Equipment Overview */}
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-                  <h3 className="text-xl font-bold text-white mb-4">Quick Overview</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Package className="w-5 h-5 text-purple-300" />
-                        <span className="text-white font-medium">Inventory Items</span>
+                <div className="bg-slate-800/50 rounded-xl p-4 sm:p-6 border border-slate-700/50">
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Quick Overview</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                    <div className="bg-slate-700/30 rounded-lg p-3 sm:p-4 border border-slate-600/30">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                        <Package className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />
+                        <span className="text-white font-medium text-sm sm:text-base">Inventory Items</span>
                       </div>
-                      <p className="text-2xl font-bold text-purple-300">24</p>
-                      <p className="text-slate-400 text-sm">Items stored</p>
+                      <p className="text-xl sm:text-2xl font-bold text-purple-300">24</p>
+                      <p className="text-slate-400 text-xs sm:text-sm">Items stored</p>
                     </div>
                     
-                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Sword className="w-5 h-5 text-amber-300" />
-                        <span className="text-white font-medium">Equipped Items</span>
+                    <div className="bg-slate-700/30 rounded-lg p-3 sm:p-4 border border-slate-600/30">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                        <Sword className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
+                        <span className="text-white font-medium text-sm sm:text-base">Equipped Items</span>
                       </div>
-                      <p className="text-2xl font-bold text-amber-300">6</p>
-                      <p className="text-slate-400 text-sm">Currently equipped</p>
+                      <p className="text-xl sm:text-2xl font-bold text-amber-300">6</p>
+                      <p className="text-slate-400 text-xs sm:text-sm">Currently equipped</p>
                     </div>
                     
-                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Star className="w-5 h-5 text-green-300" />
-                        <span className="text-white font-medium">Equipment Power</span>
+                    <div className="bg-slate-700/30 rounded-lg p-3 sm:p-4 border border-slate-600/30">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                        <Star className="w-4 h-4 sm:w-5 sm:h-5 text-green-300" />
+                        <span className="text-white font-medium text-sm sm:text-base">Equipment Power</span>
                       </div>
-                      <p className="text-2xl font-bold text-green-300">S+</p>
-                      <p className="text-slate-400 text-sm">Overall rating</p>
+                      <p className="text-xl sm:text-2xl font-bold text-green-300">S+</p>
+                      <p className="text-slate-400 text-xs sm:text-sm">Overall rating</p>
                     </div>
                   </div>
                 </div>
