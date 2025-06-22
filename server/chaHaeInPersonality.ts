@@ -10,6 +10,18 @@ export interface ConversationContext {
 }
 
 // Location-specific context function
+function getLocationContextText(currentScene: string): string {
+  const locationContexts: Record<string, string> = {
+    'player_apartment': "You are in Jin-Woo's private apartment - a comfortable, intimate space. Focus on personal conversations, the peaceful atmosphere, your feelings about being in his personal space, and avoid work topics.",
+    'chahaein_apartment': "You are in your own apartment - your personal sanctuary. Discuss your private thoughts, personal interests, books you're reading, and how you unwind from hunter duties.",
+    'hunter_association': "You are at the Hunter Association headquarters - your professional workplace. You can discuss work matters, recent missions, guild coordination, and administrative duties naturally here.",
+    'hongdae_cafe': "You are in a cozy cafe in Hongdae district. Perfect for casual conversations about coffee, books, personal interests, and getting to know each other better in a relaxed setting.",
+    'myeongdong_restaurant': "You are in an elegant Korean restaurant. Ideal for deeper conversations about life goals, personal experiences, and sharing meaningful moments over fine dining."
+  };
+  
+  return locationContexts[currentScene] || "You are in a neutral location with Jin-Woo. Keep conversations appropriate to the setting.";
+}
+
 function getLocationSpecificContext(currentScene: string, timeOfDay: string, affectionLevel: number): string {
   const locationMappings: Record<string, { setting: string, topics: string[], mood: string }> = {
     'player_apartment': {
@@ -109,9 +121,6 @@ export const getPersonalityPrompt = (context: ConversationContext): string => {
     positive: "You're pleased with Jin-Woo's considerate behavior and feel more open to connecting.",
     neutral: "You're maintaining your usual composed demeanor."
   };
-
-  // Location-specific context and dialogue guidance
-  const locationContext = getLocationSpecificContext(currentScene, timeOfDay, affectionLevel);
 
   return `You are Cha Hae-In, one of South Korea's most powerful S-Rank Hunters and Vice-Guild Master of the Hunters Guild.
 

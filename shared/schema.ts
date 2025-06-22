@@ -49,6 +49,7 @@ export const playerProfiles = pgTable("player_profiles", {
   currentEpisodeBeat: integer("current_episode_beat").default(0),
   episodeProgress: jsonb("episode_progress").notNull().default({}).$type<Record<string, any>>(),
   availableEpisodes: jsonb("available_episodes").notNull().default([]).$type<string[]>(),
+  deletedEpisodes: jsonb("deleted_episodes").notNull().default([]).$type<string[]>(),
   focusedEpisode: text("focused_episode"), // Only this episode drives AI narrative
   activeEpisodes: jsonb("active_episodes").notNull().default([]).$type<Array<{episodeId: string; priority: 'primary' | 'secondary' | 'background'; weight: number}>>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

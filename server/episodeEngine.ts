@@ -235,22 +235,17 @@ export class EpisodeEngine {
   private async getDeletedEpisodes(): Promise<string[]> {
     try {
       const { db } = await import('./db');
-      const { gameStates } = await import('@shared/schema');
+      const { playerProfiles } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
       
-      // Get deleted episodes from game states (stored in episodeState)
-      const states = await db.select().from(gameStates);
-      const deletedEpisodes: string[] = [];
+      // Get active profile's deleted episodes
+      const [activeProfile] = await db.select().from(playerProfiles).where(eq(playerProfiles.isActive, true));
       
-      for (const state of states) {
-        if (state.episodeState && typeof state.episodeState === 'object') {
-          const episodeState = state.episodeState as any;
-          if (episodeState.deletedEpisodes && Array.isArray(episodeState.deletedEpisodes)) {
-            deletedEpisodes.push(...episodeState.deletedEpisodes);
-          }
-        }
+      if (activeProfile && (activeProfile as any).deletedEpisodes) {
+        return (activeProfile as any).deletedEpisodes;
       }
       
-      return Array.from(new Set(deletedEpisodes)); // Remove duplicates
+      return [];
     } catch (error) {
       console.error('Failed to get deleted episodes from database:', error);
       return [];
