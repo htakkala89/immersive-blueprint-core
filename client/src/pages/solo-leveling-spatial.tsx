@@ -131,25 +131,25 @@ const parseCinematicText = (content: string) => {
     switch (part.type) {
       case 'dialogue':
         return (
-          <div key={index} className="text-white text-lg font-medium leading-relaxed mb-3">
+          <div key={index} className="text-white text-lg font-medium leading-relaxed mb-4 tracking-wide" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)', lineHeight: '1.6' }}>
             "{part.text}"
           </div>
         );
       case 'action':
         return (
-          <div key={index} className="text-amber-400 italic text-base leading-relaxed mb-3 pl-4">
+          <div key={index} className="text-amber-400 italic text-base leading-relaxed mb-3 pl-4 font-light" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)', letterSpacing: '0.025em' }}>
             *{part.text}*
           </div>
         );
       case 'thought':
         return (
-          <div key={index} className="text-gray-400 italic text-sm leading-relaxed mb-3 pl-6 border-l-2 border-gray-600">
+          <div key={index} className="text-gray-400 italic text-sm leading-relaxed mb-3 pl-6 border-l-2 border-gray-600 opacity-90" style={{ fontStyle: 'italic', letterSpacing: '0.02em' }}>
             ({part.text})
           </div>
         );
       case 'narrative':
         return (
-          <div key={index} className="text-gray-200 text-base leading-relaxed mb-3">
+          <div key={index} className="text-gray-200 text-base leading-relaxed mb-3 opacity-95" style={{ lineHeight: '1.65', letterSpacing: '0.01em' }}>
             {part.text}
           </div>
         );
@@ -4308,7 +4308,7 @@ export default function SoloLevelingSpatial() {
                             </div>
                           ) : (
                             // Cha Hae-In messages: Left-aligned, cinematic script formatting
-                            <div className="max-w-[75%]">
+                            <div className="max-w-[90%] sm:max-w-[85%]">
                               <div className="leading-relaxed break-words hyphens-auto">
                                 {parseCinematicText(entry.text)}
                               </div>
