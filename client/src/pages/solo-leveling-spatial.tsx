@@ -2003,28 +2003,14 @@ export default function SoloLevelingSpatial() {
     }
   };
 
-  // Auto-scroll behavior: smart scrolling to show beginning of new AI responses
+  // Auto-scroll behavior: bottom-anchored scrolling for mobile
   useEffect(() => {
     if (conversationScrollRef.current && conversationHistory.length > 0) {
-      const lastMessage = conversationHistory[conversationHistory.length - 1];
-      
       setTimeout(() => {
         if (conversationScrollRef.current) {
-          if (lastMessage.type === 'cha_hae_in') {
-            // For AI responses, scroll to show the beginning of the latest message
-            const messages = conversationScrollRef.current.children;
-            const lastMessageElement = messages[messages.length - 1] as HTMLElement;
-            if (lastMessageElement) {
-              // Scroll to position the start of the new message near the top of the visible area
-              const containerHeight = conversationScrollRef.current.clientHeight;
-              const messageTop = lastMessageElement.offsetTop;
-              const targetScroll = Math.max(0, messageTop - containerHeight * 0.1); // 10% from top
-              conversationScrollRef.current.scrollTop = targetScroll;
-            }
-          } else {
-            // For user messages, scroll to bottom to see their input
-            conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
-          }
+          // Always scroll to bottom for both user and AI messages on mobile
+          // This provides consistent behavior and prevents conversation jumping
+          conversationScrollRef.current.scrollTop = conversationScrollRef.current.scrollHeight;
         }
       }, 150); // Small delay to ensure content is rendered
     }
