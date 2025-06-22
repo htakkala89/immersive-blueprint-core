@@ -4340,10 +4340,10 @@ export default function SoloLevelingSpatial() {
               
               {/* Bottom Section - Always Visible */}
               <div className="space-y-3" style={{ paddingBottom: 'max(8px, var(--safe-area-inset-bottom))' }}>
-                {/* Thought Prompts */}
+                {/* Mobile-Responsive Thought Prompts */}
                 {thoughtPrompts.length > 0 && (
                   <motion.div
-                    className="flex gap-2 overflow-x-auto pb-1"
+                    className="flex flex-wrap gap-2 justify-center px-2"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
@@ -4351,7 +4351,7 @@ export default function SoloLevelingSpatial() {
                     {thoughtPrompts.map((prompt, index) => (
                       <motion.button
                         key={index}
-                        className="text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors"
+                        className="text-white px-2 py-1.5 rounded-lg text-xs sm:text-sm flex-1 min-w-0 max-w-[48%] sm:max-w-none transition-colors text-center leading-tight whitespace-normal"
                         style={{
                           backdropFilter: 'blur(12px) saturate(150%)',
                           background: `
