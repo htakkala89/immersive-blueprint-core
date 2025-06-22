@@ -37,7 +37,7 @@ import { RelationshipConstellationSystem6 } from '@/components/RelationshipConst
 import { DungeonRaidSystem11 } from '@/components/DungeonRaidSystem11Fixed';
 import { PlayerProgressionSystem16 } from '@/components/PlayerProgressionSystem16';
 import { MonarchArmory } from '@/components/MonarchArmory';
-import { MonarchInventorySystem } from '@/components/MonarchInventorySystem';
+import { MonarchInventorySystem } from '@/components/MonarchInventorySystemFixed';
 import { MonarchArmory2D } from '@/components/MonarchArmory2D';
 import WorldMap from '@/components/WorldMap';
 import WealthDisplay from '@/components/WealthDisplay';
