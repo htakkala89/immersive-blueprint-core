@@ -2011,15 +2011,15 @@ export default function SoloLevelingSpatial() {
           const lastMessage = conversationHistory[conversationHistory.length - 1];
           
           if (lastMessage.type === 'cha_hae_in') {
-            // For AI messages: show from the top of the new message
+            // For AI messages: show from the top of the new message with proper spacing
             const messageElements = conversationScrollRef.current.children;
             const lastMessageElement = messageElements[messageElements.length - 1] as HTMLElement;
             
             if (lastMessageElement) {
-              // Calculate position to show message from top
-              const containerHeight = conversationScrollRef.current.clientHeight;
+              // Position to show message from top with some padding
               const messageTop = lastMessageElement.offsetTop;
-              conversationScrollRef.current.scrollTop = messageTop;
+              const paddingFromTop = 16; // 16px padding from top
+              conversationScrollRef.current.scrollTop = Math.max(0, messageTop - paddingFromTop);
             }
           } else {
             // For user messages: scroll to bottom for natural input flow
