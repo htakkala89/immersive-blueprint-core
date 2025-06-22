@@ -4542,21 +4542,53 @@ export default function SoloLevelingSpatial() {
                     animate={{ 
                       width: `${Math.min(100, ((gameState.affection || 0) / 1000) * 100)}%`,
                       boxShadow: showAffectionGain ? [
-                        '0 0 8px rgba(255, 105, 180, 0.6)',
-                        '0 0 16px rgba(255, 105, 180, 0.8)',
-                        '0 0 8px rgba(255, 105, 180, 0.6)'
-                      ] : '0 0 4px rgba(255, 105, 180, 0.3)'
+                        '0 0 4px rgba(255, 105, 180, 0.3)',
+                        '0 0 12px rgba(255, 105, 180, 0.8)',
+                        '0 0 20px rgba(255, 105, 180, 1)',
+                        '0 0 12px rgba(255, 105, 180, 0.8)',
+                        '0 0 4px rgba(255, 105, 180, 0.3)'
+                      ] : '0 0 4px rgba(255, 105, 180, 0.3)',
+                      scale: showAffectionGain ? [1, 1.02, 1.05, 1.02, 1] : 1
                     }}
                     transition={{ 
                       width: { duration: 1.2, ease: "easeOut", delay: showAffectionGain ? 1.5 : 0 },
-                      boxShadow: { duration: 0.6, repeat: showAffectionGain ? 2 : 0 }
+                      boxShadow: { 
+                        duration: 0.4, 
+                        delay: showAffectionGain ? 1.6 : 0,
+                        repeat: showAffectionGain ? 1 : 0
+                      },
+                      scale: { 
+                        duration: 0.6, 
+                        delay: showAffectionGain ? 1.6 : 0,
+                        ease: "easeInOut"
+                      }
                     }}
                   >
-                    {/* Sparkle overlay when gaining affection */}
+                    {/* Hearts impact ripple effect */}
                     <AnimatePresence>
                       {showAffectionGain && (
                         <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                          className="absolute inset-0 rounded-full border-2 border-pink-300/60"
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ 
+                            scale: [0.8, 1.3, 1.8],
+                            opacity: [0, 0.8, 0]
+                          }}
+                          exit={{ opacity: 0 }}
+                          transition={{ 
+                            duration: 1.2,
+                            delay: 1.5,
+                            ease: "easeOut"
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
+
+                    {/* Sparkle sweep when gaining affection */}
+                    <AnimatePresence>
+                      {showAffectionGain && (
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
                           initial={{ x: '-100%', opacity: 0 }}
                           animate={{ 
                             x: ['100%', '200%'],
@@ -4564,8 +4596,8 @@ export default function SoloLevelingSpatial() {
                           }}
                           exit={{ opacity: 0 }}
                           transition={{ 
-                            duration: 1.5,
-                            delay: 1.3,
+                            duration: 1.0,
+                            delay: 1.7,
                             ease: "easeInOut"
                           }}
                         />
@@ -4577,29 +4609,53 @@ export default function SoloLevelingSpatial() {
                   <AnimatePresence>
                     {showAffectionGain && (
                       <>
-                        {[...Array(5)].map((_, i) => (
+                        {[...Array(6)].map((_, i) => (
                           <motion.div
                             key={i}
                             className="absolute w-1 h-1 bg-pink-300 rounded-full"
                             style={{
-                              left: `${85 + i * 3}%`,
-                              top: '-2px'
+                              left: `${80 + i * 4}%`,
+                              top: '-3px'
                             }}
                             initial={{ opacity: 0, scale: 0, y: 0 }}
                             animate={{ 
                               opacity: [0, 1, 0],
-                              scale: [0, 1.5, 0],
-                              y: [0, -8, -16]
+                              scale: [0, 2, 0],
+                              y: [0, -12, -20]
                             }}
                             exit={{ opacity: 0 }}
                             transition={{ 
-                              duration: 1.2,
-                              delay: 1.8 + i * 0.1,
+                              duration: 1.4,
+                              delay: 1.8 + i * 0.08,
                               ease: "easeOut"
                             }}
                           />
                         ))}
                       </>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Hearts absorption point indicator */}
+                  <AnimatePresence>
+                    {showAffectionGain && (
+                      <motion.div
+                        className="absolute w-2 h-2 bg-pink-200 rounded-full"
+                        style={{
+                          right: '8px',
+                          top: '-1px'
+                        }}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ 
+                          scale: [0, 1.5, 0],
+                          opacity: [0, 1, 0]
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{ 
+                          duration: 0.8,
+                          delay: 1.5,
+                          ease: "easeOut"
+                        }}
+                      />
                     )}
                   </AnimatePresence>
                 </div>
