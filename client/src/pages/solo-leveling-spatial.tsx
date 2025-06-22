@@ -370,6 +370,96 @@ export default function SoloLevelingSpatial() {
     action?: () => void;
   }>>([]);
 
+  // Integrated notification system state for Monarch's Aura menu
+  const [monarchNotifications, setMonarchNotifications] = useState<Array<{
+    id: string;
+    title: string;
+    message: string;
+    type: 'info' | 'success' | 'warning' | 'error';
+    timestamp: Date;
+    read: boolean;
+    persistent?: boolean;
+  }>>([]);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+
+  // Integrated notification system for Monarch's Aura menu
+  useEffect(() => {
+    const handleNotification = (event: CustomEvent) => {
+      const { title, message, type = 'info', persistent = false } = event.detail;
+      
+      // Prevent duplicate notifications with same title and message
+      setMonarchNotifications(prev => {
+        const isDuplicate = prev.some(notification => 
+          notification.title === title && notification.message === message
+        );
+        
+        if (isDuplicate) {
+          return prev; // Don't add duplicate
+        }
+        
+        const newNotification = {
+          id: Date.now().toString(),
+          title,
+          message,
+          type,
+          timestamp: new Date(),
+          read: false,
+          persistent
+        };
+
+        setUnreadNotificationCount(count => count + 1);
+        return [newNotification, ...prev];
+      });
+    };
+
+    window.addEventListener('game-notification', handleNotification as EventListener);
+    
+    return () => {
+      window.removeEventListener('game-notification', handleNotification as EventListener);
+    };
+  }, []);
+
+  // Auto-remove non-persistent notifications after 30 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMonarchNotifications(prev => 
+        prev.filter(notification => 
+          notification.persistent || 
+          Date.now() - notification.timestamp.getTime() < 30000
+        )
+      );
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Notification management functions
+  const markNotificationAsRead = (id: string) => {
+    setMonarchNotifications(prev => 
+      prev.map(notification => 
+        notification.id === id 
+          ? { ...notification, read: true }
+          : notification
+      )
+    );
+    setUnreadNotificationCount(prev => Math.max(0, prev - 1));
+  };
+
+  const clearNotification = (id: string) => {
+    const notification = monarchNotifications.find(n => n.id === id);
+    if (notification && !notification.read) {
+      setUnreadNotificationCount(prev => Math.max(0, prev - 1));
+    }
+    setMonarchNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const markAllNotificationsAsRead = () => {
+    setMonarchNotifications(prev => 
+      prev.map(notification => ({ ...notification, read: true }))
+    );
+    setUnreadNotificationCount(0);
+  };
+
   // System 16: Player Progression state
   const [showPlayerProgression, setShowPlayerProgression] = useState(false);
 
@@ -4487,8 +4577,6 @@ export default function SoloLevelingSpatial() {
              }}>
           <div className="text-white text-sm mb-2 font-medium text-center opacity-80">Monarch's Aura</div>
           {[
-            { icon: Package, label: 'Inventory', color: 'text-purple-300', onClick: () => { setShowInventory(true); setMonarchAuraVisible(false); } },
-            { icon: Crown, label: 'Armory', color: 'text-amber-300', onClick: () => { setShowMonarchArmory(true); setMonarchAuraVisible(false); } },
             { icon: Sword, label: 'Raid', color: 'text-red-300', onClick: () => { setShowDungeonRaid(true); setMonarchAuraVisible(false); } },
             { icon: Star, label: 'Quests', color: 'text-green-300', onClick: () => { setShowQuestLog(true); setMonarchAuraVisible(false); } },
             { icon: MapPin, label: 'World Map', color: 'text-blue-300', onClick: () => { setShowWorldMap(true); setMonarchAuraVisible(false); } },
@@ -4496,42 +4584,9 @@ export default function SoloLevelingSpatial() {
             { icon: Home, label: 'Daily Life', color: 'text-yellow-300', onClick: () => { setShowDailyLifeHub(true); setMonarchAuraVisible(false); } },
             { icon: MessageCircle, label: 'Communicator', color: 'text-cyan-300', onClick: () => { setShowCommunicator(true); setMonarchAuraVisible(false); } },
             { icon: BookOpen, label: 'Episodes', color: 'text-orange-300', onClick: () => { setShowEpisodeSelector(true); setMonarchAuraVisible(false); } },
-            { icon: Bell, label: 'Start Episode 1', color: 'text-red-300', onClick: async () => { 
-              setMonarchAuraVisible(false);
-              try {
-                const response = await fetch('/api/episodes/EP01_Red_Echo/trigger', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ profileId: loadedProfileId })
-                });
-                
-                if (response.ok) {
-                  const data = await response.json();
-                  console.log('Episode 1 triggered successfully:', data);
-                  
-                  setCurrentDialogue("A priority alert has been sent to your Hunter's Communicator. Check your messages for an urgent mission briefing from the Hunter Association.");
-                  setDialogueActive(true);
-                  setShowLivingPortrait(true);
-                  setChaHaeInExpression('concerned');
-                  
-                  setTimeout(() => {
-                    setNotifications(prev => [...prev, {
-                      id: 'episode1_alert',
-                      type: 'episode_available',
-                      title: 'Episode 1: Echoes of the Red Gate',
-                      content: 'A critical mission has been detected.',
-                      timestamp: new Date(),
-                      action: () => setShowCommunicator(true)
-                    }]);
-                  }, 1000);
-                }
-              } catch (error) {
-                console.error('Failed to trigger episode:', error);
-              }
-            }},
             { icon: User, label: 'Character', color: 'text-indigo-300', onClick: () => { setShowPlayerProgression(true); setMonarchAuraVisible(false); } },
-            { icon: Power, label: 'Exit Game', color: 'text-red-300', onClick: () => { 
-              if (confirm('Are you sure you want to exit the game?')) {
+            { icon: Power, label: 'Leave World', color: 'text-red-300', onClick: () => { 
+              if (confirm('Are you sure you want to leave the world?')) {
                 window.location.href = '/';
               }
               setMonarchAuraVisible(false);

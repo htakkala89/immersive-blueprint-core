@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { 
   Crown, Sword, Zap, Heart, Eye, Brain, 
   Plus, Star, Sparkles, Target, Shield,
-  Wind, Flame, Bolt, Users, X
+  Wind, Flame, Bolt, Users, X, Package
 } from 'lucide-react';
 
 interface CoreStats {
