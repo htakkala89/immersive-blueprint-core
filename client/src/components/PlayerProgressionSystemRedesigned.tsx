@@ -34,6 +34,7 @@ interface ProgressionProps {
   onUpdatePlayer: (updates: Partial<PlayerData>) => void;
   onOpenInventory?: () => void;
   onOpenArmory?: () => void;
+  onOpenRelationshipConstellation?: () => void;
 }
 
 export function PlayerProgressionSystemRedesigned({
@@ -42,7 +43,8 @@ export function PlayerProgressionSystemRedesigned({
   playerData,
   onUpdatePlayer,
   onOpenInventory,
-  onOpenArmory
+  onOpenArmory,
+  onOpenRelationshipConstellation
 }: ProgressionProps) {
   const [activeTab, setActiveTab] = useState<'stats' | 'relationship' | 'equipment'>('stats');
 

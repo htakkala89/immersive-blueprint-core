@@ -34,6 +34,7 @@ interface ProgressionProps {
   onUpdatePlayer: (updates: Partial<PlayerData>) => void;
   onOpenInventory?: () => void;
   onOpenArmory?: () => void;
+  onOpenRelationshipConstellation?: () => void;
 }
 
 export function PlayerProgressionSystem16Fixed({
@@ -42,7 +43,8 @@ export function PlayerProgressionSystem16Fixed({
   playerData,
   onUpdatePlayer,
   onOpenInventory,
-  onOpenArmory
+  onOpenArmory,
+  onOpenRelationshipConstellation
 }: ProgressionProps) {
   const [activeTab, setActiveTab] = useState<'stats' | 'skills' | 'equipment'>('stats');
 
@@ -264,8 +266,9 @@ export function PlayerProgressionSystem16Fixed({
                     className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg p-3 sm:p-4 cursor-pointer transition-all hover:shadow-lg hover:shadow-purple-500/25"
                     onClick={() => {
                       onClose();
-                      // This would trigger the relationship constellation view
-                      console.log('Opening Relationship Constellation...');
+                      if (onOpenRelationshipConstellation) {
+                        onOpenRelationshipConstellation();
+                      }
                     }}
                   >
                     <div className="flex items-center justify-between">
