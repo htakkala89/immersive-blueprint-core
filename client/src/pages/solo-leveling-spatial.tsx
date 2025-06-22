@@ -5426,7 +5426,8 @@ export default function SoloLevelingSpatial() {
             sense: 10
           },
           unspentStatPoints: gameState.unspentStatPoints || 0,
-          unspentSkillPoints: gameState.unspentSkillPoints || 0
+          unspentSkillPoints: gameState.unspentSkillPoints || 0,
+          affection: gameState.affection || 0
         }}
         onUpdatePlayer={(updates) => {
           setGameState(prev => ({
