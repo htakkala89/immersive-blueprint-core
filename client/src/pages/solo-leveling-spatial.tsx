@@ -4198,9 +4198,6 @@ export default function SoloLevelingSpatial() {
           }}
           transition={{ duration: 0.3 }}
         >
-          {/* Notification Bell */}
-          <NotificationBell />
-          
           {/* Narrative Lens Icon */}
           <AnimatePresence>
             {narrativeLensActive && (
