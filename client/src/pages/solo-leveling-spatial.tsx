@@ -5395,6 +5395,11 @@ export default function SoloLevelingSpatial() {
       />
 
       {/* System 16: Player Progression System */}
+      {(() => {
+        console.log('🔍 GameState for PlayerProgression:', gameState);
+        console.log('🔍 GameState.stats specifically:', gameState.stats);
+        return null;
+      })()}
       <PlayerProgressionSystem16
         isVisible={showPlayerProgression}
         onClose={() => setShowPlayerProgression(false)}
@@ -5409,11 +5414,11 @@ export default function SoloLevelingSpatial() {
           mana: gameState.mana,
           maxMana: gameState.maxMana,
           stats: gameState.stats || {
-            strength: 10,
-            agility: 10,
-            vitality: 10,
-            intelligence: 10,
-            sense: 10
+            strength: 25,
+            agility: 20,
+            vitality: 18,
+            intelligence: 15,
+            sense: 12
           },
           unspentStatPoints: gameState.unspentStatPoints || 0,
           unspentSkillPoints: gameState.unspentSkillPoints || 0,
