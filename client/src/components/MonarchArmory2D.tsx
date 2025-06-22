@@ -65,12 +65,21 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
   const [animatingStats, setAnimatingStats] = useState<{[key: string]: boolean}>({});
   const [selectedTab, setSelectedTab] = useState<'stats' | 'character' | 'equipment'>('stats');
 
+  // Baseline stats for the player
+  const baselineStats = {
+    attack: 100,
+    defense: 80,
+    speed: 60,
+    magic: 40,
+    health: 200
+  };
+
   const totalStats = {
-    attack: Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.attack || 0), 0),
-    defense: Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.defense || 0), 0),
-    speed: Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.speed || 0), 0),
-    magic: Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.magic || 0), 0),
-    health: Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.health || 0), 0)
+    attack: baselineStats.attack + Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.attack || 0), 0),
+    defense: baselineStats.defense + Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.defense || 0), 0),
+    speed: baselineStats.speed + Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.speed || 0), 0),
+    magic: baselineStats.magic + Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.magic || 0), 0),
+    health: baselineStats.health + Object.values(equippedItems).reduce((sum, item) => sum + (item.stats.health || 0), 0)
   };
 
   const handleEquipItem = (item: Equipment) => {
