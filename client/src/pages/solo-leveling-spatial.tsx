@@ -245,7 +245,7 @@ export default function SoloLevelingSpatial() {
     maxHealth: 100,
     mana: 50,
     maxMana: 50,
-    affection: 0,
+    affection: 50,
     currentScene: 'hunter_association',
     inventory: [
       {
