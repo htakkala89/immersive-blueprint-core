@@ -4568,7 +4568,7 @@ export default function SoloLevelingSpatial() {
                     <div 
                       ref={conversationScrollRef}
                       className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area"
-                      style={{ height: '200px', maxHeight: '200px' }}
+                      style={{ height: '400px', maxHeight: '400px' }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
