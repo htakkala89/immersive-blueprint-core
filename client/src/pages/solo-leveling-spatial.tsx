@@ -4109,7 +4109,7 @@ export default function SoloLevelingSpatial() {
 
               case 'combat_analytics':
                 // Show raid statistics UI
-                setShowInventory(true);
+                setShowRaidStats(true);
                 handleEnvironmentalInteraction({
                   id: 'raid_statistics_review',
                   action: 'Analyze your raid performance statistics with Cha Hae-In. Reviewing combat data together helps identify improvement areas and strengthens teamwork.',
@@ -4126,7 +4126,7 @@ export default function SoloLevelingSpatial() {
 
               case 'jewelry_counter':
                 // Open item inspection with cycling jewelry
-                setShowInventory(true);
+                setShowItemInspection(true);
                 handleEnvironmentalInteraction({
                   id: 'jewelry_inspection',
                   action: 'Browse exquisite jewelry pieces together. Each item sparkles under the display lights as you and Cha Hae-In admire the craftsmanship.',
@@ -4274,37 +4274,7 @@ export default function SoloLevelingSpatial() {
 
 
 
-              case 'rivers_edge':
-                // Create atmospheric scene with camera pan effect
-                setCinematicMode(true);
-                handleEnvironmentalInteraction({
-                  id: 'riverside_atmosphere',
-                  action: 'Walk to the river\'s edge together. The flowing water and gentle breeze create a peaceful moment of connection as the camera slowly pans across the scenic view.',
-                  name: 'Riverside Walk',
-                  x: 20,
-                  y: 70
-                });
-                setGameState(prev => ({
-                  ...prev,
-                  affection: Math.min(1000, prev.affection + 8)
-                }));
-                console.log('Rivers edge - Cinematic atmospheric scene with camera pan');
-                break;
 
-
-
-              case 'artifact_display':
-                // Open Relationship Constellation interface
-                setShowRelationshipConstellation(true);
-                handleEnvironmentalInteraction({
-                  id: 'artifact_memories',
-                  action: 'Examine the artifacts from your adventures together. Each item holds memories that strengthen your bond and connection.',
-                  name: 'Memory Artifacts',
-                  x: 80,
-                  y: 60
-                });
-                console.log('Artifact display - Opening Relationship Constellation');
-                break;
 
               case 'vanity_table':
                 // Special dialogue with memory triggers
