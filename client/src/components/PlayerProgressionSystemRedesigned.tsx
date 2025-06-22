@@ -198,7 +198,7 @@ export function PlayerProgressionSystemRedesigned({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.2 }}
-                  className="space-y-6"
+                  className="space-y-3 sm:space-y-4"
                 >
                   {/* Available Points */}
                   {playerData.unspentStatPoints > 0 && (

@@ -5399,11 +5399,6 @@ export default function SoloLevelingSpatial() {
       />
 
       {/* System 16: Player Progression System */}
-      {(() => {
-        console.log('🔍 GameState for PlayerProgression:', gameState);
-        console.log('🔍 GameState.stats specifically:', gameState.stats);
-        return null;
-      })()}
       <PlayerProgressionSystem16
         isVisible={showPlayerProgression}
         onClose={() => setShowPlayerProgression(false)}
