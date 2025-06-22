@@ -329,7 +329,7 @@ export default function SoloLevelingSpatial() {
   const [visitHistory, setVisitHistory] = useState<Record<string, number>>({});
   const [chaHaeInPresent, setChaHaeInPresent] = useState(true);
 
-  // Generate automatic greeting when clicking Cha Hae-In's node
+  // Generate automatic greeting in the dialogue interface when clicking Cha Hae-In's node
   const handleChaHaeInInteraction = async () => {
     console.log('Starting Cha Hae-In interaction...');
     
@@ -347,59 +347,106 @@ export default function SoloLevelingSpatial() {
       }]);
     }
     
-    // Generate initial greeting based on location and relationship
-    try {
-      const greetingPrompt = getLocationSpecificGreeting();
-      
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: greetingPrompt,
-          gameState: {
-            ...gameState,
-            playerId: gameState.playerId || 'spatial_player',
-            sessionId: gameState.sessionId || 'spatial_session'
-          },
-          characterState: {
-            location: playerLocation,
-            activity: currentLocationData.chaActivity
-          },
-          context: {
-            timeOfDay,
-            location: playerLocation,
-            isInitialGreeting: true
-          },
-          communicatorMode: true,
-          conversationHistory: []
-        })
-      });
+    // Step 1: Focus Animation (300ms)
+    setIsFocusMode(true);
+    console.log('Focus mode activated');
+    
+    // Step 2: Generate character image if not available
+    if (!emotionalImage) {
+      try {
+        const getEmotionalState = () => {
+          if (gameState.affection >= 80) return 'romantic_anticipation';
+          if (gameState.affection >= 60) return 'warm_welcoming';
+          if (gameState.affection >= 40) return 'professional_friendly';
+          return 'focused_professional';
+        };
 
-      if (response.ok) {
-        const data = await response.json();
+        const emotion = getEmotionalState();
+        const params = new URLSearchParams({
+          emotion,
+          location: playerLocation,
+          timeOfDay
+        });
+
+        const response = await fetch(`/api/chat-scene-image?${params}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
         
-        // Add the greeting message to conversation history
-        setConversationHistory([{
-          id: `greeting_${Date.now()}`,
-          senderName: 'Cha Hae-In',
-          content: data.response,
-          timestamp: new Date(),
-          type: 'cha_hae_in'
-        }]);
-        
-        // Open the Hunter's Communicator with the greeting already displayed
-        setShowCommunicator(true);
-        console.log('Hunter\'s Communicator opened with automatic greeting');
-      } else {
-        console.error('Failed to generate initial greeting');
-        // Fallback to opening communicator normally
-        setShowCommunicator(true);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.imageUrl) {
+            setEmotionalImage(data.imageUrl);
+          }
+        }
+      } catch (error) {
+        console.log('Character image generation skipped');
       }
-    } catch (error) {
-      console.error('Error generating greeting:', error);
-      // Fallback to opening communicator normally
-      setShowCommunicator(true);
     }
+    
+    // Step 3: Generate automatic initial greeting and display in dialogue interface
+    setTimeout(async () => {
+      console.log('Starting dialogue transitions...');
+      setShowLivingPortrait(true);
+      setChaHaeInExpression('recognition');
+      
+      try {
+        // Generate contextual greeting using AI
+        const greetingPrompt = getLocationSpecificGreeting();
+        
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: greetingPrompt,
+            gameState: {
+              ...gameState,
+              playerId: gameState.playerId || 'spatial_player',
+              sessionId: gameState.sessionId || 'spatial_session'
+            },
+            characterState: {
+              location: playerLocation,
+              activity: currentLocationData.chaActivity
+            },
+            context: {
+              timeOfDay,
+              location: playerLocation,
+              isInitialGreeting: true
+            },
+            communicatorMode: false, // Use dialogue mode, not communicator
+            conversationHistory: []
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Display the AI-generated greeting in the dialogue interface
+          setCurrentDialogue(data.response);
+          
+          // Set contextual thought prompts based on location and relationship
+          const contextualPrompts = getLocationSpecificPrompts();
+          setThoughtPrompts(contextualPrompts);
+          
+          console.log('AI-generated greeting displayed in dialogue interface');
+        } else {
+          // Fallback to predefined greeting if AI fails
+          const fallbackDialogue = getFallbackLocationDialogue();
+          setCurrentDialogue(fallbackDialogue.dialogue);
+          setThoughtPrompts(fallbackDialogue.prompts);
+          console.log('Using fallback dialogue due to AI generation failure');
+        }
+      } catch (error) {
+        console.error('Error generating AI greeting:', error);
+        // Fallback to predefined greeting
+        const fallbackDialogue = getFallbackLocationDialogue();
+        setCurrentDialogue(fallbackDialogue.dialogue);
+        setThoughtPrompts(fallbackDialogue.prompts);
+      }
+      
+      setDialogueActive(true);
+      setChaHaeInExpression('welcoming');
+    }, 300);
   };
 
   // Generate location-specific greeting prompt
@@ -436,6 +483,252 @@ export default function SoloLevelingSpatial() {
         return `[INITIAL_GREETING] Jin-Woo approaches you at ${playerLocation}. You're ${currentLocationData.chaActivity}. Greet him naturally.`;
     }
   };
+
+  // Generate contextual thought prompts based on location and relationship
+  const getLocationSpecificPrompts = () => {
+    const affectionLevel = gameState.affection || 0;
+    
+    switch (playerLocation) {
+      case 'chahaein_apartment':
+        if (affectionLevel >= 70) {
+          return [
+            "I'd love to stay with you.",
+            "Your place feels like home.",
+            "What would you like to do together?"
+          ];
+        } else if (affectionLevel >= 40) {
+          return [
+            "Thanks for inviting me in.",
+            "Your apartment is beautiful.",
+            "I hope I'm not intruding."
+          ];
+        } else {
+          return [
+            "I wanted to check on you.",
+            "Sorry if this is sudden.",
+            "Is everything alright?"
+          ];
+        }
+        
+      case 'hunter_association':
+        return [
+          "Just wanted to see you.",
+          "Anything interesting in the report?",
+          "Ready for a break?"
+        ];
+        
+      case 'player_apartment':
+        if (affectionLevel >= 80) {
+          return [
+            "I love having you here.",
+            "This is our place now.",
+            "Want to relax together?"
+          ];
+        } else {
+          return [
+            "I'm glad you like it.",
+            "Would you like something to drink?",
+            "Make yourself at home."
+          ];
+        }
+        
+      case 'hongdae_cafe':
+        return [
+          "Mind if I join you?",
+          "What are you reading?",
+          "How's your coffee?"
+        ];
+        
+      case 'myeongdong_restaurant':
+        return [
+          "The food looks amazing.",
+          "I'd love to join you.",
+          "How's your meal?"
+        ];
+        
+      default:
+        return [
+          "Just wanted to see you.",
+          "How are things going?",
+          "Do you have a moment to talk?"
+        ];
+    }
+  };
+
+  // Premium script formatting parser for in-person dialogue
+  const parseCinematicDialogue = (content: string) => {
+    const parts: Array<{
+      type: 'dialogue' | 'action' | 'thought' | 'narrative';
+      text: string;
+    }> = [];
+
+    let currentIndex = 0;
+    const contentLength = content.length;
+
+    while (currentIndex < contentLength) {
+      const remainingContent = content.slice(currentIndex);
+
+      // Look for dialogue (quoted text)
+      const dialogueMatch = remainingContent.match(/^"([^"]*)"(\s*)/);
+      if (dialogueMatch) {
+        parts.push({
+          type: 'dialogue',
+          text: dialogueMatch[1]
+        });
+        currentIndex += dialogueMatch[0].length;
+        continue;
+      }
+
+      // Look for actions (asterisk text)
+      const actionMatch = remainingContent.match(/^\*([^*]*)\*(\s*)/);
+      if (actionMatch) {
+        parts.push({
+          type: 'action',
+          text: actionMatch[1]
+        });
+        currentIndex += actionMatch[0].length;
+        continue;
+      }
+
+      // Look for thoughts (parenthesis text)
+      const thoughtMatch = remainingContent.match(/^\(([^)]*)\)(\s*)/);
+      if (thoughtMatch) {
+        parts.push({
+          type: 'thought',
+          text: thoughtMatch[1]
+        });
+        currentIndex += thoughtMatch[0].length;
+        continue;
+      }
+
+      // Look for narrative (everything else)
+      const narrativeMatch = remainingContent.match(/^([^"*()]+)/);
+      if (narrativeMatch) {
+        const text = narrativeMatch[1].trim();
+        if (text) {
+          parts.push({
+            type: 'narrative',
+            text: text
+          });
+        }
+        currentIndex += narrativeMatch[0].length;
+        continue;
+      }
+
+      // Skip single character if no matches
+      currentIndex += 1;
+    }
+
+    // Convert parts to JSX with proper styling
+    return parts.map((part, index) => {
+      switch (part.type) {
+        case 'dialogue':
+          return (
+            <div key={index} className="text-white text-lg font-medium leading-relaxed mb-3">
+              "{part.text}"
+            </div>
+          );
+        case 'action':
+          return (
+            <div key={index} className="text-amber-400 italic text-base leading-relaxed mb-3 pl-4">
+              *{part.text}*
+            </div>
+          );
+        case 'thought':
+          return (
+            <div key={index} className="text-gray-400 italic text-sm leading-relaxed mb-3 pl-6 border-l-2 border-gray-600">
+              ({part.text})
+            </div>
+          );
+        case 'narrative':
+          return (
+            <div key={index} className="text-gray-200 text-base leading-relaxed mb-3">
+              {part.text}
+            </div>
+          );
+        default:
+          return null;
+      }
+    });
+  };
+
+  // Fallback dialogue if AI generation fails
+  const getFallbackLocationDialogue = () => {
+    const affectionLevel = gameState.affection || 0;
+    
+    switch (playerLocation) {
+      case 'chahaein_apartment':
+        if (affectionLevel >= 70) {
+          return {
+            dialogue: "Jin-Woo... I'm so glad you came over. I was just making some tea. Would you like to stay for a while?",
+            prompts: [
+              "I'd love to stay with you.",
+              "Tea sounds perfect.",
+              "How are you feeling tonight?"
+            ]
+          };
+        } else if (affectionLevel >= 40) {
+          return {
+            dialogue: "Oh, Jin-Woo! I wasn't expecting you. Please, come in. Make yourself comfortable.",
+            prompts: [
+              "Thanks for inviting me in.",
+              "Your place is beautiful.",
+              "I hope I'm not intruding."
+            ]
+          };
+        } else {
+          return {
+            dialogue: "Jin-Woo? What brings you to my apartment? Is everything alright?",
+            prompts: [
+              "I wanted to check on you.",
+              "Sorry if this is sudden.",
+              "We need to talk about something."
+            ]
+          };
+        }
+        
+      case 'hunter_association':
+        return {
+          dialogue: "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?",
+          prompts: [
+            "Just wanted to see you.",
+            "Anything interesting in the report?", 
+            "Ready for a break?"
+          ]
+        };
+        
+      case 'player_apartment':
+        if (affectionLevel >= 80) {
+          return {
+            dialogue: "Your place feels like home now, Jin-Woo. I love spending time here with you.",
+            prompts: [
+              "I love having you here.",
+              "This is our place now.",
+              "Want to relax together?"
+            ]
+          };
+        } else {
+          return {
+            dialogue: "Your apartment has such a nice atmosphere, Jin-Woo. Thank you for having me over.",
+            prompts: [
+              "I'm glad you like it.",
+              "Would you like something to drink?",
+              "Make yourself at home."
+            ]
+          };
+        }
+        
+      default:
+        return {
+          dialogue: "Jin-Woo, what brings you here? Is there something you need?",
+          prompts: [
+            "Just wanted to see you.",
+            "How are things going?",
+            "Do you have a moment to talk?"
+          ]
+        };
+    }
+  };;
 
   const exitFocusMode = () => {
     setIsFocusMode(false);
@@ -1305,7 +1598,10 @@ export default function SoloLevelingSpatial() {
       });
       
       const data = await response.json();
-      setCurrentDialogue(data.response);
+      
+      // Apply premium script formatting to the response
+      const formattedResponse = parseCinematicDialogue(data.response);
+      setCurrentDialogue(formattedResponse);
       
       // Track episode event for player chatting with Cha Hae-In
       fetch('/api/episode-events', {
