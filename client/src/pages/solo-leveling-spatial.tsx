@@ -2561,18 +2561,17 @@ export default function SoloLevelingSpatial() {
       
 
 
-      {/* Monarch's Aura - Shadow Crown */}
+      {/* Monarch's Aura - Mobile-Responsive Shadow Crown */}
       <motion.button
-        className="fixed top-6 right-6 w-11 h-11 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden"
+        className="fixed top-4 sm:top-6 right-4 sm:right-6 w-12 h-12 sm:w-11 sm:h-11 rounded-full flex items-center justify-center z-[9999] cursor-pointer shadow-2xl overflow-hidden"
         style={{ 
           position: 'fixed',
-          top: '24px',
-          right: '24px',
           zIndex: 9999,
           pointerEvents: 'auto',
           background: 'radial-gradient(circle at 30% 30%, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.8) 30%, rgba(30, 27, 75, 0.9) 70%, rgba(0, 0, 0, 0.95) 100%)',
           border: '2px solid rgba(147, 51, 234, 0.6)',
-          boxShadow: '0 0 30px rgba(147, 51, 234, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3)'
+          boxShadow: '0 0 30px rgba(147, 51, 234, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3)',
+          touchAction: 'manipulation'
         }}
         whileHover={{ 
           scale: 1.1,
@@ -4457,9 +4456,9 @@ export default function SoloLevelingSpatial() {
       
 
 
-      {/* Monarch's Aura - Compact Clean Menu */}
+      {/* Monarch's Aura - Mobile-Responsive Menu */}
       {monarchAuraVisible && (
-        <div className="fixed top-20 right-6 w-40 bg-black/20 backdrop-blur-xl border border-white/30 rounded-lg p-2 z-[9998] shadow-2xl" 
+        <div className="fixed top-16 sm:top-20 right-2 sm:right-6 w-44 sm:w-40 bg-black/20 backdrop-blur-xl border border-white/30 rounded-lg p-2 z-[9998] shadow-2xl" 
              style={{ 
                background: 'rgba(255, 255, 255, 0.08)', 
                backdropFilter: 'blur(40px) saturate(180%)', 
@@ -4519,11 +4518,11 @@ export default function SoloLevelingSpatial() {
           ].map((item, index) => (
             <button
               key={item.label}
-              className="w-full flex items-center gap-2 p-2 rounded text-white hover:bg-white/10 transition-all mb-1"
+              className="w-full flex items-center gap-2 p-2.5 sm:p-2 rounded text-white hover:bg-white/10 transition-all mb-1 min-h-[44px] sm:min-h-[36px]"
               onClick={item.onClick}
             >
-              <item.icon className={`w-4 h-4 ${item.color}`} />
-              <span className="text-xs font-medium">{item.label}</span>
+              <item.icon className={`w-4 h-4 sm:w-4 sm:h-4 ${item.color}`} />
+              <span className="text-xs font-medium truncate">{item.label}</span>
             </button>
           ))}
         </div>
@@ -4537,7 +4536,7 @@ export default function SoloLevelingSpatial() {
         />
       )}
 
-      {/* System 15: Notification Banners - Repositioned to avoid Monarch's Aura button */}
+      {/* System 15: Mobile-Optimized Notification Banners */}
       <AnimatePresence>
         {notifications.map((notification, index) => (
           <motion.div
@@ -4545,9 +4544,9 @@ export default function SoloLevelingSpatial() {
             initial={{ opacity: 0, x: 300 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 300 }}
-            className="fixed top-20 right-4 z-[9998] w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-4 mb-2"
+            className="fixed top-16 sm:top-20 right-2 sm:right-4 z-[9998] w-72 sm:w-80 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl p-3 sm:p-4 mb-2"
             style={{ 
-              top: `${80 + (index * 80)}px`,
+              top: `${64 + (index * 70)}px`,
               zIndex: 9998 - index 
             }}
             transition={{ duration: 0.3 }}
