@@ -156,8 +156,8 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 bg-slate-800 border-b border-purple-500/20">
+            {/* Header with Close Button */}
+            <div className="flex items-center justify-between p-4 bg-slate-800 border-b border-purple-500/20 relative">
               <div className="flex items-center gap-3">
                 <Crown className="w-6 h-6 text-purple-400" />
                 <div>
@@ -165,11 +165,14 @@ export function MonarchArmory2D({ isVisible, onClose }: MonarchArmory2DProps) {
                   <p className="text-slate-400 text-sm">Equipment Management</p>
                 </div>
               </div>
+              
+              {/* Close Button - Fixed positioning */}
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-slate-700 rounded-lg transition-colors z-10 bg-slate-800 border border-slate-600"
+                className="absolute top-4 right-4 p-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors z-20 shadow-lg"
+                aria-label="Close Armory"
               >
-                <X className="w-6 h-6 text-white" />
+                <X className="w-5 h-5 text-white" />
               </button>
             </div>
 
