@@ -5453,10 +5453,11 @@ export default function SoloLevelingSpatial() {
                 </div>
               </motion.div>
               
-              {/* Dialogue Text - Enhanced Glassmorphism */}
+              {/* Dialogue Text - Enhanced Glassmorphism with fixed height */}
               <motion.div
-                className="rounded-lg p-4 flex-1 mb-3 flex flex-col"
+                className="rounded-lg p-4 mb-3 flex flex-col overflow-hidden"
                 style={{
+                  height: 'calc(100% - 200px)', // Reserve space for input and prompts
                   backdropFilter: 'blur(16px) saturate(180%)',
                   background: `
                     linear-gradient(135deg, 
@@ -5634,7 +5635,7 @@ export default function SoloLevelingSpatial() {
                     <div 
                       ref={conversationScrollRef}
                       className="space-y-3 overflow-y-auto scroll-smooth mobile-conversation-area scrollbar-hide"
-                      style={{ height: '400px', maxHeight: '400px' }}
+                      style={{ height: '280px', maxHeight: '280px' }}
                     >
                       {conversationHistory.map((entry, index) => (
                         <motion.div
