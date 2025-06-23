@@ -43,6 +43,55 @@ const openai = new OpenAI({
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+// Enhanced contextual fallback response system
+function generateContextualFallbackResponse(message: string, context: any, gameState: any): string {
+  const userMessage = message.toLowerCase();
+  const location = context?.location || 'hunter_association';
+  const affection = gameState?.affection || 50;
+  
+  // Analyze message content for appropriate response
+  if (userMessage.includes('how are you') || userMessage.includes('how\'s') || userMessage.includes('feeling')) {
+    if (location === 'hunter_association') {
+      return `*adjusts her training gear with a professional smile*\n\nI'm doing well, thank you for asking. Just finished reviewing some mission reports. The Association keeps us busy, but it's rewarding work.\n\n*glances at you with a hint of warmth*\n\nHow about you? Everything going smoothly?`;
+    } else if (location === 'hongdae_cafe') {
+      return `*takes a sip of her coffee, looking relaxed*\n\nI'm feeling quite good actually. It's nice to have a break from all the hunter duties. This place has such a cozy atmosphere.\n\n*smiles softly*\n\nThanks for asking. How are you finding the coffee here?`;
+    } else {
+      return `*looks at you with gentle eyes*\n\nI'm doing well, thank you. Being here with you always lifts my spirits.\n\n*her expression softens*\n\nWhat about you? How has your day been?`;
+    }
+  }
+  
+  if (userMessage.includes('beautiful') || userMessage.includes('pretty') || userMessage.includes('gorgeous')) {
+    if (affection > 300) {
+      return `*blushes deeply, looking away for a moment*\n\nYou always know how to make me feel special... Thank you.\n\n*meets your eyes with a shy smile*\n\nThat means more to me than you know.`;
+    } else {
+      return `*a soft blush crosses her cheeks*\n\nThat's... very kind of you to say. Thank you.\n\n*adjusts her hair nervously*\n\nYou're quite charming yourself.`;
+    }
+  }
+  
+  if (userMessage.includes('training') || userMessage.includes('practice') || userMessage.includes('skill')) {
+    return `*her eyes light up with professional interest*\n\nTraining is essential for any hunter. I believe in constant improvement and pushing our limits safely.\n\n*stretches slightly*\n\nWould you like to discuss techniques, or perhaps train together sometime?`;
+  }
+  
+  if (userMessage.includes('mission') || userMessage.includes('raid') || userMessage.includes('dungeon')) {
+    return `*adopts a more serious expression*\n\nMissions require careful preparation and teamwork. Every raid teaches us something new about ourselves and our capabilities.\n\n*looks at you thoughtfully*\n\nAre you thinking about taking on more challenging gates?`;
+  }
+  
+  if (userMessage.includes('coffee') || userMessage.includes('drink') || userMessage.includes('cafe')) {
+    return `*smiles warmly*\n\nI do enjoy a good cup of coffee. It helps me focus and provides a nice break from intense training.\n\n*gestures to the surroundings*\n\nPlaces like this remind me there's more to life than just hunting.`;
+  }
+  
+  if (userMessage.includes('hello') || userMessage.includes('hi') || userMessage.includes('hey')) {
+    if (location === 'hunter_association') {
+      return `*looks up from her work with a professional smile*\n\nHello there. Good to see you at the Association today.\n\n*her expression warms slightly*\n\nWhat brings you by?`;
+    } else {
+      return `*greets you with a warm smile*\n\nHello! It's lovely to see you.\n\n*her eyes sparkle with genuine happiness*\n\nI'm glad you're here.`;
+    }
+  }
+  
+  // Default thoughtful response
+  return `*considers your words carefully*\n\nThat's an interesting point. I appreciate how you think about things.\n\n*looks at you with genuine attention*\n\nTell me more about what's on your mind.`;
+}
+
 // Google Vertex AI text generation function using same credentials as Imagen
 async function generateWithVertexAI(prompt: string): Promise<string> {
   try {
@@ -2078,8 +2127,14 @@ RESPONSE INSTRUCTIONS:
           console.log('✅ Vertex AI text generation successful');
         } catch (vertexError: any) {
           console.log('⚠️ Vertex AI failed, falling back to Gemini API:', vertexError.message);
-          const result = await model.generateContent(fullPrompt);
-          rawResponse = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+          try {
+            const result = await model.generateContent(fullPrompt);
+            rawResponse = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+          } catch (geminiError: any) {
+            console.log('⚠️ Both AI services failed, using enhanced fallback dialogue');
+            // Enhanced contextual fallback based on user message and location
+            rawResponse = generateContextualFallbackResponse(message, context, gameState);
+          }
         }
         
         // Apply cinematic formatting for in-person dialogue interface
@@ -2260,7 +2315,25 @@ RESPONSE INSTRUCTIONS:
       });
     } catch (error) {
       console.error("Chat error:", error);
-      res.status(500).json({ error: "Failed to process chat" });
+      
+      // As final fallback, provide a contextual response
+      try {
+        console.log('⚠️ Using emergency fallback dialogue system');
+        const fallbackResponse = generateContextualFallbackResponse(message, context, gameState);
+        const formattedResponse = ensureCinematicFormatting(fallbackResponse);
+        
+        res.json({ 
+          response: formattedResponse, 
+          audioUrl: null,
+          expression: 'welcoming',
+          thoughtPrompts: [],
+          showAffectionHeart: false,
+          gameState: gameState
+        });
+      } catch (fallbackError) {
+        console.error("Fallback system failed:", fallbackError);
+        res.status(500).json({ error: "Failed to process chat" });
+      }
     }
   });
 
