@@ -224,8 +224,8 @@ const LOCATION_NODES: Record<string, InteractiveNode[]> = {
     }
   ],
 
-  // Gangnam District - Luxury Department Store
-  luxury_department_store: [
+  // Gangnam District - Luxury Shopping Mall
+  luxury_mall: [
     {
       id: 'jewelry_counter',
       label: 'Jewelry Counter',
