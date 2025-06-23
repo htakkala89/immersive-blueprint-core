@@ -132,38 +132,19 @@ async function generateWithVertexAI(prompt: string): Promise<string> {
 
     const { access_token } = await tokenResponse.json();
     
-    // Use Vertex AI Gemini Pro endpoint - standard generateContent
+    // Use correct Vertex AI text generation endpoint format
     const location = 'us-central1';
-    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-1.5-flash:generateContent`;
+    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/text-bison:predict`;
     
     const requestBody = {
-      contents: [{
-        role: 'user',
-        parts: [{ text: prompt }]
+      instances: [{
+        prompt: prompt
       }],
-      safetySettings: [
-        {
-          category: 'HARM_CATEGORY_HARASSMENT',
-          threshold: 'BLOCK_NONE'
-        },
-        {
-          category: 'HARM_CATEGORY_HATE_SPEECH',
-          threshold: 'BLOCK_NONE'
-        },
-        {
-          category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-          threshold: 'BLOCK_NONE'
-        },
-        {
-          category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-          threshold: 'BLOCK_NONE'
-        }
-      ],
-      generationConfig: {
+      parameters: {
         temperature: 0.8,
+        maxOutputTokens: 1024,
         topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 1024
+        topP: 0.95
       }
     };
 
@@ -183,13 +164,13 @@ async function generateWithVertexAI(prompt: string): Promise<string> {
     }
 
     const data = await response.json();
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const generatedText = data.predictions?.[0]?.content || data.predictions?.[0]?.text || data.predictions?.[0];
     
     if (!generatedText) {
       throw new Error('No text generated from Vertex AI');
     }
 
-    return generatedText;
+    return typeof generatedText === 'string' ? generatedText : generatedText.toString();
   } catch (error) {
     console.error('Vertex AI generation error:', error);
     throw error;
