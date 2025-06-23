@@ -66,6 +66,11 @@ import { AutoWeatherSystem, DynamicWeatherSystem } from '@/components/DynamicWea
 
 // Premium script formatting parser for in-person dialogue display
 const parseCinematicText = (content: string) => {
+  // Handle undefined or null content
+  if (!content || typeof content !== 'string') {
+    return [];
+  }
+
   const parts: Array<{
     type: 'dialogue' | 'action' | 'thought' | 'narrative';
     text: string;
@@ -187,6 +192,7 @@ interface GameState {
   maxExperience?: number;
   apartmentTier?: number;
   playerId?: string;
+  sessionId?: string;
   activeQuests?: any[];
   completedQuests?: any[];
   intelligence?: number;
@@ -619,7 +625,7 @@ export default function SoloLevelingSpatial() {
             gameState: {
               ...gameState,
               playerId: gameState.playerId || 'spatial_player',
-              sessionId: gameState.sessionId || 'spatial_session'
+              sessionId: (gameState as any).sessionId || 'spatial_session'
             },
             characterState: {
               location: playerLocation,
@@ -1152,17 +1158,17 @@ export default function SoloLevelingSpatial() {
           return {
             ...item,
             stats: {
-              attack: (item.stats.attack || 0) * 1.2,
-              defense: (item.stats.defense || 0) * 1.2,
-              speed: (item.stats.speed || 0) * 1.1,
-              mana: (item.stats.mana || 0) * 1.15
+              attack: Math.round(((item.stats as any).attack || 0) * 1.2),
+              defense: Math.round(((item.stats as any).defense || 0) * 1.2),
+              speed: Math.round(((item.stats as any).speed || 0) * 1.1),
+              mana: Math.round(((item.stats as any).mana || 0) * 1.15)
             },
             name: item.name + ' +1'
-          };
+          } as any;
         }
       }
       return item;
-    }));
+    }) as any);
   };
 
   const handleGiftToChaHaeIn = (itemId: string) => {
@@ -2843,7 +2849,7 @@ export default function SoloLevelingSpatial() {
   useEffect(() => {
     if (selectedRole === 'player' && loadedProfileId) {
       // Only save on level up and major milestones to reduce notifications
-      if (gameState.level > 1 || gameState.apartmentTier > 1) {
+      if (gameState.level > 1 || (gameState.apartmentTier ?? 1) > 1) {
         autoSaveProgress();
       }
     }
