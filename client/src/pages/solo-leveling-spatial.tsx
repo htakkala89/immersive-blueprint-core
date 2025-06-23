@@ -3544,7 +3544,7 @@ export default function SoloLevelingSpatial() {
             // Handle different node types with specific logic
             console.log('🔍 SWITCH STATEMENT - Processing nodeId:', nodeId);
             console.log('🗺️ Current location:', playerLocation);
-            console.log('📍 Available nodes for location:', LocationInteractiveNodes[playerLocation]?.map(n => n.id) || 'No nodes found');
+            console.log('📍 Available nodes for location:', 'checking nodes...');
             
             // Priority handler for bedroom intimate activities
             if (nodeId === 'bed' && playerLocation === 'player_apartment') {
