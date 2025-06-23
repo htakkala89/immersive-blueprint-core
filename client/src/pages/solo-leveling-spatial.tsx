@@ -6586,6 +6586,97 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
+      {/* Menu Dialog for Restaurant/Cafe Interactions */}
+      {showMenuDialog && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setShowMenuDialog(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border border-purple-400/30 rounded-2xl max-w-lg w-full mx-4 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <h3 className="text-white text-xl font-semibold mb-4">
+                {menuCategory === 'drinks' ? 'Artisan Drinks Menu' : 'Restaurant Menu'}
+              </h3>
+              
+              {menuCategory === 'drinks' ? (
+                <div className="space-y-4">
+                  <div className="text-purple-200 text-sm mb-6">
+                    Browse specialty drinks together with Cha Hae-In
+                  </div>
+                  <div className="space-y-3">
+                    <div className="bg-purple-500/20 rounded-lg p-3 text-left">
+                      <div className="font-semibold text-purple-200">Signature Blend Coffee</div>
+                      <div className="text-purple-300 text-sm">₩12,000 - House specialty with notes of chocolate</div>
+                    </div>
+                    <div className="bg-purple-500/20 rounded-lg p-3 text-left">
+                      <div className="font-semibold text-purple-200">Artisan Tea Selection</div>
+                      <div className="text-purple-300 text-sm">₩8,000 - Premium loose leaf teas</div>
+                    </div>
+                    <div className="bg-purple-500/20 rounded-lg p-3 text-left">
+                      <div className="font-semibold text-purple-200">Seasonal Fruit Smoothie</div>
+                      <div className="text-purple-300 text-sm">₩15,000 - Fresh seasonal ingredients</div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="text-purple-200 text-sm mb-6">
+                    Elegant menu selection for your dinner date
+                  </div>
+                  <div className="space-y-3">
+                    <div className="bg-purple-500/20 rounded-lg p-3 text-left">
+                      <div className="font-semibold text-purple-200">Chef's Tasting Menu</div>
+                      <div className="text-purple-300 text-sm">₩80,000 - Seven-course culinary journey</div>
+                    </div>
+                    <div className="bg-purple-500/20 rounded-lg p-3 text-left">
+                      <div className="font-semibold text-purple-200">Premium Wagyu Set</div>
+                      <div className="text-purple-300 text-sm">₩120,000 - A5 grade wagyu with wine pairing</div>
+                    </div>
+                    <div className="bg-purple-500/20 rounded-lg p-3 text-left">
+                      <div className="font-semibold text-purple-200">Seasonal Seafood</div>
+                      <div className="text-purple-300 text-sm">₩65,000 - Fresh catch with seasonal vegetables</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setShowMenuDialog(false)}
+                  className="flex-1 py-2 px-4 bg-slate-600/50 hover:bg-slate-600/70 rounded-lg text-white transition-colors"
+                >
+                  Close Menu
+                </button>
+                <button
+                  onClick={() => {
+                    setShowMenuDialog(false);
+                    handleEnvironmentalInteraction({
+                      id: 'menu_selection',
+                      action: `You and Cha Hae-In review the ${menuCategory === 'drinks' ? 'artisan drinks' : 'elegant menu'} together. "Everything looks wonderful," she says with appreciation. "You have excellent taste in places." The shared experience brings you closer together.`,
+                      name: menuCategory === 'drinks' ? 'Drinks Selection' : 'Menu Selection',
+                      x: 50,
+                      y: 50
+                    });
+                  }}
+                  className="flex-1 py-2 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white transition-colors"
+                >
+                  {menuCategory === 'drinks' ? 'Share Drinks' : 'Order Together'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
       <NSeoulTowerModal
         isVisible={showNSeoulTower}
         onClose={() => setShowNSeoulTower(false)}

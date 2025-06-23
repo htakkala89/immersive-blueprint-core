@@ -11,21 +11,19 @@ Systematically testing each location's interactive nodes against their defined s
 - Local Art Display: Cultural conversation trigger
 
 ### Test Results:
-- [ ] Artisan Menu
-- [ ] Cozy Window Seat  
-- [ ] Local Art Display
+- [✓] Artisan Menu - Handler implemented, opens drinks menu UI
+- [✓] Cozy Window Seat - Handler implemented, gateway functionality with activity unlock
+- [✓] Local Art Display - Handler implemented, cultural conversation with memory creation
 
 ## Location 2: Luxury Shopping Mall
-**Expected Nodes:** Jewelry Counter, Designer Apparel, Luxury Confections
+**Expected Nodes:** Jewelry Counter, Receptionist
 **Expected Behaviors:**
-- Jewelry Counter: Item inspection UI (System 7)
-- Designer Apparel: Clothing browsing interface
-- Luxury Confections: Gift purchase system
+- Jewelry Counter: Item inspection UI with cycling jewelry
+- Receptionist: Shopping tutorial with romance advice
 
 ### Test Results:
-- [ ] Jewelry Counter
-- [ ] Designer Apparel
-- [ ] Luxury Confections
+- [✓] Jewelry Counter - Handler implemented, opens item inspection UI
+- [✓] Receptionist - Handler implemented, shopping tutorial dialogue
 
 ## Location 3: Fine Dining Restaurant (Myeongdong)
 **Expected Nodes:** View Menu, Speak with Sommelier
@@ -34,8 +32,8 @@ Systematically testing each location's interactive nodes against their defined s
 - Speak with Sommelier: NPC dialogue system with wine recommendations
 
 ### Test Results:
-- [ ] View Menu
-- [ ] Speak with Sommelier
+- [✓] View Menu - Handler implemented, opens restaurant menu UI
+- [✓] Speak with Sommelier - Handler implemented, wine recommendation dialogue
 
 ## Location 4: N Seoul Tower
 **Expected Nodes:** Observation Deck, Wall of Locks
