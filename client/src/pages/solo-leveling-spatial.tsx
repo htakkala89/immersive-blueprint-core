@@ -644,21 +644,37 @@ export default function SoloLevelingSpatial() {
         if (response.ok) {
           const data = await response.json();
           
-          // Display the AI-generated greeting in the dialogue interface
-          setCurrentDialogue(data.response);
-          
-          // Add the initial greeting to conversation history so it appears in the dialogue area
-          setConversationHistory([{
-            type: 'cha_hae_in',
-            text: data.response,
-            timestamp: new Date()
-          }]);
-          
-          // Set contextual thought prompts based on location and relationship
-          const contextualPrompts = getLocationSpecificPrompts();
-          setThoughtPrompts(contextualPrompts);
-          
-          console.log('AI-generated greeting displayed in dialogue interface');
+          // Check if we have a valid response
+          if (data.response && data.response.trim().length > 0) {
+            // Display the AI-generated greeting in the dialogue interface
+            setCurrentDialogue(data.response);
+            
+            // Add the initial greeting to conversation history so it appears in the dialogue area
+            setConversationHistory([{
+              type: 'cha_hae_in',
+              text: data.response,
+              timestamp: new Date()
+            }]);
+            
+            // Set contextual thought prompts based on location and relationship
+            const contextualPrompts = getLocationSpecificPrompts();
+            setThoughtPrompts(contextualPrompts);
+            
+            console.log('AI-generated greeting displayed in dialogue interface');
+          } else {
+            // Use fallback if response is empty or invalid
+            const fallbackDialogue = getFallbackLocationDialogue();
+            setCurrentDialogue(fallbackDialogue.dialogue);
+            
+            setConversationHistory([{
+              type: 'cha_hae_in',
+              text: fallbackDialogue.dialogue,
+              timestamp: new Date()
+            }]);
+            
+            setThoughtPrompts(fallbackDialogue.prompts);
+            console.log('Using fallback dialogue due to empty AI response');
+          }
         } else {
           // Fallback to predefined greeting if AI fails
           const fallbackDialogue = getFallbackLocationDialogue();
@@ -805,6 +821,8 @@ export default function SoloLevelingSpatial() {
 
 
 
+
+
   // Fallback dialogue if AI generation fails
   const getFallbackLocationDialogue = () => {
     const affectionLevel = gameState.affection || 0;
@@ -842,7 +860,7 @@ export default function SoloLevelingSpatial() {
         
       case 'hunter_association':
         return {
-          dialogue: "Oh, Jin-Woo. Sorry, I was just finishing up this report on the Jeju Island aftermath. What's on your mind?",
+          dialogue: "Jin-Woo! I was just finishing some paperwork. It's good to see you. What brings you here today?",
           prompts: [
             "Just wanted to see you.",
             "Anything interesting in the report?", 
@@ -1946,6 +1964,34 @@ export default function SoloLevelingSpatial() {
           }
         })
       });
+      
+      if (!response.ok) {
+        // Use fallback dialogue when API fails
+        const fallbackResponse = getContextualFallbackResponse(message, playerLocation, gameState.affection || 0);
+        
+        // Add fallback response to conversation
+        setConversationHistory(prev => [...prev, {
+          type: 'cha_hae_in',
+          text: fallbackResponse.dialogue,
+          timestamp: new Date()
+        }]);
+        
+        // Set the dialogue display
+        setCurrentDialogue(fallbackResponse.dialogue);
+        
+        // Update affection slightly for any interaction
+        const affectionGain = 2;
+        setGameState(prev => ({
+          ...prev,
+          affection: Math.min(1000, (prev.affection || 0) + affectionGain)
+        }));
+        
+        // Trigger small affection gain animation
+        triggerAffectionGain(affectionGain);
+        
+        console.log('Using fallback response due to API failure');
+        return;
+      }
       
       const data = await response.json();
       
