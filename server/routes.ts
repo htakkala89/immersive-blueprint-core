@@ -11,6 +11,7 @@ import { log } from "./vite";
 import { z } from "zod";
 import OpenAI from "openai";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import jwt from "jsonwebtoken";
 import { narrativeEngine, type StoryMemory } from "./narrativeEngine";
 import { artisticPromptEngine } from "./artisticPromptEngine";
 import { qualityEnhancer } from "./qualityEnhancer";
@@ -41,6 +42,110 @@ const openai = new OpenAI({
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
+// Google Vertex AI text generation function using same credentials as Imagen
+async function generateWithVertexAI(prompt: string): Promise<string> {
+  try {
+    const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || '{}');
+    const projectId = credentials.project_id;
+    
+    if (!projectId) {
+      throw new Error('Google Cloud project ID not found');
+    }
+
+    // Get JWT token using same method as Imagen
+    const now = Math.floor(Date.now() / 1000);
+    const tokenPayload = {
+      iss: credentials.client_email,
+      scope: 'https://www.googleapis.com/auth/cloud-platform',
+      aud: 'https://oauth2.googleapis.com/token',
+      iat: now,
+      exp: now + 3600
+    };
+
+    // Use the imported jwt module
+    let privateKey = credentials.private_key;
+    if (privateKey && !privateKey.includes('\\n')) {
+      privateKey = privateKey.replace(/\\n/g, '\n');
+    }
+
+    const token = jwt.sign(tokenPayload, privateKey, { algorithm: 'RS256' });
+
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${token}`
+    });
+
+    if (!tokenResponse.ok) {
+      throw new Error('Failed to get access token');
+    }
+
+    const { access_token } = await tokenResponse.json();
+    
+    // Use Vertex AI Gemini Pro endpoint
+    const location = 'us-central1';
+    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-1.5-flash-002:generateContent`;
+    
+    const requestBody = {
+      contents: [{
+        role: 'user',
+        parts: [{ text: prompt }]
+      }],
+      safetySettings: [
+        {
+          category: 'HARM_CATEGORY_HARASSMENT',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_HATE_SPEECH',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+          threshold: 'BLOCK_NONE'
+        }
+      ],
+      generationConfig: {
+        temperature: 0.8,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024
+      }
+    };
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Vertex AI error:', response.status, errorText);
+      throw new Error(`Vertex AI request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!generatedText) {
+      throw new Error('No text generated from Vertex AI');
+    }
+
+    return generatedText;
+  } catch (error) {
+    console.error('Vertex AI generation error:', error);
+    throw error;
+  }
+}
 
 // Conversation analytics functions for enhanced contextual understanding
 function analyzeTone(response: string): string {
@@ -1965,8 +2070,17 @@ RESPONSE INSTRUCTIONS:
 - Keep response conversational and under 100 words
 - Express growing feelings if affection is high enough`;
         
-        const result = await model.generateContent(fullPrompt);
-        let rawResponse = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+        // Try Vertex AI first, fallback to direct Gemini API if needed
+        let rawResponse;
+        try {
+          console.log('🎨 Using Vertex AI for text generation...');
+          rawResponse = await generateWithVertexAI(fullPrompt);
+          console.log('✅ Vertex AI text generation successful');
+        } catch (vertexError: any) {
+          console.log('⚠️ Vertex AI failed, falling back to Gemini API:', vertexError.message);
+          const result = await model.generateContent(fullPrompt);
+          rawResponse = result.response.text().replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+        }
         
         // Apply cinematic formatting for in-person dialogue interface
         response = ensureCinematicFormatting(rawResponse);
