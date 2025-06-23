@@ -1935,6 +1935,93 @@ export default function SoloLevelingSpatial() {
   console.log('  Evening:', debugGetLocation('evening'));
   console.log('  Night:', debugGetLocation('night'));
 
+  // Contextual fallback response for chat messages when API fails
+  const getContextualFallbackResponse = (userMessage: string, location: string, affection: number) => {
+    const messageLower = userMessage.toLowerCase();
+    
+    // Common conversation starters
+    if (messageLower.includes('hello') || messageLower.includes('hi') || messageLower.includes('hey')) {
+      return {
+        dialogue: affection >= 70 
+          ? "Hi Jin-Woo! *smiles warmly* It's always good to see you."
+          : affection >= 40
+          ? "Hello Jin-Woo. How are you doing today?"
+          : "Oh, hello. Is there something you need?"
+      };
+    }
+    
+    // Questions about how she's doing
+    if (messageLower.includes('how are you') || messageLower.includes('how\'s it going')) {
+      switch (location) {
+        case 'hunter_association':
+          return {
+            dialogue: "I'm doing well, just working through some reports. *looks up from paperwork* How about you?"
+          };
+        case 'hongdae_cafe':
+          return {
+            dialogue: "I'm enjoying this peaceful moment. *takes a sip of coffee* It's nice to have a break from everything."
+          };
+        default:
+          return {
+            dialogue: affection >= 60 
+              ? "I'm doing well, especially now that you're here. *soft smile*"
+              : "I'm fine, thank you for asking."
+          };
+      }
+    }
+    
+    // Compliments
+    if (messageLower.includes('beautiful') || messageLower.includes('pretty') || messageLower.includes('gorgeous')) {
+      return {
+        dialogue: affection >= 50 
+          ? "*blushes softly* Thank you, Jin-Woo. That's very sweet of you to say."
+          : "*looks slightly surprised* Oh... thank you. I appreciate that."
+      };
+    }
+    
+    // Romantic expressions
+    if (messageLower.includes('love') || messageLower.includes('feelings')) {
+      return {
+        dialogue: affection >= 80 
+          ? "*heart skips a beat* Jin-Woo... I've been hoping you'd say something like that. *moves closer*"
+          : affection >= 60
+          ? "*looks into your eyes* I... I've been thinking about us too. *gentle smile*"
+          : "*surprised but not uncomfortable* That's... quite direct. I need some time to think about this."
+      };
+    }
+    
+    // Work-related topics
+    if (messageLower.includes('work') || messageLower.includes('mission') || messageLower.includes('raid')) {
+      return {
+        dialogue: location === 'hunter_association' 
+          ? "There's always something happening in the Hunter world. *gestures to paperwork* But I'm glad you stopped by."
+          : "Even when we're not at the Association, work seems to follow us around. *light laugh* But right now, I'd rather focus on this moment."
+      };
+    }
+    
+    // Default contextual responses based on location
+    switch (location) {
+      case 'hunter_association':
+        return {
+          dialogue: "I was just thinking about that myself. *sets down pen* It's nice to have someone to talk to about these things."
+        };
+      case 'hongdae_cafe':
+        return {
+          dialogue: "That's an interesting perspective. *leans forward slightly* I'd like to hear more about what you think."
+        };
+      case 'chahaein_apartment':
+        return {
+          dialogue: affection >= 70 
+            ? "You always know just what to say. *smiles warmly* I'm glad you're here with me."
+            : "I appreciate you sharing that with me. *nods thoughtfully*"
+        };
+      default:
+        return {
+          dialogue: "That's something worth thinking about. *looks at you with interest* What made you bring that up?"
+        };
+    }
+  };
+
   const handlePlayerResponse = async (message: string) => {
     if (!message.trim()) return;
     
