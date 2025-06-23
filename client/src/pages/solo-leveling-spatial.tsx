@@ -889,6 +889,26 @@ export default function SoloLevelingSpatial() {
           };
         }
         
+      case 'hongdae_cafe':
+        return {
+          dialogue: "*looks up from her latte with a warm smile*\n\nJin-Woo! What a pleasant surprise. I was just enjoying some coffee and reading. \n\n*gestures to the empty chair across from her*\n\nWould you like to join me? The atmosphere here is perfect for a good conversation.",
+          prompts: [
+            "Mind if I join you?",
+            "What are you reading?",
+            "How's your coffee?"
+          ]
+        };
+        
+      case 'myeongdong_restaurant':
+        return {
+          dialogue: "*notices you entering the restaurant*\n\nJin-Woo! I didn't expect to see you here. The food is incredible - their chef really knows what they're doing.\n\n*smiles invitingly*\n\nAre you here for dinner too?",
+          prompts: [
+            "The food looks amazing.",
+            "I'd love to join you.",
+            "How's your meal?"
+          ]
+        };
+        
       default:
         return {
           dialogue: "Jin-Woo, what brings you here? Is there something you need?",
