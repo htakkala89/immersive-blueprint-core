@@ -543,6 +543,10 @@ export default function SoloLevelingSpatial() {
   } | null>(null);
   const [showFloorSelect, setShowFloorSelect] = useState(false);
   const [cinematicMode, setCinematicMode] = useState(false);
+  
+  // Menu dialog states for node interactions
+  const [showMenuDialog, setShowMenuDialog] = useState(false);
+  const [menuCategory, setMenuCategory] = useState<'main' | 'drinks' | 'desserts'>('main');
 
   // Generate automatic greeting in the dialogue interface when clicking Cha Hae-In's node
   const handleChaHaeInInteraction = async () => {
@@ -3578,6 +3582,30 @@ export default function SoloLevelingSpatial() {
             }
             
             switch (nodeId) {
+              // Handle nodes by their gameLogic specification
+              case 'view_menu':
+                // Opens beautiful menu UI based on gameLogic: 'menu_ui_dialogue_influence'
+                console.log('🍽️ VIEW MENU HANDLER EXECUTING - Opening menu UI');
+                setShowMenuDialog(true);
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 2)
+                }));
+                console.log('✅ Menu UI opened successfully');
+                break;
+
+              case 'artisan_menu':
+                // Opens specialty drinks menu based on thoughtPrompt: "Browse the specialty drinks menu together"
+                console.log('☕ ARTISAN MENU HANDLER EXECUTING - Opening specialty drinks menu');
+                setShowMenuDialog(true);
+                setMenuCategory('drinks');
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 3)
+                }));
+                console.log('✅ Artisan menu opened successfully');
+                break;
+
               case 'red_gate_entrance':
               case 'red_gate':
                 // Enter the Red Gate dungeon for quest completion
@@ -3707,12 +3735,7 @@ export default function SoloLevelingSpatial() {
                 setShowLuxuryRealtor(true);
                 console.log('Opening luxury realtor property interface');
                 break;
-              // Myeongdong Fine Dining - Date Activity Exclusive Nodes
-              case 'view_menu':
-                // Direct access to Myeongdong dinner modal
-                console.log('🍽️ View menu clicked - opening Myeongdong dinner modal');
-                setShowMyeongdongDinner(true);
-                break;
+              // Myeongdong Fine Dining - Date Activity Exclusive Nodes - handled above in main view_menu case
 
                 
               // N Seoul Tower - Date Activity Exclusive Nodes
