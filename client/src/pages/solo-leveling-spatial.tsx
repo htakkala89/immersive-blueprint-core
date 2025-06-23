@@ -661,6 +661,7 @@ export default function SoloLevelingSpatial() {
             setThoughtPrompts(contextualPrompts);
             
             console.log('AI-generated greeting displayed in dialogue interface');
+            console.log('Thought prompts set:', contextualPrompts);
           } else {
             // Use fallback if response is empty or invalid
             const fallbackDialogue = getFallbackLocationDialogue();
