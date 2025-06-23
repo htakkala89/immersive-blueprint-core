@@ -3543,6 +3543,8 @@ export default function SoloLevelingSpatial() {
             
             // Handle different node types with specific logic
             console.log('🔍 SWITCH STATEMENT - Processing nodeId:', nodeId);
+            console.log('🗺️ Current location:', playerLocation);
+            console.log('📍 Available nodes for location:', LocationInteractiveNodes[playerLocation]?.map(n => n.id) || 'No nodes found');
             
             // Priority handler for bedroom intimate activities
             if (nodeId === 'bed' && playerLocation === 'player_apartment') {
@@ -4109,6 +4111,7 @@ export default function SoloLevelingSpatial() {
 
               case 'combat_analytics':
                 // Show raid statistics UI
+                console.log('🎯 COMBAT ANALYTICS HANDLER EXECUTING');
                 setShowRaidStats(true);
                 handleEnvironmentalInteraction({
                   id: 'raid_statistics_review',
@@ -4121,7 +4124,7 @@ export default function SoloLevelingSpatial() {
                   ...prev,
                   affection: Math.min(1000, prev.affection + 3)
                 }));
-                console.log('Combat analytics - Opening raid statistics UI');
+                console.log('✅ Combat analytics - Raid statistics UI opened successfully');
                 break;
 
               case 'jewelry_counter':
