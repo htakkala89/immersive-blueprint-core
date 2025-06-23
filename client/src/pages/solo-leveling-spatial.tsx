@@ -3606,6 +3606,64 @@ export default function SoloLevelingSpatial() {
                 console.log('✅ Artisan menu opened successfully');
                 break;
 
+              case 'cozy_window_seat':
+                // Gateway to casual seating activity based on gameLogic: 'narrative_gateway_casual'
+                console.log('🪟 COZY WINDOW SEAT HANDLER EXECUTING - Gateway to seating activity');
+                handleEnvironmentalInteraction({
+                  id: 'window_seating',
+                  action: 'You suggest taking the cozy window seat. Cha Hae-In settles in comfortably, appreciating the intimate setting. "I like how quiet it is here," she says, gazing out at the bustling Hongdae street. This unlocks new casual conversation options in your Day Planner.',
+                  name: 'Cozy Window Seat',
+                  x: 70,
+                  y: 35
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 4),
+                  unlockedActivities: [...(prev.unlockedActivities || []), 'intimate_conversation']
+                }));
+                console.log('✅ Window seat gateway activated - unlocked intimate conversations');
+                break;
+
+              case 'local_art_display':
+                // Cultural conversation trigger based on gameLogic: 'cultural_conversation_system_6'
+                console.log('🎨 LOCAL ART DISPLAY HANDLER EXECUTING - Cultural conversation');
+                handleEnvironmentalInteraction({
+                  id: 'art_discussion',
+                  action: 'You examine the local artwork together. Cha Hae-In studies a painting of the Han River. "The artist captured the peaceful feeling perfectly," she observes. "Sometimes I forget how beautiful our city can be when we\'re not focused on gates and raids."',
+                  name: 'Local Art Display',
+                  x: 80,
+                  y: 60
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 5),
+                  sharedMemories: [...(prev.sharedMemories || []), { 
+                    id: 'art_appreciation', 
+                    title: 'Art Appreciation', 
+                    description: 'Shared a moment appreciating local art',
+                    timestamp: new Date()
+                  }]
+                }));
+                console.log('✅ Cultural conversation completed - memory created');
+                break;
+
+              case 'equipment_rack':
+                // Training equipment inspection based on gameLogic: 'equipment_inspection_training'
+                console.log('⚔️ EQUIPMENT RACK HANDLER EXECUTING - Training equipment inspection');
+                handleEnvironmentalInteraction({
+                  id: 'equipment_inspection',
+                  action: 'You examine the training equipment rack. High-quality practice weapons and protective gear are neatly organized. Cha Hae-In runs her hand along a training sword. "These are well-maintained," she notes approvingly. "Good equipment makes all the difference in training."',
+                  name: 'Equipment Rack',
+                  x: 35,
+                  y: 85
+                });
+                setGameState(prev => ({
+                  ...prev,
+                  affection: Math.min(1000, prev.affection + 2)
+                }));
+                console.log('✅ Equipment inspection completed');
+                break;
+
               case 'red_gate_entrance':
               case 'red_gate':
                 // Enter the Red Gate dungeon for quest completion
