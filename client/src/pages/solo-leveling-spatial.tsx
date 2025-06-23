@@ -6429,28 +6429,30 @@ export default function SoloLevelingSpatial() {
         }}
       />
 
-      {/* System 5: Intimate Activity System */}
-      <IntimateActivitySystem5
-        isVisible={showIntimateActivity}
-        onClose={() => {
-          setShowIntimateActivity(false);
-          setCurrentIntimateActivity(null);
-        }}
-        activityId={currentIntimateActivity?.id || ''}
-        activityTitle={currentIntimateActivity?.title || ''}
-        backgroundImage={sceneImage || undefined}
-        onSceneComplete={(memory) => {
-          // Add memory to constellation system
-          console.log('New intimate memory created:', memory);
-          setGameState(prev => ({
-            ...prev,
-            affection: Math.min(10, prev.affection + 0.5), // Increase affection
-            intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + 1)
-          }));
-          setShowIntimateActivity(false);
-          setCurrentIntimateActivity(null);
-        }}
-      />
+      {/* System 5: Intimate Activity System - Temporarily disabled to fix thought prompts */}
+      {false && (
+        <IntimateActivitySystem5
+          isVisible={showIntimateActivity}
+          onClose={() => {
+            setShowIntimateActivity(false);
+            setCurrentIntimateActivity(null);
+          }}
+          activityId={currentIntimateActivity?.id || ''}
+          activityTitle={currentIntimateActivity?.title || ''}
+          backgroundImage={sceneImage || undefined}
+          onSceneComplete={(memory) => {
+            // Add memory to constellation system
+            console.log('New intimate memory created:', memory);
+            setGameState(prev => ({
+              ...prev,
+              affection: Math.min(10, prev.affection + 0.5), // Increase affection
+              intimacyLevel: Math.min(10, (prev.intimacyLevel || 1) + 1)
+            }));
+            setShowIntimateActivity(false);
+            setCurrentIntimateActivity(null);
+          }}
+        />
+      )}
 
       {/* System 16: Player Progression System */}
       <PlayerProgressionSystem16
