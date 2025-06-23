@@ -1145,7 +1145,7 @@ export default function SoloLevelingSpatial() {
   };
 
   const handleUpgradeItem = (itemId: string) => {
-    setPlayerEquipment(prev => prev.map(item => {
+    setPlayerEquipment((prev: any) => prev.map((item: any) => {
       if (item.id === itemId && item.upgradable) {
         const upgradeCost = 50000 * (item.rarity === 'legendary' ? 3 : item.rarity === 'epic' ? 2 : 1);
         
@@ -1158,17 +1158,17 @@ export default function SoloLevelingSpatial() {
           return {
             ...item,
             stats: {
-              attack: Math.round(((item.stats as any).attack || 0) * 1.2),
-              defense: Math.round(((item.stats as any).defense || 0) * 1.2),
-              speed: Math.round(((item.stats as any).speed || 0) * 1.1),
-              mana: Math.round(((item.stats as any).mana || 0) * 1.15)
+              attack: Math.round((item.stats.attack || 0) * 1.2),
+              defense: Math.round((item.stats.defense || 0) * 1.2),
+              speed: Math.round((item.stats.speed || 0) * 1.1),
+              mana: Math.round((item.stats.mana || 0) * 1.15)
             },
             name: item.name + ' +1'
-          } as any;
+          };
         }
       }
       return item;
-    }) as any);
+    }));
   };
 
   const handleGiftToChaHaeIn = (itemId: string) => {
