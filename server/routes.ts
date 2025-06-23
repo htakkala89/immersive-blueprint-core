@@ -132,38 +132,37 @@ async function generateWithVertexAI(prompt: string): Promise<string> {
 
     const { access_token } = await tokenResponse.json();
     
-    // Use Vertex AI Gemini Pro endpoint
+    // Use Vertex AI Gemini Pro endpoint - matching working Imagen pattern
     const location = 'us-central1';
-    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-1.5-flash-002:generateContent`;
+    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-1.5-flash-001:predict`;
     
     const requestBody = {
-      contents: [{
-        role: 'user',
-        parts: [{ text: prompt }]
+      instances: [{
+        content: prompt
       }],
-      safetySettings: [
-        {
-          category: 'HARM_CATEGORY_HARASSMENT',
-          threshold: 'BLOCK_NONE'
-        },
-        {
-          category: 'HARM_CATEGORY_HATE_SPEECH',
-          threshold: 'BLOCK_NONE'
-        },
-        {
-          category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-          threshold: 'BLOCK_NONE'
-        },
-        {
-          category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-          threshold: 'BLOCK_NONE'
-        }
-      ],
-      generationConfig: {
+      parameters: {
         temperature: 0.8,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 1024
+        maxOutputTokens: 1024,
+        safetySettings: [
+          {
+            category: 'HARM_CATEGORY_HARASSMENT',
+            threshold: 'BLOCK_NONE'
+          },
+          {
+            category: 'HARM_CATEGORY_HATE_SPEECH',
+            threshold: 'BLOCK_NONE'
+          },
+          {
+            category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+            threshold: 'BLOCK_NONE'
+          },
+          {
+            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+            threshold: 'BLOCK_NONE'
+          }
+        ]
       }
     };
 
@@ -183,7 +182,7 @@ async function generateWithVertexAI(prompt: string): Promise<string> {
     }
 
     const data = await response.json();
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const generatedText = data.predictions?.[0]?.content || data.predictions?.[0]?.text;
     
     if (!generatedText) {
       throw new Error('No text generated from Vertex AI');
@@ -2319,8 +2318,13 @@ RESPONSE INSTRUCTIONS:
       // As final fallback, provide a contextual response
       try {
         console.log('⚠️ Using emergency fallback dialogue system');
-        const fallbackResponse = generateContextualFallbackResponse(message, context, gameState);
-        const formattedResponse = ensureCinematicFormatting(fallbackResponse);
+        const userMessage = req.body.message || 'Hello';
+        const contextData = req.body.context || {};
+        const gameStateData = req.body.gameState || {};
+        const fallbackResponse = generateContextualFallbackResponse(userMessage, contextData, gameStateData);
+        
+        // Apply basic formatting since ensureCinematicFormatting is not accessible here
+        const formattedResponse = fallbackResponse;
         
         res.json({ 
           response: formattedResponse, 
@@ -2328,7 +2332,7 @@ RESPONSE INSTRUCTIONS:
           expression: 'welcoming',
           thoughtPrompts: [],
           showAffectionHeart: false,
-          gameState: gameState
+          gameState: gameStateData
         });
       } catch (fallbackError) {
         console.error("Fallback system failed:", fallbackError);
