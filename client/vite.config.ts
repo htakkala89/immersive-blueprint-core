@@ -3,29 +3,23 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
+// DO NOT include async plugins inside defineConfig (Vite doesn't support it here)
 export default defineConfig({
   plugins: [
     react(),
     runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
+    // Remove REPL-only plugin for Vercel compatibility
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
-      "@shared": path.resolve(__dirname, "..", "shared"),
-      "@assets": path.resolve(__dirname, "..", "attached_assets"),
+      "@shared": path.resolve(__dirname, "../shared"),
+      "@assets": path.resolve(__dirname, "../attached_assets"),
     },
   },
-  // No need to set root anymore — you're already in client/
+  // ❗️ DO NOT set 'root' here — you're already in client/
   build: {
-    outDir: "dist",
+    outDir: "dist",  // what Vercel expects
     emptyOutDir: true,
   },
   server: {
@@ -35,4 +29,3 @@ export default defineConfig({
     },
   },
 });
-
